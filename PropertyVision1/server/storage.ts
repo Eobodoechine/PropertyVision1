@@ -1787,18 +1787,32 @@ export class MemStorage implements IStorage {
         const boundary = this.generateBoundaryFromRadius(centerLat, centerLon, radius);
 
         // Search for properties in expanded boundary
-        const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+        const subjectType: string | undefined = subjectProperty?.description?.type || undefined;
+        const payloadBase: any = {
+          limit: 400,
+          offset: 0,
+          status: ['sold'],
+          boundary: { coordinates: [boundary] }
+        };
+        if (subjectType && typeof subjectType === 'string') {
+          payloadBase.type = [subjectType];
+        }
+
+        let searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
           method: 'POST',
-          body: JSON.stringify({
-            limit: 200,
-            offset: 0,
-            postal_code: null,
-            status: ['sold'],
-            list_price: { min: 50000, max: 800000 },
-            property_type: ['single_family'],
-            geometry: { type: "Polygon", coordinates: [boundary] }
-          })
+          body: JSON.stringify(payloadBase)
         });
+
+        // Fallback: if server error, try reducing limit and loosening type filter
+        if (!searchResponse.ok && searchResponse.status >= 500) {
+          const fallbackPayload = { ...payloadBase, limit: 200 } as any;
+          delete fallbackPayload.type;
+          console.log('⚠️ Enhancement fallback: retrying without type filter and lower limit');
+          searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+            method: 'POST',
+            body: JSON.stringify(fallbackPayload)
+          });
+        }
 
         if (!searchResponse.ok) {
           console.log(`❌ Enhancement search failed at ${radius} miles: ${searchResponse.status}`);
@@ -1811,14 +1825,14 @@ export class MemStorage implements IStorage {
           const properties = searchData.data.home_search.results;
           console.log(`🏠 FOUND ${properties.length} properties in ${radius}-mile radius`);
 
-          // Filter properties with 12-month sales restriction for enhancement (when confidence is low)
+          // Filter properties with sales restriction for enhancement
           const twelveMonthsAgo = new Date();
           twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
 
           const minSqft = Math.floor(subjectSqft * 0.8);
           const maxSqft = Math.ceil(subjectSqft * 1.2);
 
-          const validNewComps = properties.filter(property => {
+          let validNewComps = properties.filter(property => {
             // Check for required data
             const sqft = Number(property.description?.sqft);
             const soldPrice = Number(property.description?.sold_price || property.last_sold_price);
@@ -1858,6 +1872,44 @@ export class MemStorage implements IStorage {
             source: 'enhanced_search',
             enhanced: true
           }));
+
+          // If still too few comps, relax sales window to 24 months
+          if (validNewComps.length < 3) {
+            console.log('⚠️ Enhancement: relaxing sales window to 24 months due to low results');
+            const twentyFourMonthsAgo = new Date();
+            twentyFourMonthsAgo.setMonth(twentyFourMonthsAgo.getMonth() - 24);
+            validNewComps = properties.filter(property => {
+              const sqft = Number(property.description?.sqft);
+              const soldPrice = Number(property.description?.sold_price || property.last_sold_price);
+              const listDate = property.list_date || property.last_sold_date;
+              if (!Number.isFinite(sqft) || sqft <= 0 || !Number.isFinite(soldPrice) || soldPrice <= 0 || !listDate) {
+                return false;
+              }
+              const saleDate = new Date(listDate);
+              if (saleDate < twentyFourMonthsAgo) {
+                return false;
+              }
+              if (sqft < minSqft || sqft > maxSqft) {
+                return false;
+              }
+              const propAddress = property.location?.address?.line || '';
+              const alreadyExists = existingComps.some(comp => 
+                comp.address && propAddress && comp.address.toLowerCase().includes(propAddress.toLowerCase())
+              );
+              return !alreadyExists;
+            }).map(property => ({
+              address: property.location?.address?.line || 'Unknown Address',
+              price: property.description.sold_price,
+              sqft: property.description.sqft,
+              beds: property.description.beds || Math.ceil(property.description.sqft / 400),
+              baths: property.description.baths || Math.ceil(property.description.sqft / 500),
+              yearBuilt: property.description.year_built,
+              pricePerSqft: Math.round(property.description.sold_price / property.description.sqft),
+              soldDate: property.list_date,
+              source: 'enhanced_search_relaxed',
+              enhanced: true
+            }));
+          }
 
           console.log(`✅ ENHANCEMENT RADIUS ${radius}: Found ${validNewComps.length} valid new comparables`);
           enhancedComps.push(...validNewComps);
