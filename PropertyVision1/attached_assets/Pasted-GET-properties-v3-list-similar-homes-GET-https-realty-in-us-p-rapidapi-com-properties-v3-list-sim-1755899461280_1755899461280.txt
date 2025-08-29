@@ -1,0 +1,515 @@
+GET properties/v3/list-similar-homes
+
+GET https://realty-in-us.p.rapidapi.com/properties/v3/list-similar-homes?property_id=2080392812&limit=5&status=for_sale HTTP/1.1
+access-control-allow-credentials: true
+access-control-allow-headers: ver
+access-control-allow-methods: GET, POST
+access-control-allow-origin: *
+content-type: application/json
+date: Fri, 22 Aug 2025 21:49:54 GMT
+server: RapidAPI-1.2.8
+x-rapidapi-region: AWS - us-east-1
+x-rapidapi-request-id: 2b03f5908565580b54b5449a5ccebb9c96603a0b3c94a044c3c7caed6d9a3476
+x-rapidapi-version: 1.2.8
+x-ratelimit-rapid-free-plans-hard-limit-limit: 500000
+x-ratelimit-rapid-free-plans-hard-limit-remaining: 499965
+x-ratelimit-rapid-free-plans-hard-limit-reset: 2660931
+x-ratelimit-requests-limit: 500
+x-ratelimit-requests-remaining: 447
+x-ratelimit-requests-reset: 2660931
+specificMethodHeaders: [object Object]
+
+
+Output: {
+  "data": {
+    "home": {
+      "__typename": "Home",
+      "related_homes": {
+        "__typename": "SearchHomeResult",
+        "results": [
+          {
+            "__typename": "SearchHome",
+            "property_id": "1288624850",
+            "listing_id": "2973451913",
+            "plan_id": null,
+            "status": "for_sale",
+            "list_price": 3699900,
+            "last_sold_price": null,
+            "last_sold_date": null,
+            "primary_photo": {
+              "__typename": "HomePhoto",
+              "href": "https://ap.rdcpix.com/974ba6b82114649ba5f1d1fb947254e6l-m22018998xd-w300_h300_q80.jpg"
+            },
+            "location": {
+              "__typename": "SearchHomeLocation",
+              "address": {
+                "__typename": "SearchHomeAddress",
+                "unit": null,
+                "line": "914 S Gramercy Dr",
+                "street_number": null,
+                "street_name": "",
+                "city": "Los Angeles",
+                "state": "California",
+                "state_code": "CA",
+                "postal_code": "90019",
+                "street_suffix": null,
+                "country": null,
+                "coordinate": {
+                  "__typename": "Coordinate",
+                  "lat": 34.055305,
+                  "lon": -118.311875
+                }
+              },
+              "street_view_url": "https://maps.googleapis.com/maps/api/streetview?channel=rdc-streetview&client=gme-movesalesinc&location=914%20S%20Gramercy%20Dr%2C%20Los%20Angeles%2C%20CA%2090019&size=640x480&source=outdoor&signature=FyVVNIIiUSrkEtV-cya6EBiS3qc="
+            },
+            "description": {
+              "__typename": "SearchHomeDescription",
+              "beds": 16,
+              "baths_full_calc": 16,
+              "baths_partial_calc": null,
+              "baths": 16,
+              "sqft": 10050,
+              "beds_min": null,
+              "beds_max": null,
+              "baths_min": null,
+              "baths_max": null,
+              "baths_full": 16,
+              "baths_half": null,
+              "sqft_min": null,
+              "sqft_max": null,
+              "lot_sqft": 15004,
+              "type": "multi_family",
+              "sub_type": null,
+              "year_built": 1953,
+              "sold_price": null,
+              "text": null
+            },
+            "comparable_data": {
+              "__typename": "HomeComparableData",
+              "price": {
+                "__typename": "ComparableDataValue",
+                "percent": -9,
+                "absolute": -350100
+              },
+              "comparable_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": -36,
+                "absolute": -5556
+              },
+              "comparable_lot_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": 77,
+                "absolute": 6514
+              },
+              "year_built": {
+                "__typename": "ComparableDataAbsoluteValue",
+                "absolute": -18
+              }
+            },
+            "list_price_min": null,
+            "list_price_max": null,
+            "href": "https://www.realtor.com/realestateandhomes-detail/914-S-Gramercy-Dr_Los-Angeles_CA_90019_M12886-24850",
+            "permalink": "914-S-Gramercy-Dr_Los-Angeles_CA_90019_M12886-24850",
+            "list_date": null,
+            "last_update_date": "2025-07-17T12:01:09Z",
+            "flags": {
+              "__typename": "SearchHomeFlags",
+              "is_contingent": null,
+              "is_pending": null,
+              "is_price_reduced": false,
+              "is_new_listing": null,
+              "is_foreclosure": null
+            },
+            "photos": null,
+            "estimate": null
+          },
+          {
+            "__typename": "SearchHome",
+            "property_id": "2081287194",
+            "listing_id": "2973280270",
+            "plan_id": null,
+            "status": "for_sale",
+            "list_price": 5495000,
+            "last_sold_price": null,
+            "last_sold_date": null,
+            "primary_photo": {
+              "__typename": "HomePhoto",
+              "href": "https://ap.rdcpix.com/3358e84e45a901eb24a1c7e03071bb47l-m3921036096xd-w300_h300_q80.jpg"
+            },
+            "location": {
+              "__typename": "SearchHomeLocation",
+              "address": {
+                "__typename": "SearchHomeAddress",
+                "unit": null,
+                "line": "204 N Manhattan Pl",
+                "street_number": null,
+                "street_name": "",
+                "city": "Los Angeles",
+                "state": "California",
+                "state_code": "CA",
+                "postal_code": "90004",
+                "street_suffix": null,
+                "country": null,
+                "coordinate": {
+                  "__typename": "Coordinate",
+                  "lat": 34.07479,
+                  "lon": -118.30993
+                }
+              },
+              "street_view_url": "https://maps.googleapis.com/maps/api/streetview?channel=rdc-streetview&client=gme-movesalesinc&location=204%20N%20Manhattan%20Pl%2C%20Los%20Angeles%2C%20CA%2090004&size=640x480&source=outdoor&signature=9x0r2T8Mjl9jlqFfUbgq3mbCces="
+            },
+            "description": {
+              "__typename": "SearchHomeDescription",
+              "beds": 25,
+              "baths_full_calc": 23,
+              "baths_partial_calc": null,
+              "baths": 23,
+              "sqft": 12628,
+              "beds_min": null,
+              "beds_max": null,
+              "baths_min": null,
+              "baths_max": null,
+              "baths_full": 23,
+              "baths_half": null,
+              "sqft_min": null,
+              "sqft_max": null,
+              "lot_sqft": 14319,
+              "type": "multi_family",
+              "sub_type": null,
+              "year_built": 1961,
+              "sold_price": null,
+              "text": null
+            },
+            "comparable_data": {
+              "__typename": "HomeComparableData",
+              "price": {
+                "__typename": "ComparableDataValue",
+                "percent": 36,
+                "absolute": 1445000
+              },
+              "comparable_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": -19,
+                "absolute": -2978
+              },
+              "comparable_lot_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": 69,
+                "absolute": 5829
+              },
+              "year_built": {
+                "__typename": "ComparableDataAbsoluteValue",
+                "absolute": -10
+              }
+            },
+            "list_price_min": null,
+            "list_price_max": null,
+            "href": "https://www.realtor.com/realestateandhomes-detail/204-N-Manhattan-Pl_Los-Angeles_CA_90004_M20812-87194",
+            "permalink": "204-N-Manhattan-Pl_Los-Angeles_CA_90004_M20812-87194",
+            "list_date": null,
+            "last_update_date": "2025-08-04T17:24:36Z",
+            "flags": {
+              "__typename": "SearchHomeFlags",
+              "is_contingent": null,
+              "is_pending": null,
+              "is_price_reduced": true,
+              "is_new_listing": null,
+              "is_foreclosure": null
+            },
+            "photos": null,
+            "estimate": null
+          },
+          {
+            "__typename": "SearchHome",
+            "property_id": "1071645108",
+            "listing_id": "2972015618",
+            "plan_id": null,
+            "status": "for_sale",
+            "list_price": 5350000,
+            "last_sold_price": null,
+            "last_sold_date": null,
+            "primary_photo": {
+              "__typename": "HomePhoto",
+              "href": "https://ap.rdcpix.com/6b14c2687a82ee1b3cd5651e729d0381l-m4182811899xd-w300_h300_q80.jpg"
+            },
+            "location": {
+              "__typename": "SearchHomeLocation",
+              "address": {
+                "__typename": "SearchHomeAddress",
+                "unit": null,
+                "line": "857 S Plymouth Blvd",
+                "street_number": null,
+                "street_name": "",
+                "city": "Los Angeles",
+                "state": "California",
+                "state_code": "CA",
+                "postal_code": "90005",
+                "street_suffix": null,
+                "country": null,
+                "coordinate": {
+                  "__typename": "Coordinate",
+                  "lat": 34.058431,
+                  "lon": -118.324992
+                }
+              },
+              "street_view_url": "https://maps.googleapis.com/maps/api/streetview?channel=rdc-streetview&client=gme-movesalesinc&location=857%20S%20Plymouth%20Blvd%2C%20Los%20Angeles%2C%20CA%2090005&size=640x480&source=outdoor&signature=8NwtU1pxlg5Bwp_4UfpUM4CeW6E="
+            },
+            "description": {
+              "__typename": "SearchHomeDescription",
+              "beds": 22,
+              "baths_full_calc": 23,
+              "baths_partial_calc": null,
+              "baths": 23,
+              "sqft": 14211,
+              "beds_min": null,
+              "beds_max": null,
+              "baths_min": null,
+              "baths_max": null,
+              "baths_full": 23,
+              "baths_half": null,
+              "sqft_min": null,
+              "sqft_max": null,
+              "lot_sqft": 8974,
+              "type": "multi_family",
+              "sub_type": null,
+              "year_built": 1990,
+              "sold_price": null,
+              "text": null
+            },
+            "comparable_data": {
+              "__typename": "HomeComparableData",
+              "price": {
+                "__typename": "ComparableDataValue",
+                "percent": 32,
+                "absolute": 1300000
+              },
+              "comparable_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": -9,
+                "absolute": -1395
+              },
+              "comparable_lot_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": 6,
+                "absolute": 484
+              },
+              "year_built": {
+                "__typename": "ComparableDataAbsoluteValue",
+                "absolute": 19
+              }
+            },
+            "list_price_min": null,
+            "list_price_max": null,
+            "href": "https://www.realtor.com/realestateandhomes-detail/857-S-Plymouth-Blvd_Los-Angeles_CA_90005_M10716-45108",
+            "permalink": "857-S-Plymouth-Blvd_Los-Angeles_CA_90005_M10716-45108",
+            "list_date": null,
+            "last_update_date": "2025-08-22T11:00:19Z",
+            "flags": {
+              "__typename": "SearchHomeFlags",
+              "is_contingent": null,
+              "is_pending": null,
+              "is_price_reduced": null,
+              "is_new_listing": null,
+              "is_foreclosure": null
+            },
+            "photos": null,
+            "estimate": null
+          },
+          {
+            "__typename": "SearchHome",
+            "property_id": "1812897876",
+            "listing_id": "2968991046",
+            "plan_id": null,
+            "status": "for_sale",
+            "list_price": 5900000,
+            "last_sold_price": null,
+            "last_sold_date": null,
+            "primary_photo": {
+              "__typename": "HomePhoto",
+              "href": "https://ap.rdcpix.com/f9dd74e56025dc709098107f89a43bd6l-m586877654xd-w300_h300_q80.jpg"
+            },
+            "location": {
+              "__typename": "SearchHomeLocation",
+              "address": {
+                "__typename": "SearchHomeAddress",
+                "unit": null,
+                "line": "520 S Kenmore Ave",
+                "street_number": null,
+                "street_name": "",
+                "city": "Los Angeles",
+                "state": "California",
+                "state_code": "CA",
+                "postal_code": "90020",
+                "street_suffix": null,
+                "country": null,
+                "coordinate": {
+                  "__typename": "Coordinate",
+                  "lat": 34.064685,
+                  "lon": -118.296259
+                }
+              },
+              "street_view_url": "https://maps.googleapis.com/maps/api/streetview?channel=rdc-streetview&client=gme-movesalesinc&location=520%20S%20Kenmore%20Ave%2C%20Los%20Angeles%2C%20CA%2090020&size=640x480&source=outdoor&signature=1X6PP4TEvT8VGPvObcOo08chhIo="
+            },
+            "description": {
+              "__typename": "SearchHomeDescription",
+              "beds": 15,
+              "baths_full_calc": 24,
+              "baths_partial_calc": null,
+              "baths": 24,
+              "sqft": 18783,
+              "beds_min": null,
+              "beds_max": null,
+              "baths_min": null,
+              "baths_max": null,
+              "baths_full": 24,
+              "baths_half": null,
+              "sqft_min": null,
+              "sqft_max": null,
+              "lot_sqft": 9817,
+              "type": "multi_family",
+              "sub_type": null,
+              "year_built": 1961,
+              "sold_price": null,
+              "text": null
+            },
+            "comparable_data": {
+              "__typename": "HomeComparableData",
+              "price": {
+                "__typename": "ComparableDataValue",
+                "percent": 46,
+                "absolute": 1850000
+              },
+              "comparable_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": 20,
+                "absolute": 3177
+              },
+              "comparable_lot_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": 16,
+                "absolute": 1327
+              },
+              "year_built": {
+                "__typename": "ComparableDataAbsoluteValue",
+                "absolute": -10
+              }
+            },
+            "list_price_min": null,
+            "list_price_max": null,
+            "href": "https://www.realtor.com/realestateandhomes-detail/520-S-Kenmore-Ave_Los-Angeles_CA_90020_M18128-97876",
+            "permalink": "520-S-Kenmore-Ave_Los-Angeles_CA_90020_M18128-97876",
+            "list_date": null,
+            "last_update_date": "2025-03-28T13:20:52Z",
+            "flags": {
+              "__typename": "SearchHomeFlags",
+              "is_contingent": null,
+              "is_pending": null,
+              "is_price_reduced": null,
+              "is_new_listing": null,
+              "is_foreclosure": null
+            },
+            "photos": null,
+            "estimate": null
+          },
+          {
+            "__typename": "SearchHome",
+            "property_id": "2502978357",
+            "listing_id": "2973757543",
+            "plan_id": null,
+            "status": "for_sale",
+            "list_price": 2500000,
+            "last_sold_price": null,
+            "last_sold_date": null,
+            "primary_photo": {
+              "__typename": "HomePhoto",
+              "href": "https://ap.rdcpix.com/30e02cf75a21b43e3abafa88b9bfd40bl-m892590067xd-w300_h300_q80.jpg"
+            },
+            "location": {
+              "__typename": "SearchHomeLocation",
+              "address": {
+                "__typename": "SearchHomeAddress",
+                "unit": null,
+                "line": "4651 Council St",
+                "street_number": null,
+                "street_name": "",
+                "city": "Los Angeles",
+                "state": "California",
+                "state_code": "CA",
+                "postal_code": "90004",
+                "street_suffix": null,
+                "country": null,
+                "coordinate": {
+                  "__typename": "Coordinate",
+                  "lat": 34.074787,
+                  "lon": -118.311705
+                }
+              },
+              "street_view_url": "https://maps.googleapis.com/maps/api/streetview?channel=rdc-streetview&client=gme-movesalesinc&location=4651%20Council%20St%2C%20Los%20Angeles%2C%20CA%2090004&size=640x480&source=outdoor&signature=dsIwnDUavNpXPIB-w0oHRaltw6w="
+            },
+            "description": {
+              "__typename": "SearchHomeDescription",
+              "beds": 12,
+              "baths_full_calc": 11,
+              "baths_partial_calc": null,
+              "baths": 11,
+              "sqft": 7444,
+              "beds_min": null,
+              "beds_max": null,
+              "baths_min": null,
+              "baths_max": null,
+              "baths_full": 11,
+              "baths_half": null,
+              "sqft_min": null,
+              "sqft_max": null,
+              "lot_sqft": 7424,
+              "type": "multi_family",
+              "sub_type": null,
+              "year_built": 1958,
+              "sold_price": null,
+              "text": null
+            },
+            "comparable_data": {
+              "__typename": "HomeComparableData",
+              "price": {
+                "__typename": "ComparableDataValue",
+                "percent": -38,
+                "absolute": -1550000
+              },
+              "comparable_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": -52,
+                "absolute": -8162
+              },
+              "comparable_lot_sqft": {
+                "__typename": "ComparableDataValue",
+                "percent": -13,
+                "absolute": -1066
+              },
+              "year_built": {
+                "__typename": "ComparableDataAbsoluteValue",
+                "absolute": -13
+              }
+            },
+            "list_price_min": null,
+            "list_price_max": null,
+            "href": "https://www.realtor.com/realestateandhomes-detail/4651-Council-St_Los-Angeles_CA_90004_M25029-78357",
+            "permalink": "4651-Council-St_Los-Angeles_CA_90004_M25029-78357",
+            "list_date": null,
+            "last_update_date": "2025-07-17T16:32:05Z",
+            "flags": {
+              "__typename": "SearchHomeFlags",
+              "is_contingent": null,
+              "is_pending": null,
+              "is_price_reduced": null,
+              "is_new_listing": null,
+              "is_foreclosure": null
+            },
+            "photos": null,
+            "estimate": null
+          }
+        ]
+      }
+    }
+  }
+}   
+￼

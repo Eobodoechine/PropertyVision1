@@ -1,23 +1,84 @@
+###############################################
+# Combined ignore for Node/Vite/JS projects
+###############################################
+
 # Node & package managers
 node_modules/
 npm-debug.log*
 yarn-*.log
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 pnpm-debug.log*
+.pnpm-debug.log*
+
+# Diagnostic reports
+report.*.json
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
 
 # Builds & caches
 dist/
 build/
 .cache/
+.parcel-cache
 .vite/
 node_modules/.vite/
-coverage/
-*.tsbuildinfo
-.eslintcache
+.next
+out
+.nuxt
+.vuepress/dist
+.temp
+.docusaurus
+.serverless/
+.fusebox/
+.dynamodb/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.vscode-test
+web_modules/
 
-# Environment files (keep secrets out of git)
+# TypeScript
+*.tsbuildinfo
+
+# Optional caches
+.npm
+.eslintcache
+.stylelintcache
+
+# REPL history
+.node_repl_history
+
+# Pack artifacts
+*.tgz
+*.tar.gz
+
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Env files (do not commit secrets)
 .env
 .env.*
 .env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
 # OS & editors
 .DS_Store
@@ -26,4 +87,4 @@ coverage/
 
 # Project-specific
 server/public/
-*.tar.gz
+vite.config.ts.*

@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "es_took": 16,
+    "es_total_hits": 4,
+    "version": "v1.12.676f7ea4"
+  },
+  "autocomplete": [
+    {
+      "_id": "addr:6415411616",
+      "_score": 10149.648,
+      "area_type": "address",
+      "mpr_id": "6415411616",
+      "full_address": [
+        "3852 Austin Park Ln Decatur GA 30032",
+        "3852 Austin Park Ln Decatur GA"
+      ],
+      "line": "3852 Austin Park Ln",
+      "city": "Decatur",
+      "postal_code": "30032",
+      "state_code": "GA",
+      "country": "USA",
+      "centroid": {
+        "lon": -84.236134,
+        "lat": 33.733347
+      },
+      "prop_status": [
+        "recently_sold",
+        "off_market"
+      ],
+      "validation_code": [
+        "121"
+      ]
+    },
+    {
+      "_id": "addr:6522136140",
+      "_score": 10139.082,
+      "area_type": "address",
+      "mpr_id": "6522136140",
+      "full_address": [
+        "3852 Austin Park Ln Decatur GA 30032",
+        "3852 Austin Park Ln Unit 94 Decatur GA 30032",
+        "3852 Austin Park Ln Decatur GA",
+        "3852 Austin Park Ln Unit 94 Decatur GA"
+      ],
+      "line": "3852 Austin Park Ln Unit 94",
+      "city": "Decatur",
+      "postal_code": "30032",
+      "state_code": "GA",
+      "country": "USA",
+      "centroid": {
+        "lon": -84.235345,
+        "lat": 33.733336
+      },
+      "prop_status": [
+        "recently_sold",
+        "off_market"
+      ],
+      "validation_code": [
+        "121"
+      ]
+    },
+    {
+      "_id": "ps:ga_30032",
+      "_score": 29.177652,
+      "area_type": "postal_code",
+      "postal_code": "30032",
+      "state_code": "GA",
+      "city": "Decatur",
+      "country": "USA",
+      "centroid": {
+        "lon": -84.26393999999999,
+        "lat": 33.740006
+      },
+      "slug_id": "30032",
+      "geo_id": "d9ca9c21-0177-5957-b82b-4133d65e187f"
+    },
+    {
+      "_id": "street:usa_ga_decatur_austin-park-ln",
+      "_score": 25.140627,
+      "area_type": "street",
+      "street": "Austin Park Ln",
+      "suffix": "Ln",
+      "city": "Decatur",
+      "state_code": "GA",
+      "country": "USA",
+      "centroid": {
+        "lon": -84.23598,
+        "lat": 33.733133
+      },
+      "slug_id": "Austin-Park-Ln",
+      "city_slug_id": "Decatur_GA"
+    }
+  ]
+}
