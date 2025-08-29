@@ -2,7 +2,7 @@
  * Web search service for property research via external provider (Tavily or others)
  */
 
-import cheerio from 'cheerio';
+import { load as loadCheerio } from 'cheerio';
 
 export type WebSearchSubject = {
   beds?: number | null;
@@ -98,7 +98,7 @@ async function fetchAndExtract(url: string): Promise<WebSearchSubject> {
     clearTimeout(timeout);
     if (!res.ok) return {};
     const html = await res.text();
-    const $ = cheerio.load(html);
+    const $ = loadCheerio(html);
     const text = $('body').text() || '';
     return extractFromText(text);
   } catch {
