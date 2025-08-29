@@ -59,6 +59,35 @@ app.get('/api/info', (_req, res) => {
   });
 });
 
+// Temporary debug endpoint (no secrets): helps verify routing/base and headers
+app.get('/api/debug', (req, res) => {
+  res.json({
+    now: new Date().toISOString(),
+    method: req.method,
+    url: req.url,
+    originalUrl: req.originalUrl,
+    path: req.path,
+    headers: {
+      host: req.headers['host'],
+      'x-forwarded-host': req.headers['x-forwarded-host'],
+      'x-forwarded-proto': req.headers['x-forwarded-proto'],
+      'x-forwarded-port': req.headers['x-forwarded-port'],
+      origin: req.headers['origin'],
+      referer: req.headers['referer'],
+    },
+    server: {
+      env: process.env.NODE_ENV || 'development',
+      port: Number(process.env.PORT) || 5000,
+      cors_origin: process.env.CORS_ORIGIN || null,
+    },
+    keys_present: {
+      rapidapi: Boolean(process.env.RAPIDAPI_KEY),
+      google_maps: Boolean(process.env.GOOGLE_MAPS_API_KEY),
+      tavily: Boolean(process.env.TAVILY_API_KEY),
+    },
+  });
+});
+
 if (!mounted) {
   console.warn('[server] No router mounted (server/routes.* not exporting a router).');
 }
