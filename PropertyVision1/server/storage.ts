@@ -1381,13 +1381,16 @@ export class MemStorage implements IStorage {
       console.log(`🚿 2ND BATHROOM ARV: $${enhancedArv.toLocaleString()} (${enhancedPricePerSqft}/sqft from ${twoBathComps.length >= 3 ? '2-bath comps' : '75th percentile'})`);
     }
 
+    // Compute baths with halves, if present
+    const bathsComputed = computeBaths(subjectProperty.description);
+
     return {
       address: normalizedAddress,
       arv: arv.toString(),
       confidence,
       pricePerSqFt: medianPricePerSqft.toString(),
       beds: subjectProperty.description?.beds || 0,
-      baths: subjectProperty.description?.baths?.toString() || '0',
+      baths: (bathsComputed ?? subjectProperty.description?.baths ?? 0).toString(),
       sqft: subjectProperty.description?.sqft || subjectSqft,
       yearBuilt: subjectProperty.description?.year_built || finalYearBuilt,
       comparables: formattedComparables,
