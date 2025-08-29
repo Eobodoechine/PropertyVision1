@@ -18,6 +18,20 @@ app.use(express.json({ limit: '1mb' }));
 
 const server = createServer(app);
 
+// Dev-only API request logger to help trace routing and content-types
+if ((process.env.NODE_ENV || 'development') === 'development') {
+  app.use('/api', (req, res, next) => {
+    const start = Date.now();
+    const { method, originalUrl } = req;
+    res.on('finish', () => {
+      const ms = Date.now() - start;
+      const ct = res.get('Content-Type') || '';
+      log(`DEV API LOG: ${method} ${originalUrl} -> ${res.statusCode} ${ct} (${ms}ms)`, 'express');
+    });
+    next();
+  });
+}
+
 // Import routes with flexible shapes (default export, named {router}, or directly a Router)
 let mounted = false;
 try {
@@ -78,6 +92,11 @@ server.listen(PORT, HOST, () => {
   log(`🌟 PropertyVision server running on http://${HOST}:${PORT}`);
   log(`📱 Frontend: http://${HOST}:${PORT}`);
   log(`🔌 API: http://${HOST}:${PORT}/api`);
+  if ((process.env.NODE_ENV || 'development') === 'development') {
+    const corsOrigin = process.env.CORS_ORIGIN || '(any)';
+    log(`DEV INFO: CORS_ORIGIN=${corsOrigin}`);
+    log(`DEV INFO: Note: VITE_API_BASE is a client env; verify it in the client build if requests misroute.`);
+  }
 });
 
 const shutdown = (sig: string) => {
