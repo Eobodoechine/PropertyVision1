@@ -1219,17 +1219,6 @@ export class MemStorage implements IStorage {
 
     // Check if this is a 1-bathroom property that should trigger dual calculation
     const computedBaths = computeBaths(subjectProperty.description);
-    // TEMP DEBUG: Log raw bathroom fields reported by API for subject
-    try {
-      const d: any = subjectProperty?.description || {};
-      console.log('[DEBUG BATHS] subject raw fields:', {
-        baths: d?.baths,
-        baths_full: d?.baths_full,
-        baths_half: d?.baths_half,
-        baths_full_calc: d?.baths_full_calc,
-        baths_partial_calc: d?.baths_partial_calc,
-      });
-    } catch {}
     const actualBathrooms = computedBaths ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
     const shouldUseDualCalculation = actualBathrooms < 2;
 
