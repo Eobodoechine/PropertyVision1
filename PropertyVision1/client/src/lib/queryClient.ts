@@ -7,6 +7,18 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+function ensureJsonResponse(res: Response, url: string) {
+  const ct = (res.headers.get("content-type") || "").toLowerCase();
+  // If server returned HTML (likely index.html or a dev overlay), surface a clear error
+  if (ct.includes("text/html")) {
+    throw new Error(
+      `Received HTML instead of JSON from ${url}. ` +
+      `Check that requests target your API (e.g., '/api/...') and that 'VITE_API_BASE' is correct. ` +
+      `Also check server logs for a dev/build error.`
+    );
+  }
+}
+
 export async function apiRequest(
   method: string,
   url: string,
@@ -22,6 +34,7 @@ export async function apiRequest(
   });
 
   await throwIfResNotOk(res);
+  ensureJsonResponse(res, fullUrl);
   return res;
 }
 
@@ -43,6 +56,7 @@ export const getQueryFn: <T>(options: {
     }
 
     await throwIfResNotOk(res);
+    ensureJsonResponse(res, fullUrl);
     return await res.json();
   };
 
