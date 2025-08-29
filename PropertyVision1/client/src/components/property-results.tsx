@@ -276,28 +276,59 @@ export default function PropertyResults({ results, error, isLoading, onClearErro
                         </p>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-bold text-green-600" data-testid={`comp-price-${index}`}>
-                          ${Number(comp.price).toLocaleString()}
-                        </p>
+                        {(() => {
+                          const priceNum = typeof comp.price === 'string'
+                            ? parseFloat(comp.price.replace(/[$,]/g, ''))
+                            : Number(comp.price);
+                          const priceDisplay = Number.isFinite(priceNum)
+                            ? `$${priceNum.toLocaleString()}`
+                            : (typeof comp.price === 'string' ? comp.price : 'Price not available');
+                          return (
+                            <p className="text-lg font-bold text-green-600" data-testid={`comp-price-${index}`}>
+                              {priceDisplay}
+                            </p>
+                          );
+                        })()}
                         <p className="text-xs text-gray-500" data-testid={`comp-sold-date-${index}`}>
                           Sold: {comp.soldDate || 'Date unknown'}
                         </p>
                       </div>
                       <div className="text-center">
-                        <p className="text-lg font-bold text-blue-600" data-testid={`comp-price-per-sqft-${index}`}>
-                          ${Math.round(Number(comp.price) / Number(comp.sqft))}
-                        </p>
+                        {(() => {
+                          const priceNum = typeof comp.price === 'string'
+                            ? parseFloat(comp.price.replace(/[$,]/g, ''))
+                            : Number(comp.price);
+                          const sqftNum = Number(comp.sqft);
+                          const ppsfNum = Number.isFinite(priceNum) && Number.isFinite(sqftNum) && sqftNum > 0
+                            ? Math.round(priceNum / sqftNum)
+                            : NaN;
+                          const ppsfFallback = (comp as any).pricePerSqft as string | undefined;
+                          const ppsfDisplay = Number.isFinite(ppsfNum)
+                            ? `$${ppsfNum}`
+                            : (ppsfFallback || 'N/A');
+                          return (
+                            <p className="text-lg font-bold text-blue-600" data-testid={`comp-price-per-sqft-${index}`}>
+                              {ppsfDisplay}
+                            </p>
+                          );
+                        })()}
                         <p className="text-xs text-gray-500">
                           per sq ft
                         </p>
                       </div>
                       <div className="text-center">
                         <p className="text-sm text-gray-900" data-testid={`comp-specs-${index}`}>
-                          {comp.beds || '?'} bed • {comp.baths || '?'} bath
+                          {(comp.beds ?? '?')} bed • {(comp.baths ?? '?')} bath
                         </p>
-                        <p className="text-xs text-gray-600" data-testid={`comp-sqft-${index}`}>
-                          {Number(comp.sqft).toLocaleString()} sq ft
-                        </p>
+                        {(() => {
+                          const sqftNum = Number(comp.sqft);
+                          const sqftDisplay = Number.isFinite(sqftNum) ? sqftNum.toLocaleString() : 'N/A';
+                          return (
+                            <p className="text-xs text-gray-600" data-testid={`comp-sqft-${index}`}>
+                              {sqftDisplay} sq ft
+                            </p>
+                          );
+                        })()}
                       </div>
                     </div>
                   </div>
