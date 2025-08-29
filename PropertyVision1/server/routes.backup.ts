@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { addressSearchSchema, type PropertyAnalysisResult } from "@shared/schema";
 import { z } from "zod";
-import { webSearch } from "./web-search";
+import { webSearch } from "./web-search-service";
 import { Router } from 'express';
 
 // Create a new router instance to export
@@ -192,7 +192,7 @@ router.post("/external-web-search", async (req, res) => {
         console.log(`🔍 SEARCHING WEB FOR: ${address}`);
 
         // This would be replaced with actual web_search tool results
-        // DEMO REMOVED, return empty to maintain data integrity
+        // For demonstration, return empty to maintain data integrity
         res.json({ results: [] });
         return;
       }
