@@ -616,6 +616,32 @@ export class MemStorage implements IStorage {
       const searchResult = await this.webSearch(searchQuery);
 
       if (searchResult && searchResult.length > 0) {
+        // Try to parse any embedded JSON payloads first (from provider-assisted results)
+        for (const item of searchResult) {
+          const candidates = [item?.description, item?.content, item?.snippet, item?.title]
+            .filter(Boolean) as string[];
+          for (const text of candidates) {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+              const jsonLike = text.slice(start, end + 1);
+              try {
+                const parsed = JSON.parse(jsonLike);
+                const norm: any = {};
+                const lowerKeys = Object.fromEntries(Object.entries(parsed).map(([k, v]) => [String(k).toLowerCase(), v]));
+                if (Number.isFinite(Number(lowerKeys['sqft']))) norm.sqft = Number(lowerKeys['sqft']);
+                if (Number.isFinite(Number(lowerKeys['beds']))) norm.beds = Number(lowerKeys['beds']);
+                if (Number.isFinite(Number(lowerKeys['baths']))) norm.baths = Number(lowerKeys['baths']);
+                if (Number.isFinite(Number(lowerKeys['yearbuilt']))) norm.yearBuilt = Number(lowerKeys['yearbuilt']);
+                if (!isNaN(norm.baths) && norm.baths > 0) {
+                  console.log(`✅ WEB JSON PARSE: Beds: ${norm.beds ?? 'N/A'}, Baths: ${norm.baths}, SqFt: ${norm.sqft ?? 'N/A'}, Year: ${norm.yearBuilt ?? 'N/A'}`);
+                  return norm;
+                }
+              } catch {}
+            }
+          }
+        }
+
         console.log(`✅ WEB SEARCH: Processing ${searchResult.length} search results for ${address.split(',')[0]}`);
 
         // Combine search results into a comprehensive text block for analysis
