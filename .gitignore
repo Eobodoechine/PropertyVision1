@@ -1,0 +1,29 @@
+# Node & package managers
+node_modules/
+npm-debug.log*
+yarn-*.log
+pnpm-debug.log*
+
+# Builds & caches
+dist/
+build/
+.cache/
+.vite/
+node_modules/.vite/
+coverage/
+*.tsbuildinfo
+.eslintcache
+
+# Environment files (keep secrets out of git)
+.env
+.env.*
+.env.*.local
+
+# OS & editors
+.DS_Store
+.idea/
+.vscode/*
+
+# Project-specific
+server/public/
+*.tar.gz
