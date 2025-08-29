@@ -4,6 +4,7 @@ import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { type PropertyAnalysisResult, type ComparableProperty } from "@shared/schema";
 import { useState, useEffect } from "react";
 import WholesaleCalculator from "./wholesale-calculator";
+import { useQuery } from "@tanstack/react-query";
 
 interface PropertyResultsProps {
   results: PropertyAnalysisResult | null;
@@ -109,7 +110,7 @@ export default function PropertyResults({ results, error, isLoading, onClearErro
           <h3 className="text-xl font-semibold text-gray-900 mb-4" data-testid="arv-title">
             After Repair Value (ARV)
           </h3>
-          
+
           {results.isDualCalculation ? (
             /* Dual ARV Display for 1-Bathroom Houses */
             <div className="space-y-6">
@@ -258,7 +259,7 @@ export default function PropertyResults({ results, error, isLoading, onClearErro
                 if (!comp.address || !comp.price || !comp.sqft) {
                   return null;
                 }
-                
+
                 return (
                   <div 
                     key={comp.id || `${comp.address}-${index}`} 

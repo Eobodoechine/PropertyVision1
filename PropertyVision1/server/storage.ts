@@ -65,15 +65,15 @@ export class MemStorage implements IStorage {
     const normalizedAddress = this.normalizeAddress(addressSearch.address);
     console.log(`Original address: "${addressSearch.address}"`);
     console.log(`Normalized address: "${normalizedAddress}"`);
-    
+
     // Get API key from environment
     const apiKey = process.env.RAPIDAPI_KEY;
     if (!apiKey) {
       throw new Error("RapidAPI key not configured. Please add RAPIDAPI_KEY to environment variables.");
     }
-    
+
     console.log(`\n🔍 NEW INTELLIGENT SEARCH: Analyzing ${normalizedAddress}`);
-    
+
     try {
       // STEP 1: Get exact coordinates via auto-complete
       console.log('Step 1: Getting coordinates...');
@@ -81,22 +81,22 @@ export class MemStorage implements IStorage {
       const centerLat = coords.lat;
       const centerLon = coords.lon;
       console.log(`✅ Coordinates found: ${centerLat}, ${centerLon}`);
-      
+
       // STEP 2: Find subject property with small boundary search  
       console.log('Step 2: Getting subject property details...');
       const subjectProperty = await this.findSubjectProperty(normalizedAddress, centerLat, centerLon, apiKey);
-      
+
       if (!subjectProperty) {
         console.log('⚠️ Subject property not found in MLS data - proceeding with web research fallback');
         console.log('🔍 ROUTE: Taking WEB RESEARCH path because MLS returned no results');
-        
+
         // Check if address exists in autocomplete first and get MPR ID
         console.log('🔍 STEP 2.5: Checking if address exists in autocomplete system...');
         const autocompleteResult = await this.checkAddressInAutocomplete(normalizedAddress, apiKey);
         console.log(`🔍 AUTOCOMPLETE RESULT: ${autocompleteResult ? 'FOUND' : 'NOT FOUND'}`);
-        
+
         let researchedData = null;
-        
+
         // If we have an MPR ID, try to get property details directly from API
         if (autocompleteResult && autocompleteResult.mpr_id) {
           console.log('🔍 STEP 2.6: Attempting to get property details via MPR ID...');
@@ -106,13 +106,13 @@ export class MemStorage implements IStorage {
             console.log('✅ PROPERTY DETAILS FOUND via MPR API');
           }
         }
-        
+
         // If MPR didn't work, fall back to web search
         if (!researchedData) {
           console.log('🔍 STEP 2.7: Falling back to web search research...');
           researchedData = await this.researchPropertyData(normalizedAddress);
         }
-        
+
         if (!researchedData || (!researchedData.sqft && !researchedData.yearBuilt && !researchedData.beds)) {
           if (autocompleteResult) {
             throw new Error(`Property found at ${normalizedAddress}, but detailed property information (square footage, bedrooms, year built) is not available in public records. This may be a new construction, a property pending data updates, or have limited public information. Please try again later or contact the property owner for details.`);
@@ -120,27 +120,27 @@ export class MemStorage implements IStorage {
             throw new Error(`Property data unavailable for ${normalizedAddress}. This property may not exist in public records, may be a new construction, or the address may be incorrect. Please verify the address and try again.`);
           }
         }
-        
+
         // Use authenticated property details we researched externally
         console.log(`📋 USING AUTHENTIC PROPERTY DETAILS FROM EXTERNAL RESEARCH:`);
         console.log(`   • Address: ${normalizedAddress}`);
         console.log(`   • Authentic Size: ${researchedData.sqft || 'unknown'} sqft (researched)`);
         console.log(`   • Authentic Type: ${researchedData.propertyType || 'unknown'} (researched)`);
         console.log(`   • Authentic Beds/Baths: ${researchedData.beds || 'unknown'} bed, ${researchedData.baths || 'unknown'} bath`);
-        
+
         console.log(`🔄 CONTINUING ANALYSIS WITH RESEARCHED DATA`);
-        
+
         // For 851 Hedge Garden Ct, use the known authentic property data from web research
         let finalSqft = researchedData.sqft;
         let finalYearBuilt = researchedData.yearBuilt;
         let finalBeds = researchedData.beds;
         let finalBaths = researchedData.baths;
         let finalType = researchedData.propertyType;
-        
 
-        
+
+
         console.log(`🔍 FINAL PROPERTY DATA: ${finalSqft} sqft, ${finalYearBuilt} built, ${finalBeds} bed, ${finalBaths} bath, ${finalType}`);
-        
+
         return await this.continueAnalysisWithResearchedData(
           normalizedAddress, 
           centerLat, 
@@ -152,7 +152,7 @@ export class MemStorage implements IStorage {
           finalType
         );
       }
-      
+
       // Extract subject property details
       console.log('🔍 ROUTE: Taking MLS DATA path because subject property was found');
       let subjectSqft = subjectProperty.description?.sqft;
@@ -160,29 +160,29 @@ export class MemStorage implements IStorage {
       const subjectBeds = subjectProperty.description?.beds;
       const subjectBaths = subjectProperty.description?.baths;
       const propertyType = subjectProperty.description?.type?.toLowerCase();
-      
 
-      
+
+
       console.log(`Subject Property: ${subjectProperty.location?.address?.line}`);
       console.log(`🔍 MLS DATA: sqft=${subjectSqft}, yearBuilt=${subjectYearBuilt}, beds=${subjectBeds}, baths=${subjectBaths}, type=${propertyType}`);
       console.log(`Type: ${propertyType}, ${subjectSqft} sqft, built ${subjectYearBuilt || 'Unknown'}`);
       console.log(`${subjectBeds}bed/${subjectBaths}bath`);
-      
+
       // Handle missing data with web research fallback - ALWAYS research missing data
       let finalYearBuilt = subjectYearBuilt;
       let finalPropertyType = propertyType;
       let finalSubjectSqft = subjectSqft;
-      
+
       // Always run web research to verify and potentially override MLS data
       const missingData = [];
       if (!subjectYearBuilt) missingData.push('year built');
       if (!subjectSqft) missingData.push('square feet');
-      
+
       const shouldResearch = missingData.length > 0;
-      
+
       if (shouldResearch) {
         console.log(`📋 WEB RESEARCH: ${missingData.length > 0 ? `Missing: ${missingData.join(', ')}` : 'Verifying MLS data'} - Starting web research...`);
-        
+
         const researchedData = await this.researchPropertyData(normalizedAddress);
         console.log(`🔍 WEB RESEARCH RESULT: ${researchedData ? JSON.stringify(researchedData) : 'null'}`);
         if (researchedData) {
@@ -198,11 +198,11 @@ export class MemStorage implements IStorage {
           console.log(`❌ WEB RESEARCH FAILED: Missing data for ${missingData.join(', ')} - using fallback values`);
         }
       }
-      
+
       // Research missing or unclear property type
       if (!propertyType || propertyType === 'unknown' || propertyType === 'other') {
         console.log('📋 MISSING/UNCLEAR PROPERTY TYPE: Attempting web research for property type...');
-        
+
         const researchedData = await this.researchPropertyData(normalizedAddress);
         if (researchedData && researchedData.propertyType) {
           finalPropertyType = researchedData.propertyType.toLowerCase();
@@ -212,10 +212,10 @@ export class MemStorage implements IStorage {
           finalPropertyType = 'unknown';
         }
       }
-      
+
       if (!finalSubjectSqft) {
         console.log('📋 MISSING DATA: Subject property missing square footage after web research');
-        
+
         // Try one more comprehensive web search for this specific property
         const lastResortData = await this.researchPropertyData(normalizedAddress);
         if (lastResortData && lastResortData.sqft) {
@@ -226,15 +226,15 @@ export class MemStorage implements IStorage {
           throw new Error(`Property data unavailable for ${normalizedAddress}. This property may not exist in public records or may be a new construction. Please verify the address and try again.`);
         }
       }
-      
+
       // ENHANCED STEP 3: CONDITIONAL SEARCH METHODOLOGY
       const minSqft = Math.round(finalSubjectSqft * 0.8);
       const maxSqft = Math.round(finalSubjectSqft * 1.2);
-      
+
       // Debug the property type mapping
       console.log(`🔍 PROPERTY TYPE MAPPING:`);
       console.log(`   • Detected property type: "${finalPropertyType}"`);
-      
+
       let propertyTypeFilter: string[];
       if (finalPropertyType === 'duplex' || finalPropertyType === 'multi_family') {
         propertyTypeFilter = ['multi_family'];
@@ -252,39 +252,39 @@ export class MemStorage implements IStorage {
         propertyTypeFilter = ['multi_family'];
         console.log(`   • Unknown type "${finalPropertyType}" - defaulting to: multi_family`);
       }
-      
+
       console.log(`Step 3: Enhanced search parameters with conditional methodology:`);
-      console.log(`- Size range: ${minSqft}-${maxSqft} sqft (±20%)`);
+      console.log(`- Size range: ${minSqft}-${maxSqft} sqft (±20% of ${finalSubjectSqft})`);
       console.log(`- Year range: 1993-2013 (±10 years from ${finalYearBuilt})`);
       console.log(`- Property type: ${finalPropertyType} → Search types: ${propertyTypeFilter.join(', ')}`);
       console.log(`- Strategy: Filter first, then null-value search if insufficient`);
-      
+
       // ENHANCED CONDITIONAL SEARCH WITH RADIUS EXPANSION
       let radius = 1;
       const maxRadius = 5;
       let finalValidComps: any[] = [];
       let finalResearchCandidates: any[] = [];
-      
+
       console.log(`Starting step-by-step enhanced conditional search methodology...`);
-      
+
       while (radius <= maxRadius) {
         console.log(`\n╔═══════════════════════════════════════════════════════════════════════════════════════════╗`);
         console.log(`║                                 RADIUS ${radius} MILE SEARCH                                    ║`);
         console.log(`╚═══════════════════════════════════════════════════════════════════════════════════════════╝`);
-        
+
         console.log(`\n🔍 STEP 3A: API Search with Filters`);
         console.log(`   • Search radius: ${radius} miles`);
-        console.log(`   • Size filter: ${minSqft}-${maxSqft} sqft (±20% of ${finalSubjectSqft})`);
+        console.log(`   • Size filter: ${minSqft}-${maxSqft} sqft`);
         console.log(`   • Property types: ${propertyTypeFilter.join(', ')}`);
         console.log(`   • Year filter: ${finalYearBuilt ? (finalYearBuilt-10) + '-' + (finalYearBuilt+10) : 'No year filter'}`);
         console.log(`   • Status: sold properties only`);
         console.log(`   • Time range: last 12 months`);
-        
+
         let phaseOneComps = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '');
-        
+
         console.log(`\n📊 STEP 3A RESULTS:`);
         console.log(`   • Properties returned by API: ${phaseOneComps.length}`);
-        
+
         // Analyze the quality of results
         const minYear = finalYearBuilt ? finalYearBuilt - 10 : 1980;
         const maxYear = finalYearBuilt ? finalYearBuilt + 10 : 2025;
@@ -295,11 +295,11 @@ export class MemStorage implements IStorage {
           const yearMatch = comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear;
           return sizeMatch && yearMatch;
         }).length;
-        
+
         console.log(`   • Size matches (${minSqft}-${maxSqft} sqft): ${sizeMatchCount}`);
         console.log(`   • Year matches (${minYear}-${maxYear}): ${yearMatchCount}`);
         console.log(`   • Perfect matches (size + year): ${perfectMatchCount}`);
-        
+
         // Show data from external sources
         if (phaseOneComps.length > 0) {
           console.log(`\n📝 DETAILED PROPERTIES FROM API SEARCH:`);
@@ -315,25 +315,25 @@ export class MemStorage implements IStorage {
             console.log(`   ... and ${phaseOneComps.length - 5} more properties`);
           }
         }
-        
+
         // PHASE 2: Conditional null-value search
         let phaseTwoComps = [];
         if (perfectMatchCount < 5) {
           console.log(`\n🔍 STEP 3B: Null-Value Property Search (insufficient perfect matches: ${perfectMatchCount}/5)`);
           phaseTwoComps = await this.searchNullValueProperties(centerLat, centerLon, radius, propertyTypeFilter, subjectProperty.property_id || '');
-          
+
           console.log(`\n📊 STEP 3B RESULTS:`);
           console.log(`   • Properties with missing data found: ${phaseTwoComps.length}`);
-          
+
           // PHASE 3: Research enhancement
           if (phaseTwoComps.length > 0) {
             console.log(`\n🔍 STEP 3C: Web Research Enhancement`);
             console.log(`   • Researching up to 10 properties for missing data...`);
             const researchedComps = await this.researchNullValueProperties(phaseTwoComps.slice(0, 10), minSqft, maxSqft, finalYearBuilt);
-            
+
             console.log(`\n📊 STEP 3C RESULTS:`);
             console.log(`   • Properties successfully enhanced: ${researchedComps.length}`);
-            
+
             // Update the original properties in phaseOneComps with enhanced data
             researchedComps.forEach(enhanced => {
               const originalIndex = phaseOneComps.findIndex(comp => comp.address === enhanced.address);
@@ -351,26 +351,26 @@ export class MemStorage implements IStorage {
         } else {
           console.log(`\n✅ STEP 3B SKIPPED: Sufficient perfect matches found (${perfectMatchCount}/5)`);
         }
-        
+
         console.log(`\n🎯 STEP 3D: Final Filtering and Deduplication`);
         console.log(`   • Applying strict size/price filters...`);
         console.log(`   • Removing duplicates from previous radius searches...`);
-        
+
         // Apply strict filtering before combining results
         console.log(`\n🔍 DEBUGGING ENHANCED PROPERTIES IN phaseOneComps:`);
         phaseOneComps.slice(0, 5).forEach((comp, i) => {
           console.log(`   ${i+1}. ${comp.address} - Year: ${comp.yearBuilt || 'null'} - Enhanced: ${comp.researched ? 'YES' : 'NO'}`);
         });
-        
+
         const strictlyFilteredComps = phaseOneComps.filter(comp => {
           const sizeMatch = comp.sqft && comp.sqft >= minSqft && comp.sqft <= maxSqft;
           const hasPrice = comp.price && comp.price > 10000;
           const hasPricePerSqft = comp.pricePerSqft && comp.pricePerSqft >= 50 && comp.pricePerSqft <= 300;
           return sizeMatch && hasPrice && hasPricePerSqft;
         });
-        
+
         const beforeCount = finalValidComps.length;
-        
+
         // Only add unique comparables (avoid duplicates from overlapping searches)
         let newCompsAdded = 0;
         strictlyFilteredComps.forEach(newComp => {
@@ -382,22 +382,22 @@ export class MemStorage implements IStorage {
             newCompsAdded++;
           }
         });
-        
+
         finalResearchCandidates.push(...phaseTwoComps);
-        
+
         console.log(`\n🔍 DEBUGGING FINAL VALID COMPS:`);
         finalValidComps.slice(0, 5).forEach((comp, i) => {
           console.log(`   ${i+1}. ${comp.address} - Year: ${comp.yearBuilt || 'null'} - Enhanced: ${comp.researched ? 'YES' : 'NO'}`);
         });
-        
+
         console.log(`\n📊 STEP 3D RESULTS:`);
         console.log(`   • Properties after strict filtering: ${strictlyFilteredComps.length}`);
         console.log(`   • New unique properties added: ${newCompsAdded}`);
         console.log(`   • Duplicates rejected: ${strictlyFilteredComps.length - newCompsAdded}`);
         console.log(`   • Total accumulated comparables: ${finalValidComps.length} (was ${beforeCount})`);
-        
+
         console.log(`\n🚦 DECISION POINT: Continue or Stop?`);
-        
+
         // User preference: Stop at 1-2 miles when sufficient comparables found
         if (finalValidComps.length >= 5) {
           console.log(`   ✅ STOPPING: Found ${finalValidComps.length} comparables (sufficient) at ${radius} mile radius`);
@@ -414,17 +414,17 @@ export class MemStorage implements IStorage {
           continue;
         }
       }
-      
+
       // Update final results variables to use the new methodology results
       const validComps = finalValidComps;
       const researchCandidates = finalResearchCandidates;
-      
+
       console.log(`\n=== ENHANCED METHODOLOGY RESULTS ===`);
       console.log(`Subject: ${normalizedAddress} - ${finalSubjectSqft} sqft ${finalPropertyType}`);
       console.log(`Valid comparables: ${validComps.length}`);
       console.log(`Research candidates: ${researchCandidates.length}`);
       console.log(`Search radius: ${radius} miles`);
-      
+
       // Show final comparable summary
       console.log(`\n🔍 FINAL COMPARABLE SUMMARY:`);
       validComps.forEach((comp, i) => {
@@ -433,11 +433,11 @@ export class MemStorage implements IStorage {
         const researchFlag = comp.researched ? ' [RESEARCHED]' : '';
         console.log(`${i+1}. ${comp.address} - ${comp.sqft || 'null'}sqft (${sizeStatus}) - ${comp.yearBuilt || 'null'} built (${yearStatus}) - $${comp.pricePerSqft || 'null'}/sqft${researchFlag}`);
       });
-      
+
       if (validComps.length < 3) {
         throw new Error(`Insufficient comparables found (${validComps.length} < 3 minimum). Consider expanding search criteria.`);
       }
-      
+
       // Step 5: Calculate ARV using the new methodology
       const arvData = await this.calculateNewMethodologyARV(
         validComps,
@@ -449,16 +449,16 @@ export class MemStorage implements IStorage {
         centerLon,
         finalYearBuilt
       );
-      
+
       console.log(`✅ NEW METHODOLOGY SUCCESS: ARV ${arvData.arv} with ${arvData.confidence} confidence`);
-      
+
       // Save and return the analysis
       const analysis = await this.createPropertyAnalysis(arvData);
       return analysis;
 
     } catch (error: any) {
       console.error('Error analyzing property:', error);
-      
+
       // Enhanced error handling with specific scenarios
       if (error.message && (error.message.includes('Property data unavailable') || error.message.includes('Property not found'))) {
         // This is already a user-friendly error, pass it through
@@ -484,15 +484,15 @@ export class MemStorage implements IStorage {
     }
 
     console.log(`📍 COORDINATE LOOKUP: Using Google Maps for ${address}`);
-    
+
     const mapsResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleMapsKey}`);
-    
+
     if (!mapsResponse.ok) {
       throw new Error(`Google Maps API failed: ${mapsResponse.status}`);
     }
 
     const mapsData = await mapsResponse.json();
-    
+
     if (!mapsData.results || mapsData.results.length === 0) {
       throw new Error('No location found for the provided address');
     }
@@ -509,7 +509,7 @@ export class MemStorage implements IStorage {
 
   private async findSubjectProperty(address: string, centerLat: number, centerLon: number, apiKey: string): Promise<any> {
     console.log(`🏠 SUBJECT PROPERTY SEARCH: Looking for ${address} at ${centerLat}, ${centerLon}`);
-    
+
     const smallBoundarySize = 0.003; // Slightly larger boundary for better property discovery
     const searchBoundary = [
       [centerLon - smallBoundarySize, centerLat - smallBoundarySize],
@@ -543,20 +543,20 @@ export class MemStorage implements IStorage {
 
     const searchData = await searchResponse.json();
     const properties = searchData?.data?.home_search?.results || [];
-    
+
     console.log(`🏠 FOUND ${properties.length} properties in search area`);
 
     // Extract house number and street from the input address for better matching
     const addressParts = address.toLowerCase().replace(/[^\w\s]/g, '').split(' ');
     const houseNumber = addressParts[0];
     const streetName = addressParts.slice(1).join(' ').replace(/,.*$/, ''); // Remove city/state
-    
+
     console.log(`🏠 LOOKING FOR: House #${houseNumber} on ${streetName}`);
 
     // Find exact match by address
     for (const property of properties) {
       const propertyAddress = property.location?.address?.line?.toLowerCase().replace(/[^\w\s]/g, '') || '';
-      
+
       // Check if both house number and street name match
       if (propertyAddress.includes(houseNumber) && propertyAddress.includes(streetName)) {
         console.log(`✅ EXACT MATCH FOUND: ${property.location?.address?.line}`);
@@ -577,16 +577,16 @@ export class MemStorage implements IStorage {
   private async researchPropertyData(address: string): Promise<{yearBuilt?: number, sqft?: number, beds?: number, baths?: number, propertyType?: string} | null> {
     try {
       console.log(`📋 WEB RESEARCH: Attempting to research ${address}`);
-      
+
       const searchQuery = `${address} property details year built square feet bedrooms bathrooms`;
       console.log(`🌐 SEARCHING WEB: ${searchQuery}`);
       console.log(`🔍 DEBUG: About to call this.webSearch()...`);
-      
+
       const searchResult = await this.webSearch(searchQuery);
-      
+
       if (searchResult && searchResult.length > 0) {
         console.log(`✅ WEB SEARCH: Processing ${searchResult.length} search results for ${address.split(',')[0]}`);
-        
+
         // Combine search results into a comprehensive text block for analysis
         const searchText = searchResult.map(result => {
           const combinedText = [
@@ -597,11 +597,11 @@ export class MemStorage implements IStorage {
           ].filter(Boolean).join(' ');
           return combinedText;
         }).join(' ').toLowerCase();
-        
+
         console.log(`🌐 ANALYZING SEARCH CONTENT: ${searchText.substring(0, 200)}...`);
-        
+
         const data: any = {};
-        
+
         // Extract year built with multiple pattern matching
         const yearPatterns = [
           /(?:built|year built|constructed)[\s:]*(\d{4})/i,
@@ -614,7 +614,7 @@ export class MemStorage implements IStorage {
           /circa[\s:]*(\d{4})/i,          // "circa 1990" format
           /age[\s:]*(\d{4})/i             // "age 1990" format
         ];
-        
+
         for (const pattern of yearPatterns) {
           const yearMatch = searchText.match(pattern);
           if (yearMatch) {
@@ -626,7 +626,7 @@ export class MemStorage implements IStorage {
             }
           }
         }
-        
+
         // Extract square footage with comprehensive pattern matching including comma support
         const sqftPatterns = [
           /([\d,]{1,6})\s*sq\s*ft/i,        // "1,516 sq ft" format - handles commas
@@ -638,7 +638,7 @@ export class MemStorage implements IStorage {
           /living\s+area[:\s]*([\d,]{1,6})/i, // "living area: 1,516" format
           /square\s+feet[:\s]*([\d,]{1,6})/i  // "square feet: 1,516" format
         ];
-        
+
         for (const pattern of sqftPatterns) {
           const sqftMatch = searchText.match(pattern);
           if (sqftMatch) {
@@ -650,14 +650,14 @@ export class MemStorage implements IStorage {
             }
           }
         }
-        
+
         // Extract bedrooms with comprehensive pattern matching
         const bedsPatterns = [
           /(\d+)\s*(?:bed|bedroom|br)/i,
           /bedrooms?[\s:]*(\d+)/i,
           /(\d+)\s+bedrooms?/i  // Added for "4 bedrooms" format
         ];
-        
+
         for (const pattern of bedsPatterns) {
           const bedsMatch = searchText.match(pattern);
           if (bedsMatch) {
@@ -669,7 +669,7 @@ export class MemStorage implements IStorage {
             }
           }
         }
-        
+
         // Extract bathrooms with decimal support for half baths
         const bathsPatterns = [
           /(\d+(?:\.\d+)?)\s*(?:bath|bathroom|ba)/i,
@@ -677,7 +677,7 @@ export class MemStorage implements IStorage {
           /(\d+)\s*full.*(\d+)\s*half/i, // "2 full 1 half bath" format
           /(\d+)\s+bathrooms?/i  // Added for "2 bathrooms" format
         ];
-        
+
         for (const pattern of bathsPatterns) {
           const bathsMatch = searchText.match(pattern);
           if (bathsMatch) {
@@ -697,7 +697,7 @@ export class MemStorage implements IStorage {
             }
           }
         }
-        
+
         // Extract property type with comprehensive matching
         if (searchText.includes('townhome') || searchText.includes('townhouse') || searchText.includes('town home')) {
           data.propertyType = 'townhome';
@@ -709,12 +709,12 @@ export class MemStorage implements IStorage {
           data.propertyType = 'single_family';
           console.log(`🌐 EXTRACTED PROPERTY TYPE: ${data.propertyType}`);
         }
-        
+
         console.log(`✅ WEB RESEARCH SUCCESS: Year: ${data.yearBuilt || 'N/A'}, SqFt: ${data.sqft || 'N/A'}, Beds: ${data.beds || 'N/A'}, Baths: ${data.baths || 'N/A'}, Type: ${data.propertyType || 'N/A'}`);
-        
+
         return Object.keys(data).length > 0 ? data : null;
       }
-      
+
       console.log(`❌ WEB RESEARCH FAILED: No search results for ${address}`);
       return null;
     } catch (error) {
@@ -726,9 +726,9 @@ export class MemStorage implements IStorage {
   private async webSearch(query: string): Promise<any[] | null> {
     try {
       console.log(`🔍 WEB SEARCH: ${query}`);
-      
+
       // No hardcoded property data - all data must come from external APIs
-      
+
       // Fallback to existing web search service
       const response = await fetch('http://localhost:5000/api/web-search', {
         method: 'POST',
@@ -743,7 +743,7 @@ export class MemStorage implements IStorage {
 
       const data = await response.json();
       return data.results && data.results.length > 0 ? data.results : null;
-      
+
     } catch (error) {
       console.log(`❌ Web search failed: ${error}`);
       return null;
@@ -769,7 +769,7 @@ export class MemStorage implements IStorage {
       [centerLon - radiusInDegrees, centerLat + radiusInDegrees],
       [centerLon - radiusInDegrees, centerLat - radiusInDegrees]
     ];
-    
+
     const searchPayload: any = {
       limit: 400,
       offset: 0,
@@ -778,23 +778,23 @@ export class MemStorage implements IStorage {
       type: propertyTypes
       // Removed sqft_min/sqft_max - API filters are broken, filter client-side instead
     };
-    
+
     console.log(`🔍 API SEARCH PAYLOAD:`);
     console.log(`   • Property types requested: ${JSON.stringify(propertyTypes)}`);
     console.log(`   • Size range: ${minSqft}-${maxSqft} sqft`);
     console.log(`   • Status: sold only`);
-    
+
     // Add year built filter if available
     if (yearBuilt) {
       searchPayload.year_built_min = yearBuilt - 10;
       searchPayload.year_built_max = yearBuilt + 10;
     }
-    
+
     const apiKey = process.env.RAPIDAPI_KEY;
     if (!apiKey) {
       throw new Error('RAPIDAPI_KEY environment variable is required');
     }
-    
+
     const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
       method: 'POST',
       headers: {
@@ -804,18 +804,18 @@ export class MemStorage implements IStorage {
       },
       body: JSON.stringify(searchPayload)
     });
-    
+
     if (!searchResponse.ok) {
       console.log(`❌ Filtered search failed: ${searchResponse.status}`);
       return [];
     }
-    
+
     const searchData = await searchResponse.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
-    
+
     console.log(`\n📊 RAW API RESPONSE:`);
     console.log(`   • Total properties returned: ${foundProperties.length}`);
-    
+
     // Show first few properties and their types
     if (foundProperties.length > 0) {
       console.log(`\n📝 FIRST 10 PROPERTIES FROM API (showing property types):`);
@@ -830,11 +830,11 @@ export class MemStorage implements IStorage {
         console.log(`      Type: ${propType} | Beds/Baths: ${beds}/${baths} | Size: ${sqft}sqft | Price: $${price}`);
       });
     }
-    
+
     // Process and filter properties with dynamic sales restriction (6 or 12 months based on confidence)
     const salesFilterDate = new Date(Date.now() - (salesMonthsFilter * 30 * 24 * 60 * 60 * 1000));
     const validComps: any[] = [];
-    
+
     console.log(`\n🔍 FILTERING PROCESS (${salesMonthsFilter}-month sales filter):`);
     console.log(`   • Sales cutoff date: ${salesFilterDate.toISOString().split('T')[0]}`);
     foundProperties.forEach((prop: any, index: number) => {
@@ -843,16 +843,16 @@ export class MemStorage implements IStorage {
       const soldDate = prop.last_sold_date ? new Date(prop.last_sold_date) : null;
       const address = prop.location?.address?.line || 'Unknown';
       const propType = prop.description?.type || 'Unknown';
-      
+
       console.log(`   ${index + 1}. ${address} - Type: ${propType}`);
       console.log(`      Price: $${price || 'null'} | Size: ${sqft || 'null'}sqft | Date: ${soldDate ? soldDate.toISOString().split('T')[0] : 'null'}`);
-      
+
       // CRITICAL: Exclude subject property from comparables
       const excludeAddr = excludePropertyId.toLowerCase().trim();
       const currentAddr = address.toLowerCase().trim();
-      
+
       console.log(`      🔍 SUBJECT EXCLUSION CHECK: "${currentAddr}" vs "${excludeAddr}"`);
-      
+
       // Check if this is the same property (multiple ways to match)
       if (currentAddr.includes(excludeAddr.split(',')[0]) || 
           excludeAddr.includes(currentAddr.split(',')[0]) ||
@@ -860,17 +860,17 @@ export class MemStorage implements IStorage {
         console.log(`      → EXCLUDED: Subject property (${address}) - matches ${excludePropertyId}`);
         return;
       }
-      
+
       // MANDATORY: Dynamic sales filter (6 or 12 months) + other criteria
       if (price && price > 10000 && soldDate && soldDate >= salesFilterDate && sqft && sqft > 0) {
         const pricePerSqft = Math.round(price / sqft);
-        
+
         // STRICT SQUARE FOOTAGE FILTERING
         const sizeInRange = sqft >= minSqft && sqft <= maxSqft;
         const priceInRange = pricePerSqft >= 50 && pricePerSqft <= 300;
-        
+
         console.log(`      $/sqft: $${pricePerSqft} | Size filter: ${sizeInRange ? 'PASS' : 'FAIL'} (${minSqft}-${maxSqft}) | Price filter: ${priceInRange ? 'PASS' : 'FAIL'}`);
-        
+
         if (sizeInRange && priceInRange) {
           validComps.push({
             address,
@@ -900,10 +900,10 @@ export class MemStorage implements IStorage {
         console.log(`      → EXCLUDED: ${reasons.join(', ')}`);
       }
     });
-    
+
     return validComps;
   }
-  
+
   private async searchNullValueProperties(
     centerLat: number, 
     centerLon: number, 
@@ -919,7 +919,7 @@ export class MemStorage implements IStorage {
       [centerLon - radiusInDegrees, centerLat + radiusInDegrees],
       [centerLon - radiusInDegrees, centerLat - radiusInDegrees]
     ];
-    
+
     const searchPayload = {
       limit: 400,
       offset: 0,
@@ -928,12 +928,12 @@ export class MemStorage implements IStorage {
       type: propertyTypes
       // No sqft or year filters - capture all properties including null values
     };
-    
+
     const apiKey = process.env.RAPIDAPI_KEY;
     if (!apiKey) {
       throw new Error('RAPIDAPI_KEY environment variable is required');
     }
-    
+
     const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
       method: 'POST',
       headers: {
@@ -943,29 +943,29 @@ export class MemStorage implements IStorage {
       },
       body: JSON.stringify(searchPayload)
     });
-    
+
     if (!searchResponse.ok) {
-      console.log(`❌ Null-value search failed: ${searchResponse.status}`);
+      console.log(`❌ Null-value search failed: ${response.status}`);
       return [];
     }
-    
-    const searchData = await searchResponse.json();
+
+    const searchData = await response.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
-    
+
     // Process and find properties with null sqft or year built
     const nullValueProps: any[] = [];
-    
+
     foundProperties.forEach((prop: any) => {
       const sqft = prop.description?.sqft;
       const yearBuilt = prop.description?.year_built;
       const price = prop.last_sold_price;
       const soldDate = prop.last_sold_date ? new Date(prop.last_sold_date) : null;
       const address = prop.location?.address?.line || 'Unknown';
-      
+
       // Look for properties with missing critical data
       const hasMissingSqft = !sqft || sqft <= 0;
       const hasMissingYear = !yearBuilt;
-      
+
       // MANDATORY: Apply 6-month sales restriction as required by user
       if ((hasMissingSqft || hasMissingYear) && price && price > 10000 && soldDate && soldDate >= salesFilterDate) {
         nullValueProps.push({
@@ -986,10 +986,10 @@ export class MemStorage implements IStorage {
         });
       }
     });
-    
+
     return nullValueProps;
   }
-  
+
   private async researchNullValueProperties(
     nullValueProps: any[], 
     minSqft: number, 
@@ -997,31 +997,31 @@ export class MemStorage implements IStorage {
     targetYear: number | null
   ): Promise<any[]> {
     const researchedComps = [];
-    
+
     for (const prop of nullValueProps) {
       try {
         console.log(`🔍 Researching: ${prop.address}`);
         console.log(`   Missing data flags:`, prop.missingData);
-        
+
         const searchQuery = `${prop.address} property details square feet year built`;
         console.log(`🔍 WEB SEARCH: ${searchQuery}`);
-        
+
         // Make HTTP request to web search endpoint
         const response = await fetch('http://localhost:5000/api/web-search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ query: searchQuery })
         });
-        
+
         const searchData = await response.json();
         const searchResult = searchData.results || [];
-        
+
         if (searchResult && searchResult.length > 0) {
           console.log(`✅ WEB SEARCH: Processing ${searchResult.length} search results for ${prop.address}`);
           const searchText = searchResult.map((r: any) => `${r.title || ''} ${r.description || ''} ${r.content || ''}`).join(' ').toLowerCase();
           console.log(`🌐 ANALYZING SEARCH CONTENT: ${searchText.substring(0, 200)}...`);
           let enhanced = false;
-          
+
           // Extract missing square footage
           if (prop.missingData.sqft) {
             const sqftMatch = searchText.match(/(\d{1,4})\s*(?:sq|square)\s*(?:ft|feet|foot)/i);
@@ -1035,7 +1035,7 @@ export class MemStorage implements IStorage {
               }
             }
           }
-          
+
           // Extract missing year built
           if (prop.missingData.yearBuilt) {
             console.log(`🔍 EXTRACTING YEAR BUILT for ${prop.address}`);
@@ -1045,7 +1045,7 @@ export class MemStorage implements IStorage {
               /built\s*in\s*(\d{4})/i,
               /year[\s:]*(\d{4})/i
             ];
-            
+
             for (const pattern of yearPatterns) {
               const yearMatch = searchText.match(pattern);
               if (yearMatch) {
@@ -1059,12 +1059,12 @@ export class MemStorage implements IStorage {
                 }
               }
             }
-            
+
             if (!prop.yearBuilt) {
               console.log(`❌ NO YEAR EXTRACTED for ${prop.address} from: ${searchText.substring(0, 100)}`);
             }
           }
-          
+
           if (enhanced) {
             prop.researched = true;
             delete prop.missingData;
@@ -1075,7 +1075,7 @@ export class MemStorage implements IStorage {
         console.log(`⚠️ Research failed: ${prop.address} - ${error.message || error}`);
       }
     }
-    
+
     return researchedComps;
   }
 
@@ -1090,50 +1090,50 @@ export class MemStorage implements IStorage {
     finalYearBuilt: number | null
   ): Promise<any> {
     console.log(`🔢 NEW ARV CALCULATION: Processing ${validComps.length} valid comparables`);
-    
+
     if (validComps.length === 0) {
       throw new Error('No valid comparables provided for ARV calculation');
     }
-    
+
     // Enhanced ARV calculation with outlier detection and usage tracking
     const pricesPerSqft = validComps.map((comp, index) => ({
       price: comp.pricePerSqft,
       index,
       comp
     })).filter(item => item.price && item.price > 0);
-    
+
     if (pricesPerSqft.length === 0) {
       throw new Error('No valid price per sqft data found');
     }
-    
+
     pricesPerSqft.sort((a, b) => a.price - b.price);
-    
+
     // Calculate IQR for outlier detection with stricter bounds
     const q1Index = Math.floor(pricesPerSqft.length * 0.25);
     const q3Index = Math.floor(pricesPerSqft.length * 0.75);
     const q1 = pricesPerSqft[q1Index]?.price || pricesPerSqft[0].price;
     const q3 = pricesPerSqft[q3Index]?.price || pricesPerSqft[pricesPerSqft.length - 1].price;
     const iqr = q3 - q1;
-    
+
     // Use stricter multiplier (0.75 instead of 1.5) for real estate to catch extreme values
     const lowerBound = q1 - (0.75 * iqr);
     const upperBound = q3 + (0.75 * iqr);
-    
+
     // Apply reasonable absolute bounds for real estate (exclude extremely low/high prices)
     const absoluteLowerBound = Math.max(lowerBound, 120); // Exclude distressed sales under $120/sqft
     const absoluteUpperBound = Math.min(upperBound, 300); // Exclude luxury outliers over $300/sqft
-    
+
     console.log(`📊 ARV ANALYSIS BREAKDOWN:`);
     console.log(`   • Total comparables: ${validComps.length}`);
     console.log(`   • Price range: $${Math.min(...pricesPerSqft.map(p => p.price))} - $${Math.max(...pricesPerSqft.map(p => p.price))} per sqft`);
     console.log(`   • Q1: $${q1} | Q3: $${q3} | IQR: $${iqr}`);
     console.log(`   • IQR bounds: $${lowerBound.toFixed(0)} - $${upperBound.toFixed(0)} per sqft`);
     console.log(`   • Final bounds (with absolute limits): $${absoluteLowerBound.toFixed(0)} - $${absoluteUpperBound.toFixed(0)} per sqft`);
-    
+
     // Identify outliers and used comparables
     const outlierIndices = new Set();
     const usedIndices = new Set();
-    
+
     pricesPerSqft.forEach(item => {
       if (item.price < absoluteLowerBound || item.price > absoluteUpperBound) {
         outlierIndices.add(item.index);
@@ -1142,27 +1142,27 @@ export class MemStorage implements IStorage {
         usedIndices.add(item.index);
       }
     });
-    
+
     // Calculate ARV using non-outlier comparables
     const usedPrices = pricesPerSqft.filter(item => !outlierIndices.has(item.index)).map(item => item.price);
     const medianPricePerSqft = usedPrices.length > 0 ? 
       usedPrices[Math.floor(usedPrices.length / 2)] : 
       pricesPerSqft[Math.floor(pricesPerSqft.length / 2)].price;
-    
+
     const arv = Math.round(medianPricePerSqft * subjectSqft);
-    
+
     console.log(`   • Used in calculation: ${usedIndices.size} comparables`);
     console.log(`   • Outliers excluded: ${outlierIndices.size} comparables`);
     console.log(`   • Final median price/sqft: $${medianPricePerSqft}`);
     console.log(`   • Calculated ARV: $${arv.toLocaleString()}`);
-    
+
     const confidence = usedIndices.size >= 5 ? 'High' : usedIndices.size >= 3 ? 'Medium' : 'Low';
-    
+
     // AUTOMATED ENHANCEMENT TRIGGER: When confidence is Low or Medium, expand search automatically
     if (confidence !== 'High' && usedIndices.size < 5) {
       console.log(`\n🔍 AUTOMATED ENHANCEMENT TRIGGERED: ${confidence} confidence (${usedIndices.size}/5 comparables)`);
       console.log(`📈 EXPANDING SEARCH: Attempting to boost confidence to High level...`);
-      
+
       try {
         // Try expanding search radius beyond current boundaries
         const enhancedComps = await this.performOnlineResearchEnhancement(
@@ -1174,14 +1174,14 @@ export class MemStorage implements IStorage {
           validComps,
           process.env.RAPIDAPI_KEY!
         );
-        
+
         if (enhancedComps && enhancedComps.length > 0) {
           console.log(`✅ ENHANCEMENT SUCCESS: Found ${enhancedComps.length} additional comparables via expanded search`);
-          
+
           // Merge enhanced comparables and recalculate ARV
           const allComps = [...validComps, ...enhancedComps];
           console.log(`📊 RECALCULATING ARV: Using ${allComps.length} total comparables (${validComps.length} + ${enhancedComps.length} enhanced)`);
-          
+
           // Recursively call this function with enhanced dataset
         return await this.calculateNewMethodologyARV(
             allComps,
@@ -1200,90 +1200,98 @@ export class MemStorage implements IStorage {
         console.log(`⚠️ ENHANCEMENT ERROR: ${enhancementError} - Continuing with current dataset`);
       }
     }
-    
+
     // Check if this is a 1-bathroom property that should trigger dual calculation
     const actualBathrooms = parseFloat(subjectProperty.description?.baths?.toString() || '0');
     const shouldUseDualCalculation = actualBathrooms < 2;
-    
+
     console.log(`🚿 BATHROOM ANALYSIS: ${actualBathrooms} baths detected - Dual calculation: ${shouldUseDualCalculation ? 'ENABLED' : 'DISABLED'}`);
-    
+
     // Filter comparables by bathroom count for 1-bathroom properties
     let filteredComps = validComps;
-    
+
     if (shouldUseDualCalculation) {
       // For 1-bathroom subject properties, filter comparables to 1-1.5 bathrooms only
       filteredComps = validComps.filter(comp => {
         const compBaths = parseFloat(comp.baths?.toString() || '0');
         return compBaths >= 1 && compBaths <= 1.5;
       });
-      
+
       console.log(`🚿 BATHROOM FILTERING: Reduced from ${validComps.length} to ${filteredComps.length} comparables (1-1.5 bath only)`);
-      
+
       // If we have too few bathroom-matched comps, keep some 2-bath properties but mark them differently
       if (filteredComps.length < 5) {
         const twoBathComps = validComps.filter(comp => {
           const compBaths = parseFloat(comp.baths?.toString() || '0');
           return compBaths >= 1.75 && compBaths <= 2.5;
         });
-        
+
         const neededComps = Math.min(twoBathComps.length, 10 - filteredComps.length);
         filteredComps = [...filteredComps, ...twoBathComps.slice(0, neededComps)];
-        
+
         console.log(`🚿 SUPPLEMENTED: Added ${neededComps} two-bathroom comparables for statistical validity`);
       }
     }
-    
+
     // Format comparables with usage and bathroom indicators
     const formattedComparables = filteredComps.slice(0, 10).map((comp, index) => {
       let addressPrefix = '';
       const compBaths = parseFloat(comp.baths?.toString() || '0');
-      
+
       if (usedIndices.has(validComps.indexOf(comp))) {
         addressPrefix = '* '; // Asterisk for used in calculation
       } else if (outlierIndices.has(validComps.indexOf(comp))) {
         addressPrefix = '[OUTLIER] '; // Mark outliers
       }
-      
+
       // Add bathroom indicator for 1-bath subject properties
       if (shouldUseDualCalculation && compBaths >= 2) {
         addressPrefix += '[2BR] '; // Mark 2-bathroom comps differently
       }
-      
+
+      // Validate all numeric values to prevent NaN
+      const validPrice = Number.isFinite(Number(comp?.price)) ? Number(comp.price) : null;
+      const validBeds = Number.isFinite(Number(comp?.beds)) ? Number(comp.beds) : null;
+      const validBaths = Number.isFinite(Number(comp?.baths)) ? Number(comp.baths) : null;
+      const validSqft = Number.isFinite(Number(comp?.sqft)) ? Number(comp.sqft) : null;
+      const validPricePerSqft = Number.isFinite(Number(comp?.pricePerSqft)) ? Number(comp.pricePerSqft) : null;
+      const validDistance = Number.isFinite(Number(comp?.distance_miles)) ? Number(comp.distance_miles) : null;
+
       return {
-        id: `comp-${index + 1}`,
-        address: `${addressPrefix}${comp.address}`,
-        price: `$${comp.price.toLocaleString()}`,
-        beds: comp.beds || 0,
-        baths: comp.baths || 0,
-        sqft: comp.sqft || 0,
-        distance: '1.0 miles',
-        soldDate: comp.soldDate,
-        pricePerSqft: `$${comp.pricePerSqft}`
+        id: (comp?.listing_id || comp?.property_id || `comp-${index + 1}`),
+        address: `${addressPrefix}${comp.address || 'Address not available'}`,
+        price: validPrice ? `$${validPrice.toLocaleString()}` : 'Price not available',
+        beds: validBeds,
+        baths: validBaths,
+        sqft: validSqft,
+        distance: validDistance ? `${validDistance.toFixed(2)} miles` : 'Distance not available',
+        soldDate: (comp?.soldDate || comp?.close_date || comp?.list_date || 'Date not available'),
+        pricePerSqft: validPricePerSqft ? `$${validPricePerSqft.toFixed(0)}` : 'Price/sqft not available'
       };
     });
-    
+
     let arvWith2ndBathroom = null;
     let comparablesWith2ndBath = [];
-    
+
     if (shouldUseDualCalculation) {
       // Find actual 2-bathroom comparables from the original dataset
       const twoBathComps = validComps.filter(comp => {
         const compBaths = parseFloat(comp.baths?.toString() || '0');
         return compBaths >= 1.75 && compBaths <= 2.5 && !outlierIndices.has(validComps.indexOf(comp));
       });
-      
+
       console.log(`🚿 FOUND ${twoBathComps.length} two-bathroom comparables for enhanced ARV calculation`);
-      
+
       // Apply outlier detection to 2-bathroom comparables
       const twoBathPrices = twoBathComps.map((comp, index) => ({
         price: comp.pricePerSqft,
         index: index,
         comp: comp
       })).sort((a, b) => a.price - b.price);
-      
+
       let filteredTwoBathComps = twoBathComps;
       let twoBathOutliers = [];
-      
+
       if (twoBathPrices.length >= 5) {
         // Apply outlier detection to 2-bathroom comparables
         const q1Index = Math.floor(twoBathPrices.length * 0.25);
@@ -1291,30 +1299,30 @@ export class MemStorage implements IStorage {
         const q1 = twoBathPrices[q1Index]?.price || twoBathPrices[0].price;
         const q3 = twoBathPrices[q3Index]?.price || twoBathPrices[twoBathPrices.length - 1].price;
         const iqr = q3 - q1;
-        
+
         const lowerBound = q1 - (0.75 * iqr);
         const upperBound = q3 + (0.75 * iqr);
         const absoluteLowerBound = Math.max(lowerBound, 120);
         const absoluteUpperBound = Math.min(upperBound, 350);
-        
+
         console.log(`🚿 2-BATH OUTLIER ANALYSIS: Range $${Math.min(...twoBathPrices.map(p => p.price))} - $${Math.max(...twoBathPrices.map(p => p.price))}/sqft, bounds: $${absoluteLowerBound} - $${absoluteUpperBound}/sqft`);
-        
+
         twoBathPrices.forEach(item => {
           if (item.price < absoluteLowerBound || item.price > absoluteUpperBound) {
             twoBathOutliers.push(item.comp);
             console.log(`🚿 2-BATH OUTLIER: ${item.comp.address} at $${item.price}/sqft (outside $${absoluteLowerBound}-$${absoluteUpperBound} range)`);
           }
         });
-        
+
         filteredTwoBathComps = twoBathComps.filter(comp => !twoBathOutliers.includes(comp));
         console.log(`🚿 2-BATH FILTERING: ${twoBathOutliers.length} outliers excluded, ${filteredTwoBathComps.length} comparables remaining`);
       }
-      
+
       // Format 2-bathroom comparables for display with outlier indicators
       comparablesWith2ndBath = twoBathComps.slice(0, 10).map((comp, index) => {
         const isOutlier = twoBathOutliers.includes(comp);
         const addressPrefix = isOutlier ? '[OUTLIER] ' : '* ';
-        
+
         return {
           id: `2bath-comp-${index + 1}`,
           address: `${addressPrefix}${comp.address}`,
@@ -1327,7 +1335,7 @@ export class MemStorage implements IStorage {
           pricePerSqft: `$${comp.pricePerSqft}`
         };
       });
-      
+
       // Calculate enhanced ARV using filtered 2-bathroom comparables if available, otherwise use 75th percentile
       let enhancedPricePerSqft;
       if (filteredTwoBathComps.length >= 3) {
@@ -1343,16 +1351,16 @@ export class MemStorage implements IStorage {
         enhancedPricePerSqft = enhancedPrices[p75Index] || medianPricePerSqft;
         console.log(`🚿 Using 75th percentile (${filteredTwoBathComps.length} filtered 2-bath comps insufficient): $${enhancedPricePerSqft}/sqft`);
       }
-      
+
       const enhancedArv = Math.round(enhancedPricePerSqft * subjectSqft);
       const enhancedConfidence = usedIndices.size >= 5 ? 'High' : usedIndices.size >= 3 ? 'Medium' : 'Low';
-      
+
       arvWith2ndBathroom = {
         estimate: enhancedArv.toString(),
         confidence: enhancedConfidence,
         pricePerSqFt: enhancedPricePerSqft.toString()
       };
-      
+
       console.log(`🚿 2ND BATHROOM ARV: $${enhancedArv.toLocaleString()} (${enhancedPricePerSqft}/sqft from ${twoBathComps.length >= 3 ? '2-bath comps' : '75th percentile'})`);
     }
 
@@ -1418,7 +1426,7 @@ export class MemStorage implements IStorage {
     // Determine property types to search for based on authentic property type
     console.log(`🔍 PROPERTY TYPE MAPPING (Researched Data):`);
     console.log(`   • Detected property type: "${updatedPropertyType}"`);
-    
+
     let propertyTypes: string[];
     if (updatedPropertyType === 'duplex' || updatedPropertyType === 'multi_family') {
       propertyTypes = ['multi_family'];
@@ -1439,17 +1447,17 @@ export class MemStorage implements IStorage {
 
     // Use the existing RapidAPI search to find real comparables
     console.log(`🔍 SEARCHING FOR REAL COMPARABLES USING RAPIDAPI`);
-    
+
     const apiKey = process.env.RAPIDAPI_KEY!;
-    
+
     // FINAL BUG FIX: Force correct square footage calculation for 851 Hedge Garden Ct
     let finalSqftForCalculation = updatedSubjectSqft;
-    
 
-    
+
+
     const minSqft = Math.round(finalSqftForCalculation * 0.8);
     const maxSqft = Math.round(finalSqftForCalculation * 1.2);
-    
+
     const validComps = await this.searchWithFilters(
       centerLat, 
       centerLon, 
@@ -1464,7 +1472,7 @@ export class MemStorage implements IStorage {
 
     if (validComps.length === 0) {
       console.log(`\n🔍 ZERO COMPARABLES FOUND: Trying 12-month search for low confidence scenarios...`);
-      
+
       try {
         // First, try extending to 12 months instead of 6 months
         console.log(`📈 EXTENDING SALES FILTER: Searching with 12-month sales period...`);
@@ -1479,10 +1487,10 @@ export class MemStorage implements IStorage {
           normalizedAddress, // Exclude subject property from comparables
           12  // Use 12-month filter for low confidence
         );
-        
+
         if (extendedComps.length > 0) {
           console.log(`✅ 12-MONTH SEARCH SUCCESS: Found ${extendedComps.length} comparables with extended timeframe`);
-          
+
           // Use extended comparables for analysis
           const result = await this.calculateNewMethodologyARV(
             extendedComps,
@@ -1494,7 +1502,7 @@ export class MemStorage implements IStorage {
             centerLon,
             updatedYearBuilt
           );
-          
+
           console.log(`✅ EXTENDED ANALYSIS COMPLETE: ARV ${result.arv} with ${result.confidence} confidence`);
           return result;
         } else {
@@ -1509,10 +1517,10 @@ export class MemStorage implements IStorage {
             [],
             apiKey
           );
-          
+
           if (enhancedComps && enhancedComps.length > 0) {
             console.log(`✅ ENHANCEMENT SUCCESS: Found ${enhancedComps.length} comparables via expanded radius`);
-            
+
             const result = await this.calculateNewMethodologyARV(
               enhancedComps,
               finalSqftForCalculation,
@@ -1523,7 +1531,7 @@ export class MemStorage implements IStorage {
               centerLon,
               updatedYearBuilt
             );
-            
+
             console.log(`✅ ENHANCED ANALYSIS COMPLETE: ARV ${result.arv} with ${result.confidence} confidence`);
             return result;
           }
@@ -1531,7 +1539,7 @@ export class MemStorage implements IStorage {
       } catch (enhancementError) {
         console.log(`⚠️ ENHANCEMENT FAILED: ${enhancementError}`);
       }
-      
+
       throw new Error(`No comparable ${updatedPropertyType} properties found in reasonable size range (${finalSqftForCalculation} ± 20%). Expand search criteria or check area data availability.`);
     }
 
@@ -1560,7 +1568,7 @@ export class MemStorage implements IStorage {
     propertyType: string
   ): Promise<any[]> {
     console.log(`🔍 AUTHENTIC RESEARCH: Searching for real ${propertyType} comparables near ${subjectAddress}`);
-    
+
     const validComps: any[] = [];
     const searchQueries = [
       `${subjectAddress} recent home sales comparable properties ${propertyType}`,
@@ -1573,29 +1581,29 @@ export class MemStorage implements IStorage {
     for (const query of searchQueries) {
       try {
         console.log(`🌐 RESEARCHING: ${query}`);
-        
+
         // Skip web search for now - focus on API data
         const searchResults: any[] = [];
-        
+
         if (searchResults && searchResults.length > 0) {
           console.log(`✅ Found ${searchResults.length} search results for comparable research`);
-          
+
           // Extract property data from search results
           for (const result of searchResults) {
             const extractedData = this.extractComparableFromContent(result, subjectSqft, propertyType);
             if (extractedData) {
               validComps.push(extractedData);
               console.log(`📋 EXTRACTED COMPARABLE: ${extractedData.address} - $${extractedData.price} | ${extractedData.sqft}sqft`);
-              
+
               // Limit to prevent too many results
               if (validComps.length >= 10) break;
             }
           }
         }
-        
+
         // Stop if we have enough comparables
         if (validComps.length >= 8) break;
-        
+
       } catch (error) {
         console.log(`❌ Search failed for: ${query}`);
         continue;
@@ -1603,12 +1611,12 @@ export class MemStorage implements IStorage {
     }
 
     console.log(`📊 TOTAL AUTHENTIC COMPARABLES FOUND: ${validComps.length}`);
-    
+
     // Filter and validate the authentic comparables
     const filteredComps = validComps.filter(comp => {
       const pricePerSqft = comp.price / comp.sqft;
       const sizeVariance = Math.abs(comp.sqft - subjectSqft) / subjectSqft;
-      
+
       return pricePerSqft >= 50 && pricePerSqft <= 500 && sizeVariance <= 0.5; // 50% size variance
     });
 
@@ -1619,37 +1627,37 @@ export class MemStorage implements IStorage {
   private extractComparableFromContent(searchResult: any, subjectSqft: number, propertyType: string): any | null {
     try {
       const content = (searchResult.title + ' ' + searchResult.content).toLowerCase();
-      
+
       // Extract address pattern
       const addressMatch = content.match(/(\d+\s+[a-z\s]+(?:st|ave|dr|ln|way|ct|cir|blvd|rd|pl))/i);
       if (!addressMatch) return null;
-      
+
       // Extract price pattern
       const priceMatch = content.match(/\$([0-9,]+)/);
       if (!priceMatch) return null;
-      
+
       // Extract square footage pattern
       const sqftMatch = content.match(/(\d+)\s*(?:sq\.?\s*ft\.?|sqft|square\s+feet)/i);
       if (!sqftMatch) return null;
-      
+
       // Extract beds/baths if available
       const bedsMatch = content.match(/(\d+)\s*(?:bed|bedroom)/i);
       const bathsMatch = content.match(/(\d+)\s*(?:bath|bathroom)/i);
-      
+
       // Extract year built if available
       const yearMatch = content.match(/built\s*(?:in\s*)?(\d{4})/i);
-      
+
       const price = parseInt(priceMatch[1].replace(/,/g, ''));
       const sqft = parseInt(sqftMatch[1]);
       const beds = bedsMatch ? parseInt(bedsMatch[1]) : Math.ceil(sqft / 400);
       const baths = bathsMatch ? parseInt(bathsMatch[1]) : Math.ceil(sqft / 500);
       const yearBuilt = yearMatch ? parseInt(yearMatch[1]) : null;
-      
+
       // Validate reasonable ranges
       if (price < 50000 || price > 2000000 || sqft < 500 || sqft > 5000) {
         return null;
       }
-      
+
       return {
         address: addressMatch[1].trim(),
         price,
@@ -1661,7 +1669,7 @@ export class MemStorage implements IStorage {
         soldDate: '2024-12-01', // Assume recent
         source: 'web_research'
       };
-      
+
     } catch (error) {
       return null;
     }
@@ -1670,7 +1678,7 @@ export class MemStorage implements IStorage {
   private async checkAddressInAutocomplete(address: string, apiKey: string): Promise<any> {
     try {
       console.log(`🔍 AUTOCOMPLETE CHECK: Verifying ${address} exists in system...`);
-      
+
       const response = await fetch(`https://realty-in-us.p.rapidapi.com/locations/v2/auto-complete?input=${encodeURIComponent(address)}`, {
         method: 'GET',
         headers: {
@@ -1685,7 +1693,7 @@ export class MemStorage implements IStorage {
       }
 
       const data = await response.json();
-      
+
       if (data.autocomplete && data.autocomplete.length > 0) {
         // Check if any result is an exact address match
         const addressMatch = data.autocomplete.find((item: any) => 
@@ -1695,7 +1703,7 @@ export class MemStorage implements IStorage {
             addr.toLowerCase().includes(address.split(',')[0].toLowerCase())
           )
         );
-        
+
         if (addressMatch) {
           console.log(`✅ ADDRESS CONFIRMED: ${address} exists in autocomplete system`);
           console.log(`   • MPR ID: ${addressMatch.mpr_id || 'none'}`);
@@ -1703,10 +1711,10 @@ export class MemStorage implements IStorage {
           return addressMatch;
         }
       }
-      
+
       console.log(`❌ ADDRESS NOT FOUND: ${address} not in autocomplete system`);
       return null;
-      
+
     } catch (error) {
       console.log(`❌ Autocomplete check failed: ${error}`);
       return null;
@@ -1716,7 +1724,7 @@ export class MemStorage implements IStorage {
   private async getPropertyDetailsFromMPR(mprId: string, apiKey: string): Promise<any> {
     try {
       console.log(`🏠 FETCHING PROPERTY DETAILS: Using MPR ID ${mprId}`);
-      
+
       const response = await fetch(`https://realty-in-us.p.rapidapi.com/properties/v3/detail?property_id=${mprId}`, {
         method: 'GET',
         headers: {
@@ -1731,7 +1739,7 @@ export class MemStorage implements IStorage {
       }
 
       const data = await response.json();
-      
+
       if (data.data && data.data.home) {
         const home = data.data.home;
         console.log(`✅ PROPERTY DETAILS FOUND via MPR API:`);
@@ -1740,7 +1748,7 @@ export class MemStorage implements IStorage {
         console.log(`   • Bathrooms: ${home.description?.baths || 'unknown'}`);
         console.log(`   • Year Built: ${home.description?.year_built || 'unknown'}`);
         console.log(`   • Property Type: ${home.description?.type || 'unknown'}`);
-        
+
         return {
           sqft: home.description?.sqft,
           beds: home.description?.beds,
@@ -1749,10 +1757,10 @@ export class MemStorage implements IStorage {
           propertyType: home.description?.type
         };
       }
-      
+
       console.log(`❌ No property details found in MPR response`);
       return null;
-      
+
     } catch (error) {
       console.log(`❌ Property details lookup failed: ${error}`);
       return null;
@@ -1762,7 +1770,7 @@ export class MemStorage implements IStorage {
   private generateBoundaryFromRadius(centerLat: number, centerLon: number, radiusMiles: number): number[][] {
     const radiusInDegrees = radiusMiles / 69; // Approximate conversion: 1 degree ≈ 69 miles
     const boundarySize = radiusInDegrees;
-    
+
     return [
       [centerLon - boundarySize, centerLat - boundarySize],
       [centerLon + boundarySize, centerLat - boundarySize],
@@ -1782,17 +1790,17 @@ export class MemStorage implements IStorage {
     apiKey: string
   ): Promise<any[]> {
     console.log(`\n🔍 ONLINE RESEARCH ENHANCEMENT: Expanding comparable search beyond current boundaries`);
-    
+
     const enhancedComps = [];
     const maxEnhancementRadius = 5; // Expand up to 5 miles for enhancement
-    
+
     try {
       // Try expanding radius in increments to find more comparables
       for (let radius = 2; radius <= maxEnhancementRadius; radius++) {
         console.log(`\n📈 ENHANCEMENT PHASE ${radius}: Searching ${radius}-mile radius for additional comparables`);
-        
+
         const boundary = this.generateBoundaryFromRadius(centerLat, centerLon, radius);
-        
+
         // Search for properties in expanded boundary
         const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
           method: 'POST',
@@ -1818,42 +1826,45 @@ export class MemStorage implements IStorage {
         }
 
         const searchData = await searchResponse.json();
-        
+
         if (searchData.data && searchData.data.home_search && searchData.data.home_search.results) {
           const properties = searchData.data.home_search.results;
           console.log(`🏠 FOUND ${properties.length} properties in ${radius}-mile radius`);
-          
+
           // Filter properties with 12-month sales restriction for enhancement (when confidence is low)
           const twelveMonthsAgo = new Date();
           twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-          
+
           const minSqft = Math.floor(subjectSqft * 0.8);
           const maxSqft = Math.ceil(subjectSqft * 1.2);
-          
+
           const validNewComps = properties.filter(property => {
             // Check for required data
-            if (!property.description?.sqft || !property.list_date || !property.description?.sold_price) {
+            const sqft = Number(property.description?.sqft);
+            const soldPrice = Number(property.description?.sold_price || property.last_sold_price);
+            const listDate = property.list_date || property.last_sold_date;
+
+            if (!Number.isFinite(sqft) || sqft <= 0 || !Number.isFinite(soldPrice) || soldPrice <= 0 || !listDate) {
               return false;
             }
-            
+
             // 12-month sales filter for enhancement (when confidence is low)
-            const saleDate = new Date(property.list_date);
+            const saleDate = new Date(listDate);
             if (saleDate < twelveMonthsAgo) {
               return false;
             }
-            
+
             // Size filter (20% range)
-            const propSqft = property.description.sqft;
-            if (propSqft < minSqft || propSqft > maxSqft) {
+            if (sqft < minSqft || sqft > maxSqft) {
               return false;
             }
-            
+
             // Check if already exists
             const propAddress = property.location?.address?.line || '';
             const alreadyExists = existingComps.some(comp => 
               comp.address && propAddress && comp.address.toLowerCase().includes(propAddress.toLowerCase())
             );
-            
+
             return !alreadyExists;
           }).map(property => ({
             address: property.location?.address?.line || 'Unknown Address',
@@ -1867,10 +1878,10 @@ export class MemStorage implements IStorage {
             source: 'enhanced_search',
             enhanced: true
           }));
-          
+
           console.log(`✅ ENHANCEMENT RADIUS ${radius}: Found ${validNewComps.length} valid new comparables`);
           enhancedComps.push(...validNewComps);
-          
+
           // Stop if we have enough enhanced comparables
           if (enhancedComps.length >= 10) {
             console.log(`✅ ENHANCEMENT COMPLETE: Found sufficient additional comparables (${enhancedComps.length})`);
@@ -1878,14 +1889,33 @@ export class MemStorage implements IStorage {
           }
         }
       }
-      
+
       console.log(`\n📊 ENHANCEMENT RESULTS: Found ${enhancedComps.length} additional authentic comparables`);
       return enhancedComps;
-      
+
     } catch (error) {
       console.log(`❌ Enhancement search error: ${error}`);
       return [];
     }
+  }
+
+  // Helper method to calculate distance between two lat/lon points
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = this.deg2rad(lat2 - lat1);
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distanceInKm = R * c; // Distance in kilometers
+    const distanceInMiles = distanceInKm * 0.621371; // Convert to miles
+    return distanceInMiles;
+  }
+
+  private deg2rad(deg: number): number {
+    return deg * (Math.PI / 180);
   }
 }
 
