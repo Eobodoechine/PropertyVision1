@@ -5,6 +5,23 @@ import { loggedFetch } from "./infra/rapid";
 // Simple in-memory cache for geocoding to reduce external calls
 const geocodeCache = new Map<string, { lat: number; lon: number; ts: number }>();
 
+// Helper to compute bathrooms including half baths when API splits fields
+function computeBaths(desc: any): number | null {
+  if (!desc) return null;
+  const baths = Number(desc.baths);
+  if (Number.isFinite(baths) && baths > 0) return baths;
+  const fullCalc = Number(desc.baths_full_calc);
+  const halfCalc = Number(desc.baths_partial_calc);
+  const full = Number(desc.baths_full);
+  const half = Number(desc.baths_half);
+  let total = 0;
+  if (Number.isFinite(fullCalc)) total += fullCalc;
+  else if (Number.isFinite(full)) total += full;
+  if (Number.isFinite(halfCalc)) total += 0.5 * halfCalc;
+  else if (Number.isFinite(half)) total += 0.5 * half;
+  return total > 0 ? total : null;
+}
+
 export interface IStorage {
   getPropertyAnalysis(id: string): Promise<PropertyAnalysis | undefined>;
   getPropertyAnalysisByAddress(address: string): Promise<PropertyAnalysis | undefined>;
@@ -889,7 +906,7 @@ export class MemStorage implements IStorage {
             pricePerSqft,
             soldDate: soldDate.toISOString().split('T')[0],
             beds: prop.description?.beds,
-            baths: prop.description?.baths,
+            baths: computeBaths(prop.description) ?? prop.description?.baths,
             yearBuilt: prop.description?.year_built || null,
             lat,
             lon,
@@ -1201,7 +1218,8 @@ export class MemStorage implements IStorage {
     }
 
     // Check if this is a 1-bathroom property that should trigger dual calculation
-    const actualBathrooms = parseFloat(subjectProperty.description?.baths?.toString() || '0');
+    const computedBaths = computeBaths(subjectProperty.description);
+    const actualBathrooms = computedBaths ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
     const shouldUseDualCalculation = actualBathrooms < 2;
 
     console.log(`🚿 BATHROOM ANALYSIS: ${actualBathrooms} baths detected - Dual calculation: ${shouldUseDualCalculation ? 'ENABLED' : 'DISABLED'}`);
