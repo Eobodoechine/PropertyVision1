@@ -1451,7 +1451,7 @@ export class MemStorage implements IStorage {
     const minSqft = Math.round(finalSqftForCalculation * 0.8);
     const maxSqft = Math.round(finalSqftForCalculation * 1.2);
 
-    const validComps = await this.searchWithFilters(
+    let validComps = await this.searchWithFilters(
       centerLat, 
       centerLon, 
       1, // Start with 1 mile radius
@@ -1463,13 +1463,13 @@ export class MemStorage implements IStorage {
     );
 
 
-    if (validComps.length === 0) {
-      console.log(`\n🔍 ZERO COMPARABLES FOUND: Trying 12-month search for low confidence scenarios...`);
+    if (validComps.length < 5) {
+      console.log(`\n🔍 FEW COMPARABLES FOUND (${validComps.length}). Trying progressive relaxation...`);
 
       try {
         // First, try extending to 12 months instead of 6 months
-        console.log(`📈 EXTENDING SALES FILTER: Searching with 12-month sales period...`);
-        const extendedComps = await this.searchWithFilters(
+        console.log(`📈 EXTENDING SALES FILTER: 12 months within 1 mile...`);
+        let extendedComps = await this.searchWithFilters(
           centerLat, 
           centerLon, 
           1, // Start with 1 mile radius
@@ -1481,59 +1481,80 @@ export class MemStorage implements IStorage {
           12  // Use 12-month filter for low confidence
         );
 
-        if (extendedComps.length > 0) {
-          console.log(`✅ 12-MONTH SEARCH SUCCESS: Found ${extendedComps.length} comparables with extended timeframe`);
-
-          // Use extended comparables for analysis
-          const result = await this.calculateNewMethodologyARV(
-            extendedComps,
-            finalSqftForCalculation,
-            normalizedAddress,
-            enhancedSubjectProperty,
-            [],
+        if (extendedComps.length < 5) {
+          console.log(`⚠️ Still few comps (${extendedComps.length}). Trying 24 months within 1 mile...`);
+          extendedComps = await this.searchWithFilters(
             centerLat,
             centerLon,
-            updatedYearBuilt
+            1,
+            propertyTypes,
+            minSqft,
+            maxSqft,
+            updatedYearBuilt,
+            normalizedAddress,
+            24
           );
+        }
 
-          console.log(`✅ EXTENDED ANALYSIS COMPLETE: ARV ${result.arv} with ${result.confidence} confidence`);
-          return result;
+        if (extendedComps.length < 5) {
+          console.log(`⚠️ Still few comps (${extendedComps.length}). Relaxing size to ±30% within 1 mile...`);
+          const minSqft30 = Math.round(finalSqftForCalculation * 0.7);
+          const maxSqft30 = Math.round(finalSqftForCalculation * 1.3);
+          // Try 12 months with relaxed size, then 24
+          extendedComps = await this.searchWithFilters(
+            centerLat,
+            centerLon,
+            1,
+            propertyTypes,
+            minSqft30,
+            maxSqft30,
+            updatedYearBuilt,
+            normalizedAddress,
+            12
+          );
+          if (extendedComps.length < 5) {
+            extendedComps = await this.searchWithFilters(
+              centerLat,
+              centerLon,
+              1,
+              propertyTypes,
+              minSqft30,
+              maxSqft30,
+              updatedYearBuilt,
+              normalizedAddress,
+              24
+            );
+          }
+        }
+
+        if (extendedComps.length >= 3) {
+          console.log(`✅ EXTENDED SEARCH SUCCESS: Using ${extendedComps.length} comparables after relaxation`);
+          validComps = extendedComps;
         } else {
-          // If 12-month search still fails, try expanded radius enhancement
-          console.log(`❌ 12-month search still insufficient, trying expanded radius enhancement...`);
+          // If still insufficient, try expanded radius enhancement (2–5 miles) using working searchWithFilters
+          console.log(`❌ Extended search still insufficient. Trying expanded radius enhancement...`);
           const enhancedComps = await this.performOnlineResearchEnhancement(
             normalizedAddress,
             centerLat,
             centerLon,
             finalSqftForCalculation,
             enhancedSubjectProperty,
-            [],
-            apiKey
+            validComps,
+            apiKey,
+            propertyTypes
           );
-
-          if (enhancedComps && enhancedComps.length > 0) {
+          if (enhancedComps && enhancedComps.length >= 3) {
             console.log(`✅ ENHANCEMENT SUCCESS: Found ${enhancedComps.length} comparables via expanded radius`);
-
-            const result = await this.calculateNewMethodologyARV(
-              enhancedComps,
-              finalSqftForCalculation,
-              normalizedAddress,
-              enhancedSubjectProperty,
-              [],
-              centerLat,
-              centerLon,
-              updatedYearBuilt
-            );
-
-            console.log(`✅ ENHANCED ANALYSIS COMPLETE: ARV ${result.arv} with ${result.confidence} confidence`);
-            return result;
+            validComps = enhancedComps;
           }
         }
       } catch (enhancementError) {
         console.log(`⚠️ ENHANCEMENT FAILED: ${enhancementError}`);
       }
 
-      throw new Error(`No comparable ${updatedPropertyType} properties found in reasonable size range (${finalSqftForCalculation} ± 20%). Expand search criteria or check area data availability.`);
+      if (validComps.length < 3) {
+        throw new Error(`No sufficient comparable ${updatedPropertyType} properties found after relaxation. Consider expanding criteria or checking data availability.`);
+      }
     }
 
     // Calculate ARV using the researched subject data
@@ -1773,153 +1794,73 @@ export class MemStorage implements IStorage {
     subjectSqft: number,
     subjectProperty: any,
     existingComps: any[],
-    apiKey: string
+    apiKey: string,
+    propertyTypes?: string[]
   ): Promise<any[]> {
     console.log(`\n🔍 ONLINE RESEARCH ENHANCEMENT: Expanding comparable search beyond current boundaries`);
 
-    const enhancedComps = [];
+    const enhancedComps: any[] = [];
     const maxEnhancementRadius = 5; // Expand up to 5 miles for enhancement
 
     try {
       // Try expanding radius in increments to find more comparables
       for (let radius = 2; radius <= maxEnhancementRadius; radius++) {
         console.log(`\n📈 ENHANCEMENT PHASE ${radius}: Searching ${radius}-mile radius for additional comparables`);
+        // Reuse the working filter/search pipeline for enhancement to avoid payload mismatches
+        const subjectType = (subjectProperty?.description?.type as string | undefined) || undefined;
+        const types = propertyTypes && propertyTypes.length ? propertyTypes
+          : subjectType
+            ? [subjectType]
+            : ['single_family'];
 
-        const boundary = this.generateBoundaryFromRadius(centerLat, centerLon, radius);
+        const minSqft = Math.floor(subjectSqft * 0.8);
+        const maxSqft = Math.ceil(subjectSqft * 1.2);
 
-        // Search for properties in expanded boundary
-        const subjectType: string | undefined = subjectProperty?.description?.type || undefined;
-        const payloadBase: any = {
-          limit: 400,
-          offset: 0,
-          status: ['sold'],
-          boundary: { coordinates: [boundary] }
-        };
-        if (subjectType && typeof subjectType === 'string') {
-          payloadBase.type = [subjectType];
+        // Try 12 months first at this radius
+        let compsAtRadius = await this.searchWithFilters(
+          centerLat,
+          centerLon,
+          radius,
+          types,
+          minSqft,
+          maxSqft,
+          subjectProperty?.description?.year_built || null,
+          subjectAddress,
+          12
+        );
+
+        if (compsAtRadius.length < 3) {
+          // Try 24 months
+          compsAtRadius = await this.searchWithFilters(
+            centerLat,
+            centerLon,
+            radius,
+            types,
+            minSqft,
+            maxSqft,
+            subjectProperty?.description?.year_built || null,
+            subjectAddress,
+            24
+          );
         }
 
-        let searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
-          method: 'POST',
-          body: JSON.stringify(payloadBase)
+        // Deduplicate against existingComps and what we already gathered
+        const seen = new Set(
+          existingComps.map(c => (c.address || '').toLowerCase())
+            .concat(enhancedComps.map(c => (c.address || '').toLowerCase()))
+        );
+        compsAtRadius.forEach(c => {
+          const key = (c.address || '').toLowerCase();
+          if (!seen.has(key)) {
+            enhancedComps.push(c);
+            seen.add(key);
+          }
         });
 
-        // Fallback: if server error, try reducing limit and loosening type filter
-        if (!searchResponse.ok && searchResponse.status >= 500) {
-          const fallbackPayload = { ...payloadBase, limit: 200 } as any;
-          delete fallbackPayload.type;
-          console.log('⚠️ Enhancement fallback: retrying without type filter and lower limit');
-          searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
-            method: 'POST',
-            body: JSON.stringify(fallbackPayload)
-          });
-        }
-
-        if (!searchResponse.ok) {
-          console.log(`❌ Enhancement search failed at ${radius} miles: ${searchResponse.status}`);
-          continue;
-        }
-
-        const searchData = await searchResponse.json();
-
-        if (searchData.data && searchData.data.home_search && searchData.data.home_search.results) {
-          const properties = searchData.data.home_search.results;
-          console.log(`🏠 FOUND ${properties.length} properties in ${radius}-mile radius`);
-
-          // Filter properties with sales restriction for enhancement
-          const twelveMonthsAgo = new Date();
-          twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
-
-          const minSqft = Math.floor(subjectSqft * 0.8);
-          const maxSqft = Math.ceil(subjectSqft * 1.2);
-
-          let validNewComps = properties.filter(property => {
-            // Check for required data
-            const sqft = Number(property.description?.sqft);
-            const soldPrice = Number(property.description?.sold_price || property.last_sold_price);
-            const listDate = property.list_date || property.last_sold_date;
-
-            if (!Number.isFinite(sqft) || sqft <= 0 || !Number.isFinite(soldPrice) || soldPrice <= 0 || !listDate) {
-              return false;
-            }
-
-            // 12-month sales filter for enhancement (when confidence is low)
-            const saleDate = new Date(listDate);
-            if (saleDate < twelveMonthsAgo) {
-              return false;
-            }
-
-            // Size filter (20% range)
-            if (sqft < minSqft || sqft > maxSqft) {
-              return false;
-            }
-
-            // Check if already exists
-            const propAddress = property.location?.address?.line || '';
-            const alreadyExists = existingComps.some(comp => 
-              comp.address && propAddress && comp.address.toLowerCase().includes(propAddress.toLowerCase())
-            );
-
-            return !alreadyExists;
-          }).map(property => ({
-            address: property.location?.address?.line || 'Unknown Address',
-            price: property.description.sold_price,
-            sqft: property.description.sqft,
-            beds: property.description.beds || Math.ceil(property.description.sqft / 400),
-            baths: property.description.baths || Math.ceil(property.description.sqft / 500),
-            yearBuilt: property.description.year_built,
-            pricePerSqft: Math.round(property.description.sold_price / property.description.sqft),
-            soldDate: property.list_date,
-            source: 'enhanced_search',
-            enhanced: true
-          }));
-
-          // If still too few comps, relax sales window to 24 months
-          if (validNewComps.length < 3) {
-            console.log('⚠️ Enhancement: relaxing sales window to 24 months due to low results');
-            const twentyFourMonthsAgo = new Date();
-            twentyFourMonthsAgo.setMonth(twentyFourMonthsAgo.getMonth() - 24);
-            validNewComps = properties.filter(property => {
-              const sqft = Number(property.description?.sqft);
-              const soldPrice = Number(property.description?.sold_price || property.last_sold_price);
-              const listDate = property.list_date || property.last_sold_date;
-              if (!Number.isFinite(sqft) || sqft <= 0 || !Number.isFinite(soldPrice) || soldPrice <= 0 || !listDate) {
-                return false;
-              }
-              const saleDate = new Date(listDate);
-              if (saleDate < twentyFourMonthsAgo) {
-                return false;
-              }
-              if (sqft < minSqft || sqft > maxSqft) {
-                return false;
-              }
-              const propAddress = property.location?.address?.line || '';
-              const alreadyExists = existingComps.some(comp => 
-                comp.address && propAddress && comp.address.toLowerCase().includes(propAddress.toLowerCase())
-              );
-              return !alreadyExists;
-            }).map(property => ({
-              address: property.location?.address?.line || 'Unknown Address',
-              price: property.description.sold_price,
-              sqft: property.description.sqft,
-              beds: property.description.beds || Math.ceil(property.description.sqft / 400),
-              baths: property.description.baths || Math.ceil(property.description.sqft / 500),
-              yearBuilt: property.description.year_built,
-              pricePerSqft: Math.round(property.description.sold_price / property.description.sqft),
-              soldDate: property.list_date,
-              source: 'enhanced_search_relaxed',
-              enhanced: true
-            }));
-          }
-
-          console.log(`✅ ENHANCEMENT RADIUS ${radius}: Found ${validNewComps.length} valid new comparables`);
-          enhancedComps.push(...validNewComps);
-
-          // Stop if we have enough enhanced comparables
-          if (enhancedComps.length >= 10) {
-            console.log(`✅ ENHANCEMENT COMPLETE: Found sufficient additional comparables (${enhancedComps.length})`);
-            break;
-          }
+        console.log(`✅ ENHANCEMENT RADIUS ${radius}: Added ${compsAtRadius.length} (total unique ${enhancedComps.length})`);
+        if (enhancedComps.length >= 10) {
+          console.log(`✅ ENHANCEMENT COMPLETE: Found sufficient additional comparables (${enhancedComps.length})`);
+          break;
         }
       }
 
