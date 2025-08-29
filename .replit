@@ -19,7 +19,7 @@ localPort = 5000
 externalPort = 80
 
 [workflows]
-runButton = "PropertyVision1 Dev Server"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "PropertyVision1 Dev Server"
@@ -30,6 +30,27 @@ mode = "sequential"
 task = "shell.exec"
 args = "cd PropertyVision1 && npm run dev"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "PropertyVision Server"
+
+[[workflows.workflow]]
+name = "PropertyVision Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd PropertyVision1 && npm run dev"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [agent]
 expertMode = true
