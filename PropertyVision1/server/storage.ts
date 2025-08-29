@@ -848,6 +848,8 @@ export class MemStorage implements IStorage {
       const soldDate = prop.last_sold_date ? new Date(prop.last_sold_date) : null;
       const address = prop.location?.address?.line || 'Unknown';
       const propType = prop.description?.type || 'Unknown';
+      const lat = prop.location?.address?.coordinate?.lat;
+      const lon = prop.location?.address?.coordinate?.lon;
 
       console.log(`   ${index + 1}. ${address} - Type: ${propType}`);
       console.log(`      Price: $${price || 'null'} | Size: ${sqft || 'null'}sqft | Date: ${soldDate ? soldDate.toISOString().split('T')[0] : 'null'}`);
@@ -877,6 +879,9 @@ export class MemStorage implements IStorage {
         console.log(`      $/sqft: $${pricePerSqft} | Size filter: ${sizeInRange ? 'PASS' : 'FAIL'} (${minSqft}-${maxSqft}) | Price filter: ${priceInRange ? 'PASS' : 'FAIL'}`);
 
         if (sizeInRange && priceInRange) {
+          const distanceMiles = (Number.isFinite(Number(lat)) && Number.isFinite(Number(lon)))
+            ? this.calculateDistance(centerLat, centerLon, lat, lon)
+            : undefined;
           validComps.push({
             address,
             sqft,
@@ -886,8 +891,9 @@ export class MemStorage implements IStorage {
             beds: prop.description?.beds,
             baths: prop.description?.baths,
             yearBuilt: prop.description?.year_built || null,
-            lat: prop.location?.address?.coordinate?.lat,
-            lon: prop.location?.address?.coordinate?.lon,
+            lat,
+            lon,
+            distance_miles: distanceMiles,
             searchRadius: radius
           });
           console.log(`      → INCLUDED as comparable`);
