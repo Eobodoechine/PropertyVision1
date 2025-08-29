@@ -253,51 +253,58 @@ export default function PropertyResults({ results, error, isLoading, onClearErro
           </div>
           <div className="space-y-4" data-testid="comparables-grid">
             {currentComparables && currentComparables.length > 0 ? (
-              currentComparables.map((comp: ComparableProperty, index: number) => (
-                <div 
-                  key={comp.id || index} 
-                  className="border border-gray-200 rounded-lg p-4 bg-gray-50"
-                  data-testid={`comparable-${index}`}
-                >
-                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
-                    <div>
-                      <p className="font-medium text-gray-900" data-testid={`comp-address-${index}`}>
-                        {comp.address}
-                      </p>
-                      <p className="text-sm text-gray-600" data-testid={`comp-distance-${index}`}>
-                        {comp.distance} away
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-green-600" data-testid={`comp-price-${index}`}>
-                        {comp.price}
-                      </p>
-                      <p className="text-xs text-gray-500" data-testid={`comp-sold-date-${index}`}>
-                        Sold: {comp.soldDate}
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-blue-600" data-testid={`comp-price-per-sqft-${index}`}>
-                        {(comp as any).pricePerSqft || 'N/A'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        per sq ft
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm text-gray-900" data-testid={`comp-specs-${index}`}>
-                        {comp.beds} bed • {comp.baths} bath
-                      </p>
-                      <p className="text-xs text-gray-600" data-testid={`comp-sqft-${index}`}>
-                        {comp.sqft?.toLocaleString()} sq ft
-                      </p>
+              currentComparables.map((comp: ComparableProperty, index: number) => {
+                // Only display properties with authentic data - no fallback generation
+                if (!comp.address || !comp.price || !comp.sqft) {
+                  return null;
+                }
+                
+                return (
+                  <div 
+                    key={comp.id || `${comp.address}-${index}`} 
+                    className="border border-gray-200 rounded-lg p-4 bg-gray-50"
+                    data-testid={`comparable-${index}`}
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
+                      <div>
+                        <p className="font-medium text-gray-900" data-testid={`comp-address-${index}`}>
+                          {comp.address}
+                        </p>
+                        <p className="text-sm text-gray-600" data-testid={`comp-distance-${index}`}>
+                          {comp.distance || 'Unknown distance'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-green-600" data-testid={`comp-price-${index}`}>
+                          ${Number(comp.price).toLocaleString()}
+                        </p>
+                        <p className="text-xs text-gray-500" data-testid={`comp-sold-date-${index}`}>
+                          Sold: {comp.soldDate || 'Date unknown'}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-lg font-bold text-blue-600" data-testid={`comp-price-per-sqft-${index}`}>
+                          ${Math.round(Number(comp.price) / Number(comp.sqft))}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          per sq ft
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm text-gray-900" data-testid={`comp-specs-${index}`}>
+                          {comp.beds || '?'} bed • {comp.baths || '?'} bath
+                        </p>
+                        <p className="text-xs text-gray-600" data-testid={`comp-sqft-${index}`}>
+                          {Number(comp.sqft).toLocaleString()} sq ft
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))
+                );
+              }).filter(Boolean)
             ) : (
               <div className="text-center py-8 text-gray-500" data-testid="no-comparables">
-                <p>Comparable properties will appear here after analysis</p>
+                <p>No authentic comparable properties found. External API integration required.</p>
               </div>
             )}
           </div>

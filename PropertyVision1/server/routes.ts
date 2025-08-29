@@ -51,8 +51,11 @@ router.post("/property/analyze", async (req, res) => {
         errors: error.errors.map(e => e.message)
       });
     } else {
+      console.error('❌ Property analysis failed:', error);
+      console.log('🚫 No fallback data - external API integration required');
       res.status(500).json({ 
-        message: error instanceof Error ? error.message : "Failed to analyze property"
+        error: 'Property analysis failed - external API integration required', 
+        details: error instanceof Error ? error.message : 'No authentic data sources available' 
       });
     }
   }
@@ -138,7 +141,7 @@ router.post("/external-web-search", async (req, res) => {
 
     // All property data must come from external web search APIs
     console.log(`🔍 EXTERNAL WEB SEARCH: Processing query for external APIs only`);
-    
+
     // No hardcoded responses - external integration required
 
     res.json({ results: [] });
