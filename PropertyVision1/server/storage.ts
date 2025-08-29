@@ -1659,7 +1659,8 @@ export class MemStorage implements IStorage {
         baths,
         yearBuilt,
         pricePerSqft: Math.round(price / sqft),
-        soldDate: '2024-12-01', // Assume recent
+        // soldDate intentionally left unknown when sourced from web research without a reliable date
+        soldDate: null,
         source: 'web_research'
       };
 
