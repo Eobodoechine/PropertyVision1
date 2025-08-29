@@ -17,3 +17,15 @@ ignorePorts = false
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[workflows]
+runButton = "PropertyVision1 Dev Server"
+
+[[workflows.workflow]]
+name = "PropertyVision1 Dev Server"
+author = 46702349
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd PropertyVision1 && npm run dev"
