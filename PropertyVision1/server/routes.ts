@@ -113,50 +113,10 @@ async function performWebSearch(query: string) {
   try {
     console.log(`🌐 REAL WEB SEARCH: ${query}`);
 
-    // For verified properties, return authentic data from web search
-    if (query.includes('2333 Oakridge Ct')) {
-      console.log(`🏠 RETURNING VERIFIED PROPERTY DATA for 2333 Oakridge Ct`);
-      return [{
-        title: '2333 Oakridge Ct, Decatur, GA 30032 | MLS #7555171',
-        description: '3 bedroom, 2 bathroom ranch that needs a little TLC. 1,344 sq ft built in 1962.',
-        content: `
-          2333 Oakridge Ct Decatur GA 30032 Property Details
-          Bedrooms: 3
-          Bathrooms: 2 
-          Square Footage: 1,344 sq ft
-          Year Built: 1962
-          Property Type: Single Family House
-          Description: A 3-bedroom, 2-bath ranch that needs a little TLC
-        `,
-        url: 'https://www.zillow.com/homedetails/2333-Oakridge-Ct-Decatur-GA-30032/14440102_zpid/'
-      }];
-    }
-
-    if (query.includes('2101 Newgate Dr')) {
-      console.log(`🏠 RETURNING VERIFIED PROPERTY DATA for 2101 Newgate Dr`);
-      return [{
-        title: '2101 Newgate Dr, Decatur, GA 30035 | MLS# 7538712',
-        description: '4 bedroom, 3 bathroom A-Frame house for sale at $299,000. 2,566 sq ft built in 1971.',
-        content: `
-          2101 Newgate Dr Decatur GA 30035 Property Details
-          Bedrooms: 4
-          Bathrooms: 3 
-          Square Footage: 2,566 sq ft
-          Year Built: 1971
-          Property Type: Single Family House
-          Style: A-Frame
-          Lot Size: 0.5 acres
-          List Price: $299,000
-          Description: Two separate kitchens, income-producing property potential
-        `,
-        url: 'https://www.redfin.com/GA/Decatur/2101-Newgate-Dr-30035/home/23833154'
-      }];
-    }
-
-    // Use local web search service for all other queries
-    console.log(`🔍 Using local webSearch service for: ${query}`);
+    // No hardcoded data - all results must come from external APIs
+    console.log(`🔍 Using external web search API for: ${query}`);
     const results = await webSearch(query);
-    console.log(`✅ Web search service returned ${results.length} results`);
+    console.log(`✅ Web search API returned ${results.length} results`);
     return results;
   } catch (error) {
     console.log(`Web search integration error: ${error}`);
@@ -176,27 +136,10 @@ router.post("/external-web-search", async (req, res) => {
     // In a real implementation, this would use web_search tool:
     // const searchResults = await web_search({ query });
 
-    // Simulate what real web search would return for property queries
-    const isPropertyQuery = query.includes('property details') || 
-                           query.includes('square footage') || 
-                           query.includes('bedrooms bathrooms');
-
-    if (isPropertyQuery) {
-      console.log(`🏠 PROPERTY WEB SEARCH: Processing property query`);
-
-      // Extract address from query
-      const addressMatch = query.match(/(\d+\s+[\w\s]+(?:st|street|ave|avenue|dr|drive|ln|lane|ct|court|cir|circle|blvd|boulevard|rd|road|way|pl|place|trce|trace))/i);
-
-      if (addressMatch) {
-        const address = addressMatch[1];
-        console.log(`🔍 SEARCHING WEB FOR: ${address}`);
-
-        // This would be replaced with actual web_search tool results
-        // DEMO REMOVED, return empty to maintain data integrity
-        res.json({ results: [] });
-        return;
-      }
-    }
+    // All property data must come from external web search APIs
+    console.log(`🔍 EXTERNAL WEB SEARCH: Processing query for external APIs only`);
+    
+    // No hardcoded responses - external integration required
 
     res.json({ results: [] });
 

@@ -727,23 +727,7 @@ export class MemStorage implements IStorage {
     try {
       console.log(`🔍 WEB SEARCH: ${query}`);
       
-      // Check if this is the verified property and return known data
-      if (query.includes('2333 Oakridge Ct')) {
-        console.log(`🏠 RETURNING VERIFIED PROPERTY DATA for 2333 Oakridge Ct`);
-        return [{
-          title: '2333 Oakridge Ct Property Details',
-          description: '3 bedroom, 2 bathroom, 1,344 sq ft ranch built in 1962',
-          content: 'Property details for 2333 Oakridge Ct Decatur GA 30032: 3 bedrooms, 2 bathrooms, 1,344 square feet, year built 1962, single family house ranch style',
-          url: 'https://www.zillow.com/homedetails/2333-Oakridge-Ct-Decatur-GA-30032/14440102_zpid/',
-          propertyData: {
-            beds: 3,
-            baths: 2,
-            sqft: 1344,
-            yearBuilt: 1962,
-            propertyType: 'single_family'
-          }
-        }];
-      }
+      // No hardcoded property data - all data must come from external APIs
       
       // Fallback to existing web search service
       const response = await fetch('http://localhost:5000/api/web-search', {

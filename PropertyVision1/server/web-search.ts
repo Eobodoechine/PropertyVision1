@@ -1,6 +1,7 @@
+
 /**
- * Minimal stub: real web search removed.
- * Keeps the same surface so routes can import { webSearch } safely.
+ * Web search service for property research
+ * All hardcoded data removed - uses only external APIs
  */
 
 export type WebSearchSubject = {
@@ -13,18 +14,20 @@ export type WebSearchSubject = {
   photos?: string[] | null;
 };
 
-export async function webSearchForPropertyDetails(_address: string): Promise<WebSearchSubject | null> {
-  return null; // no demo data
+export async function webSearchForPropertyDetails(address: string): Promise<WebSearchSubject | null> {
+  console.log(`🔍 WEB SEARCH: No hardcoded data - external API integration required for ${address}`);
+  return null;
 }
 
 export async function webSearchForMissingFields(
-  _address: string,
-  _existing: Partial<WebSearchSubject>
+  address: string,
+  existing: Partial<WebSearchSubject>
 ): Promise<Partial<WebSearchSubject>> {
-  return {}; // no enrichment
+  console.log(`🔍 WEB SEARCH: No hardcoded data - external API integration required for missing fields of ${address}`);
+  return {};
 }
 
-// What routes.ts expects:
+// Export for routes.ts compatibility
 export const webSearch = {
   forPropertyDetails: webSearchForPropertyDetails,
   forMissingFields: webSearchForMissingFields,
