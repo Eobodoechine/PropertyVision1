@@ -28,7 +28,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd PropertyVision1 && npm run dev"
+args = "npm run dev"
 
 [agent]
 expertMode = true
