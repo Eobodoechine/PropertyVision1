@@ -1,5 +1,7 @@
 import { type PropertyAnalysis, type InsertPropertyAnalysis, type AddressSearch } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { webSearch } from "./web-search";
+import { loggedFetch } from "./infra/rapid";
 
 export interface IStorage {
   getPropertyAnalysis(id: string): Promise<PropertyAnalysis | undefined>;
@@ -527,13 +529,8 @@ export class MemStorage implements IStorage {
       type: ["single_family", "townhome", "condo"]
     };
 
-    const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+    const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-RapidAPI-Key': apiKey,
-        'X-RapidAPI-Host': 'realty-in-us.p.rapidapi.com'
-      },
       body: JSON.stringify(searchPayload)
     });
 
@@ -633,7 +630,7 @@ export class MemStorage implements IStorage {
           /([\d,]{1,6})\s*(?:sq|square)\s*(?:ft|feet|foot)/i,
           /([\d,]{1,6})\s*sqft/i,
           /square\s*feet[\s:]*(\d{1,5})/i,
-          /([\d,]{1,6})\s*square/i,
+          /([\d,]{1,6})\s+square/i,
           /([\d,]{1,6})\s+square\s+feet/i,  // "1,953 square feet" format
           /living\s+area[:\s]*([\d,]{1,6})/i, // "living area: 1,516" format
           /square\s+feet[:\s]*([\d,]{1,6})/i  // "square feet: 1,516" format
@@ -795,13 +792,8 @@ export class MemStorage implements IStorage {
       throw new Error('RAPIDAPI_KEY environment variable is required');
     }
 
-    const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+    const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-RapidAPI-Key': apiKey,
-        'X-RapidAPI-Host': 'realty-in-us.p.rapidapi.com'
-      },
       body: JSON.stringify(searchPayload)
     });
 
@@ -934,13 +926,8 @@ export class MemStorage implements IStorage {
       throw new Error('RAPIDAPI_KEY environment variable is required');
     }
 
-    const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+    const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-RapidAPI-Key': apiKey,
-        'X-RapidAPI-Host': 'realty-in-us.p.rapidapi.com'
-      },
       body: JSON.stringify(searchPayload)
     });
 
@@ -1802,13 +1789,8 @@ export class MemStorage implements IStorage {
         const boundary = this.generateBoundaryFromRadius(centerLat, centerLon, radius);
 
         // Search for properties in expanded boundary
-        const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+        const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-rapidapi-host': 'realty-in-us.p.rapidapi.com',
-            'x-rapidapi-key': apiKey
-          },
           body: JSON.stringify({
             limit: 200,
             offset: 0,
