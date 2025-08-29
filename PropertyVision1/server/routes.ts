@@ -10,7 +10,7 @@ import { Router } from 'express';
 const router = Router();
 
 // Analyze property endpoint
-router.post("/api/property/analyze", async (req, res) => {
+router.post("/property/analyze", async (req, res) => {
   try {
     const addressSearch = addressSearchSchema.parse(req.body);
 
@@ -59,7 +59,7 @@ router.post("/api/property/analyze", async (req, res) => {
 });
 
 // Get analysis by ID endpoint
-router.get("/api/property/analysis/:id", async (req, res) => {
+router.get("/property/analysis/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const analysis = await storage.getPropertyAnalysis(id);
@@ -78,7 +78,7 @@ router.get("/api/property/analysis/:id", async (req, res) => {
 });
 
 // Web search endpoint for property research using real web search
-router.post("/api/web-search", async (req, res) => {
+router.post("/web-search", async (req, res) => {
   try {
     const { query } = req.body;
 
@@ -165,7 +165,7 @@ async function performWebSearch(query: string) {
 }
 
 // External web search endpoint using real web search capabilities
-router.post("/api/external-web-search", async (req, res) => {
+router.post("/external-web-search", async (req, res) => {
   try {
     const { query } = req.body;
     console.log(`🌐 EXTERNAL WEB SEARCH REQUEST: ${query}`);
