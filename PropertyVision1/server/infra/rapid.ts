@@ -28,22 +28,59 @@ export async function loggedFetch(url: string, options: any = {}): Promise<Respo
   };
 
   const startTime = Date.now();
-  console.log(`[RAPIDAPI] REQUEST: ${options.method || 'GET'} ${url}`);
-  console.log(`[RAPIDAPI] API Key visible: ${apiKey ? 'YES' : 'NO'} (${apiKey ? apiKey.substring(0, 8) + '...' : 'MISSING'})`);
-
-  try {
-    const response = await fetch(url, requestOptions);
-    const duration = Date.now() - startTime;
-    
-    console.log(`[RAPIDAPI] RESPONSE: ${response.status} ${response.statusText} (${duration}ms)`);
-    console.log(`[RAPIDAPI] Request-ID: ${response.headers.get('x-request-id') || 'N/A'}`);
-    console.log(`[RAPIDAPI] Rate Limit Remaining: ${response.headers.get('x-ratelimit-remaining') || 'N/A'}`);
-    console.log(`[RAPIDAPI] Rate Limit Reset: ${response.headers.get('x-ratelimit-reset') || 'N/A'}`);
-    
-    return response;
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    console.log(`[RAPIDAPI] ERROR: ${error} (${duration}ms)`);
-    throw error;
+  const method = options.method || 'GET';
+  const showKey = process.env.NODE_ENV !== 'production' && process.env.DEBUG_RAPID !== '0' && process.env.DEBUG_RAPID !== 'false';
+  console.log(`[RAPIDAPI] REQUEST: ${method} ${url}`);
+  if (showKey) {
+    console.log(`[RAPIDAPI] API Key visible: ${apiKey ? 'YES' : 'NO'} (${apiKey ? apiKey.substring(0, 8) + '...' : 'MISSING'})`);
   }
+
+  // Retry on 429/5xx with simple backoff and 20s timeout per attempt
+  const maxRetries = typeof options.maxRetries === 'number' ? options.maxRetries : 2;
+  const baseDelay = 400; // ms
+  let lastErr: any;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const attemptStart = Date.now();
+    const controller = new AbortController();
+    const timeoutMs = typeof options.timeoutMs === 'number' ? options.timeoutMs : 20000;
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const response = await fetch(url, { ...requestOptions, signal: controller.signal } as any);
+      clearTimeout(timeout);
+
+      const duration = Date.now() - attemptStart;
+      console.log(`[RAPIDAPI] RESPONSE: ${response.status} ${response.statusText} (${duration}ms, attempt ${attempt + 1})`);
+      const rlRemain = response.headers.get('x-ratelimit-remaining') || 'N/A';
+      const rlReset = response.headers.get('x-ratelimit-reset') || 'N/A';
+      console.log(`[RAPIDAPI] Request-ID: ${response.headers.get('x-request-id') || 'N/A'}`);
+      console.log(`[RAPIDAPI] Rate Limit Remaining: ${rlRemain}`);
+      console.log(`[RAPIDAPI] Rate Limit Reset: ${rlReset}`);
+
+      if (response.status === 429 || (response.status >= 500 && response.status < 600)) {
+        if (attempt < maxRetries) {
+          const delayFromHeader = Number(rlReset) && Number(rlRemain) === 0 ? Number(rlReset) * 1000 : 0;
+          const backoff = delayFromHeader || baseDelay * Math.pow(2, attempt);
+          console.log(`[RAPIDAPI] Retrying in ${backoff}ms due to status ${response.status}...`);
+          await new Promise(r => setTimeout(r, backoff));
+          continue;
+        }
+      }
+      return response;
+    } catch (error) {
+      clearTimeout(timeout);
+      lastErr = error;
+      const duration = Date.now() - attemptStart;
+      console.log(`[RAPIDAPI] ERROR attempt ${attempt + 1}: ${error} (${duration}ms)`);
+      if (attempt < maxRetries) {
+        const backoff = baseDelay * Math.pow(2, attempt);
+        console.log(`[RAPIDAPI] Retrying in ${backoff}ms after error...`);
+        await new Promise(r => setTimeout(r, backoff));
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw lastErr || new Error('Unknown RapidAPI error');
 }

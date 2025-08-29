@@ -7,7 +7,13 @@ import { setupVite, serveStatic, log } from './vite';
 
 const app = express();
 app.set('trust proxy', 1);
-app.use(cors());
+const CORS_ORIGIN = process.env.CORS_ORIGIN;
+if (CORS_ORIGIN && CORS_ORIGIN.trim().length > 0) {
+  const origins = CORS_ORIGIN.split(',').map(o => o.trim()).filter(Boolean);
+  app.use(cors({ origin: origins, credentials: true }));
+} else {
+  app.use(cors());
+}
 app.use(express.json({ limit: '1mb' }));
 
 const server = createServer(app);
@@ -28,6 +34,15 @@ try {
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
+});
+
+// Minimal info endpoint (no secrets)
+app.get('/api/info', (_req, res) => {
+  res.json({
+    env: process.env.NODE_ENV || 'development',
+    rapidapi_key_present: Boolean(process.env.RAPIDAPI_KEY),
+    maps_key_present: Boolean(process.env.GOOGLE_MAPS_API_KEY),
+  });
 });
 
 if (!mounted) {

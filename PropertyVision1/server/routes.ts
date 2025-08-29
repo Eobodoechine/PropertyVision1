@@ -5,12 +5,13 @@ import { addressSearchSchema, type PropertyAnalysisResult } from "@shared/schema
 import { z } from "zod";
 import { webSearch } from "./web-search";
 import { Router } from 'express';
+import { requireRapidKey } from './middleware/requireRapidKey';
 
 // Create a new router instance to export
 const router = Router();
 
 // Analyze property endpoint
-router.post("/property/analyze", async (req, res) => {
+router.post("/property/analyze", requireRapidKey, async (req, res) => {
   try {
     const addressSearch = addressSearchSchema.parse(req.body);
 

@@ -1,4 +1,5 @@
 // Mile-by-mile analysis tool for detailed property search debugging
+import { loggedFetch } from './infra/rapid';
 export class MileByMileAnalyzer {
   
   async analyzeByRadius(centerLat: number, centerLon: number, maxRadius: number = 5) {
@@ -24,14 +25,8 @@ export class MileByMileAnalyzer {
         type: ["single_family"]
       };
       
-      const apiKey = process.env.RAPIDAPI_KEY;
-      const searchResponse = await fetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+      const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-RapidAPI-Key': apiKey,
-          'X-RapidAPI-Host': 'realty-in-us.p.rapidapi.com'
-        },
         body: JSON.stringify(searchPayload)
       });
       

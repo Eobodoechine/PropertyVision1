@@ -2,6 +2,8 @@ import { type PropertyAnalysis, type InsertPropertyAnalysis, type AddressSearch 
 import { randomUUID } from "crypto";
 import { webSearch } from "./web-search";
 import { loggedFetch } from "./infra/rapid";
+// Simple in-memory cache for geocoding to reduce external calls
+const geocodeCache = new Map<string, { lat: number; lon: number; ts: number }>();
 
 export interface IStorage {
   getPropertyAnalysis(id: string): Promise<PropertyAnalysis | undefined>;
@@ -487,7 +489,20 @@ export class MemStorage implements IStorage {
 
     console.log(`📍 COORDINATE LOOKUP: Using Google Maps for ${address}`);
 
-    const mapsResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleMapsKey}`);
+    // Cache lookup (6 hours TTL)
+    const now = Date.now();
+    const key = address.toLowerCase().trim();
+    const cached = geocodeCache.get(key);
+    if (cached && now - cached.ts < 6 * 60 * 60 * 1000) {
+      console.log('📍 Using cached coordinates');
+      return { lat: cached.lat, lon: cached.lon };
+    }
+
+    // Add a timeout for external call
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const mapsResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${googleMapsKey}`, { signal: controller.signal } as any);
+    clearTimeout(timeout);
 
     if (!mapsResponse.ok) {
       throw new Error(`Google Maps API failed: ${mapsResponse.status}`);
@@ -505,6 +520,8 @@ export class MemStorage implements IStorage {
 
     console.log(`📍 COORDINATES FOUND: ${lat}, ${lon}`);
     console.log(`📍 FORMATTED ADDRESS: ${mapsData.results[0].formatted_address}`);
+
+    geocodeCache.set(key, { lat, lon, ts: now });
 
     return { lat, lon };
   }
@@ -723,23 +740,19 @@ export class MemStorage implements IStorage {
   private async webSearch(query: string): Promise<any[] | null> {
     try {
       console.log(`🔍 WEB SEARCH: ${query}`);
-
-      // No hardcoded property data - all data must come from external APIs
-
-      // Fallback to existing web search service
-      const response = await fetch('http://localhost:5000/api/web-search', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query })
-      });
-
-      if (!response.ok) {
-        console.log(`❌ Web search API failed: ${response.status}`);
-        return null;
+      // Use internal web search service (external API integration required)
+      // Try detailed lookup first, adapt to expected shape if present
+      const details = await webSearch.forPropertyDetails(query);
+      if (details) {
+        return [
+          {
+            title: 'Property details (web search) ',
+            description: JSON.stringify(details),
+            content: ''
+          }
+        ];
       }
-
-      const data = await response.json();
-      return data.results && data.results.length > 0 ? data.results : null;
+      return null;
 
     } catch (error) {
       console.log(`❌ Web search failed: ${error}`);
@@ -993,15 +1006,8 @@ export class MemStorage implements IStorage {
         const searchQuery = `${prop.address} property details square feet year built`;
         console.log(`🔍 WEB SEARCH: ${searchQuery}`);
 
-        // Make HTTP request to web search endpoint
-        const response = await fetch('http://localhost:5000/api/web-search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: searchQuery })
-        });
-
-        const searchData = await response.json();
-        const searchResult = searchData.results || [];
+        // Use internal web search service directly (no HTTP self-call)
+        const searchResult = await this.webSearch(searchQuery) || [];
 
         if (searchResult && searchResult.length > 0) {
           console.log(`✅ WEB SEARCH: Processing ${searchResult.length} search results for ${prop.address}`);
@@ -1666,12 +1672,8 @@ export class MemStorage implements IStorage {
     try {
       console.log(`🔍 AUTOCOMPLETE CHECK: Verifying ${address} exists in system...`);
 
-      const response = await fetch(`https://realty-in-us.p.rapidapi.com/locations/v2/auto-complete?input=${encodeURIComponent(address)}`, {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-host': 'realty-in-us.p.rapidapi.com',
-          'x-rapidapi-key': apiKey
-        }
+      const response = await loggedFetch(`https://realty-in-us.p.rapidapi.com/locations/v2/auto-complete?input=${encodeURIComponent(address)}`, {
+        method: 'GET'
       });
 
       if (!response.ok) {
@@ -1712,12 +1714,8 @@ export class MemStorage implements IStorage {
     try {
       console.log(`🏠 FETCHING PROPERTY DETAILS: Using MPR ID ${mprId}`);
 
-      const response = await fetch(`https://realty-in-us.p.rapidapi.com/properties/v3/detail?property_id=${mprId}`, {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-host': 'realty-in-us.p.rapidapi.com',
-          'x-rapidapi-key': apiKey
-        }
+      const response = await loggedFetch(`https://realty-in-us.p.rapidapi.com/properties/v3/detail?property_id=${mprId}`, {
+        method: 'GET'
       });
 
       if (!response.ok) {
