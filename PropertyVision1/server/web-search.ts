@@ -3,6 +3,7 @@
  */
 
 import { load as loadCheerio } from 'cheerio';
+import { extractFromPage, mergeDetails } from './providers/extractors';
 
 export type WebSearchSubject = {
   beds?: number | null;
@@ -112,19 +113,47 @@ export async function webSearchForPropertyDetails(address: string): Promise<WebS
     const query = `${address} property details year built square feet bedrooms bathrooms`;
     console.log(`🔍 WEB SEARCH (Tavily): ${query}`);
 
-    const results = await tavilySearch(query, 6);
+    const results = await tavilySearch(query, 8);
     if (!results.length) return null;
 
-    const aggregate: WebSearchSubject = {};
-    for (const r of results) {
-      const data = await fetchAndExtract(r.url);
-      if (data.beds && !aggregate.beds) aggregate.beds = data.beds;
-      if (data.baths && !aggregate.baths) aggregate.baths = data.baths;
-      if (data.sqft && !aggregate.sqft) aggregate.sqft = data.sqft;
-      if (data.yearBuilt && !aggregate.yearBuilt) aggregate.yearBuilt = data.yearBuilt;
-      if (aggregate.beds && aggregate.baths && aggregate.sqft && aggregate.yearBuilt) break;
+    // Prefer known real estate hosts first
+    const priority = ['realtor.com','zillow.com','redfin.com','trulia.com','homes.com'];
+    const sorted = results.slice().sort((a,b) => {
+      const ha = new URL(a.url).hostname.replace(/^www\./,'');
+      const hb = new URL(b.url).hostname.replace(/^www\./,'');
+      const ia = priority.indexOf(ha);
+      const ib = priority.indexOf(hb);
+      if (ia !== -1 && ib === -1) return -1;
+      if (ib !== -1 && ia === -1) return 1;
+      return 0;
+    });
+
+    const collected: any[] = [];
+    for (const r of sorted) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      try {
+        const res = await fetch(r.url, { signal: controller.signal } as any);
+        clearTimeout(timeout);
+        if (!res.ok) continue;
+        const html = await res.text();
+        const details = await extractFromPage(r.url, html);
+        if (details) collected.push(details);
+        if (collected.length >= 5) break;
+      } catch { clearTimeout(timeout); }
     }
-    return Object.keys(aggregate).length ? aggregate : null;
+
+    const merged = mergeDetails(collected);
+    if (!merged) return null;
+    return {
+      beds: merged.beds ?? null,
+      baths: merged.baths ?? null,
+      sqft: merged.sqft ?? null,
+      yearBuilt: merged.yearBuilt ?? null,
+      type: merged.type ?? null,
+      sub_type: null,
+      photos: null,
+    };
   } catch (e) {
     console.log(`❌ Web search provider error: ${e}`);
     return null;
