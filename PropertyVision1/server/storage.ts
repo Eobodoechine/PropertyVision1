@@ -1169,11 +1169,11 @@ export class MemStorage implements IStorage {
     });
 
     if (!searchResponse.ok) {
-      console.log(`❌ Null-value search failed: ${response.status}`);
+      console.log(`❌ Null-value search failed: ${searchResponse.status}`);
       return [];
     }
 
-    const searchData = await response.json();
+    const searchData = await searchResponse.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
 
     // Process and find properties with null sqft or year built
