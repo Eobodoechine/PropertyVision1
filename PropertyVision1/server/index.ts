@@ -4,6 +4,7 @@ import express, { Router } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { setupVite, serveStatic, log } from './vite';
+import { addLog, getLast, clearLogs } from './utils/devLog';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -26,7 +27,9 @@ if ((process.env.NODE_ENV || 'development') === 'development') {
     res.on('finish', () => {
       const ms = Date.now() - start;
       const ct = res.get('Content-Type') || '';
-      log(`DEV API LOG: ${method} ${originalUrl} -> ${res.statusCode} ${ct} (${ms}ms)`, 'express');
+      const line = `DEV API LOG: ${method} ${originalUrl} -> ${res.statusCode} ${ct} (${ms}ms)`;
+      log(line, 'express');
+      addLog(line);
     });
     next();
   });
@@ -88,6 +91,30 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// Dev-only logs endpoint: GET /api/logs?limit=200 with optional header x-logs-token
+if ((process.env.NODE_ENV || 'development') === 'development') {
+  app.get('/api/logs', (req, res) => {
+    const token = (req.headers['x-logs-token'] as string | undefined) || (req.query.token as string | undefined);
+    const expected = process.env.LOGS_TOKEN;
+    if (expected && token !== expected) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const limit = parseInt(String(req.query.limit || '200'), 10);
+    const lines = getLast(limit);
+    res.json({ lines });
+  });
+
+  app.post('/api/logs/clear', (req, res) => {
+    const token = (req.headers['x-logs-token'] as string | undefined) || (req.query.token as string | undefined);
+    const expected = process.env.LOGS_TOKEN;
+    if (expected && token !== expected) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    clearLogs();
+    res.json({ ok: true });
+  });
+}
+
 if (!mounted) {
   console.warn('[server] No router mounted (server/routes.* not exporting a router).');
 }
@@ -110,6 +137,7 @@ app.use('/api', (req, res) => {
 // Global error handler
 app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('[server] Uncaught error:', err);
+  try { addLog(`[ERROR] ${err?.message || err}`); } catch {}
   const status = err?.status || 500;
   res.status(status).json({ error: err?.message || 'Internal Server Error' });
 });
@@ -125,6 +153,7 @@ server.listen(PORT, HOST, () => {
     const corsOrigin = process.env.CORS_ORIGIN || '(any)';
     log(`DEV INFO: CORS_ORIGIN=${corsOrigin}`);
     log(`DEV INFO: Note: VITE_API_BASE is a client env; verify it in the client build if requests misroute.`);
+    try { addLog('Server started in development mode'); } catch {}
   }
 });
 
@@ -139,3 +168,11 @@ const shutdown = (sig: string) => {
 
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
+
+// Capture unhandled errors for logs
+process.on('unhandledRejection', (reason: any) => {
+  try { addLog(`[UNHANDLED REJECTION] ${reason?.message || reason}`); } catch {}
+});
+process.on('uncaughtException', (err: any) => {
+  try { addLog(`[UNCAUGHT EXCEPTION] ${err?.message || err}`); } catch {}
+});

@@ -1,6 +1,7 @@
 
 // RapidAPI request logging utility
 import { getRapidApiKey } from '../utils/rapidKey';
+import { addLog } from '../utils/devLog';
 
 interface RapidAPIResponse {
   status: number;
@@ -31,6 +32,7 @@ export async function loggedFetch(url: string, options: any = {}): Promise<Respo
   const method = options.method || 'GET';
   const showKey = process.env.NODE_ENV !== 'production' && process.env.DEBUG_RAPID !== '0' && process.env.DEBUG_RAPID !== 'false';
   console.log(`[RAPIDAPI] REQUEST: ${method} ${url}`);
+  try { addLog(`[RAPIDAPI] ${method} ${url}`); } catch {}
   if (showKey) {
     console.log(`[RAPIDAPI] API Key visible: ${apiKey ? 'YES' : 'NO'} (${apiKey ? apiKey.substring(0, 8) + '...' : 'MISSING'})`);
   }
@@ -56,12 +58,14 @@ export async function loggedFetch(url: string, options: any = {}): Promise<Respo
       console.log(`[RAPIDAPI] Request-ID: ${response.headers.get('x-request-id') || 'N/A'}`);
       console.log(`[RAPIDAPI] Rate Limit Remaining: ${rlRemain}`);
       console.log(`[RAPIDAPI] Rate Limit Reset: ${rlReset}`);
+      try { addLog(`[RAPIDAPI] RESP ${response.status} ${response.statusText} (${duration}ms) rem=${rlRemain} reset=${rlReset}`); } catch {}
 
       if (response.status === 429 || (response.status >= 500 && response.status < 600)) {
         if (attempt < maxRetries) {
           const delayFromHeader = Number(rlReset) && Number(rlRemain) === 0 ? Number(rlReset) * 1000 : 0;
           const backoff = delayFromHeader || baseDelay * Math.pow(2, attempt);
           console.log(`[RAPIDAPI] Retrying in ${backoff}ms due to status ${response.status}...`);
+          try { addLog(`[RAPIDAPI] retry ${attempt + 1} in ${backoff}ms for ${url}`); } catch {}
           await new Promise(r => setTimeout(r, backoff));
           continue;
         }
@@ -72,6 +76,7 @@ export async function loggedFetch(url: string, options: any = {}): Promise<Respo
       lastErr = error;
       const duration = Date.now() - attemptStart;
       console.log(`[RAPIDAPI] ERROR attempt ${attempt + 1}: ${error} (${duration}ms)`);
+      try { addLog(`[RAPIDAPI] ERROR attempt ${attempt + 1}: ${String(error)} (${duration}ms)`); } catch {}
       if (attempt < maxRetries) {
         const backoff = baseDelay * Math.pow(2, attempt);
         console.log(`[RAPIDAPI] Retrying in ${backoff}ms after error...`);
