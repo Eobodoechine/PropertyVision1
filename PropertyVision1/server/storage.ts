@@ -1035,13 +1035,6 @@ export class MemStorage implements IStorage {
 
     const searchData = await searchResponse.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
-
-    // Local 6-month cutoff for null-value search
-    const nvSalesCutoff = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
-
-    // Local 6-month cutoff for null-value research
-    const nvSalesCutoff = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
-
     console.log(`\n📊 RAW API RESPONSE:`);
     console.log(`   • Total properties returned: ${foundProperties.length}`);
 
@@ -1181,6 +1174,9 @@ export class MemStorage implements IStorage {
 
     const searchData = await searchResponse.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
+
+    // Local 6-month cutoff for null-value search
+    const nvSalesCutoff = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
 
     // Process and find properties with null sqft or year built
     const nullValueProps: any[] = [];
