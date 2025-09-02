@@ -1488,9 +1488,11 @@ export class MemStorage implements IStorage {
     console.log(`📊 Subject: ${updatedSubjectSqft} sqft, built ${updatedYearBuilt}, ${updatedSubjectBeds}bed/${updatedSubjectBaths}bath ${updatedPropertyType}`);
 
     // Create subject property object with researched data from external sources
+    const safeSqft = this.isPlausibleSqft(updatedSubjectSqft) ? updatedSubjectSqft : undefined;
     const enhancedSubjectProperty = {
       description: {
-        sqft: updatedSubjectSqft,
+        // Only set sqft if plausibly extracted from online data
+        sqft: safeSqft,
         year_built: updatedYearBuilt,
         beds: updatedSubjectBeds,
         baths: updatedSubjectBaths,
@@ -1552,8 +1554,7 @@ export class MemStorage implements IStorage {
 
     const apiKey = process.env.RAPIDAPI_KEY!;
 
-    // FINAL BUG FIX: Force correct square footage calculation for 851 Hedge Garden Ct
-    // Guard against implausible researched sqft
+    // Use only plausibly extracted online sqft for ARV; otherwise, do not compute ARV
     let finalSqftForCalculation = this.isPlausibleSqft(updatedSubjectSqft) ? updatedSubjectSqft : NaN as unknown as number;
 
 
@@ -1689,6 +1690,11 @@ export class MemStorage implements IStorage {
     }
 
     // Calculate ARV using the researched subject data
+    // Ensure we have a plausible sqft before attempting ARV
+    if (!Number.isFinite(finalSqftForCalculation) || !this.isPlausibleSqft(finalSqftForCalculation)) {
+      throw new Error('Square footage not available from online sources; unable to compute ARV.');
+    }
+
     const result = await this.calculateNewMethodologyARV(
       validComps,
       finalSqftForCalculation,

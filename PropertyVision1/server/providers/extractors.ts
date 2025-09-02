@@ -87,20 +87,38 @@ export function extractFromHtmlHeuristics(html: string, hostname: string): Extra
 
 export function mergeDetails(items: ExtractedDetails[]): ExtractedDetails | null {
   if (!items.length) return null;
-  const pick = (selector: (x: ExtractedDetails) => any): any => {
-    const vals = items.map(selector).filter(v => v != null);
-    if (!vals.length) return null;
-    // Majority or first
+  const priorityHosts = new Set(['realtor.com','zillow.com','redfin.com','trulia.com','homes.com']);
+  const plausibleSqft = (n: any) => {
+    const v = Number(n);
+    return Number.isFinite(v) && v >= 600 && v <= 10000;
+  };
+
+  const pick = (
+    selector: (x: ExtractedDetails) => any,
+    opts?: { filter?: (v: any) => boolean }
+  ): any => {
+    type Vote = { val: any; weight: number };
+    const votes: Vote[] = [];
+    items.forEach((it) => {
+      const v = selector(it);
+      if (v == null) return;
+      if (opts?.filter && !opts.filter(v)) return;
+      const host = (it.source || '').replace(/^www\./,'');
+      const weight = priorityHosts.has(host) ? 3 : 1;
+      votes.push({ val: v, weight });
+    });
+    if (!votes.length) return null;
     const counts = new Map<any, number>();
-    for (const v of vals) counts.set(v, (counts.get(v) || 0) + 1);
-    let best = vals[0], bestC = 0;
-    counts.forEach((c, v) => { if (c > bestC) { best = v; bestC = c; } });
+    votes.forEach(({ val, weight }) => counts.set(val, (counts.get(val) || 0) + weight));
+    let best: any = votes[0].val; let bestW = 0;
+    counts.forEach((w, v) => { if (w > bestW) { bestW = w; best = v; } });
     return best;
   };
+
   return {
     beds: pick(x => x.beds),
     baths: pick(x => x.baths),
-    sqft: pick(x => x.sqft),
+    sqft: pick(x => x.sqft, { filter: plausibleSqft }),
     yearBuilt: pick(x => x.yearBuilt),
     type: pick(x => x.type),
     source: items[0].source,
@@ -119,4 +137,3 @@ export async function extractFromPage(url: string, html: string): Promise<Extrac
   } catch {}
   return null;
 }
-
