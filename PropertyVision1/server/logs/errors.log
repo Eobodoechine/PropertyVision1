@@ -39,3 +39,33 @@ CTX {"type":"console.error"}
 CTX {"type":"console.error"}
 [2025-09-02T18:03:55.678Z] ERROR "❌ Property analysis failed: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\nError: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\n    at MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:510:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
 CTX {"type":"console.error"}
+[2025-09-02T18:09:37.297Z] ERROR "Error analyzing property: nvSalesCutoff is not defined\nReferenceError: nvSalesCutoff is not defined\n    at <anonymous> (/home/runner/workspace/PropertyVision1/server/storage.ts:1197:99)\n    at Array.forEach (<anonymous>)\n    at MemStorage.searchNullValueProperties (/home/runner/workspace/PropertyVision1/server/storage.ts:1185:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:361:27)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:09:37.298Z] ERROR "❌ Property analysis failed: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\nError: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\n    at MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:510:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:18:21.302Z] ERROR "Error analyzing property: nvSalesCutoff is not defined\nReferenceError: nvSalesCutoff is not defined\n    at <anonymous> (/home/runner/workspace/PropertyVision1/server/storage.ts:1197:99)\n    at Array.forEach (<anonymous>)\n    at MemStorage.searchNullValueProperties (/home/runner/workspace/PropertyVision1/server/storage.ts:1185:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:361:27)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:18:21.303Z] ERROR "❌ Property analysis failed: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\nError: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\n    at MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:510:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:21:03.813Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-02T18:22:23.520Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-02T18:24:46.543Z] ERROR "Error analyzing property: nvSalesCutoff is not defined\nReferenceError: nvSalesCutoff is not defined\n    at <anonymous> (/home/runner/workspace/PropertyVision1/server/storage.ts:1197:99)\n    at Array.forEach (<anonymous>)\n    at MemStorage.searchNullValueProperties (/home/runner/workspace/PropertyVision1/server/storage.ts:1185:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:361:27)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:24:46.547Z] ERROR "❌ Property analysis failed: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\nError: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\n    at MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:510:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:25:52.915Z] ERROR "Error analyzing property: nvSalesCutoff is not defined\nReferenceError: nvSalesCutoff is not defined\n    at <anonymous> (/home/runner/workspace/PropertyVision1/server/storage.ts:1197:99)\n    at Array.forEach (<anonymous>)\n    at MemStorage.searchNullValueProperties (/home/runner/workspace/PropertyVision1/server/storage.ts:1185:21)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:361:27)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
+[2025-09-02T18:25:52.915Z] ERROR "❌ Property analysis failed: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\nError: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\n    at MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:510:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
+CTX {"type":"console.error"}
