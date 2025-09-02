@@ -673,56 +673,60 @@ export class MemStorage implements IStorage {
 
   private async findByAutocomplete(address: string): Promise<any | null> {
     try {
-      const url = `https://realty-in-us.p.rapidapi.com/locations/auto-complete?input=${encodeURIComponent(address)}`;
-      const resp = await loggedFetch(url, { method: 'GET' });
-      if (!resp.ok) return null;
-      const data = await resp.json();
-      const suggestions: any[] = data?.autocomplete?.terms || data?.data || data?.suggestions || [];
-      // Fallback: some responses shape differently; try a few keys
-      const pick = (arr: any[]): any | null => {
-        for (const s of arr) {
-          const line = (s?.line || s?.address || s?.value || s?.label || '').toString();
-          const pid = s?.property_id || s?.propertyId || s?.id;
-          if (pid && line) return s;
-          if (pid) return s;
-        }
-        return arr[0] || null;
-      };
-      const best = Array.isArray(suggestions) ? pick(suggestions) : null;
-      if (!best) return null;
-      const propertyId = best?.property_id || best?.propertyId || null;
-      if (propertyId) {
-        const home = await this.fetchDetailById(propertyId);
-        if (!home) return null;
-        return this.adaptHomeToProperty(home);
-      }
-      // If no id, but coordinates are provided, do a tiny-radius search then pick same number
-      const lat = best?.lat || best?.coordinate?.lat;
-      const lon = best?.lon || best?.coordinate?.lon;
-      if (typeof lat === 'number' && typeof lon === 'number') {
-        const smallBoundarySize = 0.0015;
-        const searchBoundary = [
-          [lon - smallBoundarySize, lat - smallBoundarySize],
-          [lon + smallBoundarySize, lat - smallBoundarySize],
-          [lon + smallBoundarySize, lat + smallBoundarySize],
-          [lon - smallBoundarySize, lat + smallBoundarySize],
-          [lon - smallBoundarySize, lat - smallBoundarySize]
-        ];
-        const searchResp = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
-          method: 'POST',
-          body: JSON.stringify({ limit: 50, offset: 0, boundary: { coordinates: [searchBoundary] }, status: ["for_sale","sold","off_market"], type: ["single_family","townhome","condo"] })
-        });
-        if (searchResp.ok) {
-          const sd = await searchResp.json();
-          const props = sd?.data?.home_search?.results || [];
-          const houseNum = (address.split(',')[0] || address).trim().split(/\s+/)[0];
-          const sameNum = props.filter((p: any) => String(p.location?.address?.line || '').trim().startsWith(houseNum + ' '));
-          const picked = sameNum[0] || props[0];
-          if (picked?.property_id) {
-            const home = await this.fetchDetailById(picked.property_id);
+      // Prefer v2 autocomplete which returns mpr_id for addresses
+      const v2 = `https://realty-in-us.p.rapidapi.com/locations/v2/auto-complete?input=${encodeURIComponent(address)}&limit=10`;
+      let resp = await loggedFetch(v2, { method: 'GET' });
+      if (resp.ok) {
+        const data = await resp.json();
+        const items: any[] = Array.isArray(data?.autocomplete) ? data.autocomplete : [];
+        const addr = items.find(x => x?.area_type === 'address');
+        if (addr) {
+          const propertyId = addr?.mpr_id || addr?.property_id || null;
+          if (propertyId) {
+            const home = await this.fetchDetailById(propertyId);
             if (home) return this.adaptHomeToProperty(home);
           }
+          const lat = addr?.centroid?.lat;
+          const lon = addr?.centroid?.lon;
+          if (typeof lat === 'number' && typeof lon === 'number') {
+            const small = 0.0015;
+            const boundary = [
+              [lon - small, lat - small],
+              [lon + small, lat - small],
+              [lon + small, lat + small],
+              [lon - small, lat + small],
+              [lon - small, lat - small]
+            ];
+            const searchResp = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+              method: 'POST',
+              body: JSON.stringify({ limit: 50, offset: 0, boundary: { coordinates: [boundary] }, status: ["for_sale","sold","off_market"], type: ["single_family","townhome","condo"] })
+            });
+            if (searchResp.ok) {
+              const sd = await searchResp.json();
+              const props = sd?.data?.home_search?.results || [];
+              const houseNum = (address.split(',')[0] || address).trim().split(/\s+/)[0];
+              const sameNum = props.filter((p: any) => String(p.location?.address?.line || '').trim().startsWith(houseNum + ' '));
+              const picked = sameNum[0] || props[0];
+              if (picked?.property_id) {
+                const home = await this.fetchDetailById(picked.property_id);
+                if (home) return this.adaptHomeToProperty(home);
+              }
+            }
+          }
         }
+      }
+      // Fallback to legacy autocomplete if v2 fails or no address entry
+      const v1 = `https://realty-in-us.p.rapidapi.com/locations/auto-complete?input=${encodeURIComponent(address)}`;
+      resp = await loggedFetch(v1, { method: 'GET' });
+      if (!resp.ok) return null;
+      const data1 = await resp.json();
+      const suggestions: any[] = data1?.autocomplete?.terms || data1?.data || data1?.suggestions || [];
+      if (!Array.isArray(suggestions) || !suggestions.length) return null;
+      const best = suggestions.find((s: any) => s?.property_id || s?.propertyId) || suggestions[0];
+      const pid = best?.property_id || best?.propertyId || null;
+      if (pid) {
+        const home = await this.fetchDetailById(pid);
+        if (home) return this.adaptHomeToProperty(home);
       }
       return null;
     } catch {
