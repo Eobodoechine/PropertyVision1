@@ -1,5 +1,12 @@
 import { load as loadCheerio } from 'cheerio';
 
+const WEB_DEBUG = (process.env.DEBUG_WEB || '').toString().trim() !== ''
+  && (process.env.DEBUG_WEB || '0') !== '0'
+  && (process.env.DEBUG_WEB || '').toLowerCase() !== 'false';
+function dlog(...args: any[]) {
+  if (WEB_DEBUG) console.log('[WEB:extractors]', ...args);
+}
+
 export type ExtractedDetails = {
   beds?: number | null;
   baths?: number | null; // allow .5
@@ -112,10 +119,11 @@ export function mergeDetails(items: ExtractedDetails[]): ExtractedDetails | null
     votes.forEach(({ val, weight }) => counts.set(val, (counts.get(val) || 0) + weight));
     let best: any = votes[0].val; let bestW = 0;
     counts.forEach((w, v) => { if (w > bestW) { bestW = w; best = v; } });
+    try { dlog('Vote tally', { field: selector.toString(), votes, best, weight: bestW }); } catch {}
     return best;
   };
 
-  return {
+  const merged = {
     beds: pick(x => x.beds),
     baths: pick(x => x.baths),
     sqft: pick(x => x.sqft, { filter: plausibleSqft }),
@@ -123,6 +131,8 @@ export function mergeDetails(items: ExtractedDetails[]): ExtractedDetails | null
     type: pick(x => x.type),
     source: items[0].source,
   };
+  try { dlog('Merged from items', items, '=>', merged); } catch {}
+  return merged;
 }
 
 // Host-specific parsers

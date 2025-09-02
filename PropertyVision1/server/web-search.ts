@@ -5,6 +5,13 @@
 import { load as loadCheerio } from 'cheerio';
 import { extractFromPage, mergeDetails } from './providers/extractors';
 
+const WEB_DEBUG = (process.env.DEBUG_WEB || '').toString().trim() !== ''
+  && (process.env.DEBUG_WEB || '0') !== '0'
+  && (process.env.DEBUG_WEB || '').toLowerCase() !== 'false';
+function dlog(...args: any[]) {
+  if (WEB_DEBUG) console.log('[WEB]', ...args);
+}
+
 export type WebSearchSubject = {
   beds?: number | null;
   baths?: number | null;
@@ -26,6 +33,7 @@ async function tavilySearch(query: string, maxResults = 5): Promise<TavilyResult
   if (!apiKey) return [];
 
   try {
+    dlog('Tavily search query:', query);
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
       headers: {
@@ -47,9 +55,11 @@ async function tavilySearch(query: string, maxResults = 5): Promise<TavilyResult
     if (!res.ok) return [];
     const data: any = await res.json();
     const results: any[] = data?.results || data?.data || [];
-    return results
+    const mapped = results
       .map((r: any) => ({ url: r.url || r.link || '', title: r.title, content: r.content }))
       .filter((r: any) => typeof r.url === 'string' && r.url.startsWith('http'));
+    dlog('Tavily results:', mapped.map(r => r.url));
+    return mapped;
   } catch {
     return [];
   }
@@ -109,6 +119,7 @@ async function fetchAndExtract(url: string): Promise<WebSearchSubject> {
     // Try structured extraction first (schema/heuristics/host-specific)
     const details = await extractFromPage(url, html);
     if (details && (details.sqft || details.beds || details.baths || details.yearBuilt)) {
+      dlog('Structured extraction success for', url, '->', details);
       return {
         beds: details.beds ?? undefined,
         baths: details.baths ?? undefined,
@@ -120,6 +131,7 @@ async function fetchAndExtract(url: string): Promise<WebSearchSubject> {
       };
     }
     // Fallback: crude text scrape
+    dlog('Structured extraction failed for', url, '- falling back to text extraction');
     const $ = loadCheerio(html);
     const text = $('body').text() || '';
     return extractFromText(text);
@@ -150,7 +162,9 @@ export async function webSearchForPropertyDetails(address: string): Promise<WebS
     });
 
     const collected: any[] = [];
-    for (const r of sorted) {
+    for (let i = 0; i < sorted.length; i++) {
+      const r = sorted[i];
+      try { dlog(`Fetching [${i+1}/${sorted.length}]`, r.url); } catch {}
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
       try {
@@ -165,14 +179,20 @@ export async function webSearchForPropertyDetails(address: string): Promise<WebS
         if (!res.ok) continue;
         const html = await res.text();
         const details = await extractFromPage(r.url, html);
-        if (details) collected.push(details);
+        if (details) {
+          collected.push(details);
+          try { dlog('Extracted from', r.url, ':', details); } catch {}
+        } else {
+          try { dlog('No details extracted from', r.url); } catch {}
+        }
         if (collected.length >= 5) break;
       } catch { clearTimeout(timeout); }
     }
 
+    try { dlog('Collected details:', collected); } catch {}
     const merged = mergeDetails(collected);
     if (!merged) return null;
-    return {
+    const result = {
       beds: merged.beds ?? null,
       baths: merged.baths ?? null,
       sqft: merged.sqft ?? null,
@@ -181,6 +201,8 @@ export async function webSearchForPropertyDetails(address: string): Promise<WebS
       sub_type: null,
       photos: null,
     };
+    try { dlog('Merged details:', result); } catch {}
+    return result;
   } catch (e) {
     console.log(`❌ Web search provider error: ${e}`);
     return null;
