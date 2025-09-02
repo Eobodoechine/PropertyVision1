@@ -1,9 +1,12 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Centralized, file-backed error logger.
 // Writes to server/logs/errors.log so you can commit and push.
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const logDir = path.resolve(__dirname, '..', 'logs');
 const logFile = path.join(logDir, 'errors.log');
 
