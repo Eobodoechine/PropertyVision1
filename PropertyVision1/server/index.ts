@@ -1,12 +1,15 @@
 // Robust Express entry (TypeScript / ESM via tsx)
 import 'dotenv/config';
-import express, { Router } from 'express';
+import express, { Router, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { setupVite, serveStatic, log } from './vite';
 import { addLog, getLast, clearLogs } from './utils/devLog';
+import { setupGlobalErrorLogging, logError } from './utils/errorFileLogger';
 
 const app = express();
+// Attach global error logging (uncaught/unhandled + console.error mirroring)
+setupGlobalErrorLogging();
 app.set('trust proxy', 1);
 const CORS_ORIGIN = process.env.CORS_ORIGIN;
 if (CORS_ORIGIN && CORS_ORIGIN.trim().length > 0) {
@@ -34,6 +37,14 @@ if ((process.env.NODE_ENV || 'development') === 'development') {
     next();
   });
 }
+
+// Error logging middleware to capture route/middleware errors
+app.use((err: any, req: Request, _res: Response, next: NextFunction) => {
+  try {
+    logError(err, { path: req.path, method: req.method });
+  } catch {}
+  next(err);
+});
 
 // Import routes with flexible shapes (default export, named {router}, or directly a Router)
 let mounted = false;
