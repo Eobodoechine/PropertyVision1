@@ -34,6 +34,11 @@ export class MemStorage implements IStorage {
     // No storage - fresh analysis every time
   }
 
+  private isPlausibleSqft(n: any): boolean {
+    const v = Number(n);
+    return Number.isFinite(v) && v >= 600 && v <= 10000;
+  }
+
   async getPropertyAnalysis(id: string): Promise<PropertyAnalysis | undefined> {
     // No storage - always return undefined
     return undefined;
@@ -211,9 +216,21 @@ export class MemStorage implements IStorage {
             finalYearBuilt = researchedData.yearBuilt;
             console.log(`✅ WEB RESEARCH SUCCESS: Found year built ${finalYearBuilt}`);
           }
-          if (researchedData.sqft) {
-            finalSubjectSqft = researchedData.sqft;
-            console.log(`✅ WEB RESEARCH SUCCESS: Found square feet ${finalSubjectSqft} (overriding MLS data: ${subjectSqft})`);
+          if (typeof researchedData.sqft === 'number' && this.isPlausibleSqft(researchedData.sqft)) {
+            if (!subjectSqft || !this.isPlausibleSqft(subjectSqft)) {
+              finalSubjectSqft = researchedData.sqft;
+              console.log(`✅ WEB RESEARCH SUCCESS: Using researched sqft ${finalSubjectSqft} (MLS missing/implausible: ${subjectSqft ?? 'N/A'})`);
+            } else {
+              const diff = Math.abs(researchedData.sqft - subjectSqft) / subjectSqft;
+              if (diff <= 0.3) {
+                finalSubjectSqft = researchedData.sqft;
+                console.log(`✅ WEB RESEARCH SUCCESS: Overriding MLS sqft ${subjectSqft} with ${finalSubjectSqft} (within 30% difference)`);
+              } else {
+                console.log(`ℹ️ Keeping MLS sqft ${subjectSqft}; researched ${researchedData.sqft} differs by ${(diff*100).toFixed(1)}%`);
+              }
+            }
+          } else if (researchedData?.sqft != null) {
+            console.log(`ℹ️ Ignoring researched sqft ${researchedData.sqft} as implausible`);
           }
         } else {
           console.log(`❌ WEB RESEARCH FAILED: Missing data for ${missingData.join(', ')} - using fallback values`);
@@ -684,28 +701,49 @@ export class MemStorage implements IStorage {
           }
         }
 
-        // Extract square footage with comprehensive pattern matching including comma support
-        const sqftPatterns = [
-          /([\d,]{1,6})\s*sq\s*ft/i,        // "1,516 sq ft" format - handles commas
-          /([\d,]{1,6})\s*(?:sq|square)\s*(?:ft|feet|foot)/i,
-          /([\d,]{1,6})\s*sqft/i,
-          /square\s*feet[\s:]*(\d{1,5})/i,
-          /([\d,]{1,6})\s+square/i,
-          /([\d,]{1,6})\s+square\s+feet/i,  // "1,953 square feet" format
-          /living\s+area[:\s]*([\d,]{1,6})/i, // "living area: 1,516" format
-          /square\s+feet[:\s]*([\d,]{1,6})/i  // "square feet: 1,516" format
+        // Extract square footage: collect all candidates and pick the most plausible
+        const labelledSqftPatterns = [
+          /living\s+area[:\s]*([\d,]{3,6})/ig,
+          /square\s+feet[:\s]*([\d,]{3,6})/ig
+        ];
+        const genericSqftPatterns = [
+          /([\d,]{3,6})\s*sq\s*ft/ig,
+          /([\d,]{3,6})\s*(?:sq|square)\s*(?:ft|feet|foot)/ig,
+          /([\d,]{3,6})\s*sqft/ig,
+          /square\s*feet[\s:]*(\d{3,6})/ig,
+          /([\d,]{3,6})\s+square/ig,
+          /([\d,]{3,6})\s+square\s+feet/ig
         ];
 
-        for (const pattern of sqftPatterns) {
-          const sqftMatch = searchText.match(pattern);
-          if (sqftMatch) {
-            const sqft = parseInt(sqftMatch[1].replace(/,/g, ''));
-            if (sqft >= 300 && sqft <= 15000) {
-              data.sqft = sqft;
-              console.log(`🌐 EXTRACTED SQUARE FEET: ${data.sqft}`);
-              break;
+        const collectMatches = (patterns: RegExp[]): number[] => {
+          const out: number[] = [];
+          for (const base of patterns) {
+            const re = new RegExp(base.source, base.flags.includes('g') ? base.flags : base.flags + 'g');
+            let m: RegExpExecArray | null;
+            while ((m = re.exec(searchText)) !== null) {
+              const n = parseInt((m[1] || '').replace(/,/g, ''));
+              if (Number.isFinite(n)) out.push(n);
             }
           }
+          return out;
+        };
+
+        const plausible = (n: number) => n >= 600 && n <= 10000;
+        const labelledCandidates = collectMatches(labelledSqftPatterns).filter(plausible);
+        const genericCandidates = collectMatches(genericSqftPatterns).filter(plausible);
+
+        let chosenSqft: number | undefined;
+        if (labelledCandidates.length) {
+          // Prefer the largest labelled value (avoids small room/garage figures)
+          chosenSqft = Math.max(...labelledCandidates);
+        } else if (genericCandidates.length) {
+          // Fall back to the largest plausible generic value
+          chosenSqft = Math.max(...genericCandidates);
+        }
+
+        if (chosenSqft) {
+          data.sqft = chosenSqft;
+          console.log(`🌐 EXTRACTED SQUARE FEET (robust): ${data.sqft}`);
         }
 
         // Extract bedrooms with comprehensive pattern matching
@@ -1515,7 +1553,8 @@ export class MemStorage implements IStorage {
     const apiKey = process.env.RAPIDAPI_KEY!;
 
     // FINAL BUG FIX: Force correct square footage calculation for 851 Hedge Garden Ct
-    let finalSqftForCalculation = updatedSubjectSqft;
+    // Guard against implausible researched sqft
+    let finalSqftForCalculation = this.isPlausibleSqft(updatedSubjectSqft) ? updatedSubjectSqft : NaN as unknown as number;
 
 
 
