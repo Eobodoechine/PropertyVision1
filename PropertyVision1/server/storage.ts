@@ -1036,6 +1036,9 @@ export class MemStorage implements IStorage {
     const searchData = await searchResponse.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
 
+    // Apply 6-month sales cutoff for null-value search (local scope)
+    const salesFilterDate = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
+
     console.log(`\n📊 RAW API RESPONSE:`);
     console.log(`   • Total properties returned: ${foundProperties.length}`);
 
