@@ -1470,25 +1470,43 @@ export class MemStorage implements IStorage {
     };
 
     // Determine property types to search for based on authentic property type
+    // Normalize to lowercase when provided; do not default to a specific type
+    const detectedType = (typeof updatedPropertyType === 'string' ? updatedPropertyType : '').toLowerCase();
+
+    // If type is ambiguous, try refining via web research
+    let effectiveType = detectedType;
+    if (!effectiveType || effectiveType === 'unknown' || effectiveType === 'other') {
+      try {
+        const researched = await this.researchPropertyData(normalizedAddress);
+        if (researched && researched.propertyType) {
+          effectiveType = researched.propertyType.toLowerCase();
+          console.log(`   • Type refined via web research: "${effectiveType}"`);
+        }
+      } catch {
+        // ignore research failures
+      }
+    }
+
     console.log(`🔍 PROPERTY TYPE MAPPING (Researched Data):`);
-    console.log(`   • Detected property type: "${updatedPropertyType}"`);
+    console.log(`   • Detected property type: "${effectiveType}"`);
 
     let propertyTypes: string[];
-    if (updatedPropertyType === 'duplex' || updatedPropertyType === 'multi_family') {
+    if (effectiveType === 'duplex' || effectiveType === 'multi_family') {
       propertyTypes = ['multi_family'];
       console.log(`   • Mapped to: multi_family (duplex/multi-family)`);
-    } else if (updatedPropertyType === 'townhome' || updatedPropertyType === 'townhomes') {
+    } else if (effectiveType === 'townhome' || effectiveType === 'townhomes') {
       propertyTypes = ['townhomes'];
       console.log(`   • Mapped to: townhomes`);
-    } else if (updatedPropertyType === 'condo' || updatedPropertyType === 'condos') {
+    } else if (effectiveType === 'condo' || effectiveType === 'condos') {
       propertyTypes = ['condos'];
       console.log(`   • Mapped to: condos`);
-    } else if (updatedPropertyType === 'single_family' || updatedPropertyType === 'single family') {
+    } else if (effectiveType === 'single_family' || effectiveType === 'single family') {
       propertyTypes = ['single_family'];
       console.log(`   • Mapped to: single_family`);
     } else {
-      propertyTypes = ['multi_family'];
-      console.log(`   • Unknown type "${updatedPropertyType}" - defaulting to: multi_family`);
+      // If we cannot determine the type, search across common residential types instead of only multi_family
+      propertyTypes = ['single_family', 'townhomes', 'condos', 'multi_family'];
+      console.log(`   • Unknown type "${effectiveType}" - searching across: ${JSON.stringify(propertyTypes)}`);
     }
 
     // Use the existing RapidAPI search to find real comparables
@@ -1501,8 +1519,28 @@ export class MemStorage implements IStorage {
 
 
 
-    const minSqft = Math.round(finalSqftForCalculation * 0.8);
-    const maxSqft = Math.round(finalSqftForCalculation * 1.2);
+    // Adapt size filters if subject sqft looks implausibly small/large from web fallback
+    let minSqft: number;
+    let maxSqft: number;
+    if (!Number.isFinite(finalSqftForCalculation) || finalSqftForCalculation <= 0) {
+      // No sqft: use a broad residential band
+      minSqft = 700;
+      maxSqft = 3000;
+      console.log(`   • No subject sqft available. Using broad size range ${minSqft}-${maxSqft} sqft`);
+    } else if (finalSqftForCalculation < 600) {
+      // Likely parsing artifact (e.g., 401 instead of 1401/2401). Relax filters to capture realistic comps.
+      minSqft = Math.max(400, Math.round(finalSqftForCalculation * 0.5));
+      maxSqft = Math.max(1200, Math.round(finalSqftForCalculation * 2.0));
+      console.log(`   • Subject sqft (${finalSqftForCalculation}) suspiciously low. Using relaxed size range ${minSqft}-${maxSqft} sqft`);
+    } else if (finalSqftForCalculation > 6000) {
+      // Unusually large; widen generously but keep upper bound reasonable
+      minSqft = Math.round(finalSqftForCalculation * 0.6);
+      maxSqft = Math.round(finalSqftForCalculation * 1.4);
+      console.log(`   • Subject sqft (${finalSqftForCalculation}) unusually high. Using adjusted size range ${minSqft}-${maxSqft} sqft`);
+    } else {
+      minSqft = Math.round(finalSqftForCalculation * 0.8);
+      maxSqft = Math.round(finalSqftForCalculation * 1.2);
+    }
 
     let validComps = await this.searchWithFilters(
       centerLat, 
@@ -1606,7 +1644,8 @@ export class MemStorage implements IStorage {
       }
 
       if (validComps.length < 3) {
-        throw new Error(`No sufficient comparable ${updatedPropertyType} properties found after relaxation. Consider expanding criteria or checking data availability.`);
+        const typeLabel = effectiveType || 'unknown';
+        throw new Error(`No sufficient comparable ${typeLabel} properties found after relaxation. Consider expanding criteria or checking data availability.`);
       }
     }
 
