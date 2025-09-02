@@ -108,6 +108,36 @@ export class MemStorage implements IStorage {
       const centerLon = coords.lon;
       console.log(`✅ Coordinates found: ${centerLat}, ${centerLon}`);
 
+      // WEB_ONLY mode: use web search exclusively for subject details
+      if ((process.env.WEB_ONLY || '').toString().trim() !== ''
+          && (process.env.WEB_ONLY || '0') !== '0'
+          && (process.env.WEB_ONLY || '').toLowerCase() !== 'false') {
+        console.log('🧪 WEB_ONLY enabled: using web search for subject details');
+        const details = await webSearch.forPropertyDetails(normalizedAddress);
+        if (!details) {
+          throw new Error('Web search did not return property details');
+        }
+        const webSqft = details.sqft ?? null;
+        const webYear = details.yearBuilt ?? null;
+        const webBeds = (details.beds as any) ?? null;
+        const webBaths = (details.baths as any) ?? null;
+        const webType = (details.type as any) ?? '';
+        console.log(`🧪 WEB_ONLY DETAILS: sqft=${webSqft}, yearBuilt=${webYear}, beds=${webBeds}, baths=${webBaths}, type=${webType}`);
+        if (!this.isPlausibleSqft(webSqft)) {
+          throw new Error('Square footage not available from web search; unable to compute ARV in WEB_ONLY mode.');
+        }
+        return await this.continueAnalysisWithResearchedData(
+          normalizedAddress,
+          centerLat,
+          centerLon,
+          webSqft as number,
+          webYear as number | null,
+          webBeds as number,
+          webBaths as number,
+          (typeof webType === 'string' ? webType : '')
+        );
+      }
+
       // STEP 2: Find subject property with small boundary search  
       console.log('Step 2: Getting subject property details...');
       const subjectProperty = await this.findSubjectProperty(normalizedAddress, centerLat, centerLon, apiKey);
