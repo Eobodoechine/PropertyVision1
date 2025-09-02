@@ -4,7 +4,7 @@ const WEB_DEBUG = (process.env.DEBUG_WEB || '').toString().trim() !== ''
   && (process.env.DEBUG_WEB || '0') !== '0'
   && (process.env.DEBUG_WEB || '').toLowerCase() !== 'false';
 function dlog(...args: any[]) {
-  if (WEB_DEBUG) console.log('[WEB:extractors]', ...args);
+  if (WEB_DEBUG) console.error('[WEB:extractors]', ...args);
 }
 
 export type ExtractedDetails = {
