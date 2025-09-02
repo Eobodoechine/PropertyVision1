@@ -1037,7 +1037,7 @@ export class MemStorage implements IStorage {
     const foundProperties = searchData?.data?.home_search?.results || [];
 
     // Apply 6-month sales cutoff for null-value search (local scope)
-    const salesFilterDate = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
+    const nvSalesCutoff = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
 
     console.log(`\n📊 RAW API RESPONSE:`);
     console.log(`   • Total properties returned: ${foundProperties.length}`);
@@ -1194,7 +1194,7 @@ export class MemStorage implements IStorage {
       const hasMissingYear = !yearBuilt;
 
       // MANDATORY: Apply 6-month sales restriction as required by user
-      if ((hasMissingSqft || hasMissingYear) && price && price > 10000 && soldDate && soldDate >= salesFilterDate) {
+      if ((hasMissingSqft || hasMissingYear) && price && price > 10000 && soldDate && soldDate >= nvSalesCutoff) {
         nullValueProps.push({
           address,
           sqft: sqft || null,
