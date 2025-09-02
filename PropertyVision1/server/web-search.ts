@@ -93,12 +93,33 @@ function extractFromText(text: string) {
 
 async function fetchAndExtract(url: string): Promise<WebSearchSubject> {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache',
+  } as any;
   try {
-    const res = await fetch(url, { signal: controller.signal } as any);
+    const res = await fetch(url, { signal: controller.signal, headers } as any);
     clearTimeout(timeout);
     if (!res.ok) return {};
     const html = await res.text();
+    // Try structured extraction first (schema/heuristics/host-specific)
+    const details = await extractFromPage(url, html);
+    if (details && (details.sqft || details.beds || details.baths || details.yearBuilt)) {
+      return {
+        beds: details.beds ?? undefined,
+        baths: details.baths ?? undefined,
+        sqft: details.sqft ?? undefined,
+        yearBuilt: details.yearBuilt ?? undefined,
+        type: details.type ?? undefined,
+        sub_type: null,
+        photos: null,
+      };
+    }
+    // Fallback: crude text scrape
     const $ = loadCheerio(html);
     const text = $('body').text() || '';
     return extractFromText(text);
@@ -131,9 +152,15 @@ export async function webSearchForPropertyDetails(address: string): Promise<WebS
     const collected: any[] = [];
     for (const r of sorted) {
       const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 12000);
+      const timeout = setTimeout(() => controller.abort(), 15000);
       try {
-        const res = await fetch(r.url, { signal: controller.signal } as any);
+        const res = await fetch(r.url, { signal: controller.signal, headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+          'Accept-Language': 'en-US,en;q=0.9',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache',
+        }} as any);
         clearTimeout(timeout);
         if (!res.ok) continue;
         const html = await res.text();

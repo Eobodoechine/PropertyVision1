@@ -125,9 +125,73 @@ export function mergeDetails(items: ExtractedDetails[]): ExtractedDetails | null
   };
 }
 
+// Host-specific parsers
+function parseZillow(html: string, hostname: string): ExtractedDetails | null {
+  try {
+    const lower = html.toLowerCase();
+    // Common keys observed on Zillow pages
+    const livingArea = /"livingarea"\s*:\s*(\d{3,5})/i.exec(lower);
+    const sqft1 = /"finishedsqfttotal"\s*:\s*(\d{3,5})/i.exec(lower);
+    const sqft2 = /"area"\s*:\s*(\d{3,5})/i.exec(lower);
+    let sqft: number | null = null;
+    if (livingArea) sqft = Number(livingArea[1]);
+    else if (sqft1) sqft = Number(sqft1[1]);
+    else if (sqft2) sqft = Number(sqft2[1]);
+    if (sqft && sqft >= 600 && sqft <= 10000) {
+      return { sqft, source: hostname };
+    }
+  } catch {}
+  return null;
+}
+
+function parseRedfin(html: string, hostname: string): ExtractedDetails | null {
+  try {
+    const lower = html.toLowerCase();
+    // Redfin often exposes __REDUX_STATE__ with squareFeet
+    const m = /"squarefeet"\s*:\s*(\d{3,5})/i.exec(lower);
+    if (m) {
+      const sqft = Number(m[1]);
+      if (sqft >= 600 && sqft <= 10000) return { sqft, source: hostname };
+    }
+  } catch {}
+  return null;
+}
+
+function parseRealtor(html: string, hostname: string): ExtractedDetails | null {
+  try {
+    const lower = html.toLowerCase();
+    // Realtor typically includes JSON-LD floorSize.value or plain text 'sq ft'
+    const ldVal = /"floorsize"\s*:\s*\{[^}]*"value"\s*:\s*(\d{3,5})/i.exec(lower);
+    if (ldVal) {
+      const sqft = Number(ldVal[1]);
+      if (sqft >= 600 && sqft <= 10000) return { sqft, source: hostname };
+    }
+    const txt = /(?:\b|\D)(\d{3,5})\s*(?:sq\.?\s*ft|square\s*feet)\b/i.exec(lower);
+    if (txt) {
+      const sqft = Number(txt[1]);
+      if (sqft >= 600 && sqft <= 10000) return { sqft, source: hostname };
+    }
+  } catch {}
+  return null;
+}
+
 export async function extractFromPage(url: string, html: string): Promise<ExtractedDetails | null> {
   try {
     const hostname = new URL(url).hostname.replace(/^www\./, '');
+    // 0) site-specific fast paths
+    if (hostname.endsWith('zillow.com')) {
+      const z = parseZillow(html, hostname);
+      if (z) return z;
+    }
+    if (hostname.endsWith('redfin.com')) {
+      const r = parseRedfin(html, hostname);
+      if (r) return r;
+    }
+    if (hostname.endsWith('realtor.com')) {
+      const rl = parseRealtor(html, hostname);
+      if (rl) return rl;
+    }
+
     // 1) schema.org JSON-LD
     const schema = extractSchemaOrg(html, hostname);
     if (schema) return schema;
