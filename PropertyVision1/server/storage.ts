@@ -595,22 +595,49 @@ export class MemStorage implements IStorage {
     console.log(`🏠 FOUND ${properties.length} properties in search area`);
 
     // Extract house number and street from the input address for better matching
-    const addressParts = address.toLowerCase().replace(/[^\w\s]/g, '').split(' ');
-    const houseNumber = addressParts[0];
-    const streetName = addressParts.slice(1).join(' ').replace(/,.*$/, ''); // Remove city/state
+    const addressOnly = address.split(',')[0] || address; // take street part before first comma
+    const normStreet = addressOnly.toLowerCase().replace(/[^\w\s]/g, '').trim();
+    const tokens = normStreet.split(/\s+/);
+    const houseNumber = tokens[0] || '';
+    const streetName = tokens.slice(1).join(' ');
 
     console.log(`🏠 LOOKING FOR: House #${houseNumber} on ${streetName}`);
 
-    // Find exact match by address
-    for (const property of properties) {
-      const propertyAddress = property.location?.address?.line?.toLowerCase().replace(/[^\w\s]/g, '') || '';
-
-      // Check if both house number and street name match
-      if (propertyAddress.includes(houseNumber) && propertyAddress.includes(streetName)) {
-        console.log(`✅ EXACT MATCH FOUND: ${property.location?.address?.line}`);
-        console.log(`🏠 Property Details: ${property.description?.beds || 'N/A'} bed, ${property.description?.baths || 'N/A'} bath, ${property.description?.sqft || 'N/A'} sqft`);
-        return property;
+    // Prefer exact house number and shortest distance to geocode point
+    const withDistances = properties.map((p: any) => {
+      const plat = p.location?.address?.coordinate?.lat;
+      const plon = p.location?.address?.coordinate?.lon;
+      let dist = Number.POSITIVE_INFINITY;
+      if (typeof plat === 'number' && typeof plon === 'number') {
+        const dlat = (plat - centerLat) * Math.PI / 180;
+        const dlon = (plon - centerLon) * Math.PI / 180;
+        const a = Math.sin(dlat/2)**2 + Math.cos(centerLat*Math.PI/180)*Math.cos(plat*Math.PI/180)*Math.sin(dlon/2)**2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const R = 3958.8; // miles
+        dist = R * c;
       }
+      const line = (p.location?.address?.line || '').toLowerCase().replace(/[^\w\s]/g, ' ').trim();
+      const pTokens = line.split(/\s+/);
+      const pNum = pTokens[0] || '';
+      const sameNumber = pNum === houseNumber;
+      return { p, dist, sameNumber, line };
+    });
+
+    const candidates = withDistances
+      .filter(x => x.sameNumber)
+      .sort((a, b) => a.dist - b.dist);
+
+    if (candidates.length && candidates[0].dist <= 0.5) { // within ~0.5 miles
+      const hit = candidates[0].p;
+      console.log(`✅ SUBJECT VIA NUMBER+DIST: ${hit.location?.address?.line} (${candidates[0].dist.toFixed(2)} mi)`);
+      // If sqft missing, try detail lookup
+      if (!hit.description?.sqft && hit.property_id) {
+        const detailed = await this.fetchDetailById(hit.property_id);
+        if (detailed?.description?.sqft) {
+          hit.description.sqft = detailed.description.sqft;
+        }
+      }
+      return hit;
     }
 
     console.log(`⚠️ EXACT MATCH NOT FOUND, showing nearby properties:`);
@@ -618,8 +645,114 @@ export class MemStorage implements IStorage {
       console.log(`${i+1}. ${prop.location?.address?.line || 'Unknown'}`);
     });
 
-    // If exact match not found, return null instead of wrong property
+    // If not found, try autocomplete -> detail fallback
+    const fallback = await this.findByAutocomplete(address);
+    if (fallback) {
+      console.log(`✅ SUBJECT VIA AUTOCOMPLETE: ${fallback.location?.address?.line}`);
+      return fallback;
+    }
+
+    // If still not found, return null instead of wrong property
     return null;
+  }
+
+  private async fetchDetailById(propertyId: string): Promise<any | null> {
+    try {
+      const resp = await loggedFetch(`https://realty-in-us.p.rapidapi.com/properties/v3/detail?property_id=${encodeURIComponent(propertyId)}`, {
+        method: 'GET'
+      });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      const home = data?.data?.home;
+      if (!home) return null;
+      return home;
+    } catch {
+      return null;
+    }
+  }
+
+  private async findByAutocomplete(address: string): Promise<any | null> {
+    try {
+      const url = `https://realty-in-us.p.rapidapi.com/locations/auto-complete?input=${encodeURIComponent(address)}`;
+      const resp = await loggedFetch(url, { method: 'GET' });
+      if (!resp.ok) return null;
+      const data = await resp.json();
+      const suggestions: any[] = data?.autocomplete?.terms || data?.data || data?.suggestions || [];
+      // Fallback: some responses shape differently; try a few keys
+      const pick = (arr: any[]): any | null => {
+        for (const s of arr) {
+          const line = (s?.line || s?.address || s?.value || s?.label || '').toString();
+          const pid = s?.property_id || s?.propertyId || s?.id;
+          if (pid && line) return s;
+          if (pid) return s;
+        }
+        return arr[0] || null;
+      };
+      const best = Array.isArray(suggestions) ? pick(suggestions) : null;
+      if (!best) return null;
+      const propertyId = best?.property_id || best?.propertyId || null;
+      if (propertyId) {
+        const home = await this.fetchDetailById(propertyId);
+        if (!home) return null;
+        return this.adaptHomeToProperty(home);
+      }
+      // If no id, but coordinates are provided, do a tiny-radius search then pick same number
+      const lat = best?.lat || best?.coordinate?.lat;
+      const lon = best?.lon || best?.coordinate?.lon;
+      if (typeof lat === 'number' && typeof lon === 'number') {
+        const smallBoundarySize = 0.0015;
+        const searchBoundary = [
+          [lon - smallBoundarySize, lat - smallBoundarySize],
+          [lon + smallBoundarySize, lat - smallBoundarySize],
+          [lon + smallBoundarySize, lat + smallBoundarySize],
+          [lon - smallBoundarySize, lat + smallBoundarySize],
+          [lon - smallBoundarySize, lat - smallBoundarySize]
+        ];
+        const searchResp = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+          method: 'POST',
+          body: JSON.stringify({ limit: 50, offset: 0, boundary: { coordinates: [searchBoundary] }, status: ["for_sale","sold","off_market"], type: ["single_family","townhome","condo"] })
+        });
+        if (searchResp.ok) {
+          const sd = await searchResp.json();
+          const props = sd?.data?.home_search?.results || [];
+          const houseNum = (address.split(',')[0] || address).trim().split(/\s+/)[0];
+          const sameNum = props.filter((p: any) => String(p.location?.address?.line || '').trim().startsWith(houseNum + ' '));
+          const picked = sameNum[0] || props[0];
+          if (picked?.property_id) {
+            const home = await this.fetchDetailById(picked.property_id);
+            if (home) return this.adaptHomeToProperty(home);
+          }
+        }
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  private adaptHomeToProperty(home: any): any {
+    return {
+      property_id: home?.property_id,
+      listing_id: home?.listing_id,
+      description: {
+        beds: home?.description?.beds ?? null,
+        baths: home?.description?.baths ?? null,
+        sqft: home?.description?.sqft ?? null,
+        type: home?.description?.type ?? null,
+        year_built: home?.description?.year_built ?? null,
+      },
+      location: {
+        address: {
+          line: home?.location?.address?.line ?? null,
+          coordinate: {
+            lat: home?.location?.address?.coordinate?.lat ?? null,
+            lon: home?.location?.address?.coordinate?.lon ?? null,
+          }
+        }
+      },
+      last_sold_price: home?.last_sold_price ?? null,
+      last_sold_date: home?.last_sold_date ?? null,
+    };
   }
 
   private async researchPropertyData(address: string): Promise<{yearBuilt?: number, sqft?: number, beds?: number, baths?: number, propertyType?: string} | null> {
