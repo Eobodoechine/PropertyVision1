@@ -54,3 +54,7 @@ outputType = "webview"
 
 [agent]
 expertMode = true
+
+[env]
+WEB_ONLY = "1"
+DEBUG_WEB = "1"
