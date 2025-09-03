@@ -367,11 +367,35 @@ export class MemStorage implements IStorage {
       console.log(`- Property type: ${finalPropertyType} → Search types: ${propertyTypeFilter.join(', ')}`);
       console.log(`- Strategy: Filter first, then null-value search if insufficient`);
 
+      // Determine early whether dual ARV is needed (subject baths < 2)
+      const subjBathsConsolRaw = (subjectProperty?.description as any)?.baths_consolidated;
+      const subjBathsConsol = typeof subjBathsConsolRaw === 'string' ? parseFloat(subjBathsConsolRaw) : (typeof subjBathsConsolRaw === 'number' ? subjBathsConsolRaw : NaN);
+      const subjBathsComputed = computeBaths(subjectProperty.description);
+      const subjBathsNumeric = Number.isFinite(subjBathsConsol) ? subjBathsConsol : (Number.isFinite(subjBathsComputed as any) ? (subjBathsComputed as number) : Number(subjectProperty?.description?.baths) || 0);
+      const dualNeeded = subjBathsNumeric < 2 - 1e-9;
+      console.log(`🚿 EARLY BATH DECISION: subject baths=${subjBathsNumeric} → dual ARV ${dualNeeded ? 'NEEDED' : 'NOT needed'}`);
+
       // ENHANCED CONDITIONAL SEARCH WITH RADIUS EXPANSION
       let radius = 1;
       const maxRadius = 5;
       let finalValidComps: any[] = [];
       let finalResearchCandidates: any[] = [];
+      // Track targets to ensure enough comps for baseline (and two-bath if dual)
+      const baselineTarget = 5;
+      const twoBathTarget = dualNeeded ? 5 : 0;
+      const epsilon = 1e-9;
+
+      const isBaselineEligible = (comp: any): boolean => {
+        const b = parseFloat(comp?.baths?.toString() || 'NaN');
+        if (!Number.isFinite(b)) return false;
+        if (b > subjBathsNumeric + epsilon) return false;
+        if (subjBathsNumeric < 2 - epsilon && b >= 2 - epsilon) return false;
+        return true;
+      };
+      const isTwoBathEligible = (comp: any): boolean => {
+        const b = parseFloat(comp?.baths?.toString() || 'NaN');
+        return Number.isFinite(b) && b >= 1.75 && b <= 2.5;
+      };
 
       console.log(`Starting step-by-step enhanced conditional search methodology...`);
 
@@ -526,23 +550,29 @@ export class MemStorage implements IStorage {
           console.log(`   ${i+1}. ${comp.address} - Year: ${comp.yearBuilt || 'null'} - Enhanced: ${comp.researched ? 'YES' : 'NO'}`);
         });
 
+        // Count category coverage
+        const baselineCount = finalValidComps.filter(isBaselineEligible).length;
+        const twoBathCount = finalValidComps.filter(isTwoBathEligible).length;
+
         console.log(`\n📊 STEP 3D RESULTS:`);
         console.log(`   • Properties after strict filtering: ${strictlyFilteredComps.length}`);
         console.log(`   • New unique properties added: ${newCompsAdded}`);
         console.log(`   • Duplicates rejected: ${strictlyFilteredComps.length - newCompsAdded}`);
         console.log(`   • Total accumulated comparables: ${finalValidComps.length} (was ${beforeCount})`);
+        console.log(`   • Baseline-eligible comps: ${baselineCount}/${baselineTarget}`);
+        if (dualNeeded) console.log(`   • Two-bath comps: ${twoBathCount}/${twoBathTarget}`);
 
         console.log(`\n🚦 DECISION POINT: Continue or Stop?`);
 
         // User preference: Stop at 1-2 miles when sufficient comparables found
-        if (finalValidComps.length >= 5) {
-          console.log(`   ✅ STOPPING: Found ${finalValidComps.length} comparables (sufficient) at ${radius} mile radius`);
+        if (baselineCount >= baselineTarget && (!dualNeeded || twoBathCount >= twoBathTarget)) {
+          console.log(`   ✅ STOPPING: Targets met (baseline=${baselineCount}/${baselineTarget}${dualNeeded ? `, two-bath=${twoBathCount}/${twoBathTarget}` : ''}) at ${radius} mile radius`);
           break;
-        } else if (finalValidComps.length >= 3 && radius >= 2) {
+        } else if (baselineCount >= 3 && radius >= 2) {
           console.log(`   ✅ STOPPING: Found ${finalValidComps.length} comparables within preferred 2-mile boundary`);
           break;
         } else if (radius >= maxRadius) {
-          console.log(`   ✅ STOPPING: Reached maximum search radius (${radius}/${maxRadius}) with ${finalValidComps.length} comparables`);
+          console.log(`   ✅ STOPPING: Reached maximum search radius (${radius}/${maxRadius}) with baseline=${baselineCount}, two-bath=${twoBathCount}`);
           break;
         } else {
           console.log(`   📈 CONTINUING: Only ${finalValidComps.length} comparables found, expanding to ${radius + 1} miles...`);
@@ -1507,9 +1537,11 @@ export class MemStorage implements IStorage {
     const lowerBound = q1 - (0.75 * iqr);
     const upperBound = q3 + (0.75 * iqr);
 
-    // Apply reasonable absolute bounds for real estate (exclude extremely low/high prices)
-    const absoluteLowerBound = Math.max(lowerBound, 120); // Exclude distressed sales under $120/sqft
-    const absoluteUpperBound = Math.min(upperBound, 300); // Exclude luxury outliers over $300/sqft
+    // Market-aware absolute bounds: preserve low-$ markets and cap luxury spikes
+    const dynamicLower = Math.max(60, Math.round(q1 * 0.7));
+    const dynamicUpper = Math.max(300, Math.round(q3 * 1.4));
+    const absoluteLowerBound = Math.max(lowerBound, dynamicLower);
+    const absoluteUpperBound = Math.min(upperBound, dynamicUpper);
 
     console.log(`📊 ARV ANALYSIS BREAKDOWN:`);
     console.log(`   • Total comparables (pre-bath filter): ${validComps.length}`);
