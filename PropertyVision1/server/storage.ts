@@ -372,8 +372,8 @@ export class MemStorage implements IStorage {
         const minYear = finalYearBuilt ? finalYearBuilt - 10 : 1980;
         const maxYear = finalYearBuilt ? finalYearBuilt + 10 : 2025;
         const sizeMatchCount = phaseOneComps.filter(comp => comp.sqft >= minSqft && comp.sqft <= maxSqft).length;
-        const yearMatchCount = phaseOneComps.filter(comp => comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear).length;
-        const perfectMatchCount = phaseOneComps.filter(comp => {
+        let yearMatchCount = phaseOneComps.filter(comp => comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear).length;
+        let perfectMatchCount = phaseOneComps.filter(comp => {
           const sizeMatch = comp.sqft >= minSqft && comp.sqft <= maxSqft;
           const yearMatch = comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear;
           return sizeMatch && yearMatch;
@@ -382,6 +382,31 @@ export class MemStorage implements IStorage {
         console.log(`   • Size matches (${minSqft}-${maxSqft} sqft): ${sizeMatchCount}`);
         console.log(`   • Year matches (${minYear}-${maxYear}): ${yearMatchCount}`);
         console.log(`   • Perfect matches (size + year): ${perfectMatchCount}`);
+
+        // Try to fill missing yearBuilt via RapidAPI detail before showing the detailed list
+        if (finalYearBuilt && perfectMatchCount < 5) {
+          const toLookup = Math.min(10, phaseOneComps.length);
+          console.log(`\n🔧 YEAR COMPLETION: Attempting detail lookups for up to ${toLookup} comps missing yearBuilt...`);
+          try {
+            const filled = await this.fillMissingYearsForComps(
+              phaseOneComps,
+              toLookup,
+              { minSqft, maxSqft, minYear, maxYear, targetPerfect: 5 }
+            );
+            if (filled > 0) {
+              // Recompute counts after filling
+              yearMatchCount = phaseOneComps.filter(comp => comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear).length;
+              perfectMatchCount = phaseOneComps.filter(comp => {
+                const sizeMatch = comp.sqft >= minSqft && comp.sqft <= maxSqft;
+                const yearMatch = comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear;
+                return sizeMatch && yearMatch;
+              }).length;
+              console.log(`   • Filled ${filled} missing yearBuilt via detail`);
+              console.log(`   • Updated year matches: ${yearMatchCount}`);
+              console.log(`   • Updated perfect matches: ${perfectMatchCount}/5`);
+            }
+          } catch {}
+        }
 
         // Show data from external sources
         if (phaseOneComps.length > 0) {
@@ -410,7 +435,9 @@ export class MemStorage implements IStorage {
 
           // PHASE 3: Research enhancement (targeted & minimal)
           const neededEnhancements = Math.max(0, 5 - perfectMatchCount);
-          if (phaseTwoComps.length > 0 && neededEnhancements > 0) {
+          // Only run Step 3C if even size matches are insufficient (<5). If size matches are already >=5,
+          // we can skip web enhancement and let the later ARV confidence check handle any remaining gaps.
+          if (phaseTwoComps.length > 0 && neededEnhancements > 0 && sizeMatchCount < 5) {
             console.log(`\n🔍 STEP 3C: Web Research Enhancement`);
             console.log(`   • Researching up to ${neededEnhancements} properties for missing data...`);
             const researchedComps = await this.researchNullValueProperties(phaseTwoComps.slice(0, neededEnhancements), minSqft, maxSqft, finalYearBuilt);
@@ -1025,7 +1052,13 @@ export class MemStorage implements IStorage {
   }
 
   // Fill missing yearBuilt for a limited number of comparables using RapidAPI detail
-  private async fillMissingYearsForComps(comps: any[], maxLookups: number = 10): Promise<void> {
+  // Returns the count of filled yearBuilt values. Optionally early-stops when enough
+  // perfect matches (size + year) are reached per the provided bounds.
+  private async fillMissingYearsForComps(
+    comps: any[],
+    maxLookups: number = 10,
+    earlyStop?: { minSqft: number; maxSqft: number; minYear: number; maxYear: number; targetPerfect: number }
+  ): Promise<number> {
     let filled = 0;
     for (const comp of comps) {
       if (filled >= maxLookups) break;
@@ -1037,10 +1070,22 @@ export class MemStorage implements IStorage {
             comp.yearBuilt = y;
             filled++;
             console.log(`🔄 FILLED year built for ${comp.address} via detail: ${y}`);
+            if (earlyStop) {
+              const perfectNow = comps.filter(c => {
+                const sizeOk = c.sqft >= earlyStop.minSqft && c.sqft <= earlyStop.maxSqft;
+                const yearOk = typeof c.yearBuilt === 'number' && c.yearBuilt >= earlyStop.minYear && c.yearBuilt <= earlyStop.maxYear;
+                return sizeOk && yearOk;
+              }).length;
+              if (perfectNow >= earlyStop.targetPerfect) {
+                console.log(`✅ EARLY STOP: Reached ${perfectNow}/${earlyStop.targetPerfect} perfect matches`);
+                break;
+              }
+            }
           }
         } catch {}
       }
     }
+    return filled;
   }
 
   private async searchWithFilters(
