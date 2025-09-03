@@ -1477,8 +1477,9 @@ export class MemStorage implements IStorage {
 
     // Calculate ARV using non-outlier comparables
     const usedPrices = pricesPerSqft.filter(item => !outlierIndices.has(item.index)).map(item => item.price);
-    const medianPricePerSqft = usedPrices.length > 0 ? 
-      usedPrices[Math.floor(usedPrices.length / 2)] : 
+    const usedPricesSorted = [...usedPrices].sort((a, b) => a - b);
+    const medianPricePerSqft = usedPricesSorted.length > 0 ? 
+      usedPricesSorted[Math.floor(usedPricesSorted.length / 2)] : 
       pricesPerSqft[Math.floor(pricesPerSqft.length / 2)].price;
 
     const arv = Math.round(medianPricePerSqft * subjectSqft);
