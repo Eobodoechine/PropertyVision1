@@ -250,10 +250,10 @@ export class MemStorage implements IStorage {
             if (!subjectSqft || !this.isPlausibleSqft(subjectSqft)) {
               finalSubjectSqft = researchedData.sqft;
               console.log(`✅ WEB RESEARCH SUCCESS: Using researched sqft ${finalSubjectSqft} (MLS missing/implausible: ${subjectSqft ?? 'N/A'})`);
-          } else {
-            // Do not override MLS sqft when MLS value is present and plausible
-            console.log(`ℹ️ Keeping MLS sqft ${subjectSqft}; ignoring researched sqft ${researchedData.sqft}`);
-          }
+            } else {
+              // Do not override MLS sqft when MLS value is present and plausible
+              console.log(`ℹ️ Keeping MLS sqft ${subjectSqft}; ignoring researched sqft ${researchedData.sqft}`);
+            }
           } else if (researchedData?.sqft != null) {
             console.log(`ℹ️ Ignoring researched sqft ${researchedData.sqft} as implausible`);
           }
