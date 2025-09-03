@@ -250,15 +250,10 @@ export class MemStorage implements IStorage {
             if (!subjectSqft || !this.isPlausibleSqft(subjectSqft)) {
               finalSubjectSqft = researchedData.sqft;
               console.log(`✅ WEB RESEARCH SUCCESS: Using researched sqft ${finalSubjectSqft} (MLS missing/implausible: ${subjectSqft ?? 'N/A'})`);
-            } else {
-              const diff = Math.abs(researchedData.sqft - subjectSqft) / subjectSqft;
-              if (diff <= 0.3) {
-                finalSubjectSqft = researchedData.sqft;
-                console.log(`✅ WEB RESEARCH SUCCESS: Overriding MLS sqft ${subjectSqft} with ${finalSubjectSqft} (within 30% difference)`);
-              } else {
-                console.log(`ℹ️ Keeping MLS sqft ${subjectSqft}; researched ${researchedData.sqft} differs by ${(diff*100).toFixed(1)}%`);
-              }
-            }
+          } else {
+            // Do not override MLS sqft when MLS value is present and plausible
+            console.log(`ℹ️ Keeping MLS sqft ${subjectSqft}; ignoring researched sqft ${researchedData.sqft}`);
+          }
           } else if (researchedData?.sqft != null) {
             console.log(`ℹ️ Ignoring researched sqft ${researchedData.sqft} as implausible`);
           }
@@ -1407,8 +1402,8 @@ export class MemStorage implements IStorage {
 
     const confidence = usedIndices.size >= 5 ? 'High' : usedIndices.size >= 3 ? 'Medium' : 'Low';
 
-    // AUTOMATED ENHANCEMENT TRIGGER: When confidence is Low or Medium, expand search automatically
-    if (confidence !== 'High' && usedIndices.size < 5) {
+    // AUTOMATED ENHANCEMENT TRIGGER: Only when insufficient comps
+    if (confidence !== 'High' && usedIndices.size < 5 && validComps.length < 5) {
       console.log(`\n🔍 AUTOMATED ENHANCEMENT TRIGGERED: ${confidence} confidence (${usedIndices.size}/5 comparables)`);
       console.log(`📈 EXPANDING SEARCH: Attempting to boost confidence to High level...`);
 
@@ -1448,6 +1443,8 @@ export class MemStorage implements IStorage {
       } catch (enhancementError) {
         console.log(`⚠️ ENHANCEMENT ERROR: ${enhancementError} - Continuing with current dataset`);
       }
+    } else if (validComps.length >= 5) {
+      console.log(`ℹ️ Skipping enhancement: sufficient comparables (${validComps.length})`);
     }
 
     // Check if this is a 1-bathroom property that should trigger dual calculation
