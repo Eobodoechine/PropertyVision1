@@ -224,16 +224,34 @@ export class MemStorage implements IStorage {
       console.log(`Type: ${propertyType}, ${subjectSqft} sqft, built ${subjectYearBuilt || 'Unknown'}`);
       console.log(`${subjectBeds}bed/${subjectBaths}bath`);
 
-      // Handle missing data with web research fallback - ALWAYS research missing data
+      // Prepare final subject fields; prefer MLS, fill missing from RapidAPI detail
       let finalYearBuilt = subjectYearBuilt;
       let finalPropertyType = propertyType;
       let finalSubjectSqft = subjectSqft;
 
-      // Always run web research to verify and potentially override MLS data
-      const missingData = [];
-      if (!subjectYearBuilt) missingData.push('year built');
-      if (!subjectSqft) missingData.push('square feet');
+      // If any key subject fields are missing and we have a property_id, fetch detail to fill blanks
+      try {
+        const needsDetail = (!!subjectProperty?.property_id) && (
+          !finalYearBuilt || !finalPropertyType || !finalSubjectSqft || !subjectBeds || !subjectBaths
+        );
+        if (needsDetail) {
+          const detail = await this.fetchDetailById(String(subjectProperty.property_id));
+          if (detail && detail.description) {
+            finalYearBuilt = finalYearBuilt ?? detail.description.year_built ?? finalYearBuilt;
+            finalPropertyType = finalPropertyType ?? (detail.description.type ? String(detail.description.type).toLowerCase() : finalPropertyType);
+            // Only fill sqft if MLS missing/implausible
+            if (!finalSubjectSqft || !this.isPlausibleSqft(finalSubjectSqft)) {
+              const dSqft = Number(detail.description.sqft);
+              if (this.isPlausibleSqft(dSqft)) finalSubjectSqft = dSqft;
+            }
+          }
+        }
+      } catch {}
 
+      // Determine if anything still missing after RapidAPI detail fill
+      const missingData: string[] = [];
+      if (!finalYearBuilt) missingData.push('year built');
+      if (!finalSubjectSqft) missingData.push('square feet');
       const shouldResearch = missingData.length > 0;
 
       if (shouldResearch) {
@@ -242,17 +260,17 @@ export class MemStorage implements IStorage {
         const researchedData = await this.researchPropertyData(normalizedAddress);
         console.log(`🔍 WEB RESEARCH RESULT: ${researchedData ? JSON.stringify(researchedData) : 'null'}`);
         if (researchedData) {
-          if (!subjectYearBuilt && researchedData.yearBuilt) {
+          if (!finalYearBuilt && researchedData.yearBuilt) {
             finalYearBuilt = researchedData.yearBuilt;
             console.log(`✅ WEB RESEARCH SUCCESS: Found year built ${finalYearBuilt}`);
           }
           if (typeof researchedData.sqft === 'number' && this.isPlausibleSqft(researchedData.sqft)) {
-            if (!subjectSqft || !this.isPlausibleSqft(subjectSqft)) {
+            if (!finalSubjectSqft || !this.isPlausibleSqft(finalSubjectSqft)) {
               finalSubjectSqft = researchedData.sqft;
-              console.log(`✅ WEB RESEARCH SUCCESS: Using researched sqft ${finalSubjectSqft} (MLS missing/implausible: ${subjectSqft ?? 'N/A'})`);
+              console.log(`✅ WEB RESEARCH SUCCESS: Using researched sqft ${finalSubjectSqft} (MLS missing/implausible)`);
             } else {
               // Do not override MLS sqft when MLS value is present and plausible
-              console.log(`ℹ️ Keeping MLS sqft ${subjectSqft}; ignoring researched sqft ${researchedData.sqft}`);
+              console.log(`ℹ️ Keeping MLS sqft ${finalSubjectSqft}; ignoring researched sqft ${researchedData.sqft}`);
             }
           } else if (researchedData?.sqft != null) {
             console.log(`ℹ️ Ignoring researched sqft ${researchedData.sqft} as implausible`);
