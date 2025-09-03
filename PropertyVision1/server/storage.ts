@@ -1894,7 +1894,7 @@ export class MemStorage implements IStorage {
       let twoBathOutliers = [];
 
       if (twoBathPrices.length >= 5) {
-        // Apply outlier detection to 2-bathroom comparables
+        // Apply outlier detection to 2-bathroom comparables (market-aware bounds)
         const q1Index = Math.floor(twoBathPrices.length * 0.25);
         const q3Index = Math.floor(twoBathPrices.length * 0.75);
         const q1 = twoBathPrices[q1Index]?.price || twoBathPrices[0].price;
@@ -1903,8 +1903,10 @@ export class MemStorage implements IStorage {
 
         const lowerBound = q1 - (0.75 * iqr);
         const upperBound = q3 + (0.75 * iqr);
-        const absoluteLowerBound = Math.max(lowerBound, 120);
-        const absoluteUpperBound = Math.min(upperBound, 350);
+        const dynamicLower = Math.max(60, Math.round(q1 * 0.7));
+        const dynamicUpper = Math.max(300, Math.round(q3 * 1.4));
+        const absoluteLowerBound = Math.max(lowerBound, dynamicLower);
+        const absoluteUpperBound = Math.min(upperBound, dynamicUpper);
 
         console.log(`🚿 2-BATH OUTLIER ANALYSIS: Range $${Math.min(...twoBathPrices.map(p => p.price))} - $${Math.max(...twoBathPrices.map(p => p.price))}/sqft, bounds: $${absoluteLowerBound} - $${absoluteUpperBound}/sqft`);
 
