@@ -1024,6 +1024,25 @@ export class MemStorage implements IStorage {
     }
   }
 
+  // Fill missing yearBuilt for a limited number of comparables using RapidAPI detail
+  private async fillMissingYearsForComps(comps: any[], maxLookups: number = 10): Promise<void> {
+    let filled = 0;
+    for (const comp of comps) {
+      if (filled >= maxLookups) break;
+      if ((!comp.yearBuilt || comp.yearBuilt === null) && comp.property_id) {
+        try {
+          const det = await this.fetchDetailById(String(comp.property_id));
+          const y = det?.description?.year_built;
+          if (typeof y === 'number' && y > 1600 && y < 2100) {
+            comp.yearBuilt = y;
+            filled++;
+            console.log(`🔄 FILLED year built for ${comp.address} via detail: ${y}`);
+          }
+        } catch {}
+      }
+    }
+  }
+
   private async searchWithFilters(
     centerLat: number, 
     centerLon: number, 
@@ -1154,6 +1173,7 @@ export class MemStorage implements IStorage {
             beds: prop.description?.beds,
             baths: computeBaths(prop.description) ?? prop.description?.baths,
             yearBuilt: prop.description?.year_built || null,
+            property_id: prop.property_id || null,
             lat,
             lon,
             distance_miles: distanceMiles,
@@ -1355,6 +1375,8 @@ export class MemStorage implements IStorage {
     finalYearBuilt: number | null
   ): Promise<any> {
     console.log(`🔢 NEW ARV CALCULATION: Processing ${validComps.length} valid comparables`);
+    // Targeted detail fill: populate yearBuilt for up to 10 comps for better reporting
+    try { await this.fillMissingYearsForComps(validComps, 10); } catch {}
 
     if (validComps.length === 0) {
       throw new Error('No valid comparables provided for ARV calculation');
