@@ -255,6 +255,24 @@ export class MemStorage implements IStorage {
         }
       } catch {}
 
+      // Ensure baths_consolidated is populated even when other fields are already present
+      try {
+        const hasConsolidated = Number.isFinite(
+          typeof (subjectProperty?.description as any)?.baths_consolidated === 'string'
+            ? parseFloat((subjectProperty!.description as any).baths_consolidated)
+            : (subjectProperty as any)?.description?.baths_consolidated
+        );
+        if (!hasConsolidated && subjectProperty?.property_id) {
+          const detail = await this.fetchDetailById(String(subjectProperty.property_id));
+          const consolidated = (detail?.description as any)?.baths_consolidated;
+          const consolidatedNum = typeof consolidated === 'string' ? parseFloat(consolidated) : (typeof consolidated === 'number' ? consolidated : undefined);
+          if (Number.isFinite(consolidatedNum)) {
+            subjectProperty.description = subjectProperty.description || {};
+            (subjectProperty.description as any).baths_consolidated = consolidatedNum;
+          }
+        }
+      } catch {}
+
       // Determine if anything still missing after RapidAPI detail fill
       const missingData: string[] = [];
       if (!finalYearBuilt) missingData.push('year built');
@@ -1434,15 +1452,26 @@ export class MemStorage implements IStorage {
       throw new Error('No valid comparables provided for ARV calculation');
     }
 
-    // Determine subject bathrooms (including half-baths)
+    // Determine subject bathrooms (prefer consolidated, then compute halves)
+    const subjectBathsConsolidatedRaw = (subjectProperty?.description as any)?.baths_consolidated;
+    const subjectBathsConsolidated = typeof subjectBathsConsolidatedRaw === 'string'
+      ? parseFloat(subjectBathsConsolidatedRaw)
+      : (typeof subjectBathsConsolidatedRaw === 'number' ? subjectBathsConsolidatedRaw : NaN);
     const subjectBathsComputed = computeBaths(subjectProperty.description);
-    const subjectBaths = subjectBathsComputed ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
-    const subjectBathsNum = Number.isFinite(subjectBaths) ? subjectBaths : 0;
+    const subjectBathsFallback = subjectBathsComputed ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
+    const subjectBathsNum = Number.isFinite(subjectBathsConsolidated) ? subjectBathsConsolidated : (Number.isFinite(subjectBathsFallback) ? subjectBathsFallback : 0);
 
-    // Baseline ARV must use only comps with bathrooms <= subject's baths
+    // Baseline ARV rule:
+    // - Always require comp baths <= subject baths
+    // - If subject < 2 baths (e.g., 1.0 or 1.5), also require comp baths < 2
     const bathroomMatchedComps = validComps.filter((comp) => {
       const compBaths = parseFloat(comp.baths?.toString() || 'NaN');
-      return Number.isFinite(compBaths) && compBaths <= subjectBathsNum + 1e-9;
+      if (!Number.isFinite(compBaths)) return false;
+      const leSubject = compBaths <= subjectBathsNum + 1e-9;
+      if (subjectBathsNum < 2 - 1e-9) {
+        return leSubject && compBaths < 2 - 1e-9;
+      }
+      return leSubject;
     });
 
     if (bathroomMatchedComps.length === 0) {
@@ -1613,7 +1642,7 @@ export class MemStorage implements IStorage {
 
       // Add bathroom indicator for 1-bath subject properties
       if (shouldUseDualCalculation && compBaths >= 2) {
-        addressPrefix += '[2BR] '; // Mark 2-bathroom comps differently
+        addressPrefix += '[2BA] '; // Mark 2-bathroom comps differently
       }
 
       // Validate all numeric values to prevent NaN
