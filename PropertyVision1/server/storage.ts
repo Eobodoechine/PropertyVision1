@@ -336,7 +336,9 @@ export class MemStorage implements IStorage {
 
       console.log(`Step 3: Enhanced search parameters with conditional methodology:`);
       console.log(`- Size range: ${minSqft}-${maxSqft} sqft (±20% of ${finalSubjectSqft})`);
-      console.log(`- Year range: 1993-2013 (±10 years from ${finalYearBuilt})`);
+      const yrMin = finalYearBuilt ? finalYearBuilt - 10 : null;
+      const yrMax = finalYearBuilt ? finalYearBuilt + 10 : null;
+      console.log(`- Year range: ${yrMin && yrMax ? `${yrMin}-${yrMax}` : 'No year filter'} (±10 years from ${finalYearBuilt ?? 'N/A'})`);
       console.log(`- Property type: ${finalPropertyType} → Search types: ${propertyTypeFilter.join(', ')}`);
       console.log(`- Strategy: Filter first, then null-value search if insufficient`);
 
@@ -406,11 +408,12 @@ export class MemStorage implements IStorage {
           console.log(`\n📊 STEP 3B RESULTS:`);
           console.log(`   • Properties with missing data found: ${phaseTwoComps.length}`);
 
-          // PHASE 3: Research enhancement
-          if (phaseTwoComps.length > 0) {
+          // PHASE 3: Research enhancement (targeted & minimal)
+          const neededEnhancements = Math.max(0, 5 - perfectMatchCount);
+          if (phaseTwoComps.length > 0 && neededEnhancements > 0) {
             console.log(`\n🔍 STEP 3C: Web Research Enhancement`);
-            console.log(`   • Researching up to 10 properties for missing data...`);
-            const researchedComps = await this.researchNullValueProperties(phaseTwoComps.slice(0, 10), minSqft, maxSqft, finalYearBuilt);
+            console.log(`   • Researching up to ${neededEnhancements} properties for missing data...`);
+            const researchedComps = await this.researchNullValueProperties(phaseTwoComps.slice(0, neededEnhancements), minSqft, maxSqft, finalYearBuilt);
 
             console.log(`\n📊 STEP 3C RESULTS:`);
             console.log(`   • Properties successfully enhanced: ${researchedComps.length}`);
