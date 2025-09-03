@@ -562,6 +562,84 @@ export class MemStorage implements IStorage {
         console.log(`   • Baseline-eligible comps: ${baselineCount}/${baselineTarget}`);
         if (dualNeeded) console.log(`   • Two-bath comps: ${twoBathCount}/${twoBathTarget}`);
 
+        // If targets not met, progressively expand constraints within this radius
+        if (baselineCount < baselineTarget || (dualNeeded && twoBathCount < twoBathTarget)) {
+          // Helper to add comps uniquely after filtering by size/price bounds
+          const addFiltered = (comps: any[], min: number, max: number) => {
+            let added = 0;
+            comps.forEach((c) => {
+              const sizeOk = c?.sqft && c.sqft >= min && c.sqft <= max;
+              const priceOk = c?.pricePerSqft && c.pricePerSqft >= 50 && c.pricePerSqft <= 300 && c?.price && c.price > 10000;
+              if (!sizeOk || !priceOk) return;
+              const dup = finalValidComps.some((e) => e.address === c.address);
+              if (!dup) { finalValidComps.push(c); added++; }
+            });
+            return added;
+          };
+
+          // 1) Expand sales window to 12 months (API call)
+          try {
+            console.log(`   ↪️ EXPAND: Trying 12-month sales window at radius ${radius} ...`);
+            const comps12 = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '', 12);
+            const before = finalValidComps.length;
+            addFiltered(comps12, minSqft, maxSqft);
+            const after = finalValidComps.length;
+            console.log(`      +${after - before} comps added from 12-month window`);
+          } catch {}
+
+          // Recount after 12-month expansion
+          let bCount = finalValidComps.filter(isBaselineEligible).length;
+          let tCount = finalValidComps.filter(isTwoBathEligible).length;
+          console.log(`      Coverage after 12m: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
+
+          // 2) Widen size band to ±25%
+          if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
+            const min25 = Math.round(finalSubjectSqft * 0.75);
+            const max25 = Math.round(finalSubjectSqft * 1.25);
+            console.log(`   ↪️ EXPAND: Widen size band to ±25% (${min25}-${max25})`);
+            const before = finalValidComps.length;
+            addFiltered([...phaseOneComps], min25, max25);
+            const after = finalValidComps.length;
+            console.log(`      +${after - before} comps added from ±25% size band`);
+            bCount = finalValidComps.filter(isBaselineEligible).length;
+            tCount = finalValidComps.filter(isTwoBathEligible).length;
+            console.log(`      Coverage after ±25%: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
+          }
+
+          // 3) Widen size band to ±30%
+          if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
+            const min30 = Math.round(finalSubjectSqft * 0.70);
+            const max30 = Math.round(finalSubjectSqft * 1.30);
+            console.log(`   ↪️ EXPAND: Widen size band to ±30% (${min30}-${max30})`);
+            const before = finalValidComps.length;
+            addFiltered([...phaseOneComps], min30, max30);
+            const after = finalValidComps.length;
+            console.log(`      +${after - before} comps added from ±30% size band`);
+            bCount = finalValidComps.filter(isBaselineEligible).length;
+            tCount = finalValidComps.filter(isTwoBathEligible).length;
+            console.log(`      Coverage after ±30%: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
+          }
+
+          // 4) Drop year filter and retry 12-month search to broaden results
+          if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
+            try {
+              console.log(`   ↪️ EXPAND: Drop year filter and retry 12-month search`);
+              const compsNoYear = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, null, subjectProperty.property_id || '', 12);
+              const before = finalValidComps.length;
+              // Use the widest size band attempted so far (±30%) to admit candidates
+              const min30 = Math.round(finalSubjectSqft * 0.70);
+              const max30 = Math.round(finalSubjectSqft * 1.30);
+              addFiltered(compsNoYear, min30, max30);
+              const after = finalValidComps.length;
+              console.log(`      +${after - before} comps added after dropping year filter`);
+            } catch {}
+
+            bCount = finalValidComps.filter(isBaselineEligible).length;
+            tCount = finalValidComps.filter(isTwoBathEligible).length;
+            console.log(`      Coverage after no-year: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
+          }
+        }
+
         console.log(`\n🚦 DECISION POINT: Continue or Stop?`);
 
         // User preference: Stop at 1-2 miles when sufficient comparables found
@@ -1136,6 +1214,29 @@ export class MemStorage implements IStorage {
                 break;
               }
             }
+          }
+        } catch {}
+      }
+    }
+    return filled;
+  }
+
+  // Fill missing baths for comps using RapidAPI detail (prefer consolidated)
+  private async fillMissingBathsForComps(comps: any[], maxLookups: number = 10): Promise<number> {
+    let filled = 0;
+    for (const comp of comps) {
+      if (filled >= maxLookups) break;
+      const hasBaths = Number.isFinite(parseFloat(comp?.baths?.toString() || 'NaN'));
+      if (!hasBaths && comp?.property_id) {
+        try {
+          const det = await this.fetchDetailById(String(comp.property_id));
+          const desc: any = det?.description || {};
+          const cons = typeof desc?.baths_consolidated === 'string' ? parseFloat(desc.baths_consolidated) : (typeof desc?.baths_consolidated === 'number' ? desc.baths_consolidated : undefined);
+          const bathsVal = Number.isFinite(cons) ? (cons as number) : (Number.isFinite(Number(desc?.baths)) ? Number(desc.baths) : undefined);
+          if (Number.isFinite(bathsVal)) {
+            comp.baths = bathsVal;
+            filled++;
+            console.log(`🔄 FILLED baths for ${comp.address} via detail: ${bathsVal}`);
           }
         } catch {}
       }
