@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +43,7 @@ export default function PropertySearchForm({
       const response = await apiRequest("POST", "/api/property/analyze", data);
       return await response.json() as PropertyAnalysisResult;
     },
+    retry: false,
     onMutate: () => {
       onAnalysisStart();
     },
@@ -55,9 +57,18 @@ export default function PropertySearchForm({
     }
   });
 
-  const onSubmit = (data: AddressSearch) => {
-    clearErrors();
-    analyzeMutation.mutate(data);
+  // Guard against double-submits (race between click and pending state)
+  const submittingRef = useRef(false);
+
+  const onSubmit = async (data: AddressSearch) => {
+    if (submittingRef.current || analyzeMutation.isPending) return;
+    submittingRef.current = true;
+    try {
+      clearErrors();
+      await analyzeMutation.mutateAsync(data);
+    } finally {
+      submittingRef.current = false;
+    }
   };
 
   return (
@@ -71,7 +82,16 @@ export default function PropertySearchForm({
             Enter a property address to get ARV estimates and comparable properties
           </p>
           
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" data-testid="property-form">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleSubmit(onSubmit)(e);
+            }}
+            noValidate
+            className="space-y-4"
+            data-testid="property-form"
+          >
             <div>
               <Label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
                 Property Address
@@ -94,10 +114,11 @@ export default function PropertySearchForm({
             <Button
               type="submit"
               className="w-full bg-blue-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
-              disabled={isLoading || analyzeMutation.isPending}
+              disabled={isLoading || analyzeMutation.isPending || submittingRef.current}
+              aria-disabled={isLoading || analyzeMutation.isPending || submittingRef.current}
               data-testid="button-analyze"
             >
-              {(isLoading || analyzeMutation.isPending) ? (
+              {(isLoading || analyzeMutation.isPending || submittingRef.current) ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Analyzing...
