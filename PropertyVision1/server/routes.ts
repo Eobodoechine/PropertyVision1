@@ -5,6 +5,7 @@ import { addressSearchSchema, type PropertyAnalysisResult } from "@shared/schema
 import { z } from "zod";
 import { webSearch } from "./web-search";
 import { Router } from 'express';
+import webSearch from './web-search';
 import { requireRapidKey } from './middleware/requireRapidKey';
 
 // Create a new router instance to export
@@ -150,6 +151,23 @@ router.post("/external-web-search", async (req, res) => {
   } catch (error) {
     console.log(`❌ External web search error: ${error}`);
     res.json({ results: [] });
+  }
+});
+
+// Pure web-details endpoint for debugging web parsing only (no RapidAPI)
+router.get('/web-details', async (req, res) => {
+  try {
+    const address = (req.query.address as string) || '';
+    if (!address || address.trim().length < 5) {
+      return res.status(400).json({ message: 'Query parameter "address" is required' });
+    }
+    const details = await webSearch.forPropertyDetails(address);
+    if (!details) {
+      return res.status(404).json({ message: 'No web details found for address' });
+    }
+    res.json({ address, details });
+  } catch (err: any) {
+    res.status(500).json({ message: err?.message || 'Failed to fetch web details' });
   }
 });
 
