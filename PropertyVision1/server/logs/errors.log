@@ -69,3 +69,203 @@ CTX {"type":"console.error"}
 CTX {"type":"console.error"}
 [2025-09-02T18:25:52.915Z] ERROR "❌ Property analysis failed: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\nError: Property analysis failed due to a technical issue. Please try again or contact support if the problem persists.\n    at MemStorage.analyzeProperty (/home/runner/workspace/PropertyVision1/server/storage.ts:510:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async <anonymous> (/home/runner/workspace/PropertyVision1/server/routes.ts:19:22)" 
 CTX {"type":"console.error"}
+[2025-09-03T16:39:11.143Z] ERROR "[WEB] Tavily search query: 185 Jordan Pl, Fayetteville, GA 30215 property details year built square feet bedrooms bathrooms" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:12.989Z] ERROR "[WEB] Tavily results: [\"https://www.trulia.com/home/185-jordan-pl-fayetteville-ga-30215-14592358\",\"https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/\",\"https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446\",\"https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/\",\"https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768\",\"https://www.redfin.com/GA/Fayetteville/180-Jordan-Pl-30215/home/23667399\",\"https://www.movoto.com/fayetteville-ga/270-jordan-pl-fayetteville-ga-30215/pid_a2ndci6lbh/\",\"https://www.trulia.com/home/165-jordan-pl-fayetteville-ga-30215-14592356\"]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:12.990Z] ERROR "[WEB] Fetching [1/8] https://www.trulia.com/home/185-jordan-pl-fayetteville-ga-30215-14592358" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:13.120Z] ERROR "[WEB] Fetching [2/8] https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:13.234Z] ERROR "[WEB] Fetching [3/8] https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:13.368Z] ERROR "[WEB] Fetching [4/8] https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:14.356Z] ERROR "[WEB] Extracted from https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768 : {\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:14.356Z] ERROR "[WEB] Fetching [5/8] https://www.redfin.com/GA/Fayetteville/180-Jordan-Pl-30215/home/23667399" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.102Z] ERROR "[WEB] Extracted from https://www.redfin.com/GA/Fayetteville/180-Jordan-Pl-30215/home/23667399 : {\"source\":\"redfin.com\",\"sqft\":2879,\"beds\":4,\"baths\":3.5,\"yearBuilt\":1979}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.102Z] ERROR "[WEB] Fetching [6/8] https://www.trulia.com/home/165-jordan-pl-fayetteville-ga-30215-14592356" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.189Z] ERROR "[WEB] Fetching [7/8] https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.285Z] ERROR "[WEB] Fetching [8/8] https://www.movoto.com/fayetteville-ga/270-jordan-pl-fayetteville-ga-30215/pid_a2ndci6lbh/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.391Z] ERROR "[WEB] Collected details: [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016},{\"source\":\"redfin.com\",\"sqft\":2879,\"beds\":4,\"baths\":3.5,\"yearBuilt\":1979}]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.391Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.beds\",\"votes\":[{\"val\":4,\"weight\":3},{\"val\":4,\"weight\":3}],\"best\":4,\"weight\":6}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.391Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.baths\",\"votes\":[{\"val\":2.5,\"weight\":3},{\"val\":3.5,\"weight\":3}],\"best\":2.5,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.392Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.sqft\",\"votes\":[{\"val\":2331,\"weight\":3},{\"val\":2879,\"weight\":3}],\"best\":2331,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.392Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.yearBuilt\",\"votes\":[{\"val\":2016,\"weight\":3},{\"val\":1979,\"weight\":3}],\"best\":2016,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.392Z] ERROR "[WEB:extractors] Merged from items [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016},{\"source\":\"redfin.com\",\"sqft\":2879,\"beds\":4,\"baths\":3.5,\"yearBuilt\":1979}] => {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"source\":\"redfin.com\"}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.392Z] ERROR "[WEB] Merged details: {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"sub_type\":null,\"photos\":null}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:15.393Z] ERROR "[WEB] Tavily search query: 185 Jordan Pl, Fayetteville, GA 30215 property details year built square feet bedrooms bathrooms property details year built square feet bedrooms bathrooms" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:17.727Z] ERROR "[WEB] Tavily results: [\"https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/\",\"https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/\",\"https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446\",\"https://www.realtor.com/propertyrecord-search/30215/Jordan-Pl\",\"https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768\"]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:17.728Z] ERROR "[WEB] Fetching [1/5] https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:17.854Z] ERROR "[WEB] Fetching [2/5] https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:17.935Z] ERROR "[WEB] Fetching [3/5] https://www.realtor.com/propertyrecord-search/30215/Jordan-Pl" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.014Z] ERROR "[WEB] Fetching [4/5] https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.704Z] ERROR "[WEB] Extracted from https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768 : {\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.705Z] ERROR "[WEB] Fetching [5/5] https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.761Z] ERROR "[WEB] Collected details: [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.762Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.beds\",\"votes\":[{\"val\":4,\"weight\":3}],\"best\":4,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.762Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.baths\",\"votes\":[{\"val\":2.5,\"weight\":3}],\"best\":2.5,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.762Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.sqft\",\"votes\":[{\"val\":2331,\"weight\":3}],\"best\":2331,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.762Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.yearBuilt\",\"votes\":[{\"val\":2016,\"weight\":3}],\"best\":2016,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.762Z] ERROR "[WEB:extractors] Merged from items [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}] => {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"source\":\"redfin.com\"}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:18.763Z] ERROR "[WEB] Merged details: {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"sub_type\":null,\"photos\":null}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:23.650Z] ERROR "[WEB] Tavily search query: 185 Jordan Pl, Fayetteville, GA 30215 property details year built square feet bedrooms bathrooms" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:25.387Z] ERROR "[WEB] Tavily results: [\"https://www.trulia.com/home/185-jordan-pl-fayetteville-ga-30215-14592358\",\"https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/\",\"https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446\",\"https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/\",\"https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768\",\"https://www.redfin.com/GA/Fayetteville/180-Jordan-Pl-30215/home/23667399\",\"https://www.movoto.com/fayetteville-ga/270-jordan-pl-fayetteville-ga-30215/pid_a2ndci6lbh/\",\"https://www.trulia.com/home/165-jordan-pl-fayetteville-ga-30215-14592356\"]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:25.388Z] ERROR "[WEB] Fetching [1/8] https://www.trulia.com/home/185-jordan-pl-fayetteville-ga-30215-14592358" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:25.541Z] ERROR "[WEB] Fetching [2/8] https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:25.671Z] ERROR "[WEB] Fetching [3/8] https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:25.781Z] ERROR "[WEB] Fetching [4/8] https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:26.409Z] ERROR "[WEB] Extracted from https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768 : {\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:26.410Z] ERROR "[WEB] Fetching [5/8] https://www.redfin.com/GA/Fayetteville/180-Jordan-Pl-30215/home/23667399" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:26.882Z] ERROR "[WEB] Extracted from https://www.redfin.com/GA/Fayetteville/180-Jordan-Pl-30215/home/23667399 : {\"source\":\"redfin.com\",\"sqft\":2879,\"beds\":4,\"baths\":3.5,\"yearBuilt\":1979}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:26.882Z] ERROR "[WEB] Fetching [6/8] https://www.trulia.com/home/165-jordan-pl-fayetteville-ga-30215-14592356" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:26.969Z] ERROR "[WEB] Fetching [7/8] https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.077Z] ERROR "[WEB] Fetching [8/8] https://www.movoto.com/fayetteville-ga/270-jordan-pl-fayetteville-ga-30215/pid_a2ndci6lbh/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.175Z] ERROR "[WEB] Collected details: [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016},{\"source\":\"redfin.com\",\"sqft\":2879,\"beds\":4,\"baths\":3.5,\"yearBuilt\":1979}]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.175Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.beds\",\"votes\":[{\"val\":4,\"weight\":3},{\"val\":4,\"weight\":3}],\"best\":4,\"weight\":6}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.175Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.baths\",\"votes\":[{\"val\":2.5,\"weight\":3},{\"val\":3.5,\"weight\":3}],\"best\":2.5,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.175Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.sqft\",\"votes\":[{\"val\":2331,\"weight\":3},{\"val\":2879,\"weight\":3}],\"best\":2331,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.176Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.yearBuilt\",\"votes\":[{\"val\":2016,\"weight\":3},{\"val\":1979,\"weight\":3}],\"best\":2016,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.176Z] ERROR "[WEB:extractors] Merged from items [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016},{\"source\":\"redfin.com\",\"sqft\":2879,\"beds\":4,\"baths\":3.5,\"yearBuilt\":1979}] => {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"source\":\"redfin.com\"}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.176Z] ERROR "[WEB] Merged details: {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"sub_type\":null,\"photos\":null}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:27.176Z] ERROR "[WEB] Tavily search query: 185 Jordan Pl, Fayetteville, GA 30215 property details year built square feet bedrooms bathrooms property details year built square feet bedrooms bathrooms" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:28.851Z] ERROR "[WEB] Tavily results: [\"https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/\",\"https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/\",\"https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446\",\"https://www.realtor.com/propertyrecord-search/30215/Jordan-Pl\",\"https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768\"]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:28.851Z] ERROR "[WEB] Fetching [1/5] https://www.zillow.com/homedetails/185-Jordan-Pl-Fayetteville-GA-30215/14592358_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:28.953Z] ERROR "[WEB] Fetching [2/5] https://www.realtor.com/realestateandhomes-detail/185-Jordan-Pl_Fayetteville_GA_30215_M63018-52446" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:28.987Z] ERROR "[WEB] Fetching [3/5] https://www.realtor.com/propertyrecord-search/30215/Jordan-Pl" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:29.087Z] ERROR "[WEB] Fetching [4/5] https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.005Z] ERROR "[WEB] Extracted from https://www.redfin.com/GA/Fayetteville/185-Jordan-Pl-30215/home/23666768 : {\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.005Z] ERROR "[WEB] Fetching [5/5] https://www.movoto.com/fayetteville-ga/185-jordan-pl-fayetteville-ga-30215-421_7214803/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.061Z] ERROR "[WEB] Collected details: [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.062Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.beds\",\"votes\":[{\"val\":4,\"weight\":3}],\"best\":4,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.062Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.baths\",\"votes\":[{\"val\":2.5,\"weight\":3}],\"best\":2.5,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.062Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.sqft\",\"votes\":[{\"val\":2331,\"weight\":3}],\"best\":2331,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.062Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.yearBuilt\",\"votes\":[{\"val\":2016,\"weight\":3}],\"best\":2016,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.063Z] ERROR "[WEB:extractors] Merged from items [{\"source\":\"redfin.com\",\"sqft\":2331,\"beds\":4,\"baths\":2.5,\"yearBuilt\":2016}] => {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"source\":\"redfin.com\"}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:30.063Z] ERROR "[WEB] Merged details: {\"beds\":4,\"baths\":2.5,\"sqft\":2331,\"yearBuilt\":2016,\"type\":null,\"sub_type\":null,\"photos\":null}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:53.384Z] ERROR "[WEB] Tavily search query: 6901 Eastern Shore Road, Montgomery, AL property details year built square feet bedrooms bathrooms" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:55.101Z] ERROR "[WEB] Tavily results: [\"https://www.zillow.com/homedetails/6901-Eastern-Shore-Rd-Montgomery-AL-36117/118919576_zpid/\",\"https://www.realtor.com/realestateandhomes-detail/6901-Eastern-Shore-Rd_Montgomery_AL_36117_M80136-84482\",\"https://www.trulia.com/home/6901-eastern-shore-rd-montgomery-al-36117-118919576\",\"https://www.remax.com/al/montgomery/home-details/6901-eastern-shore-rd-montgomery-al-36117/12654730747767307253\",\"https://www.spokeo.com/AL/Montgomery/6901-Eastern-Shore-Rd\",\"https://www.zillow.com/homedetails/6909-Eastern-Shore-Rd-Montgomery-AL-36117/118919580_zpid/\",\"https://www.countyoffice.org/eastern-shore-rd-montgomery-al-property-records/\",\"https://www.redfin.com/AL/Montgomery/6909-Eastern-Shore-Rd-36117/home/133295234\"]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:55.104Z] ERROR "[WEB] Fetching [1/8] https://www.zillow.com/homedetails/6901-Eastern-Shore-Rd-Montgomery-AL-36117/118919576_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:55.218Z] ERROR "[WEB] Fetching [2/8] https://www.realtor.com/realestateandhomes-detail/6901-Eastern-Shore-Rd_Montgomery_AL_36117_M80136-84482" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:55.320Z] ERROR "[WEB] Fetching [3/8] https://www.trulia.com/home/6901-eastern-shore-rd-montgomery-al-36117-118919576" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:55.438Z] ERROR "[WEB] Fetching [4/8] https://www.zillow.com/homedetails/6909-Eastern-Shore-Rd-Montgomery-AL-36117/118919580_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:55.533Z] ERROR "[WEB] Fetching [5/8] https://www.redfin.com/AL/Montgomery/6909-Eastern-Shore-Rd-36117/home/133295234" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.409Z] ERROR "[WEB] Extracted from https://www.redfin.com/AL/Montgomery/6909-Eastern-Shore-Rd-36117/home/133295234 : {\"source\":\"redfin.com\",\"sqft\":1390,\"beds\":3,\"baths\":2,\"yearBuilt\":1998}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.410Z] ERROR "[WEB] Fetching [6/8] https://www.remax.com/al/montgomery/home-details/6901-eastern-shore-rd-montgomery-al-36117/12654730747767307253" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.473Z] ERROR "[WEB] Extracted from https://www.remax.com/al/montgomery/home-details/6901-eastern-shore-rd-montgomery-al-36117/12654730747767307253 : {\"source\":\"remax.com\",\"sqft\":401,\"beds\":1,\"baths\":5,\"yearBuilt\":1996}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.474Z] ERROR "[WEB] Fetching [7/8] https://www.spokeo.com/AL/Montgomery/6901-Eastern-Shore-Rd" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.923Z] ERROR "[WEB] Extracted from https://www.spokeo.com/AL/Montgomery/6901-Eastern-Shore-Rd : {\"source\":\"spokeo.com\",\"sqft\":401,\"beds\":4,\"baths\":2,\"yearBuilt\":1996}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.923Z] ERROR "[WEB] Fetching [8/8] https://www.countyoffice.org/eastern-shore-rd-montgomery-al-property-records/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.972Z] ERROR "[WEB] Collected details: [{\"source\":\"redfin.com\",\"sqft\":1390,\"beds\":3,\"baths\":2,\"yearBuilt\":1998},{\"source\":\"remax.com\",\"sqft\":401,\"beds\":1,\"baths\":5,\"yearBuilt\":1996},{\"source\":\"spokeo.com\",\"sqft\":401,\"beds\":4,\"baths\":2,\"yearBuilt\":1996}]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.972Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.beds\",\"votes\":[{\"val\":3,\"weight\":3},{\"val\":1,\"weight\":1},{\"val\":4,\"weight\":1}],\"best\":3,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.972Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.baths\",\"votes\":[{\"val\":2,\"weight\":3},{\"val\":5,\"weight\":1},{\"val\":2,\"weight\":1}],\"best\":2,\"weight\":4}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.973Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.sqft\",\"votes\":[{\"val\":1390,\"weight\":3}],\"best\":1390,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.973Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.yearBuilt\",\"votes\":[{\"val\":1998,\"weight\":3},{\"val\":1996,\"weight\":1},{\"val\":1996,\"weight\":1}],\"best\":1998,\"weight\":3}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.973Z] ERROR "[WEB:extractors] Merged from items [{\"source\":\"redfin.com\",\"sqft\":1390,\"beds\":3,\"baths\":2,\"yearBuilt\":1998},{\"source\":\"remax.com\",\"sqft\":401,\"beds\":1,\"baths\":5,\"yearBuilt\":1996},{\"source\":\"spokeo.com\",\"sqft\":401,\"beds\":4,\"baths\":2,\"yearBuilt\":1996}] => {\"beds\":3,\"baths\":2,\"sqft\":1390,\"yearBuilt\":1998,\"type\":null,\"source\":\"redfin.com\"}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.973Z] ERROR "[WEB] Merged details: {\"beds\":3,\"baths\":2,\"sqft\":1390,\"yearBuilt\":1998,\"type\":null,\"sub_type\":null,\"photos\":null}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:56.974Z] ERROR "[WEB] Tavily search query: 6901 Eastern Shore Road, Montgomery, AL property details year built square feet bedrooms bathrooms property details year built square feet bedrooms bathrooms" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.501Z] ERROR "[WEB] Tavily results: [\"https://www.zillow.com/homedetails/6901-Eastern-Shore-Rd-Montgomery-AL-36117/118919576_zpid/\",\"https://www.realtor.com/realestateandhomes-detail/6901-Eastern-Shore-Rd_Montgomery_AL_36117_M80136-84482\",\"https://www.remax.com/al/montgomery/home-details/6901-eastern-shore-rd-montgomery-al-36117/12654730747767307253\"]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.501Z] ERROR "[WEB] Fetching [1/3] https://www.zillow.com/homedetails/6901-Eastern-Shore-Rd-Montgomery-AL-36117/118919576_zpid/" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.596Z] ERROR "[WEB] Fetching [2/3] https://www.realtor.com/realestateandhomes-detail/6901-Eastern-Shore-Rd_Montgomery_AL_36117_M80136-84482" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.665Z] ERROR "[WEB] Fetching [3/3] https://www.remax.com/al/montgomery/home-details/6901-eastern-shore-rd-montgomery-al-36117/12654730747767307253" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.711Z] ERROR "[WEB] Extracted from https://www.remax.com/al/montgomery/home-details/6901-eastern-shore-rd-montgomery-al-36117/12654730747767307253 : {\"source\":\"remax.com\",\"sqft\":401,\"beds\":1,\"baths\":5,\"yearBuilt\":1996}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.712Z] ERROR "[WEB] Collected details: [{\"source\":\"remax.com\",\"sqft\":401,\"beds\":1,\"baths\":5,\"yearBuilt\":1996}]" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.712Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.beds\",\"votes\":[{\"val\":1,\"weight\":1}],\"best\":1,\"weight\":1}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.712Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.baths\",\"votes\":[{\"val\":5,\"weight\":1}],\"best\":5,\"weight\":1}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.713Z] ERROR "[WEB:extractors] Vote tally {\"field\":\"x=>x.yearBuilt\",\"votes\":[{\"val\":1996,\"weight\":1}],\"best\":1996,\"weight\":1}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.714Z] ERROR "[WEB:extractors] Merged from items [{\"source\":\"remax.com\",\"sqft\":401,\"beds\":1,\"baths\":5,\"yearBuilt\":1996}] => {\"beds\":1,\"baths\":5,\"sqft\":null,\"yearBuilt\":1996,\"type\":null,\"source\":\"remax.com\"}" 
+CTX {"type":"console.error"}
+[2025-09-03T16:39:58.714Z] ERROR "[WEB] Merged details: {\"beds\":1,\"baths\":5,\"sqft\":null,\"yearBuilt\":1996,\"type\":null,\"sub_type\":null,\"photos\":null}" 
+CTX {"type":"console.error"}
