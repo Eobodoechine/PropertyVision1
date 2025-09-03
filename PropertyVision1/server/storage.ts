@@ -1627,6 +1627,32 @@ export class MemStorage implements IStorage {
 
     pricesPerSqft.sort((a, b) => a.price - b.price);
 
+    // === Stage 1: MAD-based total-price cap (apply first) ===
+    const priceTotalsAll = compsForBaseline
+      .map((c) => ({ idx: validComps.indexOf(c), price: Number(c?.price) }))
+      .filter(x => x.idx >= 0 && Number.isFinite(x.price) && x.price > 0)
+      .sort((a, b) => a.price - b.price);
+
+    const madPriceOutliersFirst = new Set<number>();
+    if (priceTotalsAll.length >= 5) {
+      const mid = Math.floor(priceTotalsAll.length / 2);
+      const medianPrice = priceTotalsAll[mid].price;
+      const deviations = priceTotalsAll.map(x => Math.abs(x.price - medianPrice)).sort((a, b) => a - b);
+      const mad = deviations[mid];
+      const scale = 1.4826 * mad;
+      const kMad = 3.0; // baseline bucket
+      const upperMadCap = medianPrice + kMad * scale;
+      console.log(`   • MAD price cap (baseline): median=$${medianPrice.toLocaleString()}, MAD=${mad.toFixed(0)}, cap=$${Math.round(upperMadCap).toLocaleString()}`);
+      if (scale > 0) {
+        priceTotalsAll.forEach(({ idx, price }) => {
+          if (price > upperMadCap) {
+            madPriceOutliersFirst.add(idx);
+            console.log(`   • OUTLIER (PRICE-MAD): ${validComps[idx]?.address} at $${Number(price).toLocaleString()}`);
+          }
+        });
+      }
+    }
+
     // Calculate IQR for outlier detection with stricter bounds
     const q1Index = Math.floor(pricesPerSqft.length * 0.25);
     const q3Index = Math.floor(pricesPerSqft.length * 0.75);
@@ -1652,11 +1678,15 @@ export class MemStorage implements IStorage {
     console.log(`   • IQR bounds: $${lowerBound.toFixed(0)} - $${upperBound.toFixed(0)} per sqft`);
     console.log(`   • Final bounds (with absolute limits): $${absoluteLowerBound.toFixed(0)} - $${absoluteUpperBound.toFixed(0)} per sqft`);
 
-    // Identify $/sqft outliers and provisional used set
+    // Identify $/sqft outliers and provisional used set (after removing MAD price outliers)
     const outlierIndices = new Set<number>();
     const usedIndices = new Set<number>();
 
     pricesPerSqft.forEach(item => {
+      if (madPriceOutliersFirst.has(item.index)) {
+        outlierIndices.add(item.index);
+        return;
+      }
       if (item.price < absoluteLowerBound || item.price > absoluteUpperBound) {
         outlierIndices.add(item.index);
         console.log(`   • OUTLIER (PP$): ${validComps[item.index]?.address} at $${item.price}/sqft (outside $${absoluteLowerBound}-$${absoluteUpperBound})`);
@@ -1819,14 +1849,41 @@ export class MemStorage implements IStorage {
 
     if (shouldUseDualCalculation) {
       // Find actual 2-bathroom comparables from the original dataset
-      const twoBathComps = validComps.filter(comp => {
+      let twoBathComps = validComps.filter(comp => {
         const compBaths = parseFloat(comp.baths?.toString() || '0');
         return compBaths >= 1.75 && compBaths <= 2.5 && !outlierIndices.has(validComps.indexOf(comp));
       });
 
       console.log(`🚿 FOUND ${twoBathComps.length} two-bathroom comparables for enhanced ARV calculation`);
 
-      // Apply outlier detection to 2-bathroom comparables
+      // Two-bath MAD cap (stricter when subject < 2 baths)
+      const tbPricesAll = twoBathComps
+        .map((c) => ({ idx: validComps.indexOf(c), price: Number(c?.price) }))
+        .filter(x => x.idx >= 0 && Number.isFinite(x.price) && x.price > 0)
+        .sort((a, b) => a.price - b.price);
+      const twoBathMadOut = new Set<number>();
+      if (tbPricesAll.length >= 5) {
+        const mid = Math.floor(tbPricesAll.length / 2);
+        const m = tbPricesAll[mid].price;
+        const dev = tbPricesAll.map(x => Math.abs(x.price - m)).sort((a, b) => a - b);
+        const mad = dev[mid];
+        const scale = 1.4826 * mad;
+        const kTb = actualBathrooms < 2 ? 2.5 : 3.0;
+        const cap = m + kTb * scale;
+        console.log(`🚿 MAD price cap (2BA): median=$${m.toLocaleString()}, MAD=${mad.toFixed(0)}, cap=$${Math.round(cap).toLocaleString()}`);
+        if (scale > 0) {
+          tbPricesAll.forEach(({ idx, price }) => {
+            if (price > cap) {
+              twoBathMadOut.add(idx);
+              console.log(`🚿 OUTLIER (2BA PRICE-MAD): ${validComps[idx]?.address} at $${Number(price).toLocaleString()}`);
+            }
+          });
+        }
+      }
+      // Filter out MAD price outliers before $/sf outlier detection for two-bath
+      twoBathComps = twoBathComps.filter(c => !twoBathMadOut.has(validComps.indexOf(c)));
+
+      // Apply outlier detection to 2-bathroom comparables (on remaining set)
       const twoBathPrices = twoBathComps.map((comp, index) => ({
         price: comp.pricePerSqft,
         index: index,
@@ -1865,7 +1922,8 @@ export class MemStorage implements IStorage {
       // Format 2-bathroom comparables for display with outlier indicators
       comparablesWith2ndBath = twoBathComps.slice(0, 10).map((comp, index) => {
         const isOutlier = twoBathOutliers.includes(comp);
-        const addressPrefix = isOutlier ? '[OUTLIER] ' : '* ';
+        let addressPrefix = isOutlier ? '[OUTLIER] ' : '* ';
+        if (twoBathMadOut.has(validComps.indexOf(comp))) addressPrefix = '[PRICE OUTLIER] ' + addressPrefix;
 
         return {
           id: `2bath-comp-${index + 1}`,
