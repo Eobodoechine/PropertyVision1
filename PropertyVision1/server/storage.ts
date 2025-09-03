@@ -1652,21 +1652,50 @@ export class MemStorage implements IStorage {
     console.log(`   • IQR bounds: $${lowerBound.toFixed(0)} - $${upperBound.toFixed(0)} per sqft`);
     console.log(`   • Final bounds (with absolute limits): $${absoluteLowerBound.toFixed(0)} - $${absoluteUpperBound.toFixed(0)} per sqft`);
 
-    // Identify outliers and used comparables
-    const outlierIndices = new Set();
-    const usedIndices = new Set();
+    // Identify $/sqft outliers and provisional used set
+    const outlierIndices = new Set<number>();
+    const usedIndices = new Set<number>();
 
     pricesPerSqft.forEach(item => {
       if (item.price < absoluteLowerBound || item.price > absoluteUpperBound) {
         outlierIndices.add(item.index);
-        console.log(`   • OUTLIER DETECTED: ${validComps[item.index]?.address} at $${item.price}/sqft (outside $${absoluteLowerBound}-$${absoluteUpperBound} range)`);
+        console.log(`   • OUTLIER (PP$): ${validComps[item.index]?.address} at $${item.price}/sqft (outside $${absoluteLowerBound}-$${absoluteUpperBound})`);
       } else {
         usedIndices.add(item.index);
       }
     });
 
+    // Additional total-price outlier filtering on the non-$psf-outliers
+    const priceValues = Array.from(usedIndices)
+      .map(idx => ({ idx, price: Number(validComps[idx]?.price) }))
+      .filter(x => Number.isFinite(x.price) && x.price > 0)
+      .sort((a, b) => a.price - b.price);
+
+    let priceOutlierIndices = new Set<number>();
+    if (priceValues.length >= 5) {
+      const q1p = priceValues[Math.floor(priceValues.length * 0.25)]!.price;
+      const q3p = priceValues[Math.floor(priceValues.length * 0.75)]!.price;
+      const iqrp = q3p - q1p;
+      const lowerPriceBound = q1p - 0.75 * iqrp;
+      const upperPriceBound = q3p + 0.75 * iqrp;
+      // Market-aware guards for total price as well
+      const absLowerPrice = Math.max(lowerPriceBound, Math.round(q1p * 0.6), 50000);
+      const absUpperPrice = Math.min(upperPriceBound, Math.round(q3p * 1.6));
+      console.log(`   • Price bounds: $${absLowerPrice.toLocaleString()} - $${absUpperPrice.toLocaleString()}`);
+      priceValues.forEach(({ idx, price }) => {
+        if (price < absLowerPrice || price > absUpperPrice) {
+          priceOutlierIndices.add(idx);
+          console.log(`   • OUTLIER (PRICE): ${validComps[idx]?.address} at $${Number(price).toLocaleString()}`);
+        }
+      });
+      // Remove total-price outliers from the used set
+      priceOutlierIndices.forEach(idx => usedIndices.delete(idx));
+    }
+
     // Calculate ARV using non-outlier comparables
-    const usedPrices = pricesPerSqft.filter(item => !outlierIndices.has(item.index)).map(item => item.price);
+    const usedPrices = pricesPerSqft
+      .filter(item => !outlierIndices.has(item.index) && !priceOutlierIndices.has(item.index))
+      .map(item => item.price);
     const usedPricesSorted = [...usedPrices].sort((a, b) => a - b);
     const medianPricePerSqft = usedPricesSorted.length > 0 ? 
       usedPricesSorted[Math.floor(usedPricesSorted.length / 2)] : 
@@ -1675,7 +1704,10 @@ export class MemStorage implements IStorage {
     const arv = Math.round(medianPricePerSqft * subjectSqft);
 
     console.log(`   • Used in calculation: ${usedIndices.size} comparables`);
-    console.log(`   • Outliers excluded: ${outlierIndices.size} comparables`);
+    console.log(`   • Outliers excluded ($/sqft): ${outlierIndices.size} comparables`);
+    if (priceOutlierIndices.size > 0) {
+      console.log(`   • Outliers excluded (price): ${priceOutlierIndices.size} comparables`);
+    }
     console.log(`   • Final median price/sqft: $${medianPricePerSqft}`);
     console.log(`   • Calculated ARV: $${arv.toLocaleString()}`);
 
@@ -1748,7 +1780,12 @@ export class MemStorage implements IStorage {
       if (usedIndices.has(validComps.indexOf(comp))) {
         addressPrefix = '* '; // Asterisk for used in calculation
       } else if (outlierIndices.has(validComps.indexOf(comp))) {
-        addressPrefix = '[OUTLIER] '; // Mark outliers
+        addressPrefix = '[OUTLIER] '; // Mark $/sqft outliers
+      }
+
+      // Mark total-price outliers distinctly
+      if (priceOutlierIndices.has(validComps.indexOf(comp))) {
+        addressPrefix += '[PRICE OUTLIER] ';
       }
 
       // Add bathroom indicator for 1-bath subject properties
