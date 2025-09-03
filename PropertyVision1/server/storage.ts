@@ -244,6 +244,13 @@ export class MemStorage implements IStorage {
               const dSqft = Number(detail.description.sqft);
               if (this.isPlausibleSqft(dSqft)) finalSubjectSqft = dSqft;
             }
+            // Prefer consolidated baths value on subject when available (e.g., "1.5")
+            const consolidated = (detail.description as any)?.baths_consolidated;
+            const consolidatedNum = typeof consolidated === 'string' ? parseFloat(consolidated) : (typeof consolidated === 'number' ? consolidated : undefined);
+            if (Number.isFinite(consolidatedNum)) {
+              subjectProperty.description = subjectProperty.description || {};
+              (subjectProperty.description as any).baths_consolidated = consolidatedNum;
+            }
           }
         }
       } catch {}
@@ -1558,7 +1565,10 @@ export class MemStorage implements IStorage {
     }
 
     // Check if this is a 1-bathroom property that should trigger dual calculation
-    const computedBaths = computeBaths(subjectProperty.description);
+    // Prefer consolidated baths value (e.g., 1.5) when present; else fall back
+    const bathsConsolidatedRaw = (subjectProperty?.description as any)?.baths_consolidated;
+    const bathsConsolidated = typeof bathsConsolidatedRaw === 'string' ? parseFloat(bathsConsolidatedRaw) : (typeof bathsConsolidatedRaw === 'number' ? bathsConsolidatedRaw : NaN);
+    const computedBaths = Number.isFinite(bathsConsolidated) ? bathsConsolidated : computeBaths(subjectProperty.description);
     const actualBathrooms = computedBaths ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
     const shouldUseDualCalculation = actualBathrooms < 2;
 
@@ -1730,7 +1740,7 @@ export class MemStorage implements IStorage {
       confidence,
       pricePerSqFt: medianPricePerSqft.toString(),
       beds: subjectProperty.description?.beds || 0,
-      baths: (bathsComputed ?? subjectProperty.description?.baths ?? 0).toString(),
+      baths: (Number.isFinite(bathsConsolidated) ? bathsConsolidated : (bathsComputed ?? subjectProperty.description?.baths ?? 0)).toString(),
       sqft: subjectProperty.description?.sqft || subjectSqft,
       yearBuilt: subjectProperty.description?.year_built || finalYearBuilt,
       comparables: formattedComparables,
