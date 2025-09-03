@@ -1943,10 +1943,11 @@ export class MemStorage implements IStorage {
       // Calculate enhanced ARV using filtered 2-bathroom comparables if available, otherwise use 75th percentile
       let enhancedPricePerSqft;
       if (filteredTwoBathComps.length >= 3) {
-        // Use median of filtered 2-bathroom comparables
+        // Use 75th percentile of filtered 2-bathroom comparables
         const filteredTwoBathPrices = filteredTwoBathComps.map(comp => comp.pricePerSqft).sort((a, b) => a - b);
-        enhancedPricePerSqft = filteredTwoBathPrices[Math.floor(filteredTwoBathPrices.length / 2)];
-        console.log(`🚿 Using median of ${filteredTwoBathComps.length} filtered two-bathroom comparables: $${enhancedPricePerSqft}/sqft`);
+        const p75IndexTb = Math.floor(filteredTwoBathPrices.length * 0.75);
+        enhancedPricePerSqft = filteredTwoBathPrices[p75IndexTb] ?? filteredTwoBathPrices[filteredTwoBathPrices.length - 1];
+        console.log(`🚿 Using p75 of ${filteredTwoBathComps.length} filtered two-bathroom comparables: $${enhancedPricePerSqft}/sqft`);
       } else {
         // Fallback to 75th percentile of all non-outlier comparables
         const enhancedPrices = pricesPerSqft.filter(item => !outlierIndices.has(item.index)).map(item => item.price);
