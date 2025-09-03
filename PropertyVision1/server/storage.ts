@@ -1427,12 +1427,32 @@ export class MemStorage implements IStorage {
       throw new Error('No valid comparables provided for ARV calculation');
     }
 
-    // Enhanced ARV calculation with outlier detection and usage tracking
-    const pricesPerSqft = validComps.map((comp, index) => ({
-      price: comp.pricePerSqft,
-      index,
-      comp
-    })).filter(item => item.price && item.price > 0);
+    // Determine subject bathrooms (including half-baths)
+    const subjectBathsComputed = computeBaths(subjectProperty.description);
+    const subjectBaths = subjectBathsComputed ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
+    const subjectBathsNum = Number.isFinite(subjectBaths) ? subjectBaths : 0;
+
+    // Baseline ARV must use only comps with bathrooms <= subject's baths
+    const bathroomMatchedComps = validComps.filter((comp) => {
+      const compBaths = parseFloat(comp.baths?.toString() || 'NaN');
+      return Number.isFinite(compBaths) && compBaths <= subjectBathsNum + 1e-9;
+    });
+
+    if (bathroomMatchedComps.length === 0) {
+      console.log(`⚠️ BATH FILTER: No comparables with baths <= subject (${subjectBathsNum}). Falling back to all valid comps for baseline ARV.`);
+    } else {
+      console.log(`🚿 BATH FILTER: Using ${bathroomMatchedComps.length}/${validComps.length} comps with baths <= ${subjectBathsNum}`);
+    }
+
+    const compsForBaseline = bathroomMatchedComps.length > 0 ? bathroomMatchedComps : validComps;
+
+    // Enhanced ARV calculation with outlier detection and usage tracking (preserve original indices)
+    const pricesPerSqft = compsForBaseline
+      .map((comp) => {
+        const idx = validComps.indexOf(comp);
+        return { price: comp.pricePerSqft, index: idx, comp };
+      })
+      .filter(item => item.price && item.price > 0 && item.index >= 0);
 
     if (pricesPerSqft.length === 0) {
       throw new Error('No valid price per sqft data found');
@@ -1456,7 +1476,8 @@ export class MemStorage implements IStorage {
     const absoluteUpperBound = Math.min(upperBound, 300); // Exclude luxury outliers over $300/sqft
 
     console.log(`📊 ARV ANALYSIS BREAKDOWN:`);
-    console.log(`   • Total comparables: ${validComps.length}`);
+    console.log(`   • Total comparables (pre-bath filter): ${validComps.length}`);
+    console.log(`   • Baseline comps (bath <= subject ${subjectBathsNum}): ${compsForBaseline.length}`);
     console.log(`   • Price range: $${Math.min(...pricesPerSqft.map(p => p.price))} - $${Math.max(...pricesPerSqft.map(p => p.price))} per sqft`);
     console.log(`   • Q1: $${q1} | Q3: $${q3} | IQR: $${iqr}`);
     console.log(`   • IQR bounds: $${lowerBound.toFixed(0)} - $${upperBound.toFixed(0)} per sqft`);
