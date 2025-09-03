@@ -1603,31 +1603,9 @@ export class MemStorage implements IStorage {
 
     console.log(`🚿 BATHROOM ANALYSIS: ${actualBathrooms} baths detected - Dual calculation: ${shouldUseDualCalculation ? 'ENABLED' : 'DISABLED'}`);
 
-    // Filter comparables by bathroom count for 1-bathroom properties
-    let filteredComps = validComps;
-
-    if (shouldUseDualCalculation) {
-      // For 1-bathroom subject properties, filter comparables to 1-1.5 bathrooms only
-      filteredComps = validComps.filter(comp => {
-        const compBaths = parseFloat(comp.baths?.toString() || '0');
-        return compBaths >= 1 && compBaths <= 1.5;
-      });
-
-      console.log(`🚿 BATHROOM FILTERING: Reduced from ${validComps.length} to ${filteredComps.length} comparables (1-1.5 bath only)`);
-
-      // If we have too few bathroom-matched comps, keep some 2-bath properties but mark them differently
-      if (filteredComps.length < 5) {
-        const twoBathComps = validComps.filter(comp => {
-          const compBaths = parseFloat(comp.baths?.toString() || '0');
-          return compBaths >= 1.75 && compBaths <= 2.5;
-        });
-
-        const neededComps = Math.min(twoBathComps.length, 10 - filteredComps.length);
-        filteredComps = [...filteredComps, ...twoBathComps.slice(0, neededComps)];
-
-        console.log(`🚿 SUPPLEMENTED: Added ${neededComps} two-bathroom comparables for statistical validity`);
-      }
-    }
+    // Display only baseline-eligible comparables (align list with baseline ARV set)
+    const filteredComps = compsForBaseline;
+    console.log(`🖼️ DISPLAY COMPS: Showing ${filteredComps.length} baseline-eligible comparables`);
 
     // Format comparables with usage and bathroom indicators
     const formattedComparables = filteredComps.slice(0, 10).map((comp, index) => {
