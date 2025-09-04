@@ -269,3 +269,22 @@ CTX {"type":"console.error"}
 CTX {"type":"console.error"}
 [2025-09-03T16:39:58.714Z] ERROR "[WEB] Merged details: {\"beds\":1,\"baths\":5,\"sqft\":null,\"yearBuilt\":1996,\"type\":null,\"sub_type\":null,\"photos\":null}" 
 CTX {"type":"console.error"}
+[2025-09-03T19:09:33.964Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-03T21:34:10.999Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-03T21:39:21.284Z] ERROR Could not find the build directory: /Users/eobodoechine/PropertyVision1/PropertyVision1/server/public, make sure to build the client first 
+STACK Error: Could not find the build directory: /Users/eobodoechine/PropertyVision1/PropertyVision1/server/public, make sure to build the client first
+    at serveStatic (/Users/eobodoechine/PropertyVision1/PropertyVision1/server/vite.ts:76:11)
+    at <anonymous> (/Users/eobodoechine/PropertyVision1/PropertyVision1/server/index.ts:140:3) 
+CTX {"type":"uncaughtException"}
