@@ -592,44 +592,15 @@ export class MemStorage implements IStorage {
           let tCount = finalValidComps.filter(isTwoBathEligible).length;
           console.log(`      Coverage after 12m: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
 
-          // 2) Widen size band to ±25%
-          if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
-            const min25 = Math.round(finalSubjectSqft * 0.75);
-            const max25 = Math.round(finalSubjectSqft * 1.25);
-            console.log(`   ↪️ EXPAND: Widen size band to ±25% (${min25}-${max25})`);
-            const before = finalValidComps.length;
-            addFiltered([...phaseOneComps], min25, max25);
-            const after = finalValidComps.length;
-            console.log(`      +${after - before} comps added from ±25% size band`);
-            bCount = finalValidComps.filter(isBaselineEligible).length;
-            tCount = finalValidComps.filter(isTwoBathEligible).length;
-            console.log(`      Coverage after ±25%: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
-          }
+          // Size band remains max ±20% per requirement (no widening)
 
-          // 3) Widen size band to ±30%
-          if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
-            const min30 = Math.round(finalSubjectSqft * 0.70);
-            const max30 = Math.round(finalSubjectSqft * 1.30);
-            console.log(`   ↪️ EXPAND: Widen size band to ±30% (${min30}-${max30})`);
-            const before = finalValidComps.length;
-            addFiltered([...phaseOneComps], min30, max30);
-            const after = finalValidComps.length;
-            console.log(`      +${after - before} comps added from ±30% size band`);
-            bCount = finalValidComps.filter(isBaselineEligible).length;
-            tCount = finalValidComps.filter(isTwoBathEligible).length;
-            console.log(`      Coverage after ±30%: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
-          }
-
-          // 4) Drop year filter and retry 12-month search to broaden results
+          // Drop year filter and retry 12-month search to broaden results (keep ±20% band)
           if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
             try {
               console.log(`   ↪️ EXPAND: Drop year filter and retry 12-month search`);
               const compsNoYear = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, null, subjectProperty.property_id || '', 12);
               const before = finalValidComps.length;
-              // Use the widest size band attempted so far (±30%) to admit candidates
-              const min30 = Math.round(finalSubjectSqft * 0.70);
-              const max30 = Math.round(finalSubjectSqft * 1.30);
-              addFiltered(compsNoYear, min30, max30);
+              addFiltered(compsNoYear, minSqft, maxSqft);
               const after = finalValidComps.length;
               console.log(`      +${after - before} comps added after dropping year filter`);
             } catch {}
@@ -1576,6 +1547,12 @@ export class MemStorage implements IStorage {
     finalYearBuilt: number | null
   ): Promise<any> {
     console.log(`🔢 NEW ARV CALCULATION: Processing ${validComps.length} valid comparables`);
+    const priceOnlyOutliers = ((process.env.PRICE_ONLY_OUTLIERS || '').toString().trim() !== ''
+      && (process.env.PRICE_ONLY_OUTLIERS || '0') !== '0'
+      && (process.env.PRICE_ONLY_OUTLIERS || '').toLowerCase() !== 'false');
+    if (priceOnlyOutliers) {
+      console.log('⚙️ OUTLIERS MODE: PRICE-ONLY (MAD + price IQR); skipping $/sqft IQR');
+    }
     // Targeted detail fill: populate yearBuilt for up to 10 comps for better reporting
     try { await this.fillMissingYearsForComps(validComps, 10); } catch {}
 
@@ -1687,12 +1664,14 @@ export class MemStorage implements IStorage {
         outlierIndices.add(item.index);
         return;
       }
-      if (item.price < absoluteLowerBound || item.price > absoluteUpperBound) {
-        outlierIndices.add(item.index);
-        console.log(`   • OUTLIER (PP$): ${validComps[item.index]?.address} at $${item.price}/sqft (outside $${absoluteLowerBound}-$${absoluteUpperBound})`);
-      } else {
-        usedIndices.add(item.index);
+      if (!priceOnlyOutliers) {
+        if (item.price < absoluteLowerBound || item.price > absoluteUpperBound) {
+          outlierIndices.add(item.index);
+          console.log(`   • OUTLIER (PP$): ${validComps[item.index]?.address} at $${item.price}/sqft (outside $${absoluteLowerBound}-$${absoluteUpperBound})`);
+          return;
+        }
       }
+      usedIndices.add(item.index);
     });
 
     // Additional total-price outlier filtering on the non-$psf-outliers
@@ -1893,7 +1872,7 @@ export class MemStorage implements IStorage {
       let filteredTwoBathComps = twoBathComps;
       let twoBathOutliers = [];
 
-      if (twoBathPrices.length >= 5) {
+      if (!priceOnlyOutliers && twoBathPrices.length >= 5) {
         // Apply outlier detection to 2-bathroom comparables (market-aware bounds)
         const q1Index = Math.floor(twoBathPrices.length * 0.25);
         const q3Index = Math.floor(twoBathPrices.length * 0.75);
