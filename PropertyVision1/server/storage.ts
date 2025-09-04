@@ -1862,6 +1862,32 @@ export class MemStorage implements IStorage {
       // Filter out MAD price outliers before $/sf outlier detection for two-bath
       twoBathComps = twoBathComps.filter(c => !twoBathMadOut.has(validComps.indexOf(c)));
 
+      // Two-bath total-price IQR filtering (market-aware), applied unless disabled by design
+      // Always apply in PRICE_ONLY_OUTLIERS mode (since that's price-only filtering),
+      // and also apply in normal mode to mirror baseline's price-IQR second pass.
+      const tbPriceIqrSorted = twoBathComps
+        .map(c => ({ idx: validComps.indexOf(c), price: Number(c?.price) }))
+        .filter(x => x.idx >= 0 && Number.isFinite(x.price) && x.price > 0)
+        .sort((a, b) => a.price - b.price);
+      const twoBathPriceIqrOut = new Set<number>();
+      if (tbPriceIqrSorted.length >= 5) {
+        const q1p = tbPriceIqrSorted[Math.floor(tbPriceIqrSorted.length * 0.25)]!.price;
+        const q3p = tbPriceIqrSorted[Math.floor(tbPriceIqrSorted.length * 0.75)]!.price;
+        const iqrp = q3p - q1p;
+        const lowerPriceBound2 = q1p - 0.75 * iqrp;
+        const upperPriceBound2 = q3p + 0.75 * iqrp;
+        const absLowerP2 = Math.max(lowerPriceBound2, Math.round(q1p * 0.6), 50000);
+        const absUpperP2 = Math.min(upperPriceBound2, Math.round(q3p * 1.6));
+        console.log(`🚿 2-BA PRICE BOUNDS: $${absLowerP2.toLocaleString()} - $${absUpperP2.toLocaleString()}`);
+        tbPriceIqrSorted.forEach(({ idx, price }) => {
+          if (price < absLowerP2 || price > absUpperP2) {
+            twoBathPriceIqrOut.add(idx);
+            console.log(`🚿 2-BA OUTLIER (PRICE-IQR): ${validComps[idx]?.address} at $${Number(price).toLocaleString()}`);
+          }
+        });
+        twoBathComps = twoBathComps.filter(c => !twoBathPriceIqrOut.has(validComps.indexOf(c)));
+      }
+
       // Apply outlier detection to 2-bathroom comparables (on remaining set)
       const twoBathPrices = twoBathComps.map((comp, index) => ({
         price: comp.pricePerSqft,
@@ -1905,6 +1931,7 @@ export class MemStorage implements IStorage {
         const isOutlier = twoBathOutliers.includes(comp);
         let addressPrefix = isOutlier ? '[OUTLIER] ' : '* ';
         if (twoBathMadOut.has(validComps.indexOf(comp))) addressPrefix = '[PRICE OUTLIER] ' + addressPrefix;
+        if (twoBathPriceIqrOut.has(validComps.indexOf(comp))) addressPrefix = '[PRICE OUTLIER] ' + addressPrefix;
 
         return {
           id: `2bath-comp-${index + 1}`,
@@ -1922,11 +1949,10 @@ export class MemStorage implements IStorage {
       // Calculate enhanced ARV using filtered 2-bathroom comparables if available, otherwise use 75th percentile
       let enhancedPricePerSqft;
       if (filteredTwoBathComps.length >= 3) {
-        // Use 75th percentile of filtered 2-bathroom comparables
+        // Make estimator identical to baseline: median of filtered two-bath $/sqft
         const filteredTwoBathPrices = filteredTwoBathComps.map(comp => comp.pricePerSqft).sort((a, b) => a - b);
-        const p75IndexTb = Math.floor(filteredTwoBathPrices.length * 0.75);
-        enhancedPricePerSqft = filteredTwoBathPrices[p75IndexTb] ?? filteredTwoBathPrices[filteredTwoBathPrices.length - 1];
-        console.log(`🚿 Using p75 of ${filteredTwoBathComps.length} filtered two-bathroom comparables: $${enhancedPricePerSqft}/sqft`);
+        enhancedPricePerSqft = filteredTwoBathPrices[Math.floor(filteredTwoBathPrices.length / 2)];
+        console.log(`🚿 Using median of ${filteredTwoBathComps.length} filtered two-bathroom comparables: $${enhancedPricePerSqft}/sqft`);
       } else {
         // Fallback to 75th percentile of all non-outlier comparables
         const enhancedPrices = pricesPerSqft.filter(item => !outlierIndices.has(item.index)).map(item => item.price);
