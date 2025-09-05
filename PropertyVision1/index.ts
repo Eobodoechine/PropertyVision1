@@ -1,6 +1,7 @@
 // Robust Express entry (TypeScript / ESM via tsx)
 import 'dotenv/config';
 import express, { Router } from 'express';
+import router from './routes';
 import cors from 'cors';
 
 const app = express();
@@ -8,18 +9,8 @@ app.set('trust proxy', 1);
 app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
-// Import routes with flexible shapes (default export, named {router}, or directly a Router)
-let mounted = false;
-try {
-  const mod = await import('./routes');
-  const candidate: any = (mod as any).default ?? (mod as any).router ?? mod;
-  if (candidate && typeof candidate === 'function') {
-    app.use('/api', candidate as Router);
-    mounted = true;
-  }
-} catch (err: any) {
-  console.warn('[server] routes import failed:', err?.message || err);
-}
+// Mount API router (static import ensures availability in bundled builds)
+app.use('/api', router as Router);
 
 app.get('/', (_req, res) => {
   res.json({
@@ -34,10 +25,6 @@ app.get('/', (_req, res) => {
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
-
-if (!mounted) {
-  console.warn('[server] No router mounted (server/routes.* not exporting a router).');
-}
 
 app.use('/api', (req, res) => {
   res.status(404).json({ error: 'Not found', path: req.path });

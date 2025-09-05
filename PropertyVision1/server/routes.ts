@@ -10,10 +10,50 @@ import { requireRapidKey } from './middleware/requireRapidKey';
 // Create a new router instance to export
 const router = Router();
 
+// Simple info endpoint with version stamp for verification
+router.get('/info', (_req, res) => {
+  res.json({
+    service: 'PropertyVision API',
+    version: 'ols-single-source-20250904',
+    time: new Date().toISOString(),
+  });
+});
+
+// Non-sensitive env presence check (no key values leaked)
+router.get('/env-check', (_req, res) => {
+  res.json({
+    hasRapidKey: Boolean(process.env.RAPIDAPI_KEY && process.env.RAPIDAPI_KEY.trim()),
+    hasMapsKey: Boolean(process.env.GOOGLE_MAPS_API_KEY && process.env.GOOGLE_MAPS_API_KEY.trim()),
+    port: process.env.PORT || '5000'
+  });
+});
+
 // Analyze property endpoint
 router.post("/property/analyze", requireRapidKey, async (req, res) => {
   try {
     const addressSearch = addressSearchSchema.parse(req.body);
+
+    // Ensure downstream code sees the keys even if provided via headers
+    const rapidFromHeader = (req as any).rapidApiKey as string | undefined;
+    if (rapidFromHeader && (!process.env.RAPIDAPI_KEY || process.env.RAPIDAPI_KEY.trim() === '')) {
+      process.env.RAPIDAPI_KEY = rapidFromHeader;
+    }
+    const mapsFromHeader = (req.headers['x-google-maps-key'] || req.headers['X-Google-Maps-Key']) as any;
+    const mapsKey = Array.isArray(mapsFromHeader) ? mapsFromHeader[0] : mapsFromHeader;
+    if (typeof mapsKey === 'string' && mapsKey.trim()) {
+      if (!process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY.trim() === '') {
+        process.env.GOOGLE_MAPS_API_KEY = mapsKey.trim();
+      }
+    }
+
+    // Per-request debug and distance controls (opt-in via query)
+    const dbg = String(req.query.debug || '').toLowerCase();
+    if (dbg && dbg !== '0' && dbg !== 'false') process.env.ANALYZE_DEBUG = '1';
+    const distanceCap = typeof req.query.distanceCap === 'string' ? req.query.distanceCap : '';
+    if (distanceCap && !Number.isNaN(Number(distanceCap))) {
+      process.env.ANALYZE_DISTANCE_START = String(Math.max(0.25, Math.min(5, Number(distanceCap))));
+      process.env.ANALYZE_DISTANCE_MAX = process.env.ANALYZE_DISTANCE_START;
+    }
 
     // Call storage to analyze the property
     const analysis = await storage.analyzeProperty(addressSearch);
@@ -41,7 +81,10 @@ router.post("/property/analyze", requireRapidKey, async (req, res) => {
           pricePerSqFt: (analysis as any).arvWith2ndBathroom?.pricePerSqFt ? `$${parseFloat((analysis as any).arvWith2ndBathroom.pricePerSqFt).toFixed(0)}` : "N/A",
         },
         comparablesWith2ndBath: Array.isArray((analysis as any).comparablesWith2ndBath) ? (analysis as any).comparablesWith2ndBath : [],
-      })
+      }),
+      // alternates removed from payload for simplicity
+      ...(typeof (analysis as any).ols !== 'undefined' ? { ols: (analysis as any).ols } : {}),
+      ...((process.env.ANALYZE_DEBUG && (analysis as any).debug) ? { debug: (analysis as any).debug } : {}),
     };
 
     res.json(result);

@@ -65,4 +65,15 @@ export interface PropertyAnalysisResult {
   arvWith2ndBathroom?: PropertyARV;
   comparablesWith2ndBath?: ComparableProperty[];
   isDualCalculation?: boolean;
+  // Optional alternates for transparency (regression, weighted, etc.)
+  alternates?: {
+    baselineRegression?: {
+      ols?: { slope: number; intercept: number; r2: number; predictedArv: number };
+      weightedOls?: { slope: number; intercept: number; r2: number; predictedArv: number };
+    };
+    twoBathRegression?: {
+      ols?: { slope: number; intercept: number; r2: number; predictedArv: number };
+      weightedOls?: { slope: number; intercept: number; r2: number; predictedArv: number };
+    };
+  }
 }
