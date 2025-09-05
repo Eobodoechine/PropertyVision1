@@ -82,7 +82,7 @@ router.post("/property/analyze", requireRapidKey, async (req, res) => {
         },
         comparablesWith2ndBath: Array.isArray((analysis as any).comparablesWith2ndBath) ? (analysis as any).comparablesWith2ndBath : [],
       }),
-      alternates: (analysis as any).alternates || undefined,
+      // alternates removed from payload for simplicity
       ...(typeof (analysis as any).ols !== 'undefined' ? { ols: (analysis as any).ols } : {}),
       ...((process.env.ANALYZE_DEBUG && (analysis as any).debug) ? { debug: (analysis as any).debug } : {}),
     };

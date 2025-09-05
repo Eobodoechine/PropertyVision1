@@ -1624,36 +1624,15 @@ export class MemStorage implements IStorage {
 
     pricesPerSqft.sort((a, b) => a.price - b.price);
 
-    // === Stage 1: MAD-based total-price cap (apply first) ===
-    const priceTotalsAll = compsForBaseline
-      .map((c) => ({ idx: validComps.indexOf(c), price: Number(c?.price) }))
-      .filter(x => x.idx >= 0 && Number.isFinite(x.price) && x.price > 0)
-      .sort((a, b) => a.price - b.price);
-
+    // MAD-based total-price cap removed per request
     const madPriceOutliersFirst = new Set<number>();
-    if (priceTotalsAll.length >= 5) {
-      const mid = Math.floor(priceTotalsAll.length / 2);
-      const medianPrice = priceTotalsAll[mid].price;
-      const deviations = priceTotalsAll.map(x => Math.abs(x.price - medianPrice)).sort((a, b) => a - b);
-      const mad = deviations[mid];
-      const scale = 1.4826 * mad;
-      const kMad = PRICE_MAD_K; // tunable
-      const upperMadCap = medianPrice + kMad * scale;
-      console.log(`   • MAD price cap (baseline): median=$${medianPrice.toLocaleString()}, MAD=${mad.toFixed(0)}, cap=$${Math.round(upperMadCap).toLocaleString()}`);
-      if (scale > 0) {
-        priceTotalsAll.forEach(({ idx, price }) => {
-          if (price > upperMadCap) {
-            madPriceOutliersFirst.add(idx);
-            console.log(`   • OUTLIER (PRICE-MAD): ${validComps[idx]?.address} at $${Number(price).toLocaleString()}`);
-          }
-        });
-      }
-    }
 
-    console.log(`📊 ARV ANALYSIS BREAKDOWN:`);
-    console.log(`   • Total comparables (pre-bath filter): ${validComps.length}`);
-    console.log(`   • Baseline comps (bath <= subject ${subjectBathsNum}): ${compsForBaseline.length}`);
-    console.log(`   • Price range: $${Math.min(...pricesPerSqft.map(p => p.price))} - $${Math.max(...pricesPerSqft.map(p => p.price))} per sqft`);
+    if ((String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false')) {
+      console.log(`📊 ARV ANALYSIS BREAKDOWN:`);
+      console.log(`   • Total comparables (pre-bath filter): ${validComps.length}`);
+      console.log(`   • Baseline comps (bath <= subject ${subjectBathsNum}): ${compsForBaseline.length}`);
+      console.log(`   • Price range: $${Math.min(...pricesPerSqft.map(p => p.price))} - $${Math.max(...pricesPerSqft.map(p => p.price))} per sqft`);
+    }
 
     // Remove IQR-based $/sqft and price outlier filtering; keep MAD total-price cap only
     const outlierIndices = new Set<number>();
@@ -1686,7 +1665,11 @@ export class MemStorage implements IStorage {
       }
     }
 
-    // Skip $/sqft IQR outlier filtering; usedIndices already populated via MAD cap
+    // Populate usedIndices with all baseline comps (no MAD/IQR filtering)
+    compsForBaseline.forEach((comp) => {
+      const idx = validComps.indexOf(comp);
+      if (idx >= 0) usedIndices.add(idx);
+    });
 
     // No additional total-price IQR filtering
     const priceOutlierIndices = new Set<number>();
@@ -1736,8 +1719,8 @@ export class MemStorage implements IStorage {
       } catch {}
     }
 
-    // Calculate ARV using non-outlier comparables
-    const banned = madPriceOutliersFirst; // only MAD price cap
+    // Calculate ARV using all baseline comps (no MAD/IQR bans)
+    const banned = new Set<number>();
     const usedPrices = pricesPerSqft
       .filter(item => !banned.has(item.index))
       .map(item => item.price);
@@ -1754,8 +1737,10 @@ export class MemStorage implements IStorage {
     if (priceOutlierIndices.size > 0) {
       console.log(`   • Outliers excluded (price): ${priceOutlierIndices.size} comparables`);
     }
-    console.log(`   • Final median price/sqft: $${medianPricePerSqft}`);
-    console.log(`   • Calculated ARV: $${arv.toLocaleString()}`);
+    if ((String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false')) {
+      console.log(`   • Final median price/sqft: $${medianPricePerSqft}`);
+      console.log(`   • Calculated ARV: $${arv.toLocaleString()}`);
+    }
 
     let confidence = usedIndices.size >= 5 ? 'High' : usedIndices.size >= 3 ? 'Medium' : 'Low';
     // Allow overriding displayed pricePerSqFt with OLS slope when used
@@ -1814,11 +1799,15 @@ export class MemStorage implements IStorage {
     const actualBathrooms = computedBaths ?? parseFloat(subjectProperty.description?.baths?.toString() || '0');
     const shouldUseDualCalculation = actualBathrooms < 2;
 
-    console.log(`🚿 BATHROOM ANALYSIS: ${actualBathrooms} baths detected - Dual calculation: ${shouldUseDualCalculation ? 'ENABLED' : 'DISABLED'}`);
+    if ((String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false')) {
+      console.log(`🚿 BATHROOM ANALYSIS: ${actualBathrooms} baths detected - Dual calculation: ${shouldUseDualCalculation ? 'ENABLED' : 'DISABLED'}`);
+    }
 
     // Display only baseline-eligible comparables (align list with baseline ARV set)
     const filteredComps = compsForBaseline;
-    console.log(`🖼️ DISPLAY COMPS: Showing ${filteredComps.length} baseline-eligible comparables`);
+    if ((String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false')) {
+      console.log(`🖼️ DISPLAY COMPS: Showing ${filteredComps.length} baseline-eligible comparables`);
+    }
 
     // Format comparables with usage and bathroom indicators
     let formattedComparables = filteredComps.slice(0, 10).map((comp, index) => {
@@ -1885,32 +1874,7 @@ export class MemStorage implements IStorage {
 
       console.log(`🚿 FOUND ${twoBathComps.length} two-bathroom comparables for enhanced ARV calculation`);
 
-      // Two-bath MAD cap (stricter when subject < 2 baths)
-      const tbPricesAll = twoBathComps
-        .map((c) => ({ idx: validComps.indexOf(c), price: Number(c?.price) }))
-        .filter(x => x.idx >= 0 && Number.isFinite(x.price) && x.price > 0)
-        .sort((a, b) => a.price - b.price);
-      const twoBathMadOut = new Set<number>();
-      if (tbPricesAll.length >= 5) {
-        const mid = Math.floor(tbPricesAll.length / 2);
-        const m = tbPricesAll[mid].price;
-        const dev = tbPricesAll.map(x => Math.abs(x.price - m)).sort((a, b) => a - b);
-        const mad = dev[mid];
-        const scale = 1.4826 * mad;
-        const kTb = actualBathrooms < 2 ? 2.5 : 3.0;
-        const cap = m + kTb * scale;
-        console.log(`🚿 MAD price cap (2BA): median=$${m.toLocaleString()}, MAD=${mad.toFixed(0)}, cap=$${Math.round(cap).toLocaleString()}`);
-        if (scale > 0) {
-          tbPricesAll.forEach(({ idx, price }) => {
-            if (price > cap) {
-              twoBathMadOut.add(idx);
-              console.log(`🚿 OUTLIER (2BA PRICE-MAD): ${validComps[idx]?.address} at $${Number(price).toLocaleString()}`);
-            }
-          });
-        }
-      }
-      // Filter out MAD price outliers before $/sf outlier detection for two-bath
-      twoBathComps = twoBathComps.filter(c => !twoBathMadOut.has(validComps.indexOf(c)));
+      // Two-bath MAD cap removed per request
 
       // Skip two-bath total-price IQR filtering (not used in OLS selection)
 
@@ -1993,41 +1957,7 @@ export class MemStorage implements IStorage {
 
       console.log(`🚿 2ND BATHROOM ARV: $${enhancedArv.toLocaleString()} (${enhancedPricePerSqft}/sqft from ${twoBathComps.length >= 3 ? '2-bath comps' : 'baseline median'})`);
 
-      // Compute two-bath regression alternates from the filtered two-bath comp set
-      try {
-        const rows: Array<{ sqft: number; price: number; dist?: number; ageMonths?: number }> = twoBathComps
-          .map((c: any) => {
-            const sqft = Number(c?.sqft);
-            const price = Number(c?.price);
-            if (!Number.isFinite(sqft) || !Number.isFinite(price) || sqft <= 0 || price <= 0) return null;
-            let ageMonths: number | undefined = undefined;
-            const dateStr = (c?.soldDate || c?.close_date || c?.list_date || '') as string;
-            if (typeof dateStr === 'string' && dateStr.includes('-')) {
-              const iso = dateStr.split('T')[0];
-              const parts = iso.split('-');
-              if (parts.length >= 2) {
-                const y = Number(parts[0]);
-                const m = Number(parts[1]);
-                const d = Number(parts[2] || '1');
-                const sold = new Date(Number.isFinite(y) ? y : 1970, Number.isFinite(m) ? m - 1 : 0, Number.isFinite(d) ? d : 1);
-                const now = new Date();
-                ageMonths = (now.getFullYear() - sold.getFullYear()) * 12 + (now.getMonth() - sold.getMonth());
-                if (!Number.isFinite(ageMonths) || ageMonths < 0) ageMonths = 0;
-              }
-            }
-            const dist = Number(c?.distance_miles);
-            return { sqft, price, dist: Number.isFinite(dist) ? dist : undefined, ageMonths };
-          })
-          .filter(Boolean) as any;
-        if (rows.length >= 2) {
-          const ols = computeOls(rows);
-          const wols = computeWeightedOls(rows);
-          twoBathRegressionData = {
-            ols: { slope: ols.slope, intercept: ols.intercept, r2: ols.r2, predictedArv: Math.round(ols.predicted) },
-            weightedOls: { slope: wols.slope, intercept: wols.intercept, r2: wols.r2, predictedArv: Math.round(wols.predicted) },
-          };
-        }
-      } catch {}
+      // Skip two-bath regression alternates (removed)
     }
 
     // === Regression alternates (price ~ sqft) ===
@@ -2352,14 +2282,7 @@ export class MemStorage implements IStorage {
     // Compute baths with halves, if present
     const bathsComputed = computeBaths(subjectProperty.description);
 
-    // Attach alternates; include two-bath regression if available/computed
-    let alternates: any = {
-      baselineRegression: {
-        ols: { slope: baselineOls.slope, intercept: baselineOls.intercept, r2: baselineOls.r2, predictedArv: Math.round(baselineOls.predicted) },
-        weightedOls: { slope: baselineWeighted.slope, intercept: baselineWeighted.intercept, r2: baselineWeighted.r2, predictedArv: Math.round(baselineWeighted.predicted) },
-      },
-      ...(twoBathRegressionData ? { twoBathRegression: twoBathRegressionData } : {})
-    };
+    // Alternates removed to simplify payload and logging
 
     // Attach OLS audit metadata
     let olsAudit: any = undefined;
@@ -2427,19 +2350,9 @@ export class MemStorage implements IStorage {
       isDualCalculation: shouldUseDualCalculation,
       arvWith2ndBathroom,
       comparablesWith2ndBath,
-      alternates,
+      
       ...((String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false' && debugBlock) ? { debug: debugBlock } : {}),
-      ...(olsAudit ? { ols: olsAudit } : {}),
-      analysis: {
-        totalComparables: validComps.length,
-        usedInCalculation: usedIndices.size,
-        outliers: outlierIndices.size,
-        medianPricePerSqft: medianPricePerSqft,
-        priceRange: {
-          min: Math.min(...pricesPerSqft.map(p => p.price)),
-          max: Math.max(...pricesPerSqft.map(p => p.price))
-        }
-      }
+      ...(olsAudit ? { ols: olsAudit } : {})
     };
   }
 
