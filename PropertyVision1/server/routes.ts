@@ -14,7 +14,7 @@ const router = Router();
 router.get('/info', (_req, res) => {
   res.json({
     service: 'PropertyVision API',
-    version: 'ols-single-source-20250904',
+    version: 'ols-1mi-yearband-no-mad-20250905',
     time: new Date().toISOString(),
   });
 });
@@ -67,10 +67,12 @@ router.post("/property/analyze", requireRapidKey, async (req, res) => {
         pricePerSqFt: analysis.pricePerSqFt || "N/A",
       },
       property: {
-        beds: analysis.beds || 0,
-        baths: analysis.baths ? parseFloat(analysis.baths) : 0,
-        sqft: analysis.sqft || 0,
-        yearBuilt: analysis.yearBuilt || 0,
+        beds: Number.isFinite(Number(analysis.beds)) ? Number(analysis.beds) : 0,
+        baths: Number.isFinite(Number(analysis.baths)) ? Number(analysis.baths) : 0,
+        sqft: Number.isFinite(Number(analysis.sqft)) ? Number(analysis.sqft) : 0,
+        yearBuilt: (typeof (analysis as any).yearBuilt === 'number'
+          ? (analysis as any).yearBuilt
+          : (Number.isFinite(Number((analysis as any).yearBuilt)) ? Number((analysis as any).yearBuilt) : null)),
       },
       comparables: Array.isArray(analysis.comparables) ? analysis.comparables : [],
       isDualCalculation: (analysis as any).isDualCalculation || false,

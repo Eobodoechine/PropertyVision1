@@ -39,6 +39,12 @@ export class MemStorage implements IStorage {
     return Number.isFinite(v) && v >= 600 && v <= 10000;
   }
 
+  private isPlausibleYear(y: any): boolean {
+    const v = Number(y);
+    const now = new Date().getFullYear();
+    return Number.isFinite(v) && v >= 1800 && v <= now + 1;
+  }
+
   async getPropertyAnalysis(id: string): Promise<PropertyAnalysis | undefined> {
     // No storage - always return undefined
     return undefined;
@@ -226,19 +232,30 @@ export class MemStorage implements IStorage {
       console.log(`${subjectBeds}bed/${subjectBaths}bath`);
 
       // Prepare final subject fields; prefer MLS, fill missing from RapidAPI detail
-      let finalYearBuilt = subjectYearBuilt;
+      // Normalize year built from MLS fields (year_built or yearBuilt)
+      const mlsYearCandidates: Array<number | null | undefined> = [
+        subjectProperty?.description?.year_built as any,
+        (subjectProperty?.description as any)?.yearBuilt as any
+      ];
+      let finalYearBuilt: number | null | undefined = mlsYearCandidates.map(n => Number(n)).find(n => this.isPlausibleYear(n));
       let finalPropertyType = propertyType;
       let finalSubjectSqft = subjectSqft;
 
       // If any key subject fields are missing and we have a property_id, fetch detail to fill blanks
       try {
         const needsDetail = (!!subjectProperty?.property_id) && (
-          !finalYearBuilt || !finalPropertyType || !finalSubjectSqft || !subjectBeds || !subjectBaths
+          !this.isPlausibleYear(finalYearBuilt) || !finalPropertyType || !finalSubjectSqft || !subjectBeds || !subjectBaths
         );
         if (needsDetail) {
           const detail = await this.fetchDetailById(String(subjectProperty.property_id));
           if (detail && detail.description) {
-            finalYearBuilt = finalYearBuilt ?? detail.description.year_built ?? finalYearBuilt;
+            // Prefer any plausible year from detail
+            const detailYearCandidates: Array<number | null | undefined> = [
+              (detail.description as any)?.year_built as any,
+              (detail.description as any)?.yearBuilt as any
+            ];
+            const pick = detailYearCandidates.map(n => Number(n)).find(n => this.isPlausibleYear(n));
+            if (this.isPlausibleYear(pick) && !this.isPlausibleYear(finalYearBuilt)) finalYearBuilt = pick as number;
             finalPropertyType = finalPropertyType ?? (detail.description.type ? String(detail.description.type).toLowerCase() : finalPropertyType);
             // Only fill sqft if MLS missing/implausible
             if (!finalSubjectSqft || !this.isPlausibleSqft(finalSubjectSqft)) {
@@ -286,9 +303,11 @@ export class MemStorage implements IStorage {
         const researchedData = await this.researchPropertyData(normalizedAddress);
         console.log(`🔍 WEB RESEARCH RESULT: ${researchedData ? JSON.stringify(researchedData) : 'null'}`);
         if (researchedData) {
-          if (!finalYearBuilt && researchedData.yearBuilt) {
-            finalYearBuilt = researchedData.yearBuilt;
-            console.log(`✅ WEB RESEARCH SUCCESS: Found year built ${finalYearBuilt}`);
+          if (!this.isPlausibleYear(finalYearBuilt) && this.isPlausibleYear(researchedData.yearBuilt)) {
+            finalYearBuilt = Number(researchedData.yearBuilt);
+            if ((String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false')) {
+              console.log(`✅ WEB RESEARCH SUCCESS: Found year built ${finalYearBuilt}`);
+            }
           }
           if (typeof researchedData.sqft === 'number' && this.isPlausibleSqft(researchedData.sqft)) {
             if (!finalSubjectSqft || !this.isPlausibleSqft(finalSubjectSqft)) {
@@ -2064,7 +2083,7 @@ export class MemStorage implements IStorage {
     // This becomes the primary ARV, with a paired 2-bath estimate when applicable.
     if (subjectBathsNum < 2 - 1e-9) {
       const toNumber = (x: any) => Number.isFinite(Number(x)) ? Number(x) : NaN;
-      const selectWithRadius = (entries: any[], take: number) => {
+      const selectWithRadius = async (entries: any[], take: number) => {
         let start = Number(process.env.ANALYZE_DISTANCE_START || '1');
         let step = Number(process.env.ANALYZE_DISTANCE_STEP || '0.25');
         let max = Number(process.env.ANALYZE_DISTANCE_MAX || '2');
@@ -2074,11 +2093,45 @@ export class MemStorage implements IStorage {
         let chosen = start;
         while (chosen <= max + 1e-9) {
           const within = entries.filter(c => Number.isFinite(Number(c?.distance_miles)) && Number(c.distance_miles) <= chosen + 1e-9);
-          const scored = within
-            .map(c => ({ comp: c, sqft: toNumber(c?.sqft), price: toNumber(c?.price) }))
+          // Year band constraint when subject year is plausible
+          const subjYear = this.isPlausibleYear(finalYearBuilt) ? Number(finalYearBuilt) : NaN;
+          const minYear = Number.isFinite(subjYear) ? subjYear - 10 : NaN;
+          const maxYear = Number.isFinite(subjYear) ? subjYear + 10 : NaN;
+          const getYear = (c: any) => {
+            const y = Number((c as any)?.yearBuilt ?? (c as any)?.year_built);
+            return Number.isFinite(y) ? y : NaN;
+          };
+          let candidates = within
+            .map(c => ({ comp: c, sqft: toNumber(c?.sqft), price: toNumber(c?.price), year: getYear(c) }))
             .filter(r => Number.isFinite(r.sqft) && r.sqft > 0 && Number.isFinite(r.price) && r.price > 0)
             .sort((a, b) => b.price - a.price);
-          const chosenRows = scored.slice(0, Math.max(3, Math.min(take, scored.length)));
+          // If subject year is known, try to backfill missing years only for likely OLS contenders
+          if (Number.isFinite(subjYear)) {
+            const inBand = candidates.filter(r => Number.isFinite(r.year) && r.year >= minYear && r.year <= maxYear);
+            const dbgOn = (String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false');
+            const attemptedFill: string[] = [];
+            if (inBand.length < take) {
+              const missingRows = candidates.filter(r => !Number.isFinite(r.year)).slice(0, Math.max(0, take - inBand.length + 2));
+              const missing = missingRows.map(r => r.comp);
+              if (dbgOn) {
+                try { (debugBlock as any).olsYear = { subjectYear: subjYear, minYear, maxYear, inBandBefore: inBand.length, attemptedFill: missingRows.map(r => r.comp?.address).filter(Boolean) }; } catch {}
+              }
+              if (missing.length > 0) {
+                try { await this.fillMissingYearsForComps(missing, missing.length); } catch {}
+                // refresh candidates with possibly filled years
+                candidates = within
+                  .map(c => ({ comp: c, sqft: toNumber(c?.sqft), price: toNumber(c?.price), year: getYear(c) }))
+                  .filter(r => Number.isFinite(r.sqft) && r.sqft > 0 && Number.isFinite(r.price) && r.price > 0)
+                  .sort((a, b) => b.price - a.price);
+              }
+            }
+            // Keep only in-band for selection when subject year known
+            candidates = candidates.filter(r => Number.isFinite(r.year) && r.year >= minYear && r.year <= maxYear);
+            if (dbgOn) {
+              try { if ((debugBlock as any).olsYear) (debugBlock as any).olsYear.inBandAfter = candidates.length; } catch {}
+            }
+          }
+          const chosenRows = candidates.slice(0, Math.max(3, Math.min(take, candidates.length)));
           if (chosenRows.length >= 3) {
             const sxy = chosenRows.reduce((s, r) => s + r.sqft * r.price, 0);
             const sxx = chosenRows.reduce((s, r) => s + r.sqft * r.sqft, 0);
@@ -2093,7 +2146,7 @@ export class MemStorage implements IStorage {
 
       // 1-bath bucket: comps with baths < 2, from full aligned pool
       const oneBathAligned = validComps.filter((c: any) => toNumber(c?.baths) < 2 - 1e-9);
-      const ols1 = selectWithRadius(oneBathAligned, 5);
+      const ols1 = await selectWithRadius(oneBathAligned, 5);
       if (ols1) {
         const newPpsf = Math.round(ols1.slope);
         const newArv = Math.round(ols1.slope * subjectSqft);
@@ -2123,6 +2176,7 @@ export class MemStorage implements IStorage {
               baths: validBaths,
               sqft: validSqft,
               distance: typeof d === 'number' ? `${d.toFixed(2)} miles` : '—',
+              yearBuilt: (Number.isFinite(Number((comp as any)?.yearBuilt)) ? Number((comp as any)?.yearBuilt) : ((comp as any)?.year_built ?? null)),
               soldDate: (comp?.soldDate || comp?.close_date || comp?.list_date || 'Date not available'),
               pricePerSqft: (validPrice && validSqft) ? `$${Math.round(validPrice/validSqft)}` : 'Price/sqft not available'
             };
@@ -2145,7 +2199,7 @@ export class MemStorage implements IStorage {
         // Strict 2.0–2.5 range for two-bath bucket per request
         return Number.isFinite(b) && b >= 2 - 1e-9 && b <= 2.5 + 1e-9;
       });
-      const ols2 = selectWithRadius(twoBathAligned, 5);
+      const ols2 = await selectWithRadius(twoBathAligned, 5);
       if (ols2) {
         const newPpsf2 = Math.round(ols2.slope);
         const newArv2 = Math.round(ols2.slope * subjectSqft);
@@ -2189,7 +2243,7 @@ export class MemStorage implements IStorage {
       // Subjects with >=2 baths:
       // Rule: target exact subject baths; if <3 comps available, expand to subject ±1.0
       const toNumber = (x: any) => Number.isFinite(Number(x)) ? Number(x) : NaN;
-      const selectWithRadius = (entries: any[], take: number) => {
+      const selectWithRadius = async (entries: any[], take: number) => {
         let start = Number(process.env.ANALYZE_DISTANCE_START || '1');
         let step = Number(process.env.ANALYZE_DISTANCE_STEP || '0.25');
         let max = Number(process.env.ANALYZE_DISTANCE_MAX || '2');
@@ -2199,11 +2253,41 @@ export class MemStorage implements IStorage {
         let chosen = start;
         while (chosen <= max + 1e-9) {
           const within = entries.filter(c => Number.isFinite(Number(c?.distance_miles)) && Number(c.distance_miles) <= chosen + 1e-9);
-          const scored = within
-            .map(c => ({ comp: c, sqft: toNumber(c?.sqft), price: toNumber(c?.price), baths: toNumber(c?.baths) }))
+          // Year band constraint when subject year is plausible
+          const subjYear = this.isPlausibleYear(finalYearBuilt) ? Number(finalYearBuilt) : NaN;
+          const minYear = Number.isFinite(subjYear) ? subjYear - 10 : NaN;
+          const maxYear = Number.isFinite(subjYear) ? subjYear + 10 : NaN;
+          const getYear = (c: any) => {
+            const y = Number((c as any)?.yearBuilt ?? (c as any)?.year_built);
+            return Number.isFinite(y) ? y : NaN;
+          };
+          let candidates = within
+            .map(c => ({ comp: c, sqft: toNumber(c?.sqft), price: toNumber(c?.price), baths: toNumber(c?.baths), year: getYear(c) }))
             .filter(r => Number.isFinite(r.sqft) && r.sqft > 0 && Number.isFinite(r.price) && r.price > 0)
             .sort((a, b) => b.price - a.price);
-          const chosenRows = scored.slice(0, Math.max(3, Math.min(take, scored.length)));
+          if (Number.isFinite(subjYear)) {
+            const inBand = candidates.filter(r => Number.isFinite(r.year) && r.year >= minYear && r.year <= maxYear);
+            const dbgOn = (String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== '0' && String(process.env.ANALYZE_DEBUG || '').toLowerCase() !== 'false');
+            if (inBand.length < take) {
+              const missingRows = candidates.filter(r => !Number.isFinite(r.year)).slice(0, Math.max(0, take - inBand.length + 2));
+              const missing = missingRows.map(r => r.comp);
+              if (dbgOn) {
+                try { (debugBlock as any).olsYear = { subjectYear: subjYear, minYear, maxYear, inBandBefore: inBand.length, attemptedFill: missingRows.map(r => r.comp?.address).filter(Boolean) }; } catch {}
+              }
+              if (missing.length > 0) {
+                try { await this.fillMissingYearsForComps(missing, missing.length); } catch {}
+                candidates = within
+                  .map(c => ({ comp: c, sqft: toNumber(c?.sqft), price: toNumber(c?.price), baths: toNumber(c?.baths), year: getYear(c) }))
+                  .filter(r => Number.isFinite(r.sqft) && r.sqft > 0 && Number.isFinite(r.price) && r.price > 0)
+                  .sort((a, b) => b.price - a.price);
+              }
+            }
+            candidates = candidates.filter(r => Number.isFinite(r.year) && r.year >= minYear && r.year <= maxYear);
+            if (dbgOn) {
+              try { if ((debugBlock as any).olsYear) (debugBlock as any).olsYear.inBandAfter = candidates.length; } catch {}
+            }
+          }
+          const chosenRows = candidates.slice(0, Math.max(3, Math.min(take, candidates.length)));
           if (chosenRows.length >= 3) {
             const sxy = chosenRows.reduce((s, r) => s + r.sqft * r.price, 0);
             const sxx = chosenRows.reduce((s, r) => s + r.sqft * r.sqft, 0);
@@ -2233,7 +2317,7 @@ export class MemStorage implements IStorage {
           return Number.isFinite(b) && b >= lower && b <= upper;
         });
       }
-      const ols = selectWithRadius(aligned, 5);
+      const ols = await selectWithRadius(aligned, 5);
       if (ols) {
         const newPpsf = Math.round(ols.slope);
         const newArv = Math.round(ols.slope * subjectSqft);
@@ -2345,7 +2429,7 @@ export class MemStorage implements IStorage {
       beds: subjectProperty.description?.beds || 0,
       baths: (Number.isFinite(bathsConsolidated) ? bathsConsolidated : (bathsComputed ?? subjectProperty.description?.baths ?? 0)).toString(),
       sqft: subjectProperty.description?.sqft || subjectSqft,
-      yearBuilt: subjectProperty.description?.year_built || finalYearBuilt,
+      yearBuilt: (this.isPlausibleYear(finalYearBuilt) ? Number(finalYearBuilt) : undefined),
       comparables: formattedComparables,
       isDualCalculation: shouldUseDualCalculation,
       arvWith2ndBathroom,
@@ -2371,11 +2455,12 @@ export class MemStorage implements IStorage {
 
     // Create subject property object with researched data from external sources
     const safeSqft = this.isPlausibleSqft(updatedSubjectSqft) ? updatedSubjectSqft : undefined;
+    const plausibleYear = this.isPlausibleYear(updatedYearBuilt) ? Number(updatedYearBuilt) : null;
     const enhancedSubjectProperty = {
       description: {
         // Only set sqft if plausibly extracted from online data
         sqft: safeSqft,
-        year_built: updatedYearBuilt,
+        year_built: plausibleYear,
         beds: updatedSubjectBeds,
         baths: updatedSubjectBaths,
         type: updatedPropertyType
