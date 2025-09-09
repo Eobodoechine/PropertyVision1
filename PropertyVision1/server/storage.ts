@@ -102,12 +102,34 @@ export class MemStorage implements IStorage {
     console.log(`\n🔍 NEW INTELLIGENT SEARCH: Analyzing ${normalizedAddress}`);
 
     try {
-      // STEP 1: Get exact coordinates via auto-complete
-      console.log('Step 1: Getting coordinates...');
-      const coords = await this.getCoordinatesFromAddress(normalizedAddress, apiKey);
-      const centerLat = coords.lat;
-      const centerLon = coords.lon;
-      console.log(`✅ Coordinates found: ${centerLat}, ${centerLon}`);
+      // STEP 0: Try RapidAPI autocomplete first to lock onto the exact subject
+      console.log('Step 0: Autocomplete lookup for subject property...');
+      let subjectProperty: any | null = await this.findByAutocomplete(normalizedAddress);
+      let centerLat: number | undefined;
+      let centerLon: number | undefined;
+      if (subjectProperty) {
+        console.log(`✅ Autocomplete matched: ${subjectProperty.location?.address?.line || '(no line)'}`);
+        const lat = subjectProperty?.location?.address?.coordinate?.lat;
+        const lon = subjectProperty?.location?.address?.coordinate?.lon;
+        if (typeof lat === 'number' && typeof lon === 'number') {
+          centerLat = lat;
+          centerLon = lon;
+          console.log(`✅ Autocomplete provided coordinates: ${centerLat}, ${centerLon}`);
+        } else {
+          console.log('ℹ️ Autocomplete had no coordinates; will geocode.');
+        }
+      } else {
+        console.log('ℹ️ Autocomplete did not return a subject; will geocode and search.');
+      }
+
+      // STEP 1: Geocode if coordinates not available yet
+      if (typeof centerLat !== 'number' || typeof centerLon !== 'number') {
+        console.log('Step 1: Getting coordinates via Google Maps...');
+        const coords = await this.getCoordinatesFromAddress(normalizedAddress, apiKey);
+        centerLat = coords.lat;
+        centerLon = coords.lon;
+        console.log(`✅ Coordinates found: ${centerLat}, ${centerLon}`);
+      }
 
       // WEB_ONLY mode: use web search exclusively for subject details
       if ((process.env.WEB_ONLY || '').toString().trim() !== ''
@@ -139,9 +161,11 @@ export class MemStorage implements IStorage {
         );
       }
 
-      // STEP 2: Find subject property with small boundary search  
+      // STEP 2: If autocomplete did not produce a subject, search by number+distance near coords
       console.log('Step 2: Getting subject property details...');
-      const subjectProperty = await this.findSubjectProperty(normalizedAddress, centerLat, centerLon, apiKey);
+      if (!subjectProperty) {
+        subjectProperty = await this.findSubjectProperty(normalizedAddress, centerLat!, centerLon!, apiKey);
+      }
 
       if (!subjectProperty) {
         console.log('⚠️ Subject property not found in MLS data - proceeding with web research fallback');
@@ -362,10 +386,10 @@ export class MemStorage implements IStorage {
 
       console.log(`Step 3: Enhanced search parameters with conditional methodology:`);
       console.log(`- Size range: ${minSqft}-${maxSqft} sqft (±20% of ${finalSubjectSqft})`);
-      const yrMin = finalYearBuilt ? finalYearBuilt - 10 : null;
       const yrMax = finalYearBuilt ? finalYearBuilt + 10 : null;
-      console.log(`- Year range: ${yrMin && yrMax ? `${yrMin}-${yrMax}` : 'No year filter'} (±10 years from ${finalYearBuilt ?? 'N/A'})`);
+      console.log(`- Year filter: ${yrMax ? `≤ ${yrMax}` : 'No year filter'} (upper bound only)`);
       console.log(`- Property type: ${finalPropertyType} → Search types: ${propertyTypeFilter.join(', ')}`);
+      console.log(`- Time range: none (sorting by last_sold_price desc)`);
       console.log(`- Strategy: Filter first, then null-value search if insufficient`);
 
       // Determine early whether dual ARV is needed (subject baths < 2)
@@ -409,9 +433,9 @@ export class MemStorage implements IStorage {
         console.log(`   • Search radius: ${radius} miles`);
         console.log(`   • Size filter: ${minSqft}-${maxSqft} sqft`);
         console.log(`   • Property types: ${propertyTypeFilter.join(', ')}`);
-        console.log(`   • Year filter: ${finalYearBuilt ? (finalYearBuilt-10) + '-' + (finalYearBuilt+10) : 'No year filter'}`);
+        console.log(`   • Year filter: ${finalYearBuilt ? `≤ ${finalYearBuilt+10}` : 'No year filter'}`);
         console.log(`   • Status: sold properties only`);
-        console.log(`   • Time range: last 12 months`);
+        console.log(`   • Time range: none (sorting by last_sold_price desc)`);
 
         let phaseOneComps = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '');
 
@@ -419,18 +443,17 @@ export class MemStorage implements IStorage {
         console.log(`   • Properties returned by API: ${phaseOneComps.length}`);
 
         // Analyze the quality of results
-        const minYear = finalYearBuilt ? finalYearBuilt - 10 : 1980;
         const maxYear = finalYearBuilt ? finalYearBuilt + 10 : 2025;
         const sizeMatchCount = phaseOneComps.filter(comp => comp.sqft >= minSqft && comp.sqft <= maxSqft).length;
-        let yearMatchCount = phaseOneComps.filter(comp => comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear).length;
+        let yearMatchCount = phaseOneComps.filter(comp => typeof comp.yearBuilt === 'number' && comp.yearBuilt <= maxYear).length;
         let perfectMatchCount = phaseOneComps.filter(comp => {
           const sizeMatch = comp.sqft >= minSqft && comp.sqft <= maxSqft;
-          const yearMatch = comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear;
+          const yearMatch = typeof comp.yearBuilt === 'number' && comp.yearBuilt <= maxYear;
           return sizeMatch && yearMatch;
         }).length;
 
         console.log(`   • Size matches (${minSqft}-${maxSqft} sqft): ${sizeMatchCount}`);
-        console.log(`   • Year matches (${minYear}-${maxYear}): ${yearMatchCount}`);
+        console.log(`   • Year matches (≤ ${maxYear}): ${yearMatchCount}`);
         console.log(`   • Perfect matches (size + year): ${perfectMatchCount}`);
 
         // Try to fill missing yearBuilt via RapidAPI detail before showing the detailed list
@@ -441,14 +464,14 @@ export class MemStorage implements IStorage {
             const filled = await this.fillMissingYearsForComps(
               phaseOneComps,
               toLookup,
-              { minSqft, maxSqft, minYear, maxYear, targetPerfect: 5 }
+              { minSqft, maxSqft, maxYear, targetPerfect: 5 }
             );
             if (filled > 0) {
               // Recompute counts after filling
-              yearMatchCount = phaseOneComps.filter(comp => comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear).length;
+              yearMatchCount = phaseOneComps.filter(comp => typeof comp.yearBuilt === 'number' && comp.yearBuilt <= maxYear).length;
               perfectMatchCount = phaseOneComps.filter(comp => {
                 const sizeMatch = comp.sqft >= minSqft && comp.sqft <= maxSqft;
-                const yearMatch = comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear;
+                const yearMatch = typeof comp.yearBuilt === 'number' && comp.yearBuilt <= maxYear;
                 return sizeMatch && yearMatch;
               }).length;
               console.log(`   • Filled ${filled} missing yearBuilt via detail`);
@@ -463,7 +486,7 @@ export class MemStorage implements IStorage {
           console.log(`\n📝 DETAILED PROPERTIES FROM API SEARCH:`);
           phaseOneComps.slice(0, 10).forEach((comp, i) => {
             const sizeFlag = comp.sqft >= minSqft && comp.sqft <= maxSqft ? '✅' : '❌';
-            const yearFlag = comp.yearBuilt >= minYear && comp.yearBuilt <= maxYear ? '✅' : (comp.yearBuilt ? '❌' : '❓');
+            const yearFlag = (typeof comp.yearBuilt === 'number' && comp.yearBuilt <= maxYear) ? '✅' : (comp.yearBuilt ? '❌' : '❓');
             console.log(`   ${i+1}. ${comp.address}`);
             console.log(`      Size: ${comp.sqft || 'null'}sqft ${sizeFlag} | Year: ${comp.yearBuilt || 'null'} ${yearFlag} | Beds/Baths: ${comp.beds || 'null'}/${comp.baths || 'null'}`);
             console.log(`      Price: $${comp.price?.toLocaleString() || 'null'} | $/sqft: $${comp.pricePerSqft || 'null'} | Date: ${comp.soldDate || 'null'}`);
@@ -526,8 +549,7 @@ export class MemStorage implements IStorage {
         const strictlyFilteredComps = phaseOneComps.filter(comp => {
           const sizeMatch = comp.sqft && comp.sqft >= minSqft && comp.sqft <= maxSqft;
           const hasPrice = comp.price && comp.price > 10000;
-          const hasPricePerSqft = comp.pricePerSqft && comp.pricePerSqft >= 50 && comp.pricePerSqft <= 300;
-          return sizeMatch && hasPrice && hasPricePerSqft;
+          return sizeMatch && hasPrice;
         });
 
         const beforeCount = finalValidComps.length;
@@ -570,7 +592,7 @@ export class MemStorage implements IStorage {
             let added = 0;
             comps.forEach((c) => {
               const sizeOk = c?.sqft && c.sqft >= min && c.sqft <= max;
-              const priceOk = c?.pricePerSqft && c.pricePerSqft >= 50 && c.pricePerSqft <= 300 && c?.price && c.price > 10000;
+              const priceOk = c?.price && c.price > 10000;
               if (!sizeOk || !priceOk) return;
               const dup = finalValidComps.some((e) => e.address === c.address);
               if (!dup) { finalValidComps.push(c); added++; }
@@ -610,6 +632,22 @@ export class MemStorage implements IStorage {
             tCount = finalValidComps.filter(isTwoBathEligible).length;
             console.log(`      Coverage after no-year: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
           }
+
+          // Try 24-month window as a late-stage expansion if still insufficient
+          if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
+            try {
+              console.log(`   ↪️ EXPAND: Try 24-month sales window (no year filter)`);
+              const comps24 = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, null, subjectProperty.property_id || '', 24);
+              const before = finalValidComps.length;
+              addFiltered(comps24, minSqft, maxSqft);
+              const after = finalValidComps.length;
+              console.log(`      +${after - before} comps added from 24-month window`);
+            } catch {}
+
+            bCount = finalValidComps.filter(isBaselineEligible).length;
+            tCount = finalValidComps.filter(isTwoBathEligible).length;
+            console.log(`      Coverage after 24m: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
+          }
         }
 
         console.log(`\n🚦 DECISION POINT: Continue or Stop?`);
@@ -645,7 +683,7 @@ export class MemStorage implements IStorage {
       console.log(`\n🔍 FINAL COMPARABLE SUMMARY:`);
       validComps.forEach((comp, i) => {
         const sizeStatus = comp.sqft && comp.sqft >= minSqft && comp.sqft <= maxSqft ? '✓' : '✗';
-        const yearStatus = comp.yearBuilt && comp.yearBuilt >= (finalYearBuilt ? finalYearBuilt - 10 : 1980) && comp.yearBuilt <= (finalYearBuilt ? finalYearBuilt + 10 : 2025) ? '✓' : '✗';
+        const yearStatus = (typeof comp.yearBuilt === 'number' && (finalYearBuilt ? comp.yearBuilt <= (finalYearBuilt + 10) : true)) ? '✓' : '✗';
         const researchFlag = comp.researched ? ' [RESEARCHED]' : '';
         console.log(`${i+1}. ${comp.address} - ${comp.sqft || 'null'}sqft (${sizeStatus}) - ${comp.yearBuilt || 'null'} built (${yearStatus}) - $${comp.pricePerSqft || 'null'}/sqft${researchFlag}`);
       });
@@ -777,11 +815,44 @@ export class MemStorage implements IStorage {
     const normStreet = addressOnly.toLowerCase().replace(/[^\w\s]/g, '').trim();
     const tokens = normStreet.split(/\s+/);
     const houseNumber = tokens[0] || '';
-    const streetName = tokens.slice(1).join(' ');
+    // Extract street tokens up to and including the first suffix (e.g., ave, st, rd). If none, take first 2 tokens.
+    const suffixes = new Set(['ave','avenue','st','street','rd','road','dr','drive','ln','lane','ct','court','ter','terrace','cir','circle','pl','place','pkwy','parkway','hwy','highway','blvd','boulevard','way','trl','trail']);
+    let streetTokens: string[] = [];
+    for (let i = 1; i < tokens.length; i++) {
+      const t = tokens[i];
+      streetTokens.push(t);
+      if (suffixes.has(t)) break;
+      // stop if token looks like state or zip (e.g., nv, ga, 5-digit)
+      if (/^\d{5}$/.test(t) || /^[a-z]{2}$/.test(t)) { streetTokens.pop(); break; }
+    }
+    if (streetTokens.length === 0) streetTokens = tokens.slice(1, Math.min(tokens.length, 3));
+    const streetName = streetTokens.join(' ');
 
     console.log(`🏠 LOOKING FOR: House #${houseNumber} on ${streetName}`);
 
     // Prefer exact house number and shortest distance to geocode point
+    // Helper to normalize street names and suffixes for comparison
+    const normalizeStreet = (s: string) => {
+      const map: Record<string, string> = {
+        avenue: 'ave', ave: 'ave',
+        street: 'st', st: 'st',
+        road: 'rd', rd: 'rd',
+        drive: 'dr', dr: 'dr',
+        lane: 'ln', ln: 'ln',
+        court: 'ct', ct: 'ct',
+        terrace: 'ter', ter: 'ter',
+        circle: 'cir', cir: 'cir',
+        place: 'pl', pl: 'pl',
+        parkway: 'pkwy', pkwy: 'pkwy',
+        highway: 'hwy', hwy: 'hwy',
+        boulevard: 'blvd', blvd: 'blvd',
+        way: 'way', trail: 'trl', trl: 'trl'
+      };
+      const parts = s.toLowerCase().split(/\s+/).map(x => x.replace(/[^a-z0-9]/g, ''));
+      return parts.map(w => map[w] || w).filter(Boolean).join(' ');
+    };
+    const queryStreetNorm = normalizeStreet(streetName);
+
     const withDistances = properties.map((p: any) => {
       const plat = p.location?.address?.coordinate?.lat;
       const plon = p.location?.address?.coordinate?.lon;
@@ -798,11 +869,15 @@ export class MemStorage implements IStorage {
       const pTokens = line.split(/\s+/);
       const pNum = pTokens[0] || '';
       const sameNumber = pNum === houseNumber;
-      return { p, dist, sameNumber, line };
+      const pStreet = pTokens.slice(1).join(' ');
+      const pStreetNorm = normalizeStreet(pStreet);
+      const streetMatch = !!(pStreetNorm && queryStreetNorm && (pStreetNorm.includes(queryStreetNorm) || queryStreetNorm.includes(pStreetNorm)));
+      return { p, dist, sameNumber, streetMatch, line, pStreetNorm };
     });
 
+    // Require both same house number AND street match
     const candidates = withDistances
-      .filter(x => x.sameNumber)
+      .filter(x => x.sameNumber && x.streetMatch)
       .sort((a, b) => a.dist - b.dist);
 
     if (candidates.length && candidates[0].dist <= 0.5) { // within ~0.5 miles
@@ -1162,7 +1237,7 @@ export class MemStorage implements IStorage {
   private async fillMissingYearsForComps(
     comps: any[],
     maxLookups: number = 10,
-    earlyStop?: { minSqft: number; maxSqft: number; minYear: number; maxYear: number; targetPerfect: number }
+    earlyStop?: { minSqft: number; maxSqft: number; maxYear: number; targetPerfect: number }
   ): Promise<number> {
     let filled = 0;
     for (const comp of comps) {
@@ -1178,7 +1253,7 @@ export class MemStorage implements IStorage {
             if (earlyStop) {
               const perfectNow = comps.filter(c => {
                 const sizeOk = c.sqft >= earlyStop.minSqft && c.sqft <= earlyStop.maxSqft;
-                const yearOk = typeof c.yearBuilt === 'number' && c.yearBuilt >= earlyStop.minYear && c.yearBuilt <= earlyStop.maxYear;
+                const yearOk = typeof c.yearBuilt === 'number' && c.yearBuilt <= earlyStop.maxYear;
                 return sizeOk && yearOk;
               }).length;
               if (perfectNow >= earlyStop.targetPerfect) {
@@ -1236,45 +1311,62 @@ export class MemStorage implements IStorage {
       [centerLon - radiusInDegrees, centerLat - radiusInDegrees]
     ];
 
-    const searchPayload: any = {
-      limit: 400,
-      offset: 0,
-      boundary: { coordinates: [searchBoundary] },
-      status: ["sold"],
-      type: propertyTypes
-      // Removed sqft_min/sqft_max - API filters are broken, filter client-side instead
-    };
+    const pageLimit = 200; // API caps around 200 per page
+    const maxPages = 5;    // safety cap per radius
+    let offset = 0;
+    const foundPropertiesAll: any[] = [];
 
-    console.log(`🔍 API SEARCH PAYLOAD:`);
+    console.log(`🔍 API SEARCH (paginated):`);
     console.log(`   • Property types requested: ${JSON.stringify(propertyTypes)}`);
     console.log(`   • Size range: ${minSqft}-${maxSqft} sqft`);
     console.log(`   • Status: sold only`);
+    console.log(`   • Pagination: limit=${pageLimit}, maxPages=${maxPages}`);
 
-    // Add year built filter if available
-    if (yearBuilt) {
-      searchPayload.year_built_min = yearBuilt - 10;
-      searchPayload.year_built_max = yearBuilt + 10;
+    let page = 0;
+    while (page < maxPages) {
+      const searchPayload: any = {
+        limit: pageLimit,
+        offset,
+        boundary: { coordinates: [searchBoundary] },
+        status: ["sold"],
+        type: propertyTypes
+        // No sqft filter — filter client-side; year lower bound removed
+      };
+
+      // Add year built upper bound if available
+      if (yearBuilt) {
+        searchPayload.year_built_max = yearBuilt + 10;
+      }
+      // Sort by last_sold_price desc as requested
+      searchPayload.sort = { field: 'last_sold_price', direction: 'desc' };
+
+      const apiKey = process.env.RAPIDAPI_KEY;
+      if (!apiKey) {
+        throw new Error('RAPIDAPI_KEY environment variable is required');
+      }
+
+      const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
+        method: 'POST',
+        body: JSON.stringify(searchPayload)
+      });
+
+      if (!searchResponse.ok) {
+        console.log(`❌ Filtered search failed (offset=${offset}): ${searchResponse.status}`);
+        break;
+      }
+
+      const searchData = await searchResponse.json();
+      const found = searchData?.data?.home_search?.results || [];
+      console.log(`\n📊 RAW API RESPONSE (offset=${offset}): ${found.length}`);
+      foundPropertiesAll.push(...found);
+
+      if (found.length < pageLimit) break; // last page
+      offset += pageLimit;
+      page++;
     }
 
-    const apiKey = process.env.RAPIDAPI_KEY;
-    if (!apiKey) {
-      throw new Error('RAPIDAPI_KEY environment variable is required');
-    }
-
-    const searchResponse = await loggedFetch('https://realty-in-us.p.rapidapi.com/properties/v3/list', {
-      method: 'POST',
-      body: JSON.stringify(searchPayload)
-    });
-
-    if (!searchResponse.ok) {
-      console.log(`❌ Filtered search failed: ${searchResponse.status}`);
-      return [];
-    }
-
-    const searchData = await searchResponse.json();
-    const foundProperties = searchData?.data?.home_search?.results || [];
-    console.log(`\n📊 RAW API RESPONSE:`);
-    console.log(`   • Total properties returned: ${foundProperties.length}`);
+    const foundProperties = foundPropertiesAll;
+    console.log(`   • Aggregated properties returned: ${foundProperties.length}`);
 
     // Show first few properties and their types
     if (foundProperties.length > 0) {
@@ -1297,7 +1389,9 @@ export class MemStorage implements IStorage {
 
     console.log(`\n🔍 FILTERING PROCESS (${salesMonthsFilter}-month sales filter):`);
     console.log(`   • Sales cutoff date: ${salesFilterDate.toISOString().split('T')[0]}`);
-    foundProperties.forEach((prop: any, index: number) => {
+    let detailLookups = 0;
+    const detailLookupCap = 20; // avoid excessive detail calls per radius
+    for (const [index, prop] of foundProperties.entries()) {
       const sqft = prop.description?.sqft;
       const price = prop.last_sold_price;
       const soldDate = prop.last_sold_date ? new Date(prop.last_sold_date) : null;
@@ -1323,50 +1417,61 @@ export class MemStorage implements IStorage {
         return;
       }
 
-      // MANDATORY: Dynamic sales filter (6 or 12 months) + other criteria
-      if (price && price > 10000 && soldDate && soldDate >= salesFilterDate && sqft && sqft > 0) {
-        const pricePerSqft = Math.round(price / sqft);
+      // MANDATORY: Basic gates (no sold-date filter)
+      if (price && price > 10000) {
+        let effectiveSqft = sqft;
+        if ((!effectiveSqft || effectiveSqft <= 0) && prop.property_id && detailLookups < detailLookupCap) {
+          try {
+            const det = await this.fetchDetailById(String(prop.property_id));
+            const detSqft = Number(det?.description?.sqft);
+            if (Number.isFinite(detSqft) && detSqft > 0) {
+              effectiveSqft = detSqft;
+              console.log(`      🔄 FILLED sqft via detail: ${effectiveSqft}`);
+            }
+            detailLookups++;
+          } catch {}
+        }
 
-        // STRICT SQUARE FOOTAGE FILTERING
-        const sizeInRange = sqft >= minSqft && sqft <= maxSqft;
-        const priceInRange = pricePerSqft >= 50 && pricePerSqft <= 300;
-
-        console.log(`      $/sqft: $${pricePerSqft} | Size filter: ${sizeInRange ? 'PASS' : 'FAIL'} (${minSqft}-${maxSqft}) | Price filter: ${priceInRange ? 'PASS' : 'FAIL'}`);
-
-        if (sizeInRange && priceInRange) {
-          const distanceMiles = (Number.isFinite(Number(lat)) && Number.isFinite(Number(lon)))
-            ? this.calculateDistance(centerLat, centerLon, lat, lon)
-            : undefined;
-          validComps.push({
-            address,
-            sqft,
-            price,
-            pricePerSqft,
-            soldDate: soldDate.toISOString().split('T')[0],
-            beds: prop.description?.beds,
-            baths: computeBaths(prop.description) ?? prop.description?.baths,
-            yearBuilt: prop.description?.year_built || null,
-            property_id: prop.property_id || null,
-            lat,
-            lon,
-            distance_miles: distanceMiles,
-            searchRadius: radius
-          });
-          console.log(`      → INCLUDED as comparable`);
+        if (effectiveSqft && effectiveSqft > 0) {
+          const pricePerSqft = Math.round(price / effectiveSqft);
+          // STRICT SQUARE FOOTAGE FILTERING (no $/sqft gating)
+          const sizeInRange = effectiveSqft >= minSqft && effectiveSqft <= maxSqft;
+          console.log(`      $/sqft: $${pricePerSqft} | Size filter: ${sizeInRange ? 'PASS' : 'FAIL'} (${minSqft}-${maxSqft})`);
+          if (sizeInRange) {
+            const distanceMiles = (Number.isFinite(Number(lat)) && Number.isFinite(Number(lon)))
+              ? this.calculateDistance(centerLat, centerLon, lat, lon)
+              : undefined;
+            validComps.push({
+              address,
+            sqft: effectiveSqft,
+              price,
+              pricePerSqft,
+              soldDate: soldDate.toISOString().split('T')[0],
+              beds: prop.description?.beds,
+              baths: computeBaths(prop.description) ?? prop.description?.baths,
+              yearBuilt: prop.description?.year_built || null,
+              property_id: prop.property_id || null,
+              lat,
+              lon,
+              distance_miles: distanceMiles,
+              searchRadius: radius
+            });
+            console.log(`      → INCLUDED as comparable`);
+          } else {
+            const reasons = [];
+            if (!sizeInRange) reasons.push(`size out of range (${effectiveSqft} not in ${minSqft}-${maxSqft})`);
+            console.log(`      → EXCLUDED: ${reasons.join(', ')}`);
+          }
         } else {
-          const reasons = [];
-          if (!sizeInRange) reasons.push(`size out of range (${sqft} not in ${minSqft}-${maxSqft})`);
-          if (!priceInRange) reasons.push('price per sqft out of range');
-          console.log(`      → EXCLUDED: ${reasons.join(', ')}`);
+          console.log(`      → EXCLUDED: missing sqft`);
         }
       } else {
         const reasons = [];
         if (!price || price <= 10000) reasons.push('invalid price');
-        if (!soldDate || soldDate < salesFilterDate) reasons.push('old sale date');
         if (!sqft || sqft <= 0) reasons.push('missing sqft');
         console.log(`      → EXCLUDED: ${reasons.join(', ')}`);
       }
-    });
+    }
 
     return validComps;
   }
@@ -1414,8 +1519,6 @@ export class MemStorage implements IStorage {
     const searchData = await searchResponse.json();
     const foundProperties = searchData?.data?.home_search?.results || [];
 
-    // Local 6-month cutoff for null-value search
-    const nvSalesCutoff = new Date(Date.now() - (6 * 30 * 24 * 60 * 60 * 1000));
 
     // Process and find properties with null sqft or year built
     const nullValueProps: any[] = [];
@@ -1431,8 +1534,8 @@ export class MemStorage implements IStorage {
       const hasMissingSqft = !sqft || sqft <= 0;
       const hasMissingYear = !yearBuilt;
 
-      // MANDATORY: Apply 6-month sales restriction as required by user
-      if ((hasMissingSqft || hasMissingYear) && price && price > 10000 && soldDate && soldDate >= nvSalesCutoff) {
+      // MANDATORY: Basic gates (no sold-date filter)
+      if ((hasMissingSqft || hasMissingYear) && price && price > 10000) {
         nullValueProps.push({
           address,
           sqft: sqft || null,
@@ -2647,10 +2750,8 @@ export class MemStorage implements IStorage {
 
     // Filter and validate the authentic comparables
     const filteredComps = validComps.filter(comp => {
-      const pricePerSqft = comp.price / comp.sqft;
       const sizeVariance = Math.abs(comp.sqft - subjectSqft) / subjectSqft;
-
-      return pricePerSqft >= 50 && pricePerSqft <= 500 && sizeVariance <= 0.5; // 50% size variance
+      return sizeVariance <= 0.5; // Keep basic size sanity, drop $/sqft gating
     });
 
     console.log(`✅ VALIDATED AUTHENTIC COMPARABLES: ${filteredComps.length}`);

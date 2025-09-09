@@ -5,6 +5,7 @@ import { addressSearchSchema, type PropertyAnalysisResult } from "@shared/schema
 import { z } from "zod";
 import { webSearch } from "./web-search";
 import { Router } from 'express';
+import { captureConsoleLogs, writeAnalysisLog } from './utils/analysisLog';
 import { requireRapidKey } from './middleware/requireRapidKey';
 
 // Create a new router instance to export
@@ -49,14 +50,28 @@ router.post("/property/analyze", requireRapidKey, async (req, res) => {
     // Per-request debug and distance controls (opt-in via query)
     const dbg = String(req.query.debug || '').toLowerCase();
     if (dbg && dbg !== '0' && dbg !== 'false') process.env.ANALYZE_DEBUG = '1';
+    const wantLogs = String(req.query.logs || req.query.fullLogs || '').toLowerCase();
+    const envAlwaysLogs = String(process.env.ANALYZE_FULL_LOGS || process.env.ALWAYS_LOG_ANALYSIS || '').toLowerCase();
+    const includeLogs = !!(
+      (wantLogs && wantLogs !== '0' && wantLogs !== 'false') ||
+      (envAlwaysLogs && envAlwaysLogs !== '0' && envAlwaysLogs !== 'false')
+    );
     const distanceCap = typeof req.query.distanceCap === 'string' ? req.query.distanceCap : '';
     if (distanceCap && !Number.isNaN(Number(distanceCap))) {
       process.env.ANALYZE_DISTANCE_START = String(Math.max(0.25, Math.min(5, Number(distanceCap))));
       process.env.ANALYZE_DISTANCE_MAX = process.env.ANALYZE_DISTANCE_START;
     }
 
-    // Call storage to analyze the property
-    const analysis = await storage.analyzeProperty(addressSearch);
+    // Call storage to analyze the property (optionally capturing full console logs)
+    let analysis;
+    let capturedLogs: string[] | undefined;
+    if (includeLogs) {
+      const captured = await captureConsoleLogs(() => storage.analyzeProperty(addressSearch));
+      analysis = captured.result;
+      capturedLogs = captured.logs;
+    } else {
+      analysis = await storage.analyzeProperty(addressSearch);
+    }
 
 
     // Format response for frontend
@@ -86,6 +101,14 @@ router.post("/property/analyze", requireRapidKey, async (req, res) => {
       ...(typeof (analysis as any).ols !== 'undefined' ? { ols: (analysis as any).ols } : {}),
       ...((process.env.ANALYZE_DEBUG && (analysis as any).debug) ? { debug: (analysis as any).debug } : {}),
     };
+
+    if (includeLogs && Array.isArray(capturedLogs)) {
+      // Persist human-readable log file for this run
+      const logPath = writeAnalysisLog({ address: addressSearch.address }, capturedLogs);
+      const payload: any = { ...result, debugLogs: capturedLogs };
+      if (logPath) payload.analysisLogFile = logPath;
+      return res.json(payload);
+    }
 
     res.json(result);
   } catch (error) {

@@ -1,11 +1,15 @@
 // Robust Express entry (TypeScript / ESM via tsx)
 import 'dotenv/config';
+import { loadAppEnv } from './utils/envLoader';
 import express, { Router, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { setupVite, serveStatic, log } from './vite';
 import { addLog, getLast, clearLogs } from './utils/devLog';
 import { setupGlobalErrorLogging, logError } from './utils/errorFileLogger';
+
+// Ensure env vars are loaded from multiple sources before server setup
+loadAppEnv();
 
 const app = express();
 // Attach global error logging (uncaught/unhandled + console.error mirroring)
@@ -153,20 +157,68 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
   res.status(status).json({ error: err?.message || 'Internal Server Error' });
 });
 
-const PORT = Number(process.env.PORT) || 5000;
 const HOST = '0.0.0.0';
 
-server.listen(PORT, HOST, () => {
-  log(`🌟 PropertyVision server running on http://${HOST}:${PORT}`);
-  log(`📱 Frontend: http://${HOST}:${PORT}`);
-  log(`🔌 API: http://${HOST}:${PORT}/api`);
-  if ((process.env.NODE_ENV || 'development') === 'development') {
-    const corsOrigin = process.env.CORS_ORIGIN || '(any)';
-    log(`DEV INFO: CORS_ORIGIN=${corsOrigin}`);
-    log(`DEV INFO: Note: VITE_API_BASE is a client env; verify it in the client build if requests misroute.`);
-    try { addLog('Server started in development mode'); } catch {}
+async function tryListen(server: ReturnType<typeof createServer>, port: number, host: string) {
+  return new Promise<void>((resolve, reject) => {
+    const onListening = () => {
+      server.off('error', onError as any);
+      resolve();
+    };
+    const onError = (err: NodeJS.ErrnoException) => {
+      server.off('listening', onListening);
+      reject(err);
+    };
+    server.once('listening', onListening);
+    server.once('error', onError as any);
+    server.listen(port, host);
+  });
+}
+
+const desiredPort = Number(process.env.PORT) || 5000;
+const portCandidates = process.env.PORT
+  ? [desiredPort]
+  : [5000, 5050, 5001, 5002, 5003, 5004, 5005];
+
+let PORT_IN_USE: number | null = null;
+for (const p of portCandidates) {
+  try {
+    await tryListen(server, p, HOST);
+    PORT_IN_USE = p;
+    break;
+  } catch (err: any) {
+    if (err && (err.code === 'EADDRINUSE' || err.code === 'EPERM')) {
+      log(`Port ${p} unavailable (${err.code}); trying next...`);
+      continue;
+    }
+    console.error('[server] Failed to bind', err);
+    try { addLog(`[ERROR] Failed to bind: ${err?.message || err}`); } catch {}
+    process.exit(1);
   }
-});
+}
+
+if (PORT_IN_USE == null) {
+  // Fallback: ephemeral port
+  try {
+    await tryListen(server, 0, HOST);
+    const addr = server.address();
+    PORT_IN_USE = typeof addr === 'object' && addr ? (addr as any).port : 0;
+  } catch (err) {
+    console.error('[server] Failed to bind to any port', err);
+    try { addLog(`[ERROR] Failed to bind to any port: ${err}`); } catch {}
+    process.exit(1);
+  }
+}
+
+log(`🌟 PropertyVision server running on http://${HOST}:${PORT_IN_USE}`);
+log(`📱 Frontend: http://${HOST}:${PORT_IN_USE}`);
+log(`🔌 API: http://${HOST}:${PORT_IN_USE}/api`);
+if ((process.env.NODE_ENV || 'development') === 'development') {
+  const corsOrigin = process.env.CORS_ORIGIN || '(any)';
+  log(`DEV INFO: CORS_ORIGIN=${corsOrigin}`);
+  log(`DEV INFO: Note: VITE_API_BASE is a client env; verify it in the client build if requests misroute.`);
+  try { addLog('Server started in development mode'); } catch {}
+}
 
 const shutdown = (sig: string) => {
   log(`${sig} received. Shutting down...`);
