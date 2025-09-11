@@ -7,7 +7,7 @@ if (!(globalThis as any).File) {
 }
 
 import 'dotenv/config';
-import { storage } from './storage';
+import { storage } from './storage-gemini-only.js';
 
 // Helper to compute baths similar to server logic
 function computeBathsCompat(desc: any): number | null {
@@ -32,8 +32,8 @@ async function main() {
     console.error('ADDRESS env var is required (full street, city, state, ZIP).');
     process.exit(1);
   }
-  if (!process.env.RAPIDAPI_KEY) {
-    console.error('RAPIDAPI_KEY env var is required.');
+  if (!process.env.GEMINI_API_KEY) {
+    console.error('GEMINI_API_KEY env var is required.');
     process.exit(1);
   }
   if (!process.env.GOOGLE_MAPS_API_KEY) {

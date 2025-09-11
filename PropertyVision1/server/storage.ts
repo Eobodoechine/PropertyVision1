@@ -1,7 +1,5 @@
 import { type PropertyAnalysis, type InsertPropertyAnalysis, type AddressSearch } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { webSearch } from "./web-search";
-import { loggedFetch } from "./infra/rapid";
 import { GeminiRealEstateSearch } from "./gemini-real-estate-search";
 // Simple in-memory cache for geocoding to reduce external calls
 const geocodeCache = new Map<string, { lat: number; lon: number; ts: number }>();
