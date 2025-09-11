@@ -2,8 +2,40 @@ import { type PropertyAnalysis, type InsertPropertyAnalysis, type AddressSearch 
 import { randomUUID } from "crypto";
 import { webSearch } from "./web-search";
 import { loggedFetch } from "./infra/rapid";
+import { GeminiRealEstateSearch } from "./gemini-real-estate-search";
 // Simple in-memory cache for geocoding to reduce external calls
 const geocodeCache = new Map<string, { lat: number; lon: number; ts: number }>();
+
+// FAST MODE: Concurrency control utilities
+class ConcurrencyLimiter {
+  private running = 0;
+  constructor(private maxConcurrent: number) {}
+
+  async execute<T>(fn: () => Promise<T>): Promise<T> {
+    while (this.running >= this.maxConcurrent) {
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    this.running++;
+    try {
+      return await fn();
+    } finally {
+      this.running--;
+    }
+  }
+}
+
+// FAST MODE: Timeout wrapper
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  const timeout = new Promise<never>((_, reject) => 
+    setTimeout(() => reject(new Error(`Operation timed out after ${timeoutMs}ms`)), timeoutMs)
+  );
+  return Promise.race([promise, timeout]);
+}
+
+// FAST MODE: Check if lean mode is enabled
+function isLeanMode(): boolean {
+  return process.env.ANALYZE_DEBUG !== '1' && process.env.DEBUG !== '1';
+}
 
 // Helper to compute bathrooms including half baths when API splits fields
 function computeBaths(desc: any): number | null {
@@ -30,13 +62,79 @@ export interface IStorage {
 }
 
 export class MemStorage implements IStorage {
+  // FAST MODE: Concurrency limiters
+  private detailLimiter = new ConcurrencyLimiter(4); // Max 4 detail lookups in-flight
+  private geminiLimiter = new ConcurrencyLimiter(2); // Max 2 Gemini searches in-flight
+  private geminiSearcher: GeminiRealEstateSearch;
+
   constructor() {
     // No storage - fresh analysis every time
+    // Initialize Gemini searcher
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
+    
+    if (geminiApiKey && googleMapsApiKey) {
+      this.geminiSearcher = new GeminiRealEstateSearch(geminiApiKey, googleMapsApiKey);
+      console.log('✅ Gemini Real Estate Search initialized');
+    } else {
+      console.warn('⚠️ Gemini API keys not found, analysis may be limited');
+    }
   }
 
   private isPlausibleSqft(n: any): boolean {
     const v = Number(n);
     return Number.isFinite(v) && v >= 600 && v <= 10000;
+  }
+
+  private async assessMarketActivity(lat: number, lon: number, apiKey: string): Promise<{level: string, score: number}> {
+    try {
+      console.log(`   🔍 Assessing market activity in area...`);
+      console.log(`   🔍 Activity Assessment Debug:`);
+      console.log(`   • Search parameters: lat=${lat}, lon=${lon}, radius=1`);
+      console.log(`   • Property types: ${['single_family', 'multi_family', 'condos', 'townhomes'].join(', ')}`);
+      console.log(`   • Time window: 6 months`);
+      
+      // Search for recent sales in 1-mile radius to assess activity
+      const recentSales = await this.searchWithFilters(lat, lon, 1, ['single_family', 'multi_family', 'condos', 'townhomes'], 500, 5000, null, '', 6);
+      
+      console.log(`   • Raw API response length: ${recentSales.length}`);
+      
+      // Count recent sales and calculate activity score
+      const salesCount = recentSales.length;
+      let activityScore = 0;
+      let activityLevel = 'Unknown';
+      
+      if (salesCount >= 15) {
+        activityScore = 9;
+        activityLevel = 'Very High';
+      } else if (salesCount >= 10) {
+        activityScore = 8;
+        activityLevel = 'High';
+      } else if (salesCount >= 7) {
+        activityScore = 7;
+        activityLevel = 'Medium-High';
+      } else if (salesCount >= 4) {
+        activityScore = 6;
+        activityLevel = 'Medium';
+      } else if (salesCount >= 2) {
+        activityScore = 4;
+        activityLevel = 'Low-Medium';
+      } else if (salesCount >= 1) {
+        activityScore = 3;
+        activityLevel = 'Low';
+      } else {
+        activityScore = 1;
+        activityLevel = 'Very Low';
+      }
+      
+      console.log(`   • Recent sales (6 months): ${salesCount}`);
+      console.log(`   • Activity score: ${activityScore}/10`);
+      
+      return { level: activityLevel, score: activityScore };
+    } catch (error) {
+      console.log(`   ⚠️ Could not assess activity, defaulting to medium activity`);
+      return { level: 'Medium', score: 5 };
+    }
   }
 
   private isPlausibleYear(y: any): boolean {
@@ -105,15 +203,21 @@ export class MemStorage implements IStorage {
       throw new Error("RapidAPI key not configured. Please add RAPIDAPI_KEY to environment variables.");
     }
 
-    console.log(`\n🔍 NEW INTELLIGENT SEARCH: Analyzing ${normalizedAddress}`);
+    if (!isLeanMode()) {
+      console.log(`\n🔍 NEW INTELLIGENT SEARCH: Analyzing ${normalizedAddress}`);
+    }
 
     try {
       // STEP 1: Get exact coordinates via auto-complete
-      console.log('Step 1: Getting coordinates...');
+      if (!isLeanMode()) {
+        console.log('Step 1: Getting coordinates...');
+      }
       const coords = await this.getCoordinatesFromAddress(normalizedAddress, apiKey);
       const centerLat = coords.lat;
       const centerLon = coords.lon;
-      console.log(`✅ Coordinates found: ${centerLat}, ${centerLon}`);
+      if (!isLeanMode()) {
+        console.log(`✅ Coordinates found: ${centerLat}, ${centerLon}`);
+      }
 
       // WEB_ONLY mode: use web search exclusively for subject details
       if ((process.env.WEB_ONLY || '').toString().trim() !== ''
@@ -381,11 +485,10 @@ export class MemStorage implements IStorage {
 
       console.log(`Step 3: Enhanced search parameters with conditional methodology:`);
       console.log(`- Size range: ${minSqft}-${maxSqft} sqft (±20% of ${finalSubjectSqft})`);
-      const yrMin = finalYearBuilt ? finalYearBuilt - 10 : null;
       const yrMax = finalYearBuilt ? finalYearBuilt + 10 : null;
-      console.log(`- Year range: ${yrMin && yrMax ? `${yrMin}-${yrMax}` : 'No year filter'} (±10 years from ${finalYearBuilt ?? 'N/A'})`);
+      console.log(`- Year filter: ${yrMax ? `Max ${yrMax}` : 'No year filter'} (max 10 years newer than ${finalYearBuilt ?? 'N/A'})`);
       console.log(`- Property type: ${finalPropertyType} → Search types: ${propertyTypeFilter.join(', ')}`);
-      console.log(`- Strategy: Filter first, then null-value search if insufficient`);
+      console.log(`- Strategy: Gemini-first, then RapidAPI fallback if insufficient`);
 
       // Determine early whether dual ARV is needed (subject baths < 2)
       const subjBathsConsolRaw = (subjectProperty?.description as any)?.baths_consolidated;
@@ -395,15 +498,26 @@ export class MemStorage implements IStorage {
       const dualNeeded = subjBathsNumeric < 2 - 1e-9;
       console.log(`🚿 EARLY BATH DECISION: subject baths=${subjBathsNumeric} → dual ARV ${dualNeeded ? 'NEEDED' : 'NOT needed'}`);
 
-      // ENHANCED CONDITIONAL SEARCH WITH RADIUS EXPANSION
+      // DYNAMIC SEARCH WITH ACTIVITY-BASED RADIUS EXPANSION
       let radius = 1;
-      const maxRadius = 5;
+      let maxRadius = 5; // Will be adjusted based on activity level
       let finalValidComps: any[] = [];
       let finalResearchCandidates: any[] = [];
       // Track targets to ensure enough comps for baseline (and two-bath if dual)
       const baselineTarget = 5;
       const twoBathTarget = dualNeeded ? 5 : 0;
       const epsilon = 1e-9;
+      let geminiAttempted = false; // Track if Gemini has been attempted at current radius
+      
+      // Start with default activity level - will be adjusted based on search results
+      let activityLevel = { level: 'Medium', score: 5 };
+      console.log(`\n🔍 MARKET ACTIVITY ASSESSMENT:`);
+      console.log(`   • Starting with default activity level: ${activityLevel.level} (${activityLevel.score}/10)`);
+      console.log(`   • Will adjust based on search results`);
+      
+      // Start with default max radius - will be adjusted based on results
+      maxRadius = 3; // Default to medium activity
+      console.log(`   • Starting with default max radius: ${maxRadius} miles`);
 
       const isBaselineEligible = (comp: any): boolean => {
         const b = parseFloat(comp?.baths?.toString() || 'NaN');
@@ -423,19 +537,128 @@ export class MemStorage implements IStorage {
         console.log(`\n╔═══════════════════════════════════════════════════════════════════════════════════════════╗`);
         console.log(`║                                 RADIUS ${radius} MILE SEARCH                                    ║`);
         console.log(`╚═══════════════════════════════════════════════════════════════════════════════════════════╝`);
+        
+        // Reset Gemini attempt flag for each radius
+        geminiAttempted = false;
 
-        console.log(`\n🔍 STEP 3A: API Search with Filters`);
+        console.log(`\n🔍 STEP 3A: GEMINI-FIRST SEARCH`);
         console.log(`   • Search radius: ${radius} miles`);
         console.log(`   • Size filter: ${minSqft}-${maxSqft} sqft`);
         console.log(`   • Property types: ${propertyTypeFilter.join(', ')}`);
-        console.log(`   • Year filter: ${finalYearBuilt ? (finalYearBuilt-10) + '-' + (finalYearBuilt+10) : 'No year filter'}`);
+        console.log(`   • Year filter: ${finalYearBuilt ? 'Max ' + (finalYearBuilt+10) : 'No year filter'}`);
         console.log(`   • Status: sold properties only`);
-        console.log(`   • Time range: last 12 months`);
+        console.log(`   • Time range: ${activityLevel.score >= 6 ? '6 months' : activityLevel.score >= 4 ? '12 months' : '18 months'}`);
 
-        let phaseOneComps = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '');
+        // GEMINI-FIRST APPROACH: Start with Gemini search
+        let phaseOneComps: any[] = [];
+        console.log(`   🔍 Gemini Integration Debug:`);
+        console.log(`   • Gemini searcher available: ${!!this.geminiSearcher}`);
+        console.log(`   • Search parameters: ${normalizedAddress}, ${centerLat}, ${centerLon}, ${radius}`);
+        console.log(`   • Max results: 8`);
+        
+        if (this.geminiSearcher) {
+          try {
+            console.log(`   🔍 GEMINI PRIMARY: Searching with Gemini at ${radius} mile radius...`);
+            const geminiComps = await this.geminiSearcher.searchComparables(
+              normalizedAddress,
+              centerLat,
+              centerLon,
+              radius,
+              8 // Request more comps initially
+            );
+
+            if (geminiComps.length > 0) {
+              console.log(`   ✅ GEMINI: Found ${geminiComps.length} comparables`);
+              
+              // Convert Gemini results to our format
+              phaseOneComps = geminiComps.map(comp => ({
+                address: comp.address,
+                sqft: comp.sqft,
+                price: comp.price,
+                pricePerSqft: Math.round(comp.price / comp.sqft),
+                beds: comp.beds,
+                baths: comp.baths,
+                yearBuilt: comp.yearBuilt,
+                last_sold_date: comp.soldDate,
+                distance_miles: comp.distance,
+                source: 'gemini',
+                confidence: comp.confidence,
+                researched: false
+              }));
+
+              // Show Gemini results
+              geminiComps.forEach((comp, i) => {
+                console.log(`   ${i+1}. ${comp.address} - ${comp.sqft}sqft - $${comp.price.toLocaleString()} - ${comp.soldDate} (${comp.confidence})`);
+              });
+            } else {
+              console.log(`   ❌ GEMINI: No comparables found, falling back to RapidAPI`);
+            }
+          } catch (error) {
+            console.error(`   ❌ GEMINI ERROR: ${error.message}`);
+          }
+        }
+
+        // RAPIDAPI FALLBACK: Only if Gemini found insufficient comps
+        if (phaseOneComps.length < 3) {
+          console.log(`   🔍 RAPIDAPI FALLBACK: Searching with RapidAPI...`);
+          const rapidAPIComps = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '');
+          
+          // Add RapidAPI comps that aren't duplicates
+          rapidAPIComps.forEach(rapidComp => {
+            const isDuplicate = phaseOneComps.some(geminiComp => 
+              geminiComp.address === rapidComp.address
+            );
+            if (!isDuplicate) {
+              phaseOneComps.push({
+                ...rapidComp,
+                source: 'rapidapi'
+              });
+            }
+          });
+          
+          console.log(`   📊 RAPIDAPI: Added ${rapidAPIComps.length} additional comparables`);
+        }
 
         console.log(`\n📊 STEP 3A RESULTS:`);
         console.log(`   • Properties returned by API: ${phaseOneComps.length}`);
+
+        // Update activity level based on search results
+        if (phaseOneComps.length > 0) {
+          const recentSales = phaseOneComps.filter(comp => {
+            if (!comp.last_sold_date) return false;
+            const soldDate = new Date(comp.last_sold_date);
+            const sixMonthsAgo = new Date();
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+            return soldDate >= sixMonthsAgo;
+          });
+          
+          const salesCount = recentSales.length;
+          console.log(`   • Recent sales (6 months): ${salesCount}`);
+          
+          // Update activity level based on recent sales count
+          if (salesCount >= 15) {
+            activityLevel = { level: 'Very High', score: 9 };
+            maxRadius = 2;
+          } else if (salesCount >= 10) {
+            activityLevel = { level: 'High', score: 8 };
+            maxRadius = 2;
+          } else if (salesCount >= 7) {
+            activityLevel = { level: 'Medium-High', score: 7 };
+            maxRadius = 3;
+          } else if (salesCount >= 4) {
+            activityLevel = { level: 'Medium', score: 6 };
+            maxRadius = 3;
+          } else if (salesCount >= 2) {
+            activityLevel = { level: 'Low-Medium', score: 4 };
+            maxRadius = 4;
+          } else {
+            activityLevel = { level: 'Low', score: 3 };
+            maxRadius = 5;
+          }
+          
+          console.log(`   • Updated activity level: ${activityLevel.level} (${activityLevel.score}/10)`);
+          console.log(`   • Updated max radius: ${maxRadius} miles`);
+        }
 
         // Analyze the quality of results
         const minYear = finalYearBuilt ? finalYearBuilt - 10 : 1980;
@@ -486,7 +709,7 @@ export class MemStorage implements IStorage {
             console.log(`   ${i+1}. ${comp.address}`);
             console.log(`      Size: ${comp.sqft || 'null'}sqft ${sizeFlag} | Year: ${comp.yearBuilt || 'null'} ${yearFlag} | Beds/Baths: ${comp.beds || 'null'}/${comp.baths || 'null'}`);
             console.log(`      Price: $${comp.price?.toLocaleString() || 'null'} | $/sqft: $${comp.pricePerSqft || 'null'} | Date: ${comp.soldDate || 'null'}`);
-            console.log(`      Distance: ${comp.distance || comp.searchRadius + ' miles'}`);
+            console.log(`      Distance: ${comp.distance_miles ? comp.distance_miles.toFixed(2) + ' miles' : comp.searchRadius + ' miles'}`);
           });
           if (phaseOneComps.length > 5) {
             console.log(`   ... and ${phaseOneComps.length - 5} more properties`);
@@ -597,28 +820,29 @@ export class MemStorage implements IStorage {
             return added;
           };
 
-          // 1) Expand sales window to 12 months (API call)
+          // 1) Expand sales window based on activity level
+          const timeWindow = activityLevel.score >= 6 ? 6 : activityLevel.score >= 4 ? 12 : 18;
           try {
-            console.log(`   ↪️ EXPAND: Trying 12-month sales window at radius ${radius} ...`);
-            const comps12 = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '', 12);
+            console.log(`   ↪️ EXPAND: Trying ${timeWindow}-month sales window at radius ${radius} ...`);
+            const compsExpanded = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, finalYearBuilt, subjectProperty.property_id || '', timeWindow);
             const before = finalValidComps.length;
-            addFiltered(comps12, minSqft, maxSqft);
+            addFiltered(compsExpanded, minSqft, maxSqft);
             const after = finalValidComps.length;
-            console.log(`      +${after - before} comps added from 12-month window`);
+            console.log(`      +${after - before} comps added from ${timeWindow}-month window`);
           } catch {}
 
-          // Recount after 12-month expansion
+          // Recount after time window expansion
           let bCount = finalValidComps.filter(isBaselineEligible).length;
           let tCount = finalValidComps.filter(isTwoBathEligible).length;
-          console.log(`      Coverage after 12m: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
+          console.log(`      Coverage after ${timeWindow}m: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
 
           // Size band remains max ±20% per requirement (no widening)
 
-          // Drop year filter and retry 12-month search to broaden results (keep ±20% band)
+          // Drop year filter and retry with expanded time window
           if (bCount < baselineTarget || (dualNeeded && tCount < twoBathTarget)) {
             try {
-              console.log(`   ↪️ EXPAND: Drop year filter and retry 12-month search`);
-              const compsNoYear = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, null, subjectProperty.property_id || '', 12);
+              console.log(`   ↪️ EXPAND: Drop year filter and retry ${timeWindow}-month search`);
+              const compsNoYear = await this.searchWithFilters(centerLat, centerLon, radius, propertyTypeFilter, minSqft, maxSqft, null, subjectProperty.property_id || '', timeWindow);
               const before = finalValidComps.length;
               addFiltered(compsNoYear, minSqft, maxSqft);
               const after = finalValidComps.length;
@@ -629,6 +853,8 @@ export class MemStorage implements IStorage {
             tCount = finalValidComps.filter(isTwoBathEligible).length;
             console.log(`      Coverage after no-year: baseline=${bCount}/${baselineTarget}${dualNeeded ? `, two-bath=${tCount}/${twoBathTarget}` : ''}`);
           }
+
+          // Note: Gemini search is now handled in the primary search phase above
         }
 
         console.log(`\n🚦 DECISION POINT: Continue or Stop?`);
@@ -644,6 +870,11 @@ export class MemStorage implements IStorage {
           console.log(`   ✅ STOPPING: Reached maximum search radius (${radius}/${maxRadius}) with baseline=${baselineCount}, two-bath=${twoBathCount}`);
           break;
         } else {
+          // FAST MODE: Early break if we have 5+ qualified comps (regardless of other criteria)
+          if (finalValidComps.length >= 5) {
+            console.log(`   ⚡ FAST MODE: Found ${finalValidComps.length} qualified comparables - stopping early`);
+            break;
+          }
           console.log(`   📈 CONTINUING: Only ${finalValidComps.length} comparables found, expanding to ${radius + 1} miles...`);
           radius++;
           continue;
@@ -668,6 +899,59 @@ export class MemStorage implements IStorage {
         const researchFlag = comp.researched ? ' [RESEARCHED]' : '';
         console.log(`${i+1}. ${comp.address} - ${comp.sqft || 'null'}sqft (${sizeStatus}) - ${comp.yearBuilt || 'null'} built (${yearStatus}) - $${comp.pricePerSqft || 'null'}/sqft${researchFlag}`);
       });
+
+      // GEMINI FALLBACK: If insufficient comparables, try Gemini search
+      if (validComps.length < 3) {
+        console.log(`\n🔍 GEMINI FALLBACK: Only ${validComps.length} comparables found, searching with Gemini...`);
+        
+        try {
+          if (this.geminiSearcher) {
+            const geminiComps = await this.geminiSearcher.searchComparables(
+              normalizedAddress,
+              centerLat,
+              centerLon,
+              Math.min(radius, 3), // Use current radius or max 3 miles
+              10 // Max 10 additional comparables
+            );
+
+            if (geminiComps.length > 0) {
+              console.log(`   ✅ GEMINI FALLBACK: Found ${geminiComps.length} additional comparables`);
+              
+               // Convert Gemini results to our format
+               const convertedComps = geminiComps.map(comp => ({
+               address: comp.address,
+               sqft: comp.sqft,
+               price: comp.price,
+               pricePerSqft: Math.round(comp.price / comp.sqft),
+               beds: comp.beds,
+               baths: comp.baths,
+               yearBuilt: comp.yearBuilt,
+               last_sold_date: comp.soldDate,
+               distance_miles: comp.distance, // Use distance_miles to match RapidAPI format
+               source: 'gemini',
+               confidence: comp.confidence,
+               researched: false
+             }));
+
+            // Add to valid comps
+            validComps.push(...convertedComps);
+            
+            console.log(`   📊 Total comparables after Gemini fallback: ${validComps.length}`);
+            
+              // Show Gemini results
+              geminiComps.forEach((comp, i) => {
+                console.log(`   ${i+1}. ${comp.address} - ${comp.sqft}sqft - $${comp.price.toLocaleString()} - ${comp.soldDate} (${comp.confidence})`);
+              });
+            } else {
+              console.log(`   ❌ GEMINI FALLBACK: No additional comparables found`);
+            }
+          } else {
+            console.log(`   ⚠️ GEMINI FALLBACK: Not available, skipping`);
+          }
+        } catch (error) {
+          console.error(`   ❌ GEMINI FALLBACK ERROR: ${error.message}`);
+        }
+      }
 
       if (validComps.length < 3) {
         throw new Error(`Insufficient comparables found (${validComps.length} < 3 minimum). Consider expanding search criteria.`);
@@ -817,7 +1101,9 @@ export class MemStorage implements IStorage {
       const pTokens = line.split(/\s+/);
       const pNum = pTokens[0] || '';
       const sameNumber = pNum === houseNumber;
-      return { p, dist, sameNumber, line };
+      const exactMatch = line.includes(address.toLowerCase().replace(/[^\w\s]/g, ' ').trim());
+      console.log(`   🔍 Property Search Debug: "${line}" | Number: ${pNum} | Same: ${sameNumber} | Exact: ${exactMatch} | Dist: ${dist.toFixed(2)}`);
+      return { p, dist, sameNumber, exactMatch, line };
     });
 
     const candidates = withDistances
@@ -1184,55 +1470,89 @@ export class MemStorage implements IStorage {
     earlyStop?: { minSqft: number; maxSqft: number; minYear: number; maxYear: number; targetPerfect: number }
   ): Promise<number> {
     let filled = 0;
-    for (const comp of comps) {
-      if (filled >= maxLookups) break;
-      if ((!comp.yearBuilt || comp.yearBuilt === null) && comp.property_id) {
+    const candidates = comps.filter(comp => (!comp.yearBuilt || comp.yearBuilt === null) && comp.property_id);
+    
+    // FAST MODE: Process with concurrency control
+    const detailPromises = candidates.slice(0, maxLookups).map(comp =>
+      this.detailLimiter.execute(async () => {
         try {
-          const det = await this.fetchDetailById(String(comp.property_id));
+          const det = await withTimeout(
+            this.fetchDetailById(String(comp.property_id)),
+            8000 // 8 second timeout
+          );
           const y = det?.description?.year_built;
           if (typeof y === 'number' && y > 1600 && y < 2100) {
             comp.yearBuilt = y;
-            filled++;
-            console.log(`🔄 FILLED year built for ${comp.address} via detail: ${y}`);
-            if (earlyStop) {
-              const perfectNow = comps.filter(c => {
-                const sizeOk = c.sqft >= earlyStop.minSqft && c.sqft <= earlyStop.maxSqft;
-                const yearOk = typeof c.yearBuilt === 'number' && c.yearBuilt >= earlyStop.minYear && c.yearBuilt <= earlyStop.maxYear;
-                return sizeOk && yearOk;
-              }).length;
-              if (perfectNow >= earlyStop.targetPerfect) {
-                console.log(`✅ EARLY STOP: Reached ${perfectNow}/${earlyStop.targetPerfect} perfect matches`);
-                break;
-              }
+            if (!isLeanMode()) {
+              console.log(`🔄 FILLED year built for ${comp.address} via detail: ${y}`);
             }
+            return true;
           }
-        } catch {}
+          return false;
+        } catch (error) {
+          if (!isLeanMode()) {
+            console.log(`⚠️ Detail lookup failed for ${comp.address}: ${error}`);
+          }
+          return false;
+        }
+      })
+    );
+
+    const results = await Promise.all(detailPromises);
+    filled = results.filter(Boolean).length;
+
+    // Check early stop condition
+    if (earlyStop) {
+      const perfectNow = comps.filter(c => {
+        const sizeOk = c.sqft >= earlyStop.minSqft && c.sqft <= earlyStop.maxSqft;
+        const yearOk = typeof c.yearBuilt === 'number' && c.yearBuilt >= earlyStop.minYear && c.yearBuilt <= earlyStop.maxYear;
+        return sizeOk && yearOk;
+      }).length;
+      if (perfectNow >= earlyStop.targetPerfect && !isLeanMode()) {
+        console.log(`✅ EARLY STOP: Reached ${perfectNow}/${earlyStop.targetPerfect} perfect matches`);
       }
     }
+
     return filled;
   }
 
   // Fill missing baths for comps using RapidAPI detail (prefer consolidated)
   private async fillMissingBathsForComps(comps: any[], maxLookups: number = 10): Promise<number> {
-    let filled = 0;
-    for (const comp of comps) {
-      if (filled >= maxLookups) break;
+    const candidates = comps.filter(comp => {
       const hasBaths = Number.isFinite(parseFloat(comp?.baths?.toString() || 'NaN'));
-      if (!hasBaths && comp?.property_id) {
+      return !hasBaths && comp?.property_id;
+    });
+    
+    // FAST MODE: Process with concurrency control
+    const detailPromises = candidates.slice(0, maxLookups).map(comp =>
+      this.detailLimiter.execute(async () => {
         try {
-          const det = await this.fetchDetailById(String(comp.property_id));
+          const det = await withTimeout(
+            this.fetchDetailById(String(comp.property_id)),
+            8000 // 8 second timeout
+          );
           const desc: any = det?.description || {};
           const cons = typeof desc?.baths_consolidated === 'string' ? parseFloat(desc.baths_consolidated) : (typeof desc?.baths_consolidated === 'number' ? desc.baths_consolidated : undefined);
           const bathsVal = Number.isFinite(cons) ? (cons as number) : (Number.isFinite(Number(desc?.baths)) ? Number(desc.baths) : undefined);
           if (Number.isFinite(bathsVal)) {
             comp.baths = bathsVal;
-            filled++;
-            console.log(`🔄 FILLED baths for ${comp.address} via detail: ${bathsVal}`);
+            if (!isLeanMode()) {
+              console.log(`🔄 FILLED baths for ${comp.address} via detail: ${bathsVal}`);
+            }
+            return true;
           }
-        } catch {}
-      }
-    }
-    return filled;
+          return false;
+        } catch (error) {
+          if (!isLeanMode()) {
+            console.log(`⚠️ Detail lookup failed for ${comp.address}: ${error}`);
+          }
+          return false;
+        }
+      })
+    );
+
+    const results = await Promise.all(detailPromises);
+    return results.filter(Boolean).length;
   }
 
   private async searchWithFilters(
@@ -1481,79 +1801,115 @@ export class MemStorage implements IStorage {
     targetYear: number | null
   ): Promise<any[]> {
     const researchedComps = [];
+    
+    // FAST MODE: Limit to top 5 candidates by price (most valuable properties first)
+    const candidates = nullValueProps
+      .sort((a, b) => (b.price || 0) - (a.price || 0))
+      .slice(0, 5);
 
-    for (const prop of nullValueProps) {
-      try {
-        console.log(`🔍 Researching: ${prop.address}`);
-        console.log(`   Missing data flags:`, prop.missingData);
+    if (!isLeanMode()) {
+      console.log(`🔍 FAST MODE: Researching top ${candidates.length} price-ranked candidates`);
+    }
 
-        const searchQuery = `${prop.address} property details square feet year built`;
-        console.log(`🔍 WEB SEARCH: ${searchQuery}`);
-
-        // Use internal web search service directly (no HTTP self-call)
-        const searchResult = await this.webSearch(searchQuery) || [];
-
-        if (searchResult && searchResult.length > 0) {
-          console.log(`✅ WEB SEARCH: Processing ${searchResult.length} search results for ${prop.address}`);
-          const searchText = searchResult.map((r: any) => `${r.title || ''} ${r.description || ''} ${r.content || ''}`).join(' ').toLowerCase();
-          console.log(`🌐 ANALYZING SEARCH CONTENT: ${searchText.substring(0, 200)}...`);
-          let enhanced = false;
-
-          // Extract missing square footage
-          if (prop.missingData.sqft) {
-            const sqftMatch = searchText.match(/(\d{1,4})\s*(?:sq|square)\s*(?:ft|feet|foot)/i);
-            if (sqftMatch) {
-              const sqft = parseInt(sqftMatch[1]);
-              if (sqft >= minSqft && sqft <= maxSqft) {
-                prop.sqft = sqft;
-                prop.pricePerSqft = Math.round(prop.price / sqft);
-                enhanced = true;
-                console.log(`✅ Enhanced sqft: ${prop.address} = ${sqft} sqft`);
-              }
-            }
+    // Process candidates with concurrency control
+    const researchPromises = candidates.map(prop => 
+      this.tavilyLimiter.execute(async () => {
+        try {
+          if (!isLeanMode()) {
+            console.log(`🔍 Researching: ${prop.address}`);
+            console.log(`   Missing data flags:`, prop.missingData);
           }
 
-          // Extract missing year built
-          if (prop.missingData.yearBuilt) {
-            console.log(`🔍 EXTRACTING YEAR BUILT for ${prop.address}`);
-            const yearPatterns = [
-              /(?:built|year built|constructed)[\s:]*(\d{4})/i,
-              /(\d{4})\s*built/i,
-              /built\s*in\s*(\d{4})/i,
-              /year[\s:]*(\d{4})/i
-            ];
+          const searchQuery = `${prop.address} property details square feet year built`;
+          if (!isLeanMode()) {
+            console.log(`🔍 WEB SEARCH: ${searchQuery}`);
+          }
 
-            for (const pattern of yearPatterns) {
-              const yearMatch = searchText.match(pattern);
-              if (yearMatch) {
-                const year = parseInt(yearMatch[1]);
-                console.log(`🌐 FOUND YEAR MATCH: ${year} using pattern ${pattern}`);
-                if (year >= 1800 && year <= 2025) {
-                  prop.yearBuilt = year;
+          // Use internal web search service with timeout
+          const searchResult = await withTimeout(
+            this.webSearch(searchQuery) || Promise.resolve([]),
+            8000 // 8 second timeout
+          );
+
+          if (searchResult && searchResult.length > 0) {
+            if (!isLeanMode()) {
+              console.log(`✅ WEB SEARCH: Processing ${searchResult.length} search results for ${prop.address}`);
+            }
+            const searchText = searchResult.map((r: any) => `${r.title || ''} ${r.description || ''} ${r.content || ''}`).join(' ').toLowerCase();
+            if (!isLeanMode()) {
+              console.log(`🌐 ANALYZING SEARCH CONTENT: ${searchText.substring(0, 200)}...`);
+            }
+            let enhanced = false;
+
+            // Extract missing square footage
+            if (prop.missingData.sqft) {
+              const sqftMatch = searchText.match(/(\d{1,4})\s*(?:sq|square)\s*(?:ft|feet|foot)/i);
+              if (sqftMatch) {
+                const sqft = parseInt(sqftMatch[1]);
+                if (sqft >= minSqft && sqft <= maxSqft) {
+                  prop.sqft = sqft;
+                  prop.pricePerSqft = Math.round(prop.price / sqft);
                   enhanced = true;
-                  console.log(`✅ Enhanced year: ${prop.address} = ${year}`);
-                  break;
+                  if (!isLeanMode()) {
+                    console.log(`✅ Enhanced sqft: ${prop.address} = ${sqft} sqft`);
+                  }
                 }
               }
             }
 
-            if (!prop.yearBuilt) {
-              console.log(`❌ NO YEAR EXTRACTED for ${prop.address} from: ${searchText.substring(0, 100)}`);
+            // Extract missing year built
+            if (prop.missingData.yearBuilt) {
+              if (!isLeanMode()) {
+                console.log(`🔍 EXTRACTING YEAR BUILT for ${prop.address}`);
+              }
+              const yearPatterns = [
+                /(?:built|year built|constructed)[\s:]*(\d{4})/i,
+                /(\d{4})\s*built/i,
+                /built\s*in\s*(\d{4})/i,
+                /year[\s:]*(\d{4})/i
+              ];
+
+              for (const pattern of yearPatterns) {
+                const yearMatch = searchText.match(pattern);
+                if (yearMatch) {
+                  const year = parseInt(yearMatch[1]);
+                  if (!isLeanMode()) {
+                    console.log(`🌐 FOUND YEAR MATCH: ${year} using pattern ${pattern}`);
+                  }
+                  if (year >= 1800 && year <= 2025) {
+                    prop.yearBuilt = year;
+                    enhanced = true;
+                    if (!isLeanMode()) {
+                      console.log(`✅ Enhanced year: ${prop.address} = ${year}`);
+                    }
+                    break;
+                  }
+                }
+              }
+
+              if (!prop.yearBuilt && !isLeanMode()) {
+                console.log(`❌ NO YEAR EXTRACTED for ${prop.address} from: ${searchText.substring(0, 100)}`);
+              }
+            }
+
+            if (enhanced) {
+              prop.researched = true;
+              delete prop.missingData;
+              return prop;
             }
           }
-
-          if (enhanced) {
-            prop.researched = true;
-            delete prop.missingData;
-            researchedComps.push(prop);
+          return null;
+        } catch (error: any) {
+          if (!isLeanMode()) {
+            console.log(`⚠️ Research failed: ${prop.address} - ${error.message || error}`);
           }
+          return null;
         }
-      } catch (error: any) {
-        console.log(`⚠️ Research failed: ${prop.address} - ${error.message || error}`);
-      }
-    }
+      })
+    );
 
-    return researchedComps;
+    const results = await Promise.all(researchPromises);
+    return results.filter(result => result !== null);
   }
 
   private async calculateNewMethodologyARV(

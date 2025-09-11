@@ -114,6 +114,17 @@ async function main() {
   } else {
     console.log(`\nAlt Baseline (bath ≤ subject): not computed`);
   }
+
+  // Show comparable details
+  if (res?.comparables && res.comparables.length > 0) {
+    console.log('\n=== COMPARABLE DETAILS ===');
+    res.comparables.forEach((comp: any, index: number) => {
+      console.log(`${index + 1}. ${comp.address}`);
+      console.log(`   Price: ${comp.price} | Size: ${comp.sqft} sqft | $${comp.pricePerSqft}/sqft`);
+      console.log(`   Sold: ${comp.soldDate} | Distance: ${comp.distance}`);
+      console.log(`   Beds/Baths: ${comp.beds}/${comp.baths} | Source: ${comp.source || 'RapidAPI'}`);
+    });
+  }
 }
 
 main().catch(err => {
