@@ -285,36 +285,9 @@ Return the information in a structured format. If you can't find specific detail
         googleSearch: {},
       };
 
-      const config = {
-        tools: [groundingTool],
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "object",
-          properties: {
-            comps: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  address: { type: "string" },
-                  sold_price: { type: "integer" },
-                  sold_date: { type: "string" },
-                  beds: { type: "integer" },
-                  baths: { type: "number" },
-                  sqft: { type: "integer" },
-                  ppsf: { type: "number" },
-                  distance_miles: { type: "number" },
-                  source_url: { type: "string" },
-                  source_site: { type: "string" }
-                },
-                required: ["address", "sold_price", "sold_date", "beds", "baths", "sqft", "ppsf", "distance_miles", "source_url"]
-              },
-              minItems: 1
-            }
-          },
-          required: ["comps"]
-        }
-      };
+    const config = {
+      tools: [groundingTool]
+    };
 
           // Make the request with proper content structure
           const result = await this.client.models.generateContent({
@@ -392,9 +365,10 @@ SEARCH HINTS:
 - "${subjectAddress.split(',')[0]}" Sold
 
 OUTPUT RULES:
-- Respond ONLY with JSON that matches the provided schema
 - For each comp include: address, sold_price, sold_date (ISO), beds, baths, sqft,
   distance_miles, ppsf, source_url, and source_site (e.g., redfin/realtor/zillow/county)
+- Format clearly with each property listed separately
+- Include only properties that have actually sold (closed) recently
 - Do not include pending or list-only entries`;
   }
 
@@ -424,64 +398,108 @@ OUTPUT RULES:
         }
       }
 
-      // Parse the structured JSON response
-      let responseData;
-      try {
-        responseData = JSON.parse(responseText);
-        console.log(`   🔍 Parsed JSON response successfully`);
-      } catch (error) {
-        console.log(`   ⚠️ Failed to parse JSON response: ${error.message}`);
-        console.log(`   📄 Full response text: ${responseText}`);
-        return [];
-      }
-
-      if (!responseData.comps || !Array.isArray(responseData.comps)) {
-        console.log(`   ⚠️ No comps array found in response`);
-        console.log(`   📄 Response structure: ${JSON.stringify(responseData, null, 2)}`);
-        return [];
-      }
-
-      const rawComparables = responseData.comps;
+      // Parse natural language response for comparable properties
+      console.log(`   🔍 Parsing natural language response for comparables`);
+      console.log(`   📄 Full response text: ${responseText}`);
+      
       const comparables: GeminiComparable[] = [];
-
-      for (const raw of rawComparables) {
-        try {
-          // Validate required fields
-          if (!raw.address || !raw.sold_price || !raw.sqft) {
-            console.log(`   ⚠️ Skipping invalid property: missing required fields`);
-            continue;
+      
+      // Look for property patterns in the response
+      const propertyPatterns = [
+        // Pattern 1: Address followed by details
+        /(\d+.*?(?:St|Street|Ave|Avenue|Rd|Road|Dr|Drive|Blvd|Boulevard|Ln|Lane|Ct|Court|Way|Pl|Place).*?)(?:\$([\d,]+)|(\d+\s*(?:bed|br|bedroom))|(\d+(?:\.\d+)?\s*(?:bath|ba|bathroom))|(\d{3,4}\s*(?:sqft|sq\.?\s*ft)))/gi,
+        // Pattern 2: Price followed by address
+        /\$([\d,]+).*?(\d+.*?(?:St|Street|Ave|Avenue|Rd|Road|Dr|Drive|Blvd|Boulevard|Ln|Lane|Ct|Court|Way|Pl|Place).*?)/gi
+      ];
+      
+      let foundProperties = new Set<string>();
+      
+      for (const pattern of propertyPatterns) {
+        let match;
+        while ((match = pattern.exec(responseText)) !== null) {
+          try {
+            let address = '';
+            let price = 0;
+            let beds = 0;
+            let baths = 0;
+            let sqft = 0;
+            
+            if (match[1] && match[1].includes('St') || match[1].includes('Ave') || match[1].includes('Rd') || match[1].includes('Dr')) {
+              // Pattern 1: Address first
+              address = match[1].trim();
+              price = match[2] ? parseInt(match[2].replace(/,/g, '')) : 0;
+              beds = match[3] ? parseInt(match[3]) : 0;
+              baths = match[4] ? parseFloat(match[4]) : 0;
+              sqft = match[5] ? parseInt(match[5]) : 0;
+            } else if (match[1] && match[2]) {
+              // Pattern 2: Price first
+              price = parseInt(match[1].replace(/,/g, ''));
+              address = match[2].trim();
+            }
+            
+            // Skip if we already found this property or missing essential data
+            if (foundProperties.has(address) || !address || !price) {
+              continue;
+            }
+            
+            // Try to extract additional details from surrounding text
+            const contextStart = Math.max(0, match.index - 200);
+            const contextEnd = Math.min(responseText.length, match.index + 200);
+            const context = responseText.substring(contextStart, contextEnd);
+            
+            // Extract beds if not found
+            if (!beds) {
+              const bedMatch = context.match(/(\d+)\s*(?:bed|br|bedroom)/i);
+              if (bedMatch) beds = parseInt(bedMatch[1]);
+            }
+            
+            // Extract baths if not found
+            if (!baths) {
+              const bathMatch = context.match(/(\d+(?:\.\d+)?)\s*(?:bath|ba|bathroom)/i);
+              if (bathMatch) baths = parseFloat(bathMatch[1]);
+            }
+            
+            // Extract sqft if not found
+            if (!sqft) {
+              const sqftMatch = context.match(/(\d{3,4})\s*(?:sqft|sq\.?\s*ft|square\s*feet)/i);
+              if (sqftMatch) sqft = parseInt(sqftMatch[1]);
+            }
+            
+            // Calculate distance
+            let distance = 0.5; // Default fallback
+            const distMatch = context.match(/(\d+(?:\.\d+)?)\s*(?:mile|mi)/i);
+            if (distMatch) {
+              distance = parseFloat(distMatch[1]);
+            } else if (address) {
+              distance = await this.calculateDistance(address, subjectLat, subjectLon);
+            }
+            
+            // Filter by distance
+            if (distance > searchRadius) {
+              console.log(`   ❌ Filtering out ${address} (distance: ${distance} > ${searchRadius})`);
+              continue;
+            }
+            
+            const comparable: GeminiComparable = {
+              address: address,
+              price: price,
+              sqft: sqft || 1200, // Default fallback
+              beds: beds || 3, // Default fallback
+              baths: baths || 2, // Default fallback
+              yearBuilt: 0, // Not available from search
+              soldDate: new Date().toISOString().split('T')[0], // Default to today
+              distance: distance,
+              source: 'Gemini Search',
+              confidence: 'medium' // Natural language parsing is medium confidence
+            };
+            
+            comparables.push(comparable);
+            foundProperties.add(address);
+            console.log(`   ✅ Added: ${comparable.address} - $${comparable.price.toLocaleString()} - ${comparable.sqft}sqft`);
+            
+          } catch (error) {
+            console.log(`   ⚠️ Error processing property match: ${error.message}`);
           }
-
-          // Use provided distance or calculate if not provided
-          let distance = raw.distance_miles || 0;
-          if (!distance && raw.address) {
-            distance = await this.calculateDistance(raw.address, subjectLat, subjectLon);
-          }
-
-          // Filter by distance
-          if (distance > searchRadius) {
-            console.log(`   ❌ Filtering out ${raw.address} (distance: ${distance} > ${searchRadius})`);
-            continue;
-          }
-
-          const comparable: GeminiComparable = {
-            address: raw.address,
-            price: parseInt(raw.sold_price),
-            sqft: parseInt(raw.sqft),
-            beds: parseInt(raw.beds) || 0,
-            baths: parseFloat(raw.baths) || 0,
-            yearBuilt: parseInt(raw.yearBuilt) || 0,
-            soldDate: raw.sold_date || '',
-            distance: distance,
-            source: raw.source_site || 'Gemini Search',
-            confidence: 'high' // Structured output should be high confidence
-          };
-
-          comparables.push(comparable);
-          console.log(`   ✅ Added: ${comparable.address} - $${comparable.price.toLocaleString()} - ${comparable.sqft}sqft`);
-
-        } catch (error) {
-          console.log(`   ⚠️ Error processing property: ${error.message}`);
         }
       }
 
