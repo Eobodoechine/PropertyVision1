@@ -361,7 +361,7 @@ HARD FILTERS:
 - Return 3–6 best comps
 
 SEARCH HINTS:
-- recently sold Henderson NV site:redfin.com OR site:realtor.com OR site:zillow.com
+- recently sold ${subjectAddress.split(',')[1]?.trim() || 'properties'} site:redfin.com OR site:realtor.com OR site:zillow.com
 - "${subjectAddress.split(',')[0]}" Sold
 
 OUTPUT RULES:

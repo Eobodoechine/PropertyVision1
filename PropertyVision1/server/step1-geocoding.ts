@@ -76,7 +76,10 @@ class GeocodingService {
 
 // Test function
 async function testGeocoding() {
-  const address = process.env.ADDRESS || "243 Kirk Ave, Henderson, NV 89015";
+  const address = process.env.ADDRESS;
+  if (!address) {
+    throw new Error('ADDRESS environment variable is required');
+  }
   
   console.log(`\n📍 STEP 1: GEOCODING ADDRESS`);
   console.log(`============================================================`);

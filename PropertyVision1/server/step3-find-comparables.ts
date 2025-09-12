@@ -1,4 +1,5 @@
 import { GoogleGenAI } from '@google/genai';
+import { LLaMAParser } from './llama-parser.js';
 
 interface ComparableProperty {
   address: string;
@@ -22,18 +23,21 @@ interface FindComparablesResult {
 class ComparableSearchService {
   private client: GoogleGenAI;
   private googleMapsApiKey: string;
+  private llamaParser: LLaMAParser;
 
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY environment variable is required');
     }
-    this.client = new GoogleGenAI(apiKey);
+    this.client = new GoogleGenAI({ apiKey });
     
     this.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || '';
     if (!this.googleMapsApiKey) {
       throw new Error('GOOGLE_MAPS_API_KEY environment variable is required');
     }
+    
+    this.llamaParser = new LLaMAParser();
   }
 
   async findComparables(
@@ -62,7 +66,10 @@ class ComparableSearchService {
       };
 
       const config = {
-        tools: [groundingTool]
+        tools: [groundingTool],
+        generationConfig: {
+          temperature: 0
+        }
       };
 
       // Retry logic for 503 errors
@@ -82,11 +89,12 @@ class ComparableSearchService {
           });
 
           console.log(`   📊 Gemini response received`);
-          console.log(`   📄 Response text preview: ${result.text.substring(0, 200)}...`);
+          console.log(`   📄 Response text preview: ${result.text?.substring(0, 200) || 'No text'}...`);
           
-          // Extract comparables from response
+          // Extract comparables from response using LLaMA parser
           const comparables = await this.extractComparablesFromResponse(
             result,
+            subjectAddress,
             subjectLat,
             subjectLon,
             searchRadius
@@ -146,12 +154,14 @@ HARD FILTERS:
 - Return 3–6 best comps
 
 SEARCH HINTS:
-- recently sold Henderson NV site:redfin.com OR site:realtor.com OR site:zillow.com
+- recently sold ${subjectAddress.split(',')[1]?.trim() || 'properties'} site:redfin.com OR site:realtor.com OR site:zillow.com
 - "${subjectAddress.split(',')[0]}" Sold
 
 OUTPUT RULES:
 - For each comp include: address, sold_price, sold_date (ISO), beds, baths, sqft,
-  distance_miles, ppsf, source_url, and source_site (e.g., redfin/realtor/zillow/county)
+  year_built, distance_miles, ppsf, source_url, and source_site (e.g., redfin/realtor/zillow/county)
+- Search property listing sites for year built information when available
+- If year built is not available, include "Year Built: Unknown"
 - Format clearly with each property listed separately
 - Include only properties that have actually sold (closed) recently
 - Do not include pending or list-only entries`;
@@ -159,13 +169,14 @@ OUTPUT RULES:
 
   private async extractComparablesFromResponse(
     response: any,
+    subjectAddress: string,
     subjectLat: number,
     subjectLon: number,
     searchRadius: number
   ): Promise<ComparableProperty[]> {
     try {
       // Get the response text
-      const responseText = response.text;
+      const responseText = response.text || '';
       console.log(`   📄 Response text length: ${responseText.length} characters`);
       
       // Check for grounding metadata
@@ -180,89 +191,44 @@ OUTPUT RULES:
         }
       }
 
-      // Parse natural language response for comparable properties
-      console.log(`   🔍 Parsing natural language response for comparables`);
-      console.log(`   📄 Full response text: ${responseText}`);
+      // Use LLaMA parser to extract comparables
+      console.log(`   🦙 Using LLaMA parser to extract comparables`);
+      const parsedComparables = await this.llamaParser.parseComparables(responseText, subjectAddress);
       
-      // Clean the response text first to remove reference markers
-      const cleanText = responseText.replace(/\[\d+(?:,\s*\d+)*\s+in\s+previous\s+step\]/gi, '');
-      
-      // Look for structured property data in the response
+      // Convert to our format and add distance calculations
       const comparables: ComparableProperty[] = [];
       
-      // Split by various property section formats
-      const compSections = cleanText.split(/\*\*(?:Comparable Property|Comp|Property) \d+\*\*/gi);
-      
-      for (const section of compSections) {
-        if (section.trim().length === 0) continue;
-        
-        // Extract address (support both formats)
-        let addressMatch = section.match(/\*\s+\*\*Address:\*\*\s*([^\n]+)/i);
-        if (!addressMatch) {
-          addressMatch = section.match(/\*\s+\*\*address:\*\*\s*([^\n]+)/i);
-        }
-        if (!addressMatch) continue;
-        
-        const address = addressMatch[1].trim();
-        
-        // Extract sold price (support both formats)
-        let priceMatch = section.match(/\*\s+\*\*Sold Price:\*\*\s*\$([\d,]+)/i);
-        if (!priceMatch) {
-          priceMatch = section.match(/\*\s+\*\*sold_price:\*\*\s*\$([\d,]+)/i);
-        }
-        if (!priceMatch) continue;
-        
-        const price = parseInt(priceMatch[1].replace(/,/g, ''));
-        
-        // Extract beds (support both formats)
-        let bedsMatch = section.match(/\*\s+\*\*Beds:\*\*\s*(\d+)/i);
-        if (!bedsMatch) {
-          bedsMatch = section.match(/\*\s+\*\*beds:\*\*\s*(\d+)/i);
-        }
-        const beds = bedsMatch ? parseInt(bedsMatch[1]) : 3;
-        
-        // Extract baths (support both formats)
-        let bathsMatch = section.match(/\*\s+\*\*Baths:\*\*\s*(\d+(?:\.\d+)?)/i);
-        if (!bathsMatch) {
-          bathsMatch = section.match(/\*\s+\*\*baths:\*\*\s*(\d+(?:\.\d+)?)/i);
-        }
-        const baths = bathsMatch ? parseFloat(bathsMatch[1]) : 2;
-        
-        // Extract sqft (support both formats)
-        let sqftMatch = section.match(/\*\s+\*\*Sqft:\*\*\s*([\d,]+)/i);
-        if (!sqftMatch) {
-          sqftMatch = section.match(/\*\s+\*\*sqft:\*\*\s*([\d,]+)/i);
-        }
-        const sqft = sqftMatch ? parseInt(sqftMatch[1].replace(/,/g, '')) : 1200;
-        
+      for (const parsed of parsedComparables) {
         // Calculate actual distance using Google Maps API
-        const distance = await this.calculateDistance(address, subjectLat, subjectLon);
-        
-        // Debug: Log what we extracted
-        console.log(`   🔍 DEBUG: Extracted ${address} - distance: ${distance}`);
+        console.log(`   🔍 Calculating distance from (${subjectLat}, ${subjectLon}) to ${parsed.address}`);
+        const distance = await this.calculateDistance(parsed.address, subjectLat, subjectLon);
+        console.log(`   🔍 Calculated distance: ${distance} miles`);
         
         // Filter by distance
         if (distance > searchRadius) {
-          console.log(`   ❌ Filtering out ${address} (distance: ${distance} > ${searchRadius})`);
+          console.log(`   ❌ Filtering out ${parsed.address} (distance: ${distance} > ${searchRadius})`);
           continue;
         }
         
         const comparable: ComparableProperty = {
-          address: address,
-          price: price,
-          sqft: sqft,
-          beds: beds,
-          baths: baths,
-          yearBuilt: 0,
-          soldDate: new Date().toISOString().split('T')[0],
+          address: parsed.address,
+          price: parseInt(parsed.price),
+          sqft: parsed.sqft,
+          beds: parsed.beds,
+          baths: parsed.baths,
+          yearBuilt: parsed.yearBuilt || 0,
+          soldDate: parsed.soldDate,
           distance: distance,
-          source: 'Gemini Search',
-          confidence: 'medium'
+          source: 'Gemini Search + LLaMA',
+          confidence: 'high'
         };
         
         comparables.push(comparable);
-        console.log(`   ✅ Added: ${comparable.address} - $${comparable.price.toLocaleString()} - ${comparable.sqft}sqft`);
+        console.log(`   ✅ Added: ${comparable.address} - $${comparable.price.toLocaleString()} - ${comparable.sqft}sqft - Built: ${comparable.yearBuilt || 'Unknown'}`);
       }
+
+      // LLaMA parser completed successfully
+      console.log(`   🦙 LLaMA parser completed successfully`);
 
       return comparables;
 
@@ -328,9 +294,22 @@ OUTPUT RULES:
 
 // Test function
 async function testFindComparables() {
-  const address = process.env.ADDRESS || "243 Kirk Ave, Henderson, NV 89015";
-  const lat = 36.053908;
-  const lon = -114.9601516;
+  const address = process.env.ADDRESS;
+  if (!address) {
+    throw new Error('ADDRESS environment variable is required');
+  }
+  
+  // Import and use geocoding service to get real coordinates
+  const { GeocodingService } = await import('./step1-geocoding.js');
+  const geocodingService = new GeocodingService();
+  const geocodingResult = await geocodingService.geocodeAddress(address);
+  
+  if (!geocodingResult.success) {
+    throw new Error(`Geocoding failed: ${geocodingResult.error}`);
+  }
+  
+  const lat = geocodingResult.lat;
+  const lon = geocodingResult.lon;
   const radius = 1.0;
   
   console.log(`\n🔍 STEP 3: FINDING COMPARABLES`);
@@ -342,9 +321,12 @@ async function testFindComparables() {
   if (result.success) {
     console.log(`✅ Found ${result.comparables.length} comparables:`);
     result.comparables.forEach((comp, index) => {
+      const soldDate = new Date(comp.soldDate).toLocaleDateString();
       console.log(`   ${index + 1}. ${comp.address}`);
       console.log(`      Price: $${comp.price.toLocaleString()}`);
       console.log(`      Size: ${comp.sqft} sqft (${comp.beds}bd/${comp.baths}ba)`);
+      console.log(`      Built: ${comp.yearBuilt || 'Unknown'}`);
+      console.log(`      Sold: ${soldDate}`);
       console.log(`      Distance: ${comp.distance.toFixed(2)} miles`);
       console.log(`      Source: ${comp.source}`);
     });
