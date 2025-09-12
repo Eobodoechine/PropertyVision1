@@ -34,11 +34,11 @@ export class LLaMAParser {
   }
 
   private createParsingPrompt(response: string, subjectAddress: string): string {
-    return `You are a real estate data parser. Extract comparable property information from the following text and return ONLY a JSON array.
+    return `You are a real estate data parser. Extract ALL comparable property information from the following text and return ONLY a JSON array.
 
 IMPORTANT RULES:
-1. Extract ONLY comparable properties (NOT the subject property)
-2. Subject property address: "${subjectAddress}" - EXCLUDE this from results
+1. Extract ALL properties from the input - they are all comparables, not the subject property
+2. The subject property "${subjectAddress}" is NOT in this data - all properties here are comparables
 3. Parse prices as numbers (remove $ and commas)
 4. Parse square footage as numbers (remove commas)  
 5. Parse beds and baths as numbers
@@ -46,7 +46,7 @@ IMPORTANT RULES:
 7. Parse distance as a number (extract numeric value from text like "0.8 miles")
 8. Parse sold date as ISO date string (YYYY-MM-DD format)
 9. Return ONLY valid JSON array, no other text
-10. If no valid comparables found, return empty array []
+10. Include ALL properties that have complete data (address, price, sqft, beds, baths)
 
 Text to parse:
 ${response}

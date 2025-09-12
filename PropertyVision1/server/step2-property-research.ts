@@ -19,7 +19,7 @@ class PropertyResearchService {
     if (!apiKey) {
       throw new Error('GEMINI_API_KEY environment variable is required');
     }
-    this.client = new GoogleGenAI(apiKey);
+    this.client = new GoogleGenAI({ apiKey });
   }
 
   async researchProperty(address: string): Promise<PropertyDetails> {
@@ -55,7 +55,12 @@ Format your response clearly with each detail on a separate line.`;
         tools: [groundingTool]
       };
 
-      const result = await this.client.models.generateContent({
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('API call timeout after 30 seconds')), 30000);
+      });
+
+      const apiPromise = this.client.models.generateContent({
         model: "gemini-2.5-flash",
         contents: [{
           parts: [{
@@ -64,6 +69,8 @@ Format your response clearly with each detail on a separate line.`;
         }],
         config,
       });
+
+      const result = await Promise.race([apiPromise, timeoutPromise]) as any;
 
       console.log(`   📡 Gemini response received`);
       const responseText = result.text;

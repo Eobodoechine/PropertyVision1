@@ -45,7 +45,13 @@ class ComparableSearchService {
     subjectLat: number,
     subjectLon: number,
     searchRadius: number,
-    maxResults: number = 10
+    maxResults: number = 10,
+    timeWindowMonths: number = 24,
+    subjectBeds?: number,
+    subjectBaths?: number,
+    subjectSqft?: number,
+    subjectYearBuilt?: number,
+    subjectPropertyType?: string
   ): Promise<FindComparablesResult> {
     try {
       console.log(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
@@ -57,7 +63,13 @@ class ComparableSearchService {
         subjectLat,
         subjectLon,
         searchRadius,
-        maxResults
+        maxResults,
+        timeWindowMonths,
+        subjectBeds,
+        subjectBaths,
+        subjectSqft,
+        subjectYearBuilt,
+        subjectPropertyType
       );
 
       // Configure Gemini with Google Search grounding
@@ -136,35 +148,97 @@ class ComparableSearchService {
     subjectLat: number,
     subjectLon: number,
     searchRadius: number,
-    maxResults: number
+    maxResults: number,
+    timeWindowMonths: number = 24,
+    subjectBeds?: number,
+    subjectBaths?: number,
+    subjectSqft?: number,
+    subjectYearBuilt?: number,
+    subjectPropertyType?: string
   ): string {
-    return `Find RECENTLY SOLD (closed) comps for the subject property. Use Google Search.
-Prefer Redfin, Realtor.com, Zillow, and county/assessor records.
+    const city = subjectAddress.split(',')[1]?.trim() || 'properties';
+    const streetAddress = subjectAddress.split(',')[0]?.trim() || subjectAddress;
+    
+    // Calculate date range for search
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setMonth(endDate.getMonth() - timeWindowMonths);
+    const startDateStr = startDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const endDateStr = endDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    
+    // Determine property era for year built filtering
+    let yearBuiltFilter = '';
+    if (subjectYearBuilt) {
+      if (subjectYearBuilt < 1960) {
+        yearBuiltFilter = 'Pre-1960: match era + effective age; ignore strict ± years\n  * Prefer properties built 1940-1970 (same era/construction style)\n  * Minimum year requirement can be dropped if not enough comps found';
+      } else if (subjectYearBuilt >= 1960 && subjectYearBuilt < 1990) {
+        yearBuiltFilter = '1960-1990 stock: ±10–15 yrs (same era)\n  * Prefer properties built 1950-2000 (same construction style)\n  * Allow some flexibility for comparable scarcity';
+      } else if (subjectYearBuilt >= 1990 && subjectYearBuilt < 2000) {
+        yearBuiltFilter = '1990s construction: ±5–10 yrs\n  * Prefer properties built 1985-2005\n  * Focus on similar construction methods and materials';
+      } else if (subjectYearBuilt >= 2000) {
+        yearBuiltFilter = '2000s–present suburbs: ±5–10 yrs\n  * Prefer properties built 1995-present\n  * Modern construction standards apply';
+      }
+    }
 
-Subject:
-- address: ${subjectAddress}
-- type: Single-family home
-- beds/baths: 3/2
-- heated sqft: 1132
+    // Calculate size range based on subject sqft
+    const sizeRange = subjectSqft ? 
+      `size roughly 0.8×–1.2× subject sqft (${Math.round(subjectSqft * 0.8)}-${Math.round(subjectSqft * 1.2)} sqft)` :
+      'similar size range to subject property';
 
-HARD FILTERS:
-- Only CLOSED sales ('Sold'/'Closed'), within 12 months and ${searchRadius} miles
-- Same property type; size roughly 0.8×–1.25× subject sqft (750-1400 sqft)
-- Include exact SOLD PRICE and SOLD DATE
-- Return 3–6 best comps
+    return `TASK: Find as many RECENTLY SOLD (closed) comparable properties as possible, up to a maximum of 10. Prioritize quality, but broaden the search criteria if necessary to meet the quantity goal.
 
-SEARCH HINTS:
-- recently sold ${subjectAddress.split(',')[1]?.trim() || 'properties'} site:redfin.com OR site:realtor.com OR site:zillow.com
-- "${subjectAddress.split(',')[0]}" Sold
+METHODOLOGY:
+1. Use Google Search with the provided queries.
+2. Prioritize results from Redfin, Realtor.com, Zillow, and local county/assessor records.
+3. Validate all data points, especially 'sold' status and sale price, through multiple sources when possible.
 
-OUTPUT RULES:
-- For each comp include: address, sold_price, sold_date (ISO), beds, baths, sqft,
-  year_built, distance_miles, ppsf, source_url, and source_site (e.g., redfin/realtor/zillow/county)
-- Search property listing sites for year built information when available
-- If year built is not available, include "Year Built: Unknown"
-- Format clearly with each property listed separately
-- Include only properties that have actually sold (closed) recently
-- Do not include pending or list-only entries`;
+SUBJECT PROPERTY DETAILS:
+- Address: ${subjectAddress}
+- Type: ${subjectPropertyType || 'Single-family home'}
+- Beds/Baths: ${subjectBeds || 'Unknown'}/${subjectBaths || 'Unknown'}
+- Square Feet: ${subjectSqft || 'Unknown'}
+- Year Built: ${subjectYearBuilt || 'Unknown'}
+
+SEARCH CRITERIA:
+- Time Window: ${startDateStr} to ${endDateStr} (${timeWindowMonths} months)
+- Distance: Within ${searchRadius} miles from subject property.
+- Property Type: Only ${subjectPropertyType || 'Single-family home'}.
+- Size Range: Square footage must be within a ${sizeRange || '20%'} range of the subject property's square footage.
+- Bathroom Count: When possible, match the exact bathroom count. Prioritize properties with a similar number of full and half baths. ${subjectBaths === 1 ? 'Prefer comps with <2 baths' : 'Match bathroom count when possible'}
+- Year Built: Prefer properties built within a ${yearBuiltFilter || 'Match era when possible'} year range of the subject property.
+- Geographic Priority: 1. Same city/subdivision. 2. Same municipality. 3. Same school district.
+
+SEARCH QUERIES:
+- "recently sold ${city} properties" site:redfin.com OR site:realtor.com OR site:zillow.com
+- "${streetAddress}" sold property
+- "${city} single family home sales" ${startDateStr} to ${endDateStr}
+- "${city} property sales records" county assessor
+
+REQUIREMENTS:
+- Only include properties that have been verified as SOLD/CLOSED.
+- Do not include pending sales, active listings, or withdrawn properties.
+- Each comparable property must have complete data: address, sold_price, sold_date, beds, baths, sqft, and year_built.
+- Return a list of up to 10 comps.
+
+OUTPUT FORMAT:
+Provide the output as a JSON object formatted as follows. If any data is unavailable for a property, use \`null\`.
+
+[
+  {
+    "address": "Full street address",
+    "sold_price": "Exact sale price as a number",
+    "sold_date": "YYYY-MM-DD",
+    "beds": "Number of bedrooms",
+    "baths": "Number of bathrooms",
+    "sqft": "Square footage as a number",
+    "year_built": "Construction year as a number",
+    "distance_miles": "Approximate distance as a number",
+    "ppsf": "Price per square foot as a number",
+    "source_url": "Direct link to listing",
+    "source_site": "Platform name (e.g., redfin, realtor, zillow, county)"
+  },
+  ... (additional comparables)
+]`;
   }
 
   private async extractComparablesFromResponse(
@@ -310,7 +384,7 @@ async function testFindComparables() {
   
   const lat = geocodingResult.lat;
   const lon = geocodingResult.lon;
-  const radius = 1.0;
+  const radius = 1.0; // Default radius for testing
   
   console.log(`\n🔍 STEP 3: FINDING COMPARABLES`);
   console.log(`============================================================`);
