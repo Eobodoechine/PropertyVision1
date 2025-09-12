@@ -1,0 +1,5 @@
+---
+description:do not hallucinate. Always take your time to debug, do not jump to conclusions.
+globs:
+alwaysApply: true
+---
