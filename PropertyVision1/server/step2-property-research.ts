@@ -112,11 +112,11 @@ Format your response clearly with each detail on a separate line.`;
     let lotSize: number | null = null;
 
     try {
-      // Square footage patterns
+      // Square footage patterns - handles both "sq ft" and "sqft"
       const sqftPatterns = [
-        /\*\s+\*\*Square\s*Footage\s*\(sqft\):\*\*\s*(\d{1,3}(?:,\d{3})*)\s*sqft/gi,
-        /Square\s*Footage[:\s]*(\d{1,3}(?:,\d{3})*)\s*sqft/gi,
-        /(\d{1,3}(?:,\d{3})*)\s*sqft/gi
+        /\*\s+\*\*Square\s*Footage\s*\(sqft\):\*\*\s*(\d{1,3}(?:,\d{3})*)\s*sq\s*ft/gi,
+        /Square\s*Footage[:\s]*(\d{1,3}(?:,\d{3})*)\s*sq\s*ft/gi,
+        /(\d{1,3}(?:,\d{3})*)\s*sq\s*ft/gi
       ];
 
       for (const pattern of sqftPatterns) {

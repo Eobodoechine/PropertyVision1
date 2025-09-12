@@ -21,7 +21,7 @@ export class LLaMAParser {
       const parsedData = this.extractJSONFromResponse(llamaResponse);
       
       // Convert to ComparableProperty format
-      const comparables = this.convertToComparableProperties(parsedData);
+      const comparables = this.convertToComparableProperties(parsedData, subjectAddress);
       
       console.log(`✅ LLaMA Parser found ${comparables.length} comparables`);
       return comparables;
@@ -103,13 +103,19 @@ Expected JSON format:
     return JSON.parse(jsonText);
   }
 
-  private convertToComparableProperties(parsedData: any[]): ComparableProperty[] {
+  private convertToComparableProperties(parsedData: any[], subjectAddress: string): ComparableProperty[] {
     const comparables: ComparableProperty[] = [];
 
     for (const item of parsedData) {
       // Validate required fields
       if (!item.address || !item.price || !item.sqft) {
         console.log(`⚠️ Skipping incomplete property: ${item.address || 'Unknown'}`);
+        continue;
+      }
+
+      // Filter out subject property (LLaMA sometimes hallucinates it)
+      if (item.address.toLowerCase().trim() === subjectAddress.toLowerCase().trim()) {
+        console.log(`🚫 Filtering out subject property: ${item.address}`);
         continue;
       }
 

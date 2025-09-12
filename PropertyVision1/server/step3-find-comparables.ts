@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import { LLaMAParser } from './llama-parser.js';
+import { GeminiParser } from './gemini-parser.js';
 
 interface ComparableProperty {
   address: string;
@@ -24,6 +25,7 @@ class ComparableSearchService {
   private client: GoogleGenAI;
   private googleMapsApiKey: string;
   private llamaParser: LLaMAParser;
+  private geminiParser: GeminiParser;
 
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -38,6 +40,7 @@ class ComparableSearchService {
     }
     
     this.llamaParser = new LLaMAParser();
+    this.geminiParser = new GeminiParser();
   }
 
   async findComparables(
@@ -265,9 +268,15 @@ Provide the output as a JSON object formatted as follows. If any data is unavail
         }
       }
 
-      // Use LLaMA parser to extract comparables
-      console.log(`   🦙 Using LLaMA parser to extract comparables`);
-      const parsedComparables = await this.llamaParser.parseComparables(responseText, subjectAddress);
+      // Use Gemini parser to extract comparables
+      console.log(`   🤖 Using Gemini parser to extract comparables`);
+      console.log(`   📄 GEMINI RESPONSE TEXT (first 500 chars):`);
+      console.log(`   ${responseText.substring(0, 500)}...`);
+      console.log(`   📄 GEMINI RESPONSE TEXT (last 500 chars):`);
+      console.log(`   ...${responseText.substring(responseText.length - 500)}`);
+      console.log(`   📄 FULL GEMINI RESPONSE TEXT:`);
+      console.log(`   ${responseText}`);
+      const parsedComparables = await this.geminiParser.parseComparables(responseText, subjectAddress);
       
       // Convert to our format and add distance calculations
       const comparables: ComparableProperty[] = [];
