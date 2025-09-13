@@ -12,7 +12,7 @@ interface ComparableProperty {
   soldDate: string;
   distance: number;
   source: string;
-  confidence: string;
+  confidence: "low" | "medium" | "high";
 }
 
 interface FindComparablesResult {

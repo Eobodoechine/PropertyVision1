@@ -2,18 +2,27 @@ import { GeocodingService } from './step1-geocoding';
 import { PropertyResearchService } from './step2-property-research';
 import { ComparableSearchService } from './step3-find-comparables';
 import { ARVCalculationService } from './step4-arv-calculation';
+import { deriveOutlierSets } from './utils/outlier-utils';
+import { ANALYZER_VERSION } from './utils/version';
+import type { ComparableProperty, PropertyDetails, ARVResult } from '../shared/types';
 
 interface FullAnalysisResult {
   address: string;
   coordinates: { lat: number; lon: number };
-  propertyDetails: any;
-  comparables: any[];
-  arv: {
-    standard: any;
-    weighted: any;
+  propertyDetails: PropertyDetails;
+  comparables: {
+    original: ComparableProperty[];
+    glaBucketed: ComparableProperty[];
+    keptForARV: ComparableProperty[];
+    excluded: Array<ComparableProperty & { reasonFlags: string[] }>;
   };
+  arv: ARVResult;
   confidence: string;
   timestamp: string;
+  metadata: {
+    subjectSqft: number;
+    version: string;
+  };
 }
 
 class FullAnalysisService {
@@ -122,64 +131,21 @@ class FullAnalysisService {
       console.log(`\n💰 STEP 4: ARV CALCULATION`);
       console.log(`============================================================`);
       
-      let standardARV: any = null;
-      let weightedARV: any = null;
-      let confidence = 'low';
+      const subjectSqft = propertyDetails.sqft ?? 0;
+      const arvService = new ARVCalculationService();
 
       if (comparables.length === 0) {
         throw new Error(`No comparable properties found. Cannot calculate ARV without comparable sales data.`);
       }
 
       console.log(`📊 Calculating ARV using ${comparables.length} comparables`);
-      standardARV = this.arvService.calculateARV(comparables, propertyDetails.sqft);
+      const standardARV = arvService.calculateARV(comparables as ComparableProperty[], subjectSqft);
 
-      // Check if we need escalation based on ARV calculation results
-      if (standardARV.dataPoints < 3) {
-        console.log(`\n🔄 ESCALATION NEEDED`);
-        console.log(`============================================================`);
-        console.log(`📊 ARV calculation found only ${standardARV.dataPoints} valid comps`);
-        
-        // Step 1: Timeline Expansion (24 months)
-        console.log(`🔄 Step 1: Expanding timeline search to 24 months...`);
-        const expandedComparableResult = await this.comparableService.findComparables(
-          address,
-          geocodingResult.lat,
-          geocodingResult.lon,
-          1, // radius
-          10, // maxResults
-          24, // timeWindowMonths
-          propertyDetails.beds,
-          propertyDetails.baths,
-          propertyDetails.sqft,
-          propertyDetails.yearBuilt,
-          propertyDetails.propertyType
-        );
+      // Build audit sets for transparency (kept/excluded with reasons)
+      const sets = deriveOutlierSets(arvService, comparables as ComparableProperty[], subjectSqft);
 
-        if (expandedComparableResult.success && expandedComparableResult.comparables.length > comparables.length) {
-          console.log(`✅ Timeline expansion found ${expandedComparableResult.comparables.length} total comps (${expandedComparableResult.comparables.length - comparables.length} additional)`);
-          
-          // Recalculate ARV with 24-month dataset (this will handle GLA escalation if still needed)
-          console.log(`📊 Recalculating ARV with expanded timeline dataset...`);
-          standardARV = this.arvService.calculateARV(expandedComparableResult.comparables, propertyDetails.sqft);
-          
-          console.log(`📊 After timeline expansion: ${standardARV.dataPoints} valid comps`);
-          
-          // Update comparables reference for final results
-          comparables = expandedComparableResult.comparables;
-        } else {
-          console.log(`⚠️ Timeline expansion found ${expandedComparableResult.comparables.length} comps (no additional comps found)`);
-          
-          // Still try with the 24-month results even if no additional comps
-          if (expandedComparableResult.success) {
-            console.log(`📊 Recalculating ARV with 24-month dataset...`);
-            standardARV = this.arvService.calculateARV(expandedComparableResult.comparables, propertyDetails.sqft);
-            comparables = expandedComparableResult.comparables;
-          }
-        }
-      }
-      
-      // Determine overall confidence based on ARV calculation result
-      confidence = standardARV.confidence;
+      // Confidence mirrors the ARV result
+      const confidence = standardARV.confidence;
 
       // Final Results
       console.log(`\n📋 FINAL ANALYSIS RESULTS`);
@@ -188,27 +154,40 @@ class FullAnalysisService {
       console.log(`📍 Location: ${geocodingResult.lat}, ${geocodingResult.lon}`);
       console.log(`📏 Details: ${propertyDetails.sqft || 'Unknown'} sqft, ${propertyDetails.beds || 'Unknown'}bd/${propertyDetails.baths || 'Unknown'}ba`);
       console.log(`📊 Comparables: ${comparables.length} found`);
-      
-      if (standardARV) {
-        console.log(`💰 ARV Estimate:`);
-        console.log(`   ${standardARV.method}: $${standardARV.arv.toLocaleString()}`);
-        console.log(`   Recommended: $${standardARV.arv.toLocaleString()}`);
+
+      console.log(`\n💰 ARV Estimate`);
+      console.log(`   Method: ${standardARV.method}`);
+      console.log(`   Point : $${Math.round(standardARV.arv).toLocaleString()}`);
+      if (typeof standardARV.low === "number" && typeof standardARV.high === "number") {
+        console.log(`   Range : $${Math.round(standardARV.low).toLocaleString()} - $${Math.round(standardARV.high).toLocaleString()}`);
       }
-      
-      console.log(`🎯 Confidence: ${confidence.toUpperCase()}`);
+      if (standardARV.coreComps?.length) {
+        console.log(`\n🔎 Core Comps Used (${standardARV.coreComps.length})`);
+        standardARV.coreComps.forEach((c, i) =>
+          console.log(`   ${i + 1}. ${c.address} — $${c.ppsf.toFixed(2)}/sf → $${Math.round(c.indication).toLocaleString()} (score ${Math.round(c.score)})`)
+        );
+      }
+
+      console.log(`\n🎯 Confidence: ${standardARV.confidence.toUpperCase()}`);
       console.log(`⏰ Completed: ${new Date().toISOString()}`);
 
       return {
         address,
         coordinates: { lat: geocodingResult.lat, lon: geocodingResult.lon },
         propertyDetails,
-        comparables,
-        arv: {
-          standard: standardARV,
-          weighted: weightedARV
+        comparables: {
+          original: comparables as ComparableProperty[],
+          glaBucketed: sets.glaBucketed,
+          keptForARV: sets.keptForARV,
+          excluded: sets.excluded
         },
+        arv: { ...standardARV, version: ANALYZER_VERSION },
         confidence,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        metadata: {
+          subjectSqft,
+          version: ANALYZER_VERSION
+        }
       };
 
     } catch (error) {
@@ -233,11 +212,8 @@ async function main() {
     const result = await analysisService.runFullAnalysis(address);
     
     console.log(`\n✅ Analysis completed successfully!`);
-    console.log(`📊 Summary: ${result.comparables.length} comps, ${result.confidence} confidence`);
-    
-    if (result.arv.weighted) {
-      console.log(`💰 ARV: $${result.arv.weighted.arv.toLocaleString()}`);
-    }
+    console.log(`📊 Summary: ${result.comparables.original.length} comps, ${result.confidence} confidence`);
+    console.log(`💰 ARV: $${result.arv.arv.toLocaleString()}`);
     
   } catch (error) {
     console.error(`❌ Analysis failed: ${error.message}`);
