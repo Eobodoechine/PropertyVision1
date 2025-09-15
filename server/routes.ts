@@ -33,7 +33,7 @@ router.post("/analyze", async (req, res) => {
     console.log(`🔍 Starting analysis for: ${address}`);
     
     // Import and use the FullAnalysisService
-    const { FullAnalysisService } = await import('./full-analysis.js');
+    const { FullAnalysisService } = await import('./full-analysis.ts');
     const analysisService = new FullAnalysisService();
     
     const result = await analysisService.runFullAnalysis(address);

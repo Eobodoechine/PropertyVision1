@@ -1,0 +1,8 @@
+[2025-09-12T22:01:56.864Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1775:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:1998:3 
+CTX {"type":"uncaughtException"}

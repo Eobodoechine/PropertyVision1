@@ -14,9 +14,22 @@ export class GeminiParser {
       
       const prompt = this.createParsingPrompt(response, subjectAddress);
       const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      const result = await model.generateContent(prompt);
-      const responseText = await result.response.text();
+
+      const withTimeout = async <T>(p: Promise<T>, ms: number): Promise<T> => {
+        return await Promise.race([
+          p,
+          new Promise<T>((_, reject) => setTimeout(() => reject(new Error('parse-timeout')), ms))
+        ]);
+      };
+
+      const result: any = await withTimeout(
+        model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0, maxOutputTokens: 600, candidateCount: 1 },
+        }) as any,
+        10000
+      );
+      const responseText = await (result as any).response.text();
       
       // Extract JSON from response
       const jsonMatch = responseText.match(/\[[\s\S]*\]/);
@@ -48,8 +61,9 @@ IMPORTANT RULES:
 6. Parse year built as a 4-digit number
 7. Parse distance as a number (extract numeric value from text like "0.8 miles")
 8. Parse sold date as ISO date string (YYYY-MM-DD format)
-9. Return ONLY valid JSON array, no other text
-10. Include ALL properties that have complete data (address, price, sqft, beds, baths)
+9. If condition language suggests renovated/updated/original/fixer, include a "condition" string field
+10. Return ONLY valid JSON array, no other text
+11. Include ALL properties that have complete data (address, price, sqft, beds, baths)
 
 Text to parse:
 ${response}
@@ -64,7 +78,8 @@ Expected JSON format:
     "baths": 2,
     "yearBuilt": 1995,
     "distance": 0.8,
-    "soldDate": "2024-08-15"
+    "soldDate": "2024-08-15",
+    "condition": "updated"
   }
 ]`;
   }
@@ -93,8 +108,9 @@ Expected JSON format:
         beds: Number(item.beds) || 0,
         baths: Number(item.baths) || 0,
         sqft: Number(item.sqft),
-        distance: String(item.distance || 0),
+        distance: Number(item.distance ?? item.distance_miles ?? 0),
         yearBuilt: Number(item.yearBuilt) || 0,
+        condition: typeof item.condition === 'string' ? item.condition.toLowerCase() : undefined,
       };
 
       comparables.push(comparable);

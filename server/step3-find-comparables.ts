@@ -13,6 +13,7 @@ interface ComparableProperty {
   distance: number;
   source: string;
   confidence: string;
+  condition?: string;
 }
 
 interface FindComparablesResult {
@@ -26,6 +27,8 @@ class ComparableSearchService {
   private googleMapsApiKey: string;
   private llamaParser: LLaMAParser;
   private geminiParser: GeminiParser;
+  // Simple in-memory geocode cache for comp addresses across stages
+  private geocodeCache: Map<string, { lat: number; lon: number }>; 
 
   constructor() {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -41,6 +44,7 @@ class ComparableSearchService {
     
     this.llamaParser = new LLaMAParser();
     this.geminiParser = new GeminiParser();
+    this.geocodeCache = new Map();
   }
 
   async findComparables(
@@ -76,37 +80,64 @@ class ComparableSearchService {
       );
 
       // Configure Gemini with Google Search grounding
-      const groundingTool = {
-        googleSearch: {},
-      };
-
+      const useMinimal = process.env.MINIMAL === '1';
+      const groundingTool = { googleSearch: {} } as const;
       const config = {
-        tools: [groundingTool],
+        tools: useMinimal ? [] : [groundingTool],
         generationConfig: {
-          temperature: 0
+          temperature: 0,
+          maxOutputTokens: 800,
+          candidateCount: 1,
         }
+      } as const;
+
+      // Helper: wrap a promise with a timeout
+      const withTimeout = async <T>(p: Promise<T>, ms: number): Promise<T> => {
+        return await Promise.race([
+          p,
+          new Promise<T>((_, reject) => setTimeout(() => reject(new Error('gen-timeout')), ms))
+        ]);
       };
 
-      // Retry logic for 503 errors
-      let lastError;
+      // Helper: run a single attempt with model fallback for 5xx only
+      const runAttempt = async (): Promise<any> => {
+        const models = useMinimal ? (["gemini-1.5-flash"] as const) : (["gemini-2.5-flash", "gemini-1.5-flash"] as const);
+        let lastErr: any;
+        for (const model of models) {
+          try {
+            const result: any = await withTimeout(
+              this.client.models.generateContent({
+                model,
+                contents: [{ parts: [{ text: searchPrompt }] }],
+                config,
+              }),
+              10000
+            );
+            return result;
+          } catch (err: any) {
+            lastErr = err;
+            // If this was a timeout or 4xx, do not try fallback model
+            const msg = String(err?.message || '');
+            const code = (err as any)?.error?.code as number | undefined;
+            const status = (err as any)?.error?.status as string | undefined;
+            const is5xx = (typeof code === 'number' && code >= 500 && code < 600) || /UNAVAILABLE|INTERNAL|RESOURCE_EXHAUSTED|503/.test(msg) || /UNAVAILABLE|INTERNAL|RESOURCE_EXHAUSTED/.test(String(status||''));
+            if (!is5xx) throw err; // fast-fail on timeout/4xx/parse
+            // else loop to fallback model
+          }
+        }
+        throw lastErr;
+      };
+
+      // Retry logic: only for transient 5xx. No retry for timeout/4xx.
+      let lastError: any;
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
           console.log(`   🔄 Attempt ${attempt}/3...`);
-          
-          const result = await this.client.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: [{
-              parts: [{
-                text: searchPrompt
-              }]
-            }],
-            config,
-          });
-
+          const result: any = await runAttempt();
           console.log(`   📊 Gemini response received`);
-          console.log(`   📄 Response text preview: ${result.text?.substring(0, 200) || 'No text'}...`);
-          
-          // Extract comparables from response using LLaMA parser
+          const preview = result?.text ? String(result.text).slice(0, 200) : 'No text';
+          console.log(`   📄 Response preview: ${preview}...`);
+
           const comparables = await this.extractComparablesFromResponse(
             result,
             subjectAddress,
@@ -114,26 +145,27 @@ class ComparableSearchService {
             subjectLon,
             searchRadius
           );
-
           console.log(`   ✅ Found ${comparables.length} comparables`);
-          return {
-            comparables,
-            success: true
-          };
-
-        } catch (error) {
+          return { comparables, success: true };
+        } catch (error: any) {
           lastError = error;
-          console.log(`   ⚠️ Attempt ${attempt} failed: ${error.message}`);
-          
+          const msg = String(error?.message || '');
+          const code = (error as any)?.error?.code as number | undefined;
+          const status = (error as any)?.error?.status as string | undefined;
+          const is5xx = (typeof code === 'number' && code >= 500 && code < 600) || /UNAVAILABLE|INTERNAL|RESOURCE_EXHAUSTED|503/.test(msg) || /UNAVAILABLE|INTERNAL|RESOURCE_EXHAUSTED/.test(String(status||''));
+          console.log(`   ⚠️ Attempt ${attempt} failed: ${msg || status || code}`);
+          if (!is5xx) break; // do not retry on timeout/4xx/parse
           if (attempt < 3) {
-            const delay = Math.pow(2, attempt) * 1000; // Exponential backoff: 2s, 4s
+            const base = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+            const jitter = Math.floor(Math.random() * 1000); // +0-1s
+            const delay = Math.min(10000, base + jitter);
             console.log(`   ⏳ Waiting ${delay}ms before retry...`);
             await new Promise(resolve => setTimeout(resolve, delay));
           }
         }
       }
-      
-      // All attempts failed
+
+      // All attempts exhausted or non-5xx error encountered
       throw lastError;
 
     } catch (error) {
@@ -159,6 +191,7 @@ class ComparableSearchService {
     subjectYearBuilt?: number,
     subjectPropertyType?: string
   ): string {
+    const minimal = process.env.MINIMAL === '1';
     const city = subjectAddress.split(',')[1]?.trim() || 'properties';
     const streetAddress = subjectAddress.split(',')[0]?.trim() || subjectAddress;
     
@@ -188,7 +221,29 @@ class ComparableSearchService {
       `size roughly 0.8×–1.2× subject sqft (${Math.round(subjectSqft * 0.8)}-${Math.round(subjectSqft * 1.2)} sqft)` :
       'similar size range to subject property';
 
-    return `TASK: Find as many RECENTLY SOLD (closed) comparable properties as possible, up to a maximum of 10. Prioritize quality, but broaden the search criteria if necessary to meet the quantity goal.
+    if (minimal) {
+      return `Return ONLY JSON (no prose, no markdown). Find up to ${maxResults} RECENTLY SOLD single-family comps within ${searchRadius} miles of "${subjectAddress}", sold between ${startDateStr} and ${endDateStr}. Prefer renovated/updated/move-in ready; avoid obvious as-is. Output array of at most 3 best comps.
+
+[
+  {
+    "address": "full street, city, state ZIP",
+    "sold_price": 0,
+    "sold_date": "YYYY-MM-DD",
+    "beds": 0,
+    "baths": 0,
+    "sqft": 0,
+    "year_built": 0,
+    "distance_miles": 0,
+    "ppsf": 0,
+    "source_url": "",
+    "source_site": "",
+    "condition": "updated|renovated|remodeled|original|fixer|unknown"
+  }
+]
+`;
+    }
+
+    return `TASK: Find RECENTLY SOLD (closed) comparable properties appropriate for ARV (after-repair value) analysis, up to a maximum of ${maxResults}. Prioritize RENOVATED/UPDATED or move-in ready homes; avoid obvious fixers/"as-is" unless necessary.
 
 METHODOLOGY:
 1. Use Google Search with the provided queries.
@@ -220,8 +275,9 @@ SEARCH QUERIES:
 REQUIREMENTS:
 - Only include properties that have been verified as SOLD/CLOSED.
 - Do not include pending sales, active listings, or withdrawn properties.
-- Each comparable property must have complete data: address, sold_price, sold_date, beds, baths, sqft, and year_built.
-- Return a list of up to 10 comps.
+ - Each comparable property must have complete data: address, sold_price, sold_date, beds, baths, sqft, and year_built.
+ - Return a list of up to ${maxResults} comps.
+ - Prefer properties described as "updated", "renovated", "remodeled", or "move-in ready"; avoid "as-is", "needs TLC", "investor special", or distressed unless insufficient comps.
 
 OUTPUT FORMAT:
 Provide the output as a JSON object formatted as follows. If any data is unavailable for a property, use \`null\`.
@@ -238,7 +294,8 @@ Provide the output as a JSON object formatted as follows. If any data is unavail
     "distance_miles": "Approximate distance as a number",
     "ppsf": "Price per square foot as a number",
     "source_url": "Direct link to listing",
-    "source_site": "Platform name (e.g., redfin, realtor, zillow, county)"
+    "source_site": "Platform name (e.g., redfin, realtor, zillow, county)",
+    "condition": "renovated | updated | remodeled | original | fixer | unknown"
   },
   ... (additional comparables)
 ]`;
@@ -270,42 +327,53 @@ Provide the output as a JSON object formatted as follows. If any data is unavail
 
       // Use Gemini parser to extract comparables
       console.log(`   🤖 Using Gemini parser to extract comparables`);
-      console.log(`   📄 GEMINI RESPONSE TEXT (first 500 chars):`);
-      console.log(`   ${responseText.substring(0, 500)}...`);
-      console.log(`   📄 GEMINI RESPONSE TEXT (last 500 chars):`);
-      console.log(`   ...${responseText.substring(responseText.length - 500)}`);
-      console.log(`   📄 FULL GEMINI RESPONSE TEXT:`);
-      console.log(`   ${responseText}`);
+      // Keep logs light to reduce overhead
+      console.log(`   📄 Trimming verbose response logs (performance)`);
       const parsedComparables = await this.geminiParser.parseComparables(responseText, subjectAddress);
-      
-      // Convert to our format and add distance calculations
+
+      // Parallel geocoding for distances with cache and 3s timeout
+      const distancePromises = parsedComparables.map(async (parsed: any) => {
+        try {
+          // Prefer model-reported distance if provided
+          let dist: number | null = null;
+          const dRaw = (parsed as any).distance ?? (parsed as any).distance_miles;
+          if (dRaw != null) {
+            const dNum = typeof dRaw === 'number' ? dRaw : parseFloat(String(dRaw).toString().replace(/[^0-9.]/g, ''));
+            if (Number.isFinite(dNum)) dist = dNum as number;
+          }
+          if (dist == null) {
+            dist = await this.calculateDistance(parsed.address, subjectLat, subjectLon, 3000);
+          }
+          return { parsed, distance: dist } as const;
+        } catch {
+          return { parsed, distance: Number.POSITIVE_INFINITY } as const;
+        }
+      });
+
+      const settled = await Promise.allSettled(distancePromises);
       const comparables: ComparableProperty[] = [];
-      
-      for (const parsed of parsedComparables) {
-        // Calculate actual distance using Google Maps API
-        console.log(`   🔍 Calculating distance from (${subjectLat}, ${subjectLon}) to ${parsed.address}`);
-        const distance = await this.calculateDistance(parsed.address, subjectLat, subjectLon);
-        console.log(`   🔍 Calculated distance: ${distance} miles`);
-        
-        // Filter by distance
-        if (distance > searchRadius) {
+
+      for (const s of settled) {
+        if (s.status !== 'fulfilled') continue;
+        const { parsed, distance } = s.value;
+        console.log(`   🔍 Distance for ${parsed.address}: ${Number.isFinite(distance) ? distance.toFixed(2) : 'timeout'} miles`);
+        if (!Number.isFinite(distance) || distance > searchRadius) {
           console.log(`   ❌ Filtering out ${parsed.address} (distance: ${distance} > ${searchRadius})`);
           continue;
         }
-        
         const comparable: ComparableProperty = {
-          address: parsed.address,
-          price: parseInt(parsed.price),
-          sqft: parsed.sqft,
-          beds: parsed.beds,
-          baths: parsed.baths,
-          yearBuilt: parsed.yearBuilt || 0,
-          soldDate: parsed.soldDate,
-          distance: distance,
+          address: (parsed as any).address,
+          price: parseInt((parsed as any).price),
+          sqft: (parsed as any).sqft,
+          beds: (parsed as any).beds,
+          baths: (parsed as any).baths,
+          yearBuilt: (parsed as any).yearBuilt || 0,
+          soldDate: (parsed as any).soldDate,
+          distance,
           source: 'Gemini Search + LLaMA',
-          confidence: 'high'
+          confidence: 'high',
+          condition: typeof (parsed as any).condition === 'string' ? (parsed as any).condition.toLowerCase() : undefined
         };
-        
         comparables.push(comparable);
         console.log(`   ✅ Added: ${comparable.address} - $${comparable.price.toLocaleString()} - ${comparable.sqft}sqft - Built: ${comparable.yearBuilt || 'Unknown'}`);
       }
@@ -321,40 +389,49 @@ Provide the output as a JSON object formatted as follows. If any data is unavail
     }
   }
 
-  private async calculateDistance(address: string, subjectLat: number, subjectLon: number): Promise<number> {
+  private async calculateDistance(address: string, subjectLat: number, subjectLon: number, timeoutMs: number = 3000): Promise<number> {
     try {
-      const https = await import('https');
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.googleMapsApiKey}`;
-      
-      const data = await new Promise((resolve, reject) => {
-        https.get(url, (res) => {
-          let body = '';
-          res.on('data', (chunk) => body += chunk);
-          res.on('end', () => {
-            try {
-              resolve(JSON.parse(body));
-            } catch (e) {
-              reject(e);
-            }
-          });
-        }).on('error', reject);
-      }) as any;
-      
-      if (data.status === 'OK' && data.results && data.results.length > 0) {
-        const result = data.results[0];
-        const location = result.geometry.location;
-        const lat = location.lat;
-        const lon = location.lng; // Google Maps uses 'lng' not 'lon'
-        
-        return this.haversineDistance(subjectLat, subjectLon, lat, lon);
+      let coords = this.geocodeCache.get(address);
+      if (!coords) {
+        const geocoded = await this.geocodeWithTimeout(address, timeoutMs);
+        if (!geocoded) throw new Error('geocode-timeout');
+        coords = geocoded;
+        this.geocodeCache.set(address, coords);
       }
-      
-      console.warn(`⚠️ Geocoding failed for ${address}: ${data.status}`);
-      return 0.5; // Default fallback distance
-    } catch (error) {
-      console.warn(`⚠️ Error calculating distance for ${address}: ${error.message}`);
-      return 0.5; // Default fallback distance
+      return this.haversineDistance(subjectLat, subjectLon, coords.lat, coords.lon);
+    } catch (error: any) {
+      console.warn(`⚠️ Distance calc failed for ${address}: ${error?.message || error}`);
+      return Number.POSITIVE_INFINITY; // Treat as out-of-range
     }
+  }
+
+  private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
+    const https = await import('https');
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.googleMapsApiKey}`;
+    return await new Promise((resolve) => {
+      const req = https.get(url, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => {
+          try {
+            const data = JSON.parse(body);
+            if (data.status === 'OK' && data.results && data.results.length > 0) {
+              const loc = data.results[0].geometry.location;
+              resolve({ lat: loc.lat, lon: loc.lng });
+            } else {
+              resolve(null);
+            }
+          } catch {
+            resolve(null);
+          }
+        });
+      });
+      req.on('error', () => resolve(null));
+      req.setTimeout(timeoutMs, () => {
+        try { req.destroy(new Error('timeout')); } catch {}
+        resolve(null);
+      });
+    });
   }
 
   private haversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {

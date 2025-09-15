@@ -16,7 +16,11 @@ class ARVCalculationService {
    * Calculate ARV using zero-intercept linear regression (y = mx)
    * This finds the best-fit line through the origin using comparable sales data
    */
-  calculateARV(comparables: ComparableProperty[], subjectSqft: number): ARVResult {
+  calculateARV(
+    comparables: ComparableProperty[],
+    subjectSqft: number,
+    subjectBaths?: number | null
+  ): ARVResult {
     if (comparables.length === 0) {
       return {
         arv: 0,
@@ -37,24 +41,28 @@ class ARVCalculationService {
       // If all are outliers, use original set but flag as low confidence
     }
 
-    // Apply bathroom penalties to 2-bath comparables if subject has 1 bath
-    const subjectBaths = 1; // From property research - subject has 1 bath
+    // Apply bathroom adjustments when subject has fewer baths than comps
+    const subjectBathsNormalized = Number.isFinite(subjectBaths as any)
+      ? Number(subjectBaths)
+      : null;
     const finalComparables = (filteredComparables.length > 0 ? filteredComparables : comparables);
     
     let dataPoints: any[];
     
-    // Check if we need bathroom adjustments
-    const hasTwoBathComps = finalComparables.some(comp => comp.baths >= 2);
-    if (hasTwoBathComps && subjectBaths === 1) {
-      console.log(`🚿 Subject has 1 bath, applying bathroom penalties to 2-bath comps...`);
+    // Check if we need bathroom adjustments (only if subject bath count is known)
+    const needsBathAdjustments = subjectBathsNormalized != null
+      && finalComparables.some(comp => Number.isFinite(comp.baths as any) && comp.baths > (subjectBathsNormalized as number));
+    if (needsBathAdjustments) {
+      console.log(`🚿 Applying bathroom adjustments where comps exceed subject baths (${subjectBathsNormalized})...`);
       
       // Estimate second bathroom premium
       const bathPremium = this.estimateSecondBathPremium(subjectSqft, finalComparables);
       
       // Apply penalties and create adjusted data points
       const adjustedComparables = finalComparables.map(comp => {
-        if (comp.baths >= 2) {
-          const adjustedPrice = this.applyBathPenaltyToIndication(subjectSqft, subjectBaths, comp, bathPremium);
+        const compBaths = Number(comp.baths);
+        if (Number.isFinite(compBaths) && subjectBathsNormalized != null && compBaths > subjectBathsNormalized) {
+          const adjustedPrice = this.applyBathPenaltyToIndication(subjectSqft, subjectBathsNormalized, comp, bathPremium);
           return {
             ...comp,
             price: adjustedPrice,
