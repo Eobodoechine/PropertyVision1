@@ -6,3 +6,175 @@ STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type stri
     at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1775:26)
     at file:///Users/eobodoechine/PropertyVision1/dist/index.js:1998:3 
 CTX {"type":"uncaughtException"}
+[2025-09-15T20:50:44.284Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2071:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2294:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T20:51:03.299Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:13.302Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:23.305Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:33.308Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:43.310Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:53.311Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:53.311Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data." 
+CTX {"type":"console.error"}
+[2025-09-15T20:51:53.311Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data.\nError: gen-timeout Cannot calculate ARV without comparable sales data.\n    at FullAnalysisService.runFullAnalysis (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1705:19)\n    at async handleAnalyze (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1774:20)" 
+CTX {"type":"console.error"}
+[2025-09-15T20:57:36.922Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2073:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2296:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T20:57:56.564Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:06.568Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:16.571Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:26.573Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:36.575Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:46.580Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:46.581Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data." 
+CTX {"type":"console.error"}
+[2025-09-15T20:58:46.581Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data.\nError: gen-timeout Cannot calculate ARV without comparable sales data.\n    at FullAnalysisService.runFullAnalysis (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1705:19)\n    at async handleAnalyze (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1774:20)" 
+CTX {"type":"console.error"}
+[2025-09-15T20:59:21.060Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2073:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2296:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T20:59:54.143Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:04.146Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:14.150Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:24.155Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:34.101Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:44.103Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:44.104Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data." 
+CTX {"type":"console.error"}
+[2025-09-15T21:00:44.105Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data.\nError: gen-timeout Cannot calculate ARV without comparable sales data.\n    at FullAnalysisService.runFullAnalysis (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1705:19)\n    at async handleAnalyze (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1774:20)" 
+CTX {"type":"console.error"}
+[2025-09-15T21:02:40.946Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2073:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2296:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T21:03:02.495Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:12.497Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:22.502Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:32.505Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:42.507Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:52.510Z] ERROR "❌ Comparable search failed: gen-timeout" 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:52.511Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data." 
+CTX {"type":"console.error"}
+[2025-09-15T21:03:52.512Z] ERROR "❌ Analysis failed: gen-timeout Cannot calculate ARV without comparable sales data.\nError: gen-timeout Cannot calculate ARV without comparable sales data.\n    at FullAnalysisService.runFullAnalysis (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1705:19)\n    at async handleAnalyze (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1774:20)" 
+CTX {"type":"console.error"}
+[2025-09-15T21:09:57.620Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2073:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2296:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T23:23:08.153Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2423:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T23:24:22.126Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2423:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T23:24:46.253Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2423:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T23:24:48.308Z] ERROR "❌ Analysis failed: Geocoding failed: ZERO_RESULTS" 
+CTX {"type":"console.error"}
+[2025-09-15T23:24:48.309Z] ERROR "❌ Analysis failed: Geocoding failed: ZERO_RESULTS\nError: Geocoding failed: ZERO_RESULTS\n    at FullAnalysisService.runFullAnalysis (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1617:19)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async handleAnalyze (file:///Users/eobodoechine/PropertyVision1/dist/index.js:1774:20)" 
+CTX {"type":"console.error"}
+[2025-09-15T23:27:13.435Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2509:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T23:29:53.844Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2509:3 
+CTX {"type":"uncaughtException"}
+[2025-09-15T23:30:22.672Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2509:3 
+CTX {"type":"uncaughtException"}
+[2025-09-16T00:42:46.628Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2596:3 
+CTX {"type":"uncaughtException"}
+[2025-09-16T00:43:40.524Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2596:3 
+CTX {"type":"uncaughtException"}

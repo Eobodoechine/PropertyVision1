@@ -190,6 +190,13 @@ class FullAnalysisService {
         console.log(`   ${standardARV.method}: $${standardARV.arv.toLocaleString()}`);
         console.log(`   Recommended: $${standardARV.arv.toLocaleString()}`);
       }
+      // Print comparables for verification
+      try {
+        console.log(`\n=== COMPARABLES USED ===`);
+        comparables.forEach((c, i) => {
+          console.log(`${i + 1}. ${c.address} | $${Number(c.price).toLocaleString()} | ${c.sqft || 'N/A'} sqft | ${c.beds}bd/${c.baths}ba | Built ${c.yearBuilt || 'N/A'} | ${c.soldDate || 'N/A'} | ${typeof c.distance === 'number' ? c.distance.toFixed(2) + ' mi' : 'N/A'} | ${c.source || ''}`);
+        });
+      } catch {}
       
       console.log(`🎯 Confidence: ${confidence.toUpperCase()}`);
       console.log(`⏰ Completed: ${new Date().toISOString()}`);

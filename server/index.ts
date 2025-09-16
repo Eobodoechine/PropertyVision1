@@ -73,6 +73,164 @@ app.get('/api/info', (_req, res) => {
   });
 });
 
+// Grounded health: verify grounded web search emits queries and returns JSON
+app.get('/api/grounded/health', async (req, res) => {
+  try {
+    const address = String((req.query.address as string) || '').trim();
+    if (!address || address.length < 5) {
+      return res.status(400).json({ error: 'Query param "address" is required' });
+    }
+    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+    if (!saPath || !fs.existsSync(saPath)) {
+      return res.status(500).json({ error: 'Server not configured with GCP_SA_JSON' });
+    }
+    const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
+    const projectId = process.env.PROJECT_ID || sa.project_id;
+    const location = process.env.VERTEX_LOCATION || 'us-central1';
+    const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+
+    // SA token
+    const token = await (async () => {
+      const iat = Math.floor(Date.now() / 1000);
+      const exp = iat + 3600;
+      const header = { alg: 'RS256', typ: 'JWT' };
+      const claims = { iss: sa.client_email, scope: 'https://www.googleapis.com/auth/cloud-platform', aud: sa.token_uri, exp, iat } as any;
+      const b64 = (o: any) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+      const unsigned = `${b64(header)}.${b64(claims)}`;
+      const sign = (crypto as any).createSign('RSA-SHA256');
+      sign.update(unsigned);
+      const assertion = `${unsigned}.${sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_')}`;
+      const form = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }).toString();
+      const u = new URL(sa.token_uri);
+      const out: any = await new Promise((resolve, reject) => {
+        const r = (https as any).request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(form).toString() } }, (rr: any) => {
+          let data = '';
+          rr.on('data', (c: any) => data += c);
+          rr.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+        });
+        r.on('error', reject);
+        r.write(form);
+        r.end();
+      });
+      if (!out?.access_token) throw new Error('sa-token-failed');
+      return out.access_token as string;
+    })();
+
+    // Grounded schema request
+    const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
+    const responseSchema = {
+      type: 'OBJECT',
+      properties: {
+        sqft: { type: 'NUMBER', nullable: true },
+        beds: { type: 'NUMBER', nullable: true },
+        baths: { type: 'NUMBER', nullable: true },
+        yearBuilt: { type: 'NUMBER', nullable: true },
+        lotSize: { type: 'NUMBER', nullable: true },
+        subdivision: { type: 'STRING', nullable: true },
+        sources: { type: 'ARRAY', items: { type: 'STRING' }, nullable: true }
+      }
+    } as any;
+    const payload = {
+      contents: [{ role: 'user', parts: [{ text: `Use Google Search grounding. Return JSON only for: ${address}.` }]}],
+      generationConfig: { temperature: 0, maxOutputTokens: 1500, responseMimeType: 'application/json', responseSchema },
+      tools: [{ google_search: {} } as any]
+    };
+    const vertexResp: any = await new Promise((resolve, reject) => {
+      const u = new URL(url);
+      const body = JSON.stringify(payload);
+      const rq = (https as any).request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), Authorization: `Bearer ${token}` } }, (rr: any) => {
+        let data = '';
+        rr.on('data', (c: any) => data += c);
+        rr.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve({ raw: data }) } });
+      });
+      rq.on('error', reject);
+      rq.write(body);
+      rq.end();
+    });
+
+    res.json({ ok: true, address, model, location, response: vertexResp });
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Grounded health failed' });
+  }
+});
+
+// Grounded freeform subject details: returns text + grounding metadata + light parse
+app.get('/api/grounded/details', async (req, res) => {
+  try {
+    const address = String((req.query.address as string) || '').trim();
+    if (!address || address.length < 5) {
+      return res.status(400).json({ error: 'Query param "address" is required' });
+    }
+    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+    if (!saPath || !fs.existsSync(saPath)) {
+      return res.status(500).json({ error: 'Server not configured with GCP_SA_JSON' });
+    }
+    const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8')) as any;
+    const projectId = process.env.PROJECT_ID || sa.project_id;
+    const location = process.env.VERTEX_LOCATION || 'us-central1';
+    const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+
+    // SA token
+    const token = await (async () => {
+      const iat = Math.floor(Date.now() / 1000);
+      const exp = iat + 3600;
+      const header = { alg: 'RS256', typ: 'JWT' };
+      const claims = { iss: sa.client_email, scope: 'https://www.googleapis.com/auth/cloud-platform', aud: sa.token_uri, exp, iat } as any;
+      const b64 = (o: any) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+      const unsigned = `${b64(header)}.${b64(claims)}`;
+      const sign = (crypto as any).createSign('RSA-SHA256');
+      sign.update(unsigned);
+      const assertion = `${unsigned}.${sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_')}`;
+      const form = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }).toString();
+      const u = new URL(sa.token_uri);
+      const out: any = await new Promise((resolve, reject) => {
+        const r = (https as any).request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(form).toString() } }, (rr: any) => {
+          let data = '';
+          rr.on('data', (c: any) => data += c);
+          rr.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+        });
+        r.on('error', reject);
+        r.write(form);
+        r.end();
+      });
+      if (!out?.access_token) throw new Error('sa-token-failed');
+      return out.access_token as string;
+    })();
+
+    const url = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
+    const prompt = `Facts only. No valuation or advice. Provide subject property facts with source links for: ${address}.\nFields: sqft, beds, baths, year built, lot size, subdivision (if known).`;
+    const payload = {
+      contents: [{ role: 'user', parts: [{ text: prompt }]}],
+      generationConfig: { temperature: 0, maxOutputTokens: 1500 },
+      tools: [{ google_search: {} } as any]
+    } as any;
+    const vertexResp: any = await new Promise((resolve, reject) => {
+      const u = new URL(url);
+      const body = JSON.stringify(payload);
+      const rq = (https as any).request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), Authorization: `Bearer ${token}` } }, (rr: any) => {
+        let data = '';
+        rr.on('data', (c: any) => data += c);
+        rr.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve({ raw: data }) } });
+      });
+      rq.on('error', reject);
+      rq.write(body);
+      rq.end();
+    });
+    const parts: any[] = vertexResp?.candidates?.[0]?.content?.parts || [];
+    const text: string = parts.map((p: any) => p?.text || '').join('');
+    // minimal parser
+    const clean = (s: string) => s.replace(/,/g, '').trim();
+    const num = (m: RegExpMatchArray | null) => (m ? Number(clean(m[1])) : null);
+    const sqft = num(text.match(/(\d{3,5})\s*(?:sq\s*ft|sqft)/i));
+    const beds = num(text.match(/\b(?:bedrooms?|beds?)\D*([0-9]{1,2})\b/i));
+    const baths = (() => { const m = text.match(/\b(?:bathrooms?|baths?)\D*([0-9]+(?:\.[0-9]+)?)/i); return m ? Number(clean(m[1])) : null; })();
+    const yearBuilt = num(text.match(/\b(?:year\s*built|built)\D*([12][0-9]{3})\b/i));
+    res.json({ ok: true, address, model, location, text, groundingMetadata: vertexResp?.candidates?.[0]?.groundingMetadata || null, parsed: { sqft, beds, baths, yearBuilt } });
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Grounded details failed' });
+  }
+});
+
 // Temporary debug endpoint (no secrets): helps verify routing/base and headers
 app.get('/api/debug', (req, res) => {
   res.json({

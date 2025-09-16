@@ -69,7 +69,7 @@ async function vertexGenerate(sa: any, projectId: string, location: string, mode
   const payload: any = {
     contents: [ { role: 'user', parts: [ { text: prompt } ] } ],
     generationConfig: { temperature: 0, maxOutputTokens: 900, responseMimeType: 'application/json' },
-    tools: grounded ? [ { googleSearchRetrieval: {} } ] : undefined
+    tools: grounded ? [ { google_search: {} } as any ] : undefined
   };
   const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, timeoutMs);
   const text = res?.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -127,4 +127,3 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch(err => { console.error(err?.message || err); process.exit(1); });
 }
-

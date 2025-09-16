@@ -1,4 +1,9 @@
 import { GoogleGenAI } from '@google/genai';
+import { fetchPropertyDetailsViaVertex } from './vertex-details';
+import fs from 'fs';
+import https from 'https';
+import crypto from 'crypto';
+import { groundedFreeform } from './vertex-freeform';
 
 interface PropertyDetails {
   address: string;
@@ -7,6 +12,7 @@ interface PropertyDetails {
   baths: number | null;
   yearBuilt: number | null;
   lotSize: number | null;
+  propertyType?: string | null;
   success: boolean;
   error?: string;
 }
@@ -25,6 +31,89 @@ class PropertyResearchService {
   async researchProperty(address: string): Promise<PropertyDetails> {
     try {
       console.log(`🔍 RESEARCHING: ${address}`);
+      // If REQUIRE_GROUNDED is set, use grounded freeform details (no fallback)
+      if (process.env.REQUIRE_GROUNDED === '1') {
+        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+        if (!saPath) throw new Error('Set GCP_SA_JSON to your service account JSON path');
+        const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8')) as any;
+        // Mint access token (JWT flow)
+        const iat = Math.floor(Date.now() / 1000), exp = iat + 3600;
+        const header = { alg: 'RS256', typ: 'JWT' } as any;
+        const claims = { iss: sa.client_email, scope: 'https://www.googleapis.com/auth/cloud-platform', aud: sa.token_uri, exp, iat } as any;
+        const b64 = (o: any) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+        const unsigned = `${b64(header)}.${b64(claims)}`;
+        const sign = (crypto as any).createSign('RSA-SHA256');
+        sign.update(unsigned);
+        const assertion = `${unsigned}.${sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_')}`;
+        const form = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }).toString();
+        const u = new URL(sa.token_uri);
+        const tok: any = await new Promise((resolve, reject) => {
+          const rq = (https as any).request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(form).toString() } }, (rr: any) => {
+            let data = '';
+            rr.on('data', (c: any) => data += c);
+            rr.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+          });
+          rq.on('error', reject);
+          rq.write(form);
+          rq.end();
+        });
+        if (!tok?.access_token) throw new Error('sa-token-failed');
+        const accessToken = tok.access_token as string;
+
+        const projectId = sa.project_id;
+        const location = process.env.VERTEX_LOCATION || 'us-central1';
+        const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+        const prompt = `Facts only. No valuation or advice. Provide subject property facts with source links for: ${address}.\nFields: sqft, beds, baths, year built, lot size, subdivision (if known).`;
+        const { text, response } = await groundedFreeform({ accessToken, projectId, location, model, prompt, maxOutputTokens: 1500 });
+        // Parse minimal fields from freeform text
+        const clean = (s: string) => s.replace(/,/g, '').trim();
+        const num = (m: RegExpMatchArray | null) => (m ? Number(clean(m[1])) : null);
+        // Capture numbers with optional commas, prefer non-lot context
+        const sqftCandidates = Array.from(text.matchAll(/([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,5})\s*(?:sq\s*ft|sqft)/gi))
+          .map((m: any) => ({ idx: m.index as number, val: Number(clean(m[1])) }));
+        let sqft: number | null = null;
+        for (const c of sqftCandidates) {
+          const ctx = text.slice(Math.max(0, c.idx - 15), c.idx).toLowerCase();
+          if (!/lot\s*size|\blot\b/.test(ctx)) { sqft = c.val; break; }
+        }
+        if (sqft == null && sqftCandidates.length) sqft = sqftCandidates[0].val;
+        const beds = num(text.match(/\b(?:bedrooms?|beds?)\D*([0-9]{1,2})\b/i));
+        const baths = (() => { const m = text.match(/\b(?:bathrooms?|baths?)\D*([0-9]+(?:\.[0-9]+)?)/i); return m ? Number(clean(m[1])) : null; })();
+        const yearBuilt = num(text.match(/\b(?:year\s*built|built)\D*((?:19|20)[0-9]{2})\b/i));
+        const lotSize = (() => {
+          const m = text.match(/\b(?:lot\s*size|lot)\D*([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{3,6})\s*(?:sq\s*ft|sqft)\b/i);
+          return m ? Number(clean(m[1])) : null;
+        })();
+        // Infer property type from text
+        const type = (() => {
+          const t = text.toLowerCase();
+          if (/town\s*house|townhome|row\s*house/.test(t)) return 'townhome';
+          if (/single[-\s]*family|detached/.test(t)) return 'single_family';
+          if (/condo|minium/.test(t)) return 'condo';
+          if (/multi[-\s]*family|duplex|triplex|fourplex/.test(t)) return 'multi_family';
+          return null;
+        })();
+        const details: PropertyDetails = { address, sqft, beds, baths, yearBuilt, lotSize, propertyType: type, success: true };
+        console.log('   ✅ Grounded freeform details:', details);
+        return details;
+      }
+      // Prefer Vertex multi-strategy retriever when SA is configured (legacy path)
+      try {
+        const viaVertex = await fetchPropertyDetailsViaVertex(address);
+        if (viaVertex) {
+          const details: PropertyDetails = {
+            address,
+            sqft: viaVertex.sqft,
+            beds: viaVertex.beds,
+            baths: viaVertex.baths,
+            yearBuilt: viaVertex.yearBuilt,
+            lotSize: viaVertex.lotSize,
+            success: true,
+          };
+          console.log('   ✅ Vertex details:', details);
+          return details;
+        }
+      } catch {}
       
       const prompt = `Research the following property and provide detailed information:
 
@@ -46,7 +135,7 @@ Use Google Search to find current, accurate information from reliable sources li
 
 Format your response clearly with each detail on a separate line.`;
 
-      // Configure Gemini with Google Search grounding
+      // Fallback: Gemini with Google Search grounding (SDK)
       const groundingTool = {
         googleSearch: {},
       };

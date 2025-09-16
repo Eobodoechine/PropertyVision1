@@ -61,6 +61,181 @@ class ComparableSearchService {
     subjectPropertyType?: string
   ): Promise<FindComparablesResult> {
     try {
+      // Grounded freeform pathway (parse text), restrict to subdivision if available via env
+      if (process.env.REQUIRE_GROUNDED === '1') {
+        try {
+          const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+          if (!saPath) throw new Error('Set GCP_SA_JSON');
+          const sa = JSON.parse((await import('fs')).default.readFileSync(saPath, 'utf-8')) as any;
+          const https = await import('https');
+          const crypto = await import('crypto');
+          const iat = Math.floor(Date.now() / 1000), exp = iat + 3600;
+          const header = { alg: 'RS256', typ: 'JWT' } as any;
+          const claims = { iss: sa.client_email, scope: 'https://www.googleapis.com/auth/cloud-platform', aud: sa.token_uri, exp, iat } as any;
+          const b64 = (o: any) => Buffer.from(JSON.stringify(o)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+          const unsigned = `${b64(header)}.${b64(claims)}`;
+          const sign = (crypto as any).createSign('RSA-SHA256');
+          sign.update(unsigned);
+          const assertion = `${unsigned}.${sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_')}`;
+          const form = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion }).toString();
+          const u = new URL(sa.token_uri);
+          const tok: any = await new Promise((resolve, reject) => {
+            const rq = (https as any).request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(form).toString() } }, (rr: any) => {
+              let data = '';
+              rr.on('data', (c: any) => data += c);
+              rr.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+            });
+            rq.on('error', reject);
+            rq.write(form);
+            rq.end();
+          });
+          if (!tok?.access_token) throw new Error('sa-token-failed');
+          const accessToken = tok.access_token as string;
+          const projectId = sa.project_id;
+          const location = process.env.VERTEX_LOCATION || 'us-central1';
+          const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+          const subdivision = process.env.SUBDIVISION?.trim();
+          const subLine = subdivision ? `Only include properties in subdivision "${subdivision}".` : '';
+          const typeWanted = (subjectPropertyType || process.env.SUBJECT_TYPE || '').toLowerCase();
+          const typeLine = typeWanted ? `Only include property type: ${typeWanted} (use synonyms: townhome/townhouse/rowhouse for townhome).` : '';
+          const prompt = `Facts only. No valuation. List RECENTLY SOLD (closed) comps near "${subjectAddress}" within ${searchRadius} miles over the last ${timeWindowMonths} months. ${subLine} ${typeLine}\nFor each comp, include: address, sold price, sold date (YYYY-MM-DD), beds, baths, sqft, year built, and a source URL. Include the property type token (e.g., townhome/townhouse/rowhouse) in the line text.\nFormat: one comp per line using pipe separators: address | sold_price | sold_date | beds | baths | sqft | year_built | source_url`;
+          const { groundedFreeform } = await import('./vertex-freeform.js');
+          const { text } = await groundedFreeform({ accessToken, projectId, location, model, prompt, maxOutputTokens: 1800 });
+          const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+          const comps: ComparableProperty[] = [];
+          const missingSqft: { addr: string; price: number; dateStr: string; beds: number; baths: number; yearBuilt: number; url: string }[] = [];
+          const typeMatch = (want: string, lineLower: string) => {
+            if (!want) return true;
+            if (/townhome|townhouse|rowhouse|row\s*house/.test(want))
+              return /(town\s*house|townhome|row\s*house)/.test(lineLower);
+            if (/single[_-]?family|detached/.test(want))
+              return /(single[-\s]*family|detached)/.test(lineLower);
+            if (/condo|minium/.test(want)) return /(condo|minium)/.test(lineLower);
+            if (/multi[_-]?family|duplex|triplex|fourplex/.test(want)) return /(multi[-\s]*family|duplex|triplex|fourplex)/.test(lineLower);
+            return true;
+          };
+          for (const line of lines) {
+            const parts = line.split('|').map(s => s.trim());
+            if (parts.length < 8) continue;
+            const [addr, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts;
+            // Reject placeholders or empties
+            if (!addr || /^(address|123\s+main\s+st|example)/i.test(addr)) continue;
+            const lineLower = line.toLowerCase();
+            if (!typeMatch(typeWanted, lineLower)) continue;
+            const price = Number(priceStr.replace(/[^0-9.]/g, ''));
+            const sqft = Number(sqftStr.replace(/[^0-9.]/g, ''));
+            const beds = Number(bedsStr);
+            const baths = Number(bathsStr);
+            const yearBuilt = Number(ybStr);
+            // Reasonable checks (nationwide wholesaling range)
+            if (!Number.isFinite(price) || price < 20000 || price > 10000000) continue;
+            // Require sold_date in YYYY-MM-DD and within time window
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr || '')) continue;
+            const dt = new Date(dateStr as string);
+            if (isNaN(dt.getTime())) continue;
+            const threshold = new Date();
+            threshold.setMonth(threshold.getMonth() - timeWindowMonths);
+            if (dt < threshold) continue;
+            // Enforce sold signal and reject rentals (best-effort)
+            const urlLower = String(url || '').toLowerCase();
+            if (/rent|for-rent|forrent/.test(urlLower)) continue;
+            if (!/(sold|recently[_-]?sold|closed)/.test(lineLower) && !/(sold|recently[_-]?sold|closed)/.test(urlLower)) continue;
+            // If sqft present, keep; otherwise collect for enrichment later
+            if (!Number.isFinite(sqft) || sqft <= 0) {
+              missingSqft.push({ addr, price, dateStr: dateStr as string, beds: Number.isFinite(beds)?beds:0, baths: Number.isFinite(baths)?baths:0, yearBuilt: Number.isFinite(yearBuilt)?yearBuilt:0, url: url || '' });
+              continue;
+            }
+            // Compute distance via geocode
+            const dist = await this.calculateDistance(addr, subjectLat, subjectLon, 3000);
+            if (!Number.isFinite(dist) || dist > searchRadius + 0.3) continue;
+            comps.push({
+              address: addr,
+              price,
+              sqft: Number.isFinite(sqft) ? sqft : 0,
+              beds: Number.isFinite(beds) ? beds : 0,
+              baths: Number.isFinite(baths) ? baths : 0,
+              yearBuilt: Number.isFinite(yearBuilt) ? yearBuilt : 0,
+              soldDate: dateStr || '',
+              distance: dist,
+              source: url || '',
+              confidence: 'medium'
+            });
+          }
+          console.log(`   ✅ Parsed ${comps.length} grounded comps (freeform)`);
+          if (comps.length >= 3) {
+            return { comparables: comps, success: true };
+          }
+          // If not enough comps, retry without subdivision restriction
+          const prompt2 = `Facts only. No valuation. List RECENTLY SOLD (closed) comps near "${subjectAddress}" within ${searchRadius} miles over the last ${timeWindowMonths} months. ${typeLine}\nFor each comp, include: address, sold price, sold date (YYYY-MM-DD), beds, baths, sqft, year built, and a source URL. Include the property type token (e.g., townhome/townhouse/rowhouse) in the line text.\nFormat: one comp per line using pipe separators: address | sold_price | sold_date | beds | baths | sqft | year_built | source_url`;
+          const { text: text2 } = await groundedFreeform({ accessToken, projectId, location, model, prompt: prompt2, maxOutputTokens: 1800 });
+          const comps2: ComparableProperty[] = [];
+          const missingSqft2: typeof missingSqft = [];
+          for (const line of text2.split(/\r?\n/).map(s => s.trim()).filter(Boolean)) {
+            const parts = line.split('|').map(s => s.trim());
+            if (parts.length < 8) continue;
+            const [addr, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts;
+            if (!addr || /^(address|123\s+main\s+st|example)/i.test(addr)) continue;
+            const price = Number(priceStr.replace(/[^0-9.]/g, ''));
+            const sqft = Number(sqftStr.replace(/[^0-9.]/g, ''));
+            const beds = Number(bedsStr);
+            const baths = Number(bathsStr);
+            const yearBuilt = Number(ybStr);
+            if (!Number.isFinite(price) || price < 20000 || price > 10000000) continue;
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr || '')) continue;
+            const dt = new Date(dateStr as string);
+            if (isNaN(dt.getTime())) continue;
+            const threshold = new Date();
+            threshold.setMonth(threshold.getMonth() - timeWindowMonths);
+            if (dt < threshold) continue;
+            const lineLower = line.toLowerCase();
+            const urlLower = String(url || '').toLowerCase();
+            if (/rent|for-rent|forrent/.test(urlLower)) continue;
+            if (!/(sold|recently[_-]?sold|closed)/.test(lineLower) && !/(sold|recently[_-]?sold|closed)/.test(urlLower)) continue;
+            if (!Number.isFinite(sqft) || sqft <= 0) { missingSqft2.push({ addr, price, dateStr: dateStr as string, beds: Number.isFinite(beds)?beds:0, baths: Number.isFinite(baths)?baths:0, yearBuilt: Number.isFinite(yearBuilt)?yearBuilt:0, url: url || '' }); continue; }
+            const dist = await this.calculateDistance(addr, subjectLat, subjectLon, 3000);
+            if (!Number.isFinite(dist) || dist > searchRadius + 0.3) continue;
+            comps2.push({ address: addr, price, sqft, beds: Number.isFinite(beds)?beds:0, baths: Number.isFinite(baths)?baths:0, yearBuilt: Number.isFinite(yearBuilt)?yearBuilt:0, soldDate: dateStr || '', distance: dist, source: url || '', confidence: 'medium' });
+          }
+          let merged = [...comps, ...comps2];
+          console.log(`   ✅ Parsed ${merged.length} grounded comps (with non-subdivision)`);
+          if (merged.length >= 3) return { comparables: merged, success: true };
+          // Enrich missing sqft via grounded schema (county records)
+          const toEnrich = [...missingSqft, ...missingSqft2];
+          const urlGen = (addr: string) => `Return ONLY JSON: {"sqft": number|null}. Prefer county/assessor records. Address: ${addr}`;
+          for (const m of toEnrich) {
+            try {
+              const schema = { type: 'OBJECT', properties: { sqft: { type: 'NUMBER', nullable: true } } } as any;
+              const endpoint = `https://${location}-aiplatform.googleapis.com/v1/projects/${projectId}/locations/${location}/publishers/google/models/${model}:generateContent`;
+              const payload: any = { contents: [{ role: 'user', parts: [{ text: urlGen(m.addr) }]}], generationConfig: { temperature: 0, maxOutputTokens: 400, responseMimeType: 'application/json', responseSchema: schema }, tools: [{ google_search: {} } as any] };
+              const enriched: any = await new Promise((resolve, reject) => {
+                const u = new URL(endpoint);
+                const body = JSON.stringify(payload);
+                const httpsMod = (https as any).default ? (https as any).default : (https as any);
+                const req = httpsMod.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), Authorization: `Bearer ${accessToken}` } }, (r: any) => {
+                  let data = '';
+                  r.on('data', c => data += c);
+                  r.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
+                });
+                req.on('error', reject);
+                req.write(body);
+                req.end();
+              });
+              const textJson = enriched?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+              const obj = textJson ? JSON.parse(textJson) : null;
+              const sqft = obj?.sqft != null ? Number(obj.sqft) : NaN;
+              if (!Number.isFinite(sqft) || sqft <= 0) continue;
+              const dist = await this.calculateDistance(m.addr, subjectLat, subjectLon, 3000);
+              if (!Number.isFinite(dist) || dist > searchRadius + 0.3) continue;
+              merged.push({ address: m.addr, price: m.price, sqft, beds: m.beds, baths: m.baths, yearBuilt: m.yearBuilt, soldDate: m.dateStr, distance: dist, source: m.url, confidence: 'low' });
+              if (merged.length >= 3) break;
+            } catch {}
+          }
+          return { comparables: merged, success: merged.length >= 3, error: merged.length >= 3 ? undefined : 'not-enough-grounded-comps' };
+        } catch (e: any) {
+          console.log(`   ⚠️ Grounded comps failed: ${e?.message || e}`);
+          return { comparables: [], success: false, error: e?.message || 'grounded-failed' };
+        }
+      }
       console.log(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
       console.log(`   • Radius: ${searchRadius} miles`);
       console.log(`   • Max results: ${maxResults}`);
@@ -91,13 +266,17 @@ class ComparableSearchService {
         }
       } as const;
 
-      // Helper: wrap a promise with a timeout
+      // Helper: wrap a promise with a timeout (configurable; 0/negative disables)
       const withTimeout = async <T>(p: Promise<T>, ms: number): Promise<T> => {
+        if (!(ms > 0)) return p;
         return await Promise.race([
           p,
           new Promise<T>((_, reject) => setTimeout(() => reject(new Error('gen-timeout')), ms))
         ]);
       };
+
+      // Allow overriding the generation timeout via env; default preserves prior 10s behavior
+      const genTimeoutMs = Number(process.env.COMPS_GEN_TIMEOUT_MS ?? '10000');
 
       // Helper: run a single attempt with model fallback for 5xx only
       const runAttempt = async (): Promise<any> => {
@@ -111,7 +290,7 @@ class ComparableSearchService {
                 contents: [{ parts: [{ text: searchPrompt }] }],
                 config,
               }),
-              10000
+              genTimeoutMs
             );
             return result;
           } catch (err: any) {

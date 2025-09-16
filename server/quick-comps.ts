@@ -208,7 +208,7 @@ async function vertexGenerate(sa: any, projectId: string, location: string, mode
   const payload = {
     contents: [ { role: 'user', parts: [ { text: prompt } ] } ],
     generationConfig: { temperature: 0, maxOutputTokens: 800, responseMimeType: 'application/json' },
-    tools: grounded ? [ { googleSearchRetrieval: {} } ] : undefined
+    tools: grounded ? [ { google_search: {} as any } ] : undefined
   };
   const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` });
   const text = res?.candidates?.[0]?.content?.parts?.[0]?.text || '';
