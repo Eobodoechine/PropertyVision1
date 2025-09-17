@@ -81,7 +81,12 @@ async function vertexGenerate(opts: {
   const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
   const payload: any = {
     contents: [ { role: 'user', parts: [ { text: opts.prompt } ] } ],
-    generationConfig: { temperature: 0, maxOutputTokens: 1500, ...(opts.json ? { responseMimeType: 'application/json' } : {}) },
+    generationConfig: {
+      temperature: 0,           // Maximum determinism
+      seed: 12345,             // Fixed seed for reproducibility
+      maxOutputTokens: 1500,
+      ...(opts.json ? { responseMimeType: 'application/json' } : {})
+    },
   };
   // Use legacy grounding tool name expected by this project
   if (opts.grounded) payload.tools = [ { google_search: {} } as any ];

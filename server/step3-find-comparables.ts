@@ -25,6 +25,7 @@ interface FindComparablesResult {
 }
 
 class VertexComparableSearchService {
+  private rawCompsFound: number = 0;
   private googleMapsApiKey: string;
   private geocodeCache: Map<string, { lat: number; lon: number }>;
 
@@ -41,7 +42,8 @@ class VertexComparableSearchService {
     subjectPropertyType?: string,
     maxResults: number = 10,
     searchRadius: number = 3,
-    timeWindowMonths: number = 18
+    timeWindowMonths: number = 18,
+    subjectDetails?: { sqft: number; beds: number; baths: number; yearBuilt: number }
   ): Promise<FindComparablesResult> {
     try {
       console.log(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
@@ -73,14 +75,26 @@ class VertexComparableSearchService {
       const typeWanted = (subjectPropertyType || process.env.SUBJECT_TYPE || '').toLowerCase();
       const typeLine = typeWanted ? `Only include property type: ${typeWanted} (use synonyms: townhome/townhouse/rowhouse for townhome).` : '';
 
-      const prompt = `Use Google Search grounding to find recently SOLD comparable properties near "${subjectAddress}".
+      const prompt = `REAL ESTATE COMPARABLE SEARCH - VERTEX AI GROUNDED ANALYSIS
 
-SEARCH CRITERIA:
+Use Google Search grounding with authoritative MLS data sources to find recently SOLD comparable properties.
+
+TARGET PROPERTY: ${subjectAddress}
+
+SEARCH CRITERIA (STRICT REQUIREMENTS):
 - Location: Within ${searchRadius} miles of ${subjectAddress}
-- Time frame: Sold within last ${timeWindowMonths} months
+- Time frame: Sold within last ${timeWindowMonths} months (SOLD properties only, not listings)
 - Property type: Single-family homes, townhomes, condos
 ${subLine ? `- Subdivision: ${subLine}` : ''}
 ${typeLine ? `- Type filter: ${typeLine}` : ''}
+
+SEARCH METHODOLOGY FOR CONSISTENT RESULTS:
+1. Query multiple authoritative sources in this order:
+   - MLS data via Zillow, Redfin, Realtor.com
+   - County records for verification
+   - Real estate databases
+2. Use consistent search terms: "recently sold" + "${subjectAddress.split(',').slice(1).join(',').trim()}"
+3. Filter for properties with complete sale data only
 
 REQUIRED DATA FOR EACH PROPERTY:
 - Complete street address with city, state, ZIP
@@ -120,7 +134,7 @@ Find ${maxResults} best comparable properties with complete, verified data.`;
       console.log(`   📊 Vertex response received`);
 
       // Parse the pipe-separated response with enhanced filtering
-      let comps = await this.parseVertexResponse(result.text, subjectCoords.lat, subjectCoords.lon);
+      let comps = await this.parseVertexResponse(result.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
 
       if (comps.length < 3 && subdivision) {
         console.log(`   🔄 Insufficient subdivision comps (${comps.length}), retrying without subdivision filter...`);
@@ -155,7 +169,7 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
           maxOutputTokens: 2500
         });
 
-        const fallbackComps = await this.parseVertexResponse(fallbackResult.text, subjectCoords.lat, subjectCoords.lon);
+        const fallbackComps = await this.parseVertexResponse(fallbackResult.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         comps.push(...fallbackComps);
       }
 
@@ -166,30 +180,57 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
       comps.sort((a, b) => a.distance - b.distance);
       const finalComps = comps.slice(0, maxResults);
 
+      // COMPREHENSIVE VALIDATION LOGGING
+      const foundCount = this.rawCompsFound || 0; // Track raw comps found
+      const qualifiedCount = finalComps.length;
+      const rejectedCount = foundCount - qualifiedCount;
+
+      console.log(`   📊 SEARCH SUMMARY:`);
+      console.log(`      🔍 Found: ${foundCount} raw comps from Vertex AI`);
+      console.log(`      ✅ Qualified: ${qualifiedCount} comps (passed all filters)`);
+      console.log(`      ❌ Rejected: ${rejectedCount} comps (failed validation)`);
+
+      if (qualifiedCount > 0) {
+        const distances = finalComps.map(c => c.distance);
+        const sizes = finalComps.map(c => c.sqft);
+        const ppsfValues = finalComps.map(c => c.price / c.sqft);
+
+        console.log(`      📍 Distance range: ${Math.min(...distances).toFixed(2)}mi - ${Math.max(...distances).toFixed(2)}mi`);
+        console.log(`      📐 Size range: ${Math.min(...sizes).toLocaleString()} - ${Math.max(...sizes).toLocaleString()} sqft`);
+        console.log(`      💲 PPSF range: $${Math.min(...ppsfValues).toFixed(2)} - $${Math.max(...ppsfValues).toFixed(2)}`);
+      }
+
       // MINIMUM COMP COUNT VALIDATION
       const MIN_COMPS_REQUIRED = 3;
       if (finalComps.length < MIN_COMPS_REQUIRED) {
-        console.log(`   ⚠️  WARNING: Only ${finalComps.length} comps found (minimum ${MIN_COMPS_REQUIRED} recommended)`);
-        console.log(`   💡 Consider expanding search radius or extending time window to 18+ months for rural areas`);
+        console.log(`   ⚠️  WARNING: Only ${finalComps.length} qualified comps (minimum ${MIN_COMPS_REQUIRED} recommended)`);
+        console.log(`   💡 SUGGESTED EXPANSIONS:`);
+        console.log(`      📅 Extend time window: 12 → 18 months`);
+        console.log(`      📍 Expand distance: 2 → 3 miles`);
+        console.log(`      📐 Relax size variance: ±20% → ±25%`);
 
         if (finalComps.length === 0) {
           return {
             comparables: [],
             success: false,
-            error: `No valid comparables found. Try expanding search criteria.`
+            error: `No qualified comparables found after strict filtering. Consider expanding search criteria.`
           };
         }
       }
 
-      // Log comp quality summary
+      // Log comp quality breakdown
       const recentComps = finalComps.filter(c => {
         const soldDate = new Date(c.soldDate);
         const ageInMonths = Math.floor((Date.now() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
         return ageInMonths <= 12;
       });
 
-      console.log(`   ✅ Found ${finalComps.length} filtered comparables`);
-      console.log(`   📊 Quality: ${recentComps.length} recent (≤12mo), ${finalComps.length - recentComps.length} extended (12-18mo)`);
+      const idealDistance = finalComps.filter(c => c.distance <= 1.0);
+      const extendedDistance = finalComps.filter(c => c.distance > 1.0);
+
+      console.log(`   ✅ QUALIFIED COMPARABLES: ${finalComps.length}`);
+      console.log(`   📊 Time Quality: ${recentComps.length} recent (≤12mo), ${finalComps.length - recentComps.length} extended (12-18mo)`);
+      console.log(`   📊 Distance Quality: ${idealDistance.length} ideal (≤1mi), ${extendedDistance.length} extended (1-2mi)`);
 
       return {
         comparables: finalComps,
@@ -223,6 +264,8 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
 
       // Skip header lines or examples
       if (!addr || /^(address|123\s+main\s+st|example)/i.test(addr)) continue;
+
+      this.rawCompsFound++; // Count raw comp found
 
       // SOLD DATE VALIDATION
       if (!dateStr || dateStr.trim() === '') {
@@ -300,23 +343,48 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
         }
       }
 
-      // TIERED TIME WINDOW FILTERING
-      let ageCategory = '';
-      if (ageInMonths <= 12) {
-        ageCategory = 'recent'; // 6-12 months - ideal
-        console.log(`   ✅ ${addr}: Recent sale (${ageInMonths} months old) - High confidence`);
-      } else if (ageInMonths <= 18) {
-        ageCategory = 'acceptable'; // 12-18 months - acceptable with adjustments
-        console.log(`   ⚠️  ${addr}: Extended range sale (${ageInMonths} months old) - May need market adjustments`);
-      } else {
-        // 18+ months - only use in extremely rural areas
-        console.log(`   ❌ Rejected ${addr}: Sale too old (${ageInMonths} months) - Market conditions likely changed`);
-        continue;
-      }
-
-      // Calculate distance
+      // STRICT DISTANCE FILTERING (Tiered with hard limits)
       const distance = await this.calculateDistance(addr, subjectLat, subjectLon);
       if (!Number.isFinite(distance)) continue;
+
+      const IDEAL_DISTANCE = 1.0;    // miles - preferred
+      const MAX_DISTANCE = 2.0;      // miles - suburban limit
+
+      if (distance > MAX_DISTANCE) {
+        console.log(`   ❌ REJECTED ${addr}: Too far (${distance.toFixed(2)}mi > ${MAX_DISTANCE}mi limit)`);
+        continue; // Hard rejection
+      }
+
+      if (distance > IDEAL_DISTANCE) {
+        console.log(`   ⚠️  EXTENDED DISTANCE ${addr}: (${distance.toFixed(2)}mi > ${IDEAL_DISTANCE}mi ideal)`);
+      }
+
+      // STRICT SIZE VARIANCE FILTERING (±20%)
+      if (subjectDetails) {
+        const sizeVariance = Math.abs(sqft - subjectDetails.sqft) / subjectDetails.sqft;
+        const MAX_SIZE_VARIANCE = 0.20; // 20%
+
+        if (sizeVariance > MAX_SIZE_VARIANCE) {
+          console.log(`   ❌ REJECTED ${addr}: Size variance too high (${(sizeVariance * 100).toFixed(1)}% > ${(MAX_SIZE_VARIANCE * 100)}%)`);
+          console.log(`      Subject: ${subjectDetails.sqft}sqft | Comp: ${sqft}sqft`);
+          continue; // Hard rejection
+        }
+
+        console.log(`   ✅ SIZE QUALIFIED ${addr}: ${(sizeVariance * 100).toFixed(1)}% variance (within ${(MAX_SIZE_VARIANCE * 100)}% limit)`);
+      }
+
+      // TIERED TIME WINDOW FILTERING
+      const IDEAL_TIME_MONTHS = 12;
+      const MAX_TIME_MONTHS = 18;
+
+      if (ageInMonths <= IDEAL_TIME_MONTHS) {
+        console.log(`   ✅ TIME QUALIFIED ${addr}: Recent sale (${ageInMonths} months)`);
+      } else if (ageInMonths <= MAX_TIME_MONTHS) {
+        console.log(`   ⚠️  TIME EXTENDED ${addr}: Extended time range (${ageInMonths} months) - may need market adjustments`);
+      } else {
+        console.log(`   ❌ REJECTED ${addr}: Too old (${ageInMonths} months > ${MAX_TIME_MONTHS} months)`);
+        continue;
+      }
 
       comps.push({
         address: addr,
