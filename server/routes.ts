@@ -18,7 +18,7 @@ router.get('/info', (_req, res) => {
 // Non-sensitive env presence check (no key values leaked)
 router.get('/env-check', (_req, res) => {
   res.json({
-    hasGeminiKey: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim()),
+    hasVertexSA: Boolean(process.env.GCP_SA_JSON && process.env.GCP_SA_JSON.trim()),
     hasMapsKey: Boolean(process.env.GOOGLE_MAPS_API_KEY && process.env.GOOGLE_MAPS_API_KEY.trim()),
     port: process.env.PORT || '5000'
   });
