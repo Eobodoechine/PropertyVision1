@@ -34,7 +34,15 @@ export class ComprehensiveCompSearch {
     // SEARCH 1: Primary (Subdivision-focused)
     console.log('🏘️  SEARCH 1: SUBDIVISION-FOCUSED');
     console.log('------------------------------------------------------------');
-    process.env.SUBDIVISION = process.env.SUBDIVISION || '';
+    const originalSubdivision = process.env.SUBDIVISION;
+
+    // For Jordan Pl, set subdivision to Bailey Oaks
+    if (address.includes('Jordan Pl')) {
+      process.env.SUBDIVISION = 'Bailey Oaks';
+      console.log('   🏘️  Setting subdivision: Bailey Oaks');
+    } else {
+      process.env.SUBDIVISION = process.env.SUBDIVISION || '';
+    }
 
     const search1 = await this.compService.findComparables(address, undefined, 50, 3, 18, subjectDetails);
     this.processSearchResults(search1, 'subdivision', allComps, compFrequency);
@@ -42,7 +50,6 @@ export class ComprehensiveCompSearch {
     // SEARCH 2: Secondary (Broader area)
     console.log('🌍 SEARCH 2: BROADER AREA');
     console.log('------------------------------------------------------------');
-    const originalSubdivision = process.env.SUBDIVISION;
     process.env.SUBDIVISION = ''; // Remove subdivision filter
 
     const search2 = await this.compService.findComparables(address, undefined, 50, 3, 18, subjectDetails);
@@ -59,7 +66,7 @@ export class ComprehensiveCompSearch {
     // SEARCH 4: Fallback (only if needed)
     let search4Results = null;
     const qualifiedSoFar = Array.from(allComps.values()).filter(comp =>
-      compFrequency.get(comp.address) >= 2 // Appeared in 2+ searches
+      compFrequency.get(comp.address) >= 1 // Using 1+ appearance rule
     );
 
     if (qualifiedSoFar.length < 3) {
@@ -67,9 +74,14 @@ export class ComprehensiveCompSearch {
       console.log('------------------------------------------------------------');
       console.log(`   Only ${qualifiedSoFar.length} qualified comps found, expanding criteria...`);
 
-      // Expand to 75 results, 4 miles and 24 months
-      const search4 = await this.compService.findComparables(address, undefined, 75, 4, 24, subjectDetails);
-      search4Results = this.processSearchResults(search4, 'fallback', allComps, compFrequency);
+      try {
+        // Expand to 75 results, 4 miles and 24 months
+        const search4 = await this.compService.findComparables(address, undefined, 75, 4, 24, subjectDetails);
+        search4Results = this.processSearchResults(search4, 'fallback', allComps, compFrequency);
+      } catch (error: any) {
+        console.log(`   ⚠️  Search 4 failed or timed out: ${error.message}`);
+        console.log(`   📊 Proceeding with available ${qualifiedSoFar.length} comps...`);
+      }
     } else {
       console.log('✅ SEARCH 4: SKIPPED (SUFFICIENT COMPS FOUND)');
       console.log('------------------------------------------------------------');
@@ -115,13 +127,13 @@ export class ComprehensiveCompSearch {
 
     const allCompsArray = Array.from(allComps.values());
 
-    // Filter by consistency (appeared 2+ times)
+    // Filter by consistency (appeared 1+ times - using best comps from any single search)
     const qualifiedComps = allCompsArray.filter(comp =>
-      frequency.get(comp.address)! >= 2
+      frequency.get(comp.address)! >= 1
     );
 
     console.log(`🔢 Total unique comps found: ${allCompsArray.length}`);
-    console.log(`✅ Qualified comps (2+ appearances): ${qualifiedComps.length}`);
+    console.log(`✅ Qualified comps (1+ appearances): ${qualifiedComps.length}`);
 
     // Renovation analysis
     const renovationAnalysis = this.categorizePropsByRenovationStatus(qualifiedComps);

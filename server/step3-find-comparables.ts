@@ -276,9 +276,10 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
       const soldDate = new Date(dateStr);
       const today = new Date();
 
-      // Reject future dates
-      if (soldDate > today) {
-        console.log(`   ❌ Rejected ${addr}: Future sold date (${dateStr})`);
+      // Reject future dates (with 7-day buffer for data processing delays)
+      const futureBuffer = new Date(today.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 days ahead
+      if (soldDate > futureBuffer) {
+        console.log(`   ❌ Rejected ${addr}: Future sold date (${dateStr}) - today is ${today.toISOString().split('T')[0]}`);
         continue;
       }
 
@@ -306,10 +307,15 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
 
       // ENHANCED FILTERING based on subject property (if available)
       if (subjectDetails) {
+        console.log(`   🔍 FILTERING ${addr}: ${beds}BR/${baths}BA, ${sqft}sqft vs Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft`);
+
         // 1. Bedroom count: ±1 bedroom max
-        if (Math.abs(beds - subjectDetails.beds) > 1) {
-          console.log(`   ⚠️  Filtered out ${addr}: bedroom mismatch (${beds} vs ${subjectDetails.beds})`);
+        const bedroomDiff = Math.abs(beds - subjectDetails.beds);
+        if (bedroomDiff > 1) {
+          console.log(`   ❌ FILTERED OUT ${addr}: bedroom mismatch (${beds}BR vs ${subjectDetails.beds}BR, diff: ${bedroomDiff})`);
           continue;
+        } else {
+          console.log(`   ✅ BEDROOM OK ${addr}: ${beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff} ≤ 1)`);
         }
 
         // 2. Bathroom filtering with special logic for low bathroom count
@@ -320,9 +326,10 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
             // Still include but flag for separate ARV calculation
           }
         } else {
-          // For subject with >2 baths, use ±1 bathroom rule
-          if (Math.abs(baths - subjectDetails.baths) > 1) {
-            console.log(`   ⚠️  Filtered out ${addr}: bathroom mismatch (${baths} vs ${subjectDetails.baths})`);
+          // For subject with >2 baths, use ±1 bathroom rule (rounded for half baths)
+          const bathDiff = Math.abs(baths - subjectDetails.baths);
+          if (bathDiff > 1.5) { // Allow up to 1.5 difference to handle half-bath variations
+            console.log(`   ⚠️  Filtered out ${addr}: bathroom mismatch (${baths} vs ${subjectDetails.baths}, diff: ${bathDiff.toFixed(1)})`);
             continue;
           }
         }
