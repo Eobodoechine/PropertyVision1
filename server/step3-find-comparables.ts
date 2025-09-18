@@ -136,8 +136,60 @@ Find ${maxResults} best comparable properties with complete, verified data.`;
       // Parse the pipe-separated response with enhanced filtering
       let comps = await this.parseVertexResponse(result.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
 
+      // MULTIPLE CALL AGGREGATION for subdivision search consistency
       if (comps.length < 3 && subdivision) {
-        console.log(`   🔄 Insufficient subdivision comps (${comps.length}), retrying without subdivision filter...`);
+        console.log(`   🔄 Initial subdivision search found ${comps.length} comps, attempting multiple-call aggregation...`);
+
+        // Make 2 additional subdivision calls and aggregate unique properties
+        const aggregatedComps = new Map<string, ComparableProperty>();
+
+        // Add initial results
+        comps.forEach(comp => aggregatedComps.set(comp.address, comp));
+
+        for (let call = 2; call <= 3; call++) {
+          console.log(`   📞 Subdivision call ${call}/3...`);
+
+          try {
+            const additionalResult = await groundedFreeform({
+              accessToken: token,
+              projectId,
+              location,
+              model,
+              prompt,
+              maxOutputTokens: 2500
+            });
+
+            const additionalComps = await this.parseVertexResponse(
+              additionalResult.text,
+              subjectCoords.lat,
+              subjectCoords.lon,
+              subjectDetails
+            );
+
+            console.log(`      ✅ Found ${additionalComps.length} additional comps`);
+
+            // Add unique properties to aggregation
+            additionalComps.forEach(comp => {
+              if (!aggregatedComps.has(comp.address)) {
+                aggregatedComps.set(comp.address, comp);
+              }
+            });
+
+            // Small delay between calls
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+          } catch (error) {
+            console.log(`      ❌ Call ${call} failed: ${error}`);
+          }
+        }
+
+        // Use aggregated results
+        comps = Array.from(aggregatedComps.values());
+        console.log(`   🔗 Aggregated total: ${comps.length} unique subdivision properties`);
+      }
+
+      if (comps.length < 3 && subdivision) {
+        console.log(`   🔄 After aggregation still insufficient (${comps.length}), retrying without subdivision filter...`);
 
         const fallbackPrompt = `Use Google Search grounding to find recently SOLD RENOVATED properties near "${subjectAddress}" (expanded search - no subdivision filter).
 
@@ -172,6 +224,9 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
         const fallbackComps = await this.parseVertexResponse(fallbackResult.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         comps.push(...fallbackComps);
       }
+
+      // Deduplicate by address (remove duplicate addresses)
+      comps = this.deduplicateComparables(comps);
 
       // Apply PPSF variance filtering to reduce outliers
       comps = this.filterByPPSFVariance(comps);
@@ -247,6 +302,102 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
     }
   }
 
+  private getVertexConfig() {
+    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+    if (!saPath) {
+      throw new Error('GCP_SA_JSON environment variable is required for Vertex AI');
+    }
+
+    const serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
+    const projectId = serviceAccount.project_id;
+    const location = process.env.VERTEX_LOCATION || 'us-central1';
+    const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+
+    return { serviceAccount, projectId, location, model };
+  }
+
+  private async parsePropertyDataWithLLM(propertyLine: string): Promise<{
+    address: string;
+    price: number;
+    soldDate: Date;
+    beds: number;
+    baths: number;
+    sqft: number;
+    yearBuilt: number;
+    source: string;
+  } | null> {
+    try {
+      const { vertexGenerate } = await import('./vertex-freeform.js');
+      const { serviceAccount, projectId, location, model } = this.getVertexConfig();
+
+      // Extract each field using LLM
+      const addressPrompt = `Extract only the complete street address from this property data:\n\n"${propertyLine}"\n\nReturn only the address, nothing else.`;
+      const pricePrompt = `Extract only the sale price number from this property data:\n\n"${propertyLine}"\n\nReturn only the number, no dollar signs or commas.`;
+      const datePrompt = `Extract the sale date from this property data and convert to YYYY-MM-DD format:\n\n"${propertyLine}"\n\nIf you see "—" or invalid date, return "INVALID". Otherwise return YYYY-MM-DD format only.`;
+      const bedsPrompt = `Extract only the number of bedrooms from this property data:\n\n"${propertyLine}"\n\nReturn only the number.`;
+      const bathsPrompt = `Extract only the number of bathrooms from this property data:\n\n"${propertyLine}"\n\nReturn only the number (can be decimal like 2.5).`;
+      const sqftPrompt = `Extract only the square footage number from this property data:\n\n"${propertyLine}"\n\nReturn only the number, no commas.`;
+      const yearPrompt = `Extract only the year built from this property data:\n\n"${propertyLine}"\n\nReturn only the 4-digit year number.`;
+      const sourcePrompt = `Extract the source website from this property data:\n\n"${propertyLine}"\n\nReturn the website name or URL.`;
+
+      // Make all LLM calls
+      const [addressRes, priceRes, dateRes, bedsRes, bathsRes, sqftRes, yearRes, sourceRes] = await Promise.all([
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: addressPrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: pricePrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: datePrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: bedsPrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: bathsPrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: sqftPrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: yearPrompt, grounded: false, json: false, timeoutMs: 5000 }),
+        vertexGenerate({ sa: serviceAccount, projectId, location, model, prompt: sourcePrompt, grounded: false, json: false, timeoutMs: 5000 })
+      ]);
+
+      // Parse results
+      const address = addressRes.trim();
+      const price = Number(priceRes.replace(/[^\d.]/g, ''));
+      const dateStr = dateRes.trim();
+      const beds = Number(bedsRes.replace(/[^\d.]/g, ''));
+      const baths = Number(bathsRes.replace(/[^\d.]/g, ''));
+      const sqft = Number(sqftRes.replace(/[^\d.]/g, ''));
+      const yearBuilt = Number(yearRes.replace(/[^\d]/g, ''));
+      const source = sourceRes.trim();
+
+      // Handle date parsing
+      let soldDate: Date | null = null;
+      if (dateStr && dateStr !== 'INVALID') {
+        soldDate = new Date(dateStr);
+        if (isNaN(soldDate.getTime())) {
+          // Try alternative date parsing
+          const dateMatch = dateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (dateMatch) {
+            soldDate = new Date(parseInt(dateMatch[1]), parseInt(dateMatch[2]) - 1, parseInt(dateMatch[3]));
+          } else {
+            soldDate = null;
+          }
+        }
+      }
+
+      if (!address || !price || !soldDate || !beds || !baths || !sqft || !yearBuilt) {
+        return null;
+      }
+
+      return {
+        address,
+        price,
+        soldDate,
+        beds,
+        baths,
+        sqft,
+        yearBuilt,
+        source: source || 'unknown'
+      };
+
+    } catch (error) {
+      console.log(`   ⚠️ LLM parsing error: ${error}`);
+      return null;
+    }
+  }
+
   private async parseVertexResponse(
     text: string,
     subjectLat: number,
@@ -260,76 +411,88 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
       const parts = line.split('|').map(s => s.trim());
       if (parts.length < 7) continue;
 
-      const [addr, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts;
+      const [addrOld, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts;
 
       // Skip header lines or examples
-      if (!addr || /^(address|123\s+main\s+st|example)/i.test(addr)) continue;
+      if (!addrOld || /^(address|123\s+main\s+st|example)/i.test(addrOld)) continue;
 
       this.rawCompsFound++; // Count raw comp found
 
-      // SOLD DATE VALIDATION
-      if (!dateStr || dateStr.trim() === '') {
-        console.log(`   ❌ Rejected ${addr}: Missing sold date`);
+      // LLM PARSING FOR ALL FIELDS
+      const parsedData = await this.parsePropertyDataWithLLM(line);
+
+      if (!parsedData) {
+        console.log(`   ❌ Rejected ${addrOld}: LLM parsing failed`);
         continue;
       }
 
-      const soldDate = new Date(dateStr);
+      const { address, price, soldDate, beds, baths, sqft, yearBuilt, source } = parsedData;
+
+      // Basic validation
+      if (!price || price < 50000 || price > 5000000) {
+        console.log(`   ❌ Rejected ${address}: Invalid price ($${price})`);
+        continue;
+      }
+      if (!sqft || sqft < 500 || sqft > 10000) {
+        console.log(`   ❌ Rejected ${address}: Invalid sqft (${sqft})`);
+        continue;
+      }
+      if (!beds || beds < 1 || beds > 10) {
+        console.log(`   ❌ Rejected ${address}: Invalid beds (${beds})`);
+        continue;
+      }
+      if (!baths || baths < 1 || baths > 10) {
+        console.log(`   ❌ Rejected ${address}: Invalid baths (${baths})`);
+        continue;
+      }
+      if (!yearBuilt || yearBuilt < 1900 || yearBuilt > new Date().getFullYear()) {
+        console.log(`   ❌ Rejected ${address}: Invalid year built (${yearBuilt})`);
+        continue;
+      }
+
+      // SOLD DATE VALIDATION
+      if (!soldDate) {
+        console.log(`   ❌ Rejected ${address}: Invalid or missing sold date`);
+        continue;
+      }
+
       const today = new Date();
 
       // Reject future dates (with 7-day buffer for data processing delays)
       const futureBuffer = new Date(today.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 days ahead
       if (soldDate > futureBuffer) {
-        console.log(`   ❌ Rejected ${addr}: Future sold date (${dateStr}) - today is ${today.toISOString().split('T')[0]}`);
-        continue;
-      }
-
-      // Check if date is valid
-      if (isNaN(soldDate.getTime())) {
-        console.log(`   ❌ Rejected ${addr}: Invalid date format (${dateStr})`);
+        console.log(`   ❌ Rejected ${address}: Future sold date (${soldDate.toISOString().split('T')[0]}) - today is ${today.toISOString().split('T')[0]}`);
         continue;
       }
 
       // Calculate age in months
       const ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
 
-      const price = Number(priceStr.replace(/[^0-9.]/g, ''));
-      const sqft = Number(sqftStr.replace(/[^0-9.]/g, ''));
-      const beds = Number(bedsStr.replace(/[^0-9.]/g, ''));
-      const baths = Number(bathsStr.replace(/[^0-9.]/g, ''));
-      const yearBuilt = Number(ybStr.replace(/[^0-9]/g, ''));
-
-      // Basic validation
-      if (!price || price < 50000 || price > 5000000) continue;
-      if (!sqft || sqft < 500 || sqft > 10000) continue;
-      if (!beds || beds < 1 || beds > 10) continue;
-      if (!baths || baths < 1 || baths > 10) continue;
-      if (!yearBuilt || yearBuilt < 1900 || yearBuilt > new Date().getFullYear()) continue;
-
       // ENHANCED FILTERING based on subject property (if available)
       if (subjectDetails) {
-        console.log(`   🔍 FILTERING ${addr}: ${beds}BR/${baths}BA, ${sqft}sqft vs Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft`);
+        console.log(`   🔍 FILTERING ${address}: ${beds}BR/${baths}BA, ${sqft}sqft vs Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft`);
 
         // 1. Bedroom count: ±1 bedroom max
         const bedroomDiff = Math.abs(beds - subjectDetails.beds);
         if (bedroomDiff > 1) {
-          console.log(`   ❌ FILTERED OUT ${addr}: bedroom mismatch (${beds}BR vs ${subjectDetails.beds}BR, diff: ${bedroomDiff})`);
+          console.log(`   ❌ FILTERED OUT ${address}: bedroom mismatch (${beds}BR vs ${subjectDetails.beds}BR, diff: ${bedroomDiff})`);
           continue;
         } else {
-          console.log(`   ✅ BEDROOM OK ${addr}: ${beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff} ≤ 1)`);
+          console.log(`   ✅ BEDROOM OK ${address}: ${beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff} ≤ 1)`);
         }
 
         // 2. Bathroom filtering with special logic for low bathroom count
         if (subjectDetails.baths <= 2) {
           // For subject with ≤2 baths, keep all comps with ≤2 baths + separate tracking for >2 bath comps
           if (baths > 2) {
-            console.log(`   📝 Flagged ${addr}: high bathroom count for low-bath subject (${baths} vs ${subjectDetails.baths})`);
+            console.log(`   📝 Flagged ${address}: high bathroom count for low-bath subject (${baths} vs ${subjectDetails.baths})`);
             // Still include but flag for separate ARV calculation
           }
         } else {
           // For subject with >2 baths, use ±1 bathroom rule (rounded for half baths)
           const bathDiff = Math.abs(baths - subjectDetails.baths);
           if (bathDiff > 1.5) { // Allow up to 1.5 difference to handle half-bath variations
-            console.log(`   ⚠️  Filtered out ${addr}: bathroom mismatch (${baths} vs ${subjectDetails.baths}, diff: ${bathDiff.toFixed(1)})`);
+            console.log(`   ⚠️  Filtered out ${address}: bathroom mismatch (${baths} vs ${subjectDetails.baths}, diff: ${bathDiff.toFixed(1)})`);
             continue;
           }
         }
@@ -337,7 +500,7 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
         // 3. Square footage: ±20% max
         const sqftVariance = Math.abs(sqft - subjectDetails.sqft) / subjectDetails.sqft;
         if (sqftVariance > 0.20) {
-          console.log(`   ⚠️  Filtered out ${addr}: size variance too high (${(sqftVariance * 100).toFixed(1)}% > 20% limit)`);
+          console.log(`   ⚠️  Filtered out ${address}: size variance too high (${(sqftVariance * 100).toFixed(1)}% > 20% limit)`);
           continue;
         }
 
@@ -345,25 +508,25 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
         const ageGroup = this.getAgeGroup(subjectDetails.yearBuilt);
         const compAgeGroup = this.getAgeGroup(yearBuilt);
         if (!this.isAdjacentAgeGroup(ageGroup, compAgeGroup)) {
-          console.log(`   ⚠️  Filtered out ${addr}: age group mismatch (${compAgeGroup} vs ${ageGroup})`);
+          console.log(`   ⚠️  Filtered out ${address}: age group mismatch (${compAgeGroup} vs ${ageGroup})`);
           continue;
         }
       }
 
       // STRICT DISTANCE FILTERING (Tiered with hard limits)
-      const distance = await this.calculateDistance(addr, subjectLat, subjectLon);
+      const distance = await this.calculateDistance(address, subjectLat, subjectLon);
       if (!Number.isFinite(distance)) continue;
 
       const IDEAL_DISTANCE = 1.0;    // miles - preferred
       const MAX_DISTANCE = 2.0;      // miles - suburban limit
 
       if (distance > MAX_DISTANCE) {
-        console.log(`   ❌ REJECTED ${addr}: Too far (${distance.toFixed(2)}mi > ${MAX_DISTANCE}mi limit)`);
+        console.log(`   ❌ REJECTED ${address}: Too far (${distance.toFixed(2)}mi > ${MAX_DISTANCE}mi limit)`);
         continue; // Hard rejection
       }
 
       if (distance > IDEAL_DISTANCE) {
-        console.log(`   ⚠️  EXTENDED DISTANCE ${addr}: (${distance.toFixed(2)}mi > ${IDEAL_DISTANCE}mi ideal)`);
+        console.log(`   ⚠️  EXTENDED DISTANCE ${address}: (${distance.toFixed(2)}mi > ${IDEAL_DISTANCE}mi ideal)`);
       }
 
       // STRICT SIZE VARIANCE FILTERING (±20%)
@@ -372,12 +535,12 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
         const MAX_SIZE_VARIANCE = 0.20; // 20%
 
         if (sizeVariance > MAX_SIZE_VARIANCE) {
-          console.log(`   ❌ REJECTED ${addr}: Size variance too high (${(sizeVariance * 100).toFixed(1)}% > ${(MAX_SIZE_VARIANCE * 100)}%)`);
+          console.log(`   ❌ REJECTED ${address}: Size variance too high (${(sizeVariance * 100).toFixed(1)}% > ${(MAX_SIZE_VARIANCE * 100)}%)`);
           console.log(`      Subject: ${subjectDetails.sqft}sqft | Comp: ${sqft}sqft`);
           continue; // Hard rejection
         }
 
-        console.log(`   ✅ SIZE QUALIFIED ${addr}: ${(sizeVariance * 100).toFixed(1)}% variance (within ${(MAX_SIZE_VARIANCE * 100)}% limit)`);
+        console.log(`   ✅ SIZE QUALIFIED ${address}: ${(sizeVariance * 100).toFixed(1)}% variance (within ${(MAX_SIZE_VARIANCE * 100)}% limit)`);
       }
 
       // TIERED TIME WINDOW FILTERING
@@ -385,16 +548,16 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
       const MAX_TIME_MONTHS = 18;
 
       if (ageInMonths <= IDEAL_TIME_MONTHS) {
-        console.log(`   ✅ TIME QUALIFIED ${addr}: Recent sale (${ageInMonths} months)`);
+        console.log(`   ✅ TIME QUALIFIED ${address}: Recent sale (${ageInMonths} months)`);
       } else if (ageInMonths <= MAX_TIME_MONTHS) {
-        console.log(`   ⚠️  TIME EXTENDED ${addr}: Extended time range (${ageInMonths} months) - may need market adjustments`);
+        console.log(`   ⚠️  TIME EXTENDED ${address}: Extended time range (${ageInMonths} months) - may need market adjustments`);
       } else {
-        console.log(`   ❌ REJECTED ${addr}: Too old (${ageInMonths} months > ${MAX_TIME_MONTHS} months)`);
+        console.log(`   ❌ REJECTED ${address}: Too old (${ageInMonths} months > ${MAX_TIME_MONTHS} months)`);
         continue;
       }
 
       comps.push({
-        address: addr,
+        address: address,
         price,
         sqft,
         beds,
@@ -407,7 +570,7 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
         condition: 'renovated' // Assume renovated for ARV analysis
       });
 
-      console.log(`   ✅ Added: ${addr} - $${price.toLocaleString()} - ${sqft}sqft - Built: ${yearBuilt}`);
+      console.log(`   ✅ Added: ${address} - $${price.toLocaleString()} - ${sqft}sqft - Built: ${yearBuilt}`);
     }
 
     return comps;
@@ -429,6 +592,26 @@ Find ${maxResults} comparable RENOVATED properties with complete data.`;
     const index1 = groups.indexOf(group1);
     const index2 = groups.indexOf(group2);
     return Math.abs(index1 - index2) <= 1; // Same group or adjacent
+  }
+
+  private deduplicateComparables(comps: ComparableProperty[]): ComparableProperty[] {
+    const seen = new Set<string>();
+    const deduplicated: ComparableProperty[] = [];
+
+    for (const comp of comps) {
+      // Normalize address for comparison (lowercase, remove extra spaces)
+      const normalizedAddress = comp.address.toLowerCase().trim().replace(/\s+/g, ' ');
+
+      if (!seen.has(normalizedAddress)) {
+        seen.add(normalizedAddress);
+        deduplicated.push(comp);
+      } else {
+        console.log(`   🔄 Removed duplicate: ${comp.address}`);
+      }
+    }
+
+    console.log(`   📊 Deduplication: ${comps.length} → ${deduplicated.length} unique properties`);
+    return deduplicated;
   }
 
   private filterByPPSFVariance(comps: ComparableProperty[]): ComparableProperty[] {
