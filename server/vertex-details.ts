@@ -10,6 +10,7 @@ export type BasicDetails = {
   baths: number | null;
   yearBuilt: number | null;
   lotSize: number | null;
+  subdivision: string | null;
   success: boolean;
 };
 
@@ -44,7 +45,7 @@ async function httpsPostForm(url: string, body: string, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
-    req.setTimeout(timeoutMs, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
+    req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
     req.write(body);
     req.end();
   });
@@ -60,7 +61,7 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
-    req.setTimeout(timeoutMs, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
+    req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
     req.write(body);
     req.end();
   });
@@ -96,135 +97,125 @@ async function vertexGenerate(opts: {
   return text;
 }
 
-function parseFreeform(text: string): Partial<BasicDetails> {
+// LLM-based parsing to replace problematic regex
+async function parseFreeformWithLLM(text: string, sa: any, projectId: string, location: string, model: string): Promise<Partial<BasicDetails>> {
+  try {
+    // Extract square footage using LLM - this solves the house vs lot size confusion
+    const sqftPrompt = `What is the house square footage (interior/living space only, not lot size) in this text?
+
+"${text}"
+
+Give only the number, no commas or units.`;
+
+    const sqftResponse = await vertexGenerate({
+      sa, projectId, location, model,
+      prompt: sqftPrompt,
+      grounded: false,
+      json: false,
+      timeoutMs: 10000
+    });
+
+    const sqft = sqftResponse.match(/\d+/) ? Number(sqftResponse.replace(/[^\d]/g, '')) : null;
+
+    // Extract bedrooms using LLM
+    const bedsPrompt = `How many bedrooms are in this property?
+
+"${text}"
+
+Give only the number.`;
+
+    const bedsResponse = await vertexGenerate({
+      sa, projectId, location, model,
+      prompt: bedsPrompt,
+      grounded: false,
+      json: false,
+      timeoutMs: 10000
+    });
+
+    const beds = bedsResponse.match(/\d+/) ? Number(bedsResponse.replace(/[^\d]/g, '')) : null;
+
+    // Extract bathrooms using LLM
+    const bathsPrompt = `How many bathrooms (including half baths as 0.5) are in this property?
+
+"${text}"
+
+Give only the number (use decimals like 2.5).`;
+
+    const bathsResponse = await vertexGenerate({
+      sa, projectId, location, model,
+      prompt: bathsPrompt,
+      grounded: false,
+      json: false,
+      timeoutMs: 10000
+    });
+
+    const baths = bathsResponse.match(/[\d.]+/) ? Number(bathsResponse.match(/[\d.]+/)?.[0]) : null;
+
+    // Extract year built using LLM
+    const yearPrompt = `What year was this property built?
+
+"${text}"
+
+Give only the 4-digit year.`;
+
+    const yearResponse = await vertexGenerate({
+      sa, projectId, location, model,
+      prompt: yearPrompt,
+      grounded: false,
+      json: false,
+      timeoutMs: 10000
+    });
+
+    const yearBuilt = yearResponse.match(/\b(19|20)\d{2}\b/) ? Number(yearResponse.match(/\b(19|20)\d{2}\b/)?.[0]) : null;
+
+    // Try to extract subdivision/neighborhood from text
+    let subdivision: string | null = null;
+    try {
+      const subPrompt = `From this text, what is the subdivision or neighborhood name of the property? If not present, answer UNKNOWN.\n\n"${text}"\n\nRespond with only the name or UNKNOWN.`;
+      const subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: false, json: false, timeoutMs: 15000 });
+      const cleaned = (subResp || '').trim();
+      if (cleaned && !/^unknown$/i.test(cleaned)) {
+        subdivision = cleaned.replace(/^[-\s:]+/, '').trim();
+      }
+    } catch {}
+
+    console.log(`   🤖 LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}`);
+
+    return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision };
+
+  } catch (error) {
+    console.log(`   ⚠️  LLM parsing failed, falling back to regex: ${error}`);
+    return parseFreeformRegex(text);
+  }
+}
+
+// Keep original regex as fallback
+function parseFreeformRegex(text: string): Partial<BasicDetails> {
   const clean = (s: string) => s.replace(/[,\s]/g, '').trim();
-  const num = (m: RegExpMatchArray | null) => (m ? Number(clean(m[1])) : null);
 
-  // Enhanced square footage parsing with multiple patterns
-  const sqftCandidates = [
-    text.match(/(?:square\s*feet?|sq\s*ft|sqft)[:\s]*([0-9,]+)/i),
-    text.match(/([0-9,]+)\s*(?:square\s*feet?|sq\s*ft|sqft)/i),
-    text.match(/(?:living\s*area|floor\s*area)[:\s]*([0-9,]+)/i),
-    text.match(/size[:\s]*([0-9,]+)\s*(?:sq|square)/i)
-  ];
+  // Simplified square footage parsing (keeping the problematic logic for fallback only)
+  const sqftMatch = text.match(/([0-9,]+)\s*(?:sq\s*ft|square\s*feet)/i);
   let sqft = null;
-  for (const candidate of sqftCandidates) {
-    if (candidate) {
-      const val = Number(clean(candidate[1]));
-      if (val >= 500 && val <= 10000) { // Reasonable range
-        sqft = val;
-        break;
-      }
+  if (sqftMatch) {
+    const val = Number(clean(sqftMatch[1]));
+    if (val >= 500 && val <= 10000) {
+      sqft = val;
     }
   }
 
-  // Enhanced bedroom parsing with more patterns
-  const bedsCandidates = [
-    text.match(/(?:bedrooms?|beds?)[:\s]*([0-9]{1,2})/i),
-    text.match(/([0-9]{1,2})\s*(?:bedroom|bed)\b/i),
-    text.match(/(?:\b|\*)([0-9]{1,2})\s*(?:br|bd)\b/i),
-    text.match(/([0-9]{1,2})\s*bed\s*[/\-]\s*[0-9]/i),
-    text.match(/([0-9]{1,2})\s*BR/i),
-    text.match(/\b([0-9]{1,2})\s*(?:bed|BR|bedroom)/i),
-    text.match(/bed(?:room)?s?\D*?([0-9]{1,2})/i)
-  ];
-  let beds = null;
-  for (const candidate of bedsCandidates) {
-    if (candidate) {
-      const val = Number(candidate[1]);
-      if (val >= 1 && val <= 10) { // Reasonable range
-        beds = val;
-        break;
-      }
-    }
-  }
+  // Simplified bedroom parsing for fallback
+  const bedsMatch = text.match(/([0-9]{1,2})\s*(?:bedroom|bed|BR)/i);
+  const beds = bedsMatch ? Number(bedsMatch[1]) : null;
 
-  // Enhanced bathroom parsing with more patterns
-  const bathsCandidates = [
-    text.match(/(?:bathrooms?|baths?)[:\s]*([0-9]+(?:\.[0-9]+)?)/i),
-    text.match(/([0-9]+(?:\.[0-9]+)?)\s*(?:bathroom|bath)\b/i),
-    text.match(/(?:\b|\*)([0-9]+(?:\.[0-9]+)?)\s*(?:ba|bath)\b/i),
-    text.match(/([0-9]+(?:\.[0-9]+)?)\s*ba\s*\b/i),
-    text.match(/([0-9]+(?:\.[0-9]+)?)\s*BA\b/i),
-    text.match(/\b([0-9]+(?:\.[0-9]+)?)\s*(?:bath|BA|bathroom)/i),
-    text.match(/bath(?:room)?s?\D*?([0-9]+(?:\.[0-9]+)?)/i),
-    text.match(/[0-9]\s*bed\s*[/\-]\s*([0-9]+(?:\.[0-9]+)?)\s*bath/i)
-  ];
-  let baths = null;
-  for (const candidate of bathsCandidates) {
-    if (candidate) {
-      const val = Number(candidate[1]);
-      if (val >= 1 && val <= 10) { // Reasonable range
-        baths = val;
-        break;
-      }
-    }
-  }
+  // Simplified bathroom parsing for fallback
+  const bathsMatch = text.match(/([0-9]+(?:\.[0-9]+)?)\s*(?:bathroom|bath|BA)/i);
+  const baths = bathsMatch ? Number(bathsMatch[1]) : null;
 
-  // Enhanced year built parsing with more patterns
-  const yearCandidates = [
-    text.match(/(?:year\s*built|built\s*in?|constructed)[:\s]*([12][0-9]{3})/i),
-    text.match(/([12][0-9]{3})\s*(?:build|built|construction)/i),
-    text.match(/(?:from|circa|c\.)\s*([12][0-9]{3})/i),
-    text.match(/built[:\s]*([12][0-9]{3})/i),
-    text.match(/([12][0-9]{3})\s*built/i),
-    text.match(/year[:\s]*([12][0-9]{3})/i),
-    text.match(/([12][0-9]{3})\s*year/i),
-    text.match(/\b([12][0-9]{3})\b/g)?.find(match => {
-      const year = Number(match[1]);
-      const currentYear = new Date().getFullYear();
-      return year >= 1900 && year <= currentYear;
-    })
-  ].filter(Boolean);
+  // Simplified year parsing for fallback
+  const yearMatch = text.match(/\b(19|20)\d{2}\b/);
+  const yearBuilt = yearMatch ? Number(yearMatch[0]) : null;
 
-  let yearBuilt = null;
-  for (const candidate of yearCandidates) {
-    if (candidate) {
-      const val = Number(candidate[1]);
-      const currentYear = new Date().getFullYear();
-      if (val >= 1800 && val <= currentYear) { // Reasonable range
-        yearBuilt = val;
-        break;
-      }
-    }
-  }
-
-  // If still no year found, look for any 4-digit number that could be a year
-  if (!yearBuilt) {
-    const allFourDigits = text.match(/\b(19[0-9]{2}|20[0-9]{2})\b/g);
-    if (allFourDigits) {
-      const currentYear = new Date().getFullYear();
-      for (const yearStr of allFourDigits) {
-        const year = Number(yearStr);
-        if (year >= 1900 && year <= currentYear) {
-          yearBuilt = year;
-          break;
-        }
-      }
-    }
-  }
-
-  // Enhanced lot size parsing
-  const lotCandidates = [
-    text.match(/(?:lot\s*size)[:\s]*([0-9,]+(?:\.[0-9]+)?)\s*(?:sq\s*ft|square\s*feet)/i),
-    text.match(/(?:lot)[:\s]*([0-9,]+(?:\.[0-9]+)?)\s*(?:acres?)/i),
-    text.match(/([0-9,]+(?:\.[0-9]+)?)\s*(?:acre|ac)\s*lot/i)
-  ];
-  let lotSize = null;
-  for (const candidate of lotCandidates) {
-    if (candidate) {
-      const val = Number(clean(candidate[1]));
-      // Convert acres to square feet if needed
-      if (text.toLowerCase().includes('acre') && val < 10) {
-        lotSize = Math.round(val * 43560); // acres to sq ft
-      } else if (val >= 1000 && val <= 500000) { // sq ft range
-        lotSize = val;
-      }
-      if (lotSize) break;
-    }
-  }
-
-  return { sqft, beds, baths, yearBuilt, lotSize };
+  return { sqft, beds, baths, yearBuilt, lotSize: null };
 }
 
 export async function fetchPropertyDetailsViaVertex(address: string): Promise<BasicDetails | null> {
@@ -267,7 +258,7 @@ Provide specific facts with numbers. If any critical data is missing, clearly st
     const text = await vertexGenerate({ sa, projectId, location, model, prompt, grounded: true, json: false, timeoutMs });
     console.log(`   📄 Primary search response: ${text.substring(0, 200)}...`);
 
-    propertyDetails = parseFreeform(text);
+    propertyDetails = await parseFreeformWithLLM(text, sa, projectId, location, model);
     console.log(`   📊 Parsed data: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}`);
 
   } catch (err) {
@@ -301,7 +292,7 @@ Search county assessor and tax records:
 Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
 
       const countyText = await vertexGenerate({ sa, projectId, location, model, prompt: countyPrompt, grounded: true, json: false, timeoutMs });
-      const countyData = parseFreeform(countyText);
+      const countyData = await parseFreeformWithLLM(countyText, sa, projectId, location, model);
 
       // Fill in missing critical data
       if (!propertyDetails.sqft && countyData.sqft) propertyDetails.sqft = countyData.sqft;
@@ -318,6 +309,8 @@ Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
 
   // FINAL VALIDATION - Must have ALL critical data to proceed
   const finalValidation = propertyDetails.sqft && propertyDetails.beds && propertyDetails.baths && propertyDetails.yearBuilt;
+
+  // Skip grounded JSON lookup for subdivision; leave as-is if missing
 
   if (!finalValidation) {
     const stillMissing = [];
@@ -343,6 +336,7 @@ function normalize(address: string, obj: any): BasicDetails {
     baths: obj?.baths != null ? Number(obj.baths) : null,
     yearBuilt: obj?.yearBuilt != null && Number.isFinite(Number(obj.yearBuilt)) ? Number(obj.yearBuilt) : null,
     lotSize: obj?.lotSize != null && Number.isFinite(Number(obj.lotSize)) ? Number(obj.lotSize) : null,
+    subdivision: typeof obj?.subdivision === 'string' && obj.subdivision.trim().length > 0 ? obj.subdivision.trim() : null,
     success: true,
   };
 }

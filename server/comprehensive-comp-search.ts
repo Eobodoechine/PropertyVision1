@@ -1,4 +1,5 @@
 import { VertexComparableSearchService } from './step3-find-comparables.js';
+import { fetchPropertyDetailsViaVertex } from './vertex-details.js';
 
 interface ComprehensiveSearchResult {
   all_comps: any[];
@@ -31,17 +32,46 @@ export class ComprehensiveCompSearch {
     const allComps = new Map<string, any>();
     const compFrequency = new Map<string, number>();
 
+    // Ensure subject details are available (used by parse/filters/enrichment in the service)
+    if (!subjectDetails) {
+      try {
+        const details = await fetchPropertyDetailsViaVertex(address);
+        if (details && details.sqft && details.beds && details.baths && details.yearBuilt) {
+          subjectDetails = {
+            sqft: details.sqft,
+            beds: details.beds,
+            baths: details.baths as number,
+            yearBuilt: details.yearBuilt,
+          };
+          console.log(`   🧩 Subject details: ${subjectDetails.sqft} sqft | ${subjectDetails.beds}bd/${subjectDetails.baths}ba | Built ${subjectDetails.yearBuilt}`);
+        } else {
+          console.log(`   ⚠️  Subject details incomplete; continuing without strict subject filters.`);
+        }
+      } catch (e: any) {
+        console.log(`   ⚠️  Failed to fetch subject details: ${e?.message || e}`);
+      }
+    }
+
     // SEARCH 1: Primary (Subdivision-focused)
     console.log('🏘️  SEARCH 1: SUBDIVISION-FOCUSED');
     console.log('------------------------------------------------------------');
     const originalSubdivision = process.env.SUBDIVISION;
-
-    // For Jordan Pl, set subdivision to Bailey Oaks
-    if (address.includes('Jordan Pl')) {
-      process.env.SUBDIVISION = 'Bailey Oaks';
-      console.log('   🏘️  Setting subdivision: Bailey Oaks');
-    } else {
-      process.env.SUBDIVISION = process.env.SUBDIVISION || '';
+    // Set subdivision from property details (if available)
+    if (subjectDetails) {
+      // subjectDetails doesn't include subdivision; fetchDetailsViaVertex handled above
+    }
+    try {
+      const details = await fetchPropertyDetailsViaVertex(address);
+      const subdivision = (details && typeof details.subdivision === 'string' && details.subdivision.trim()) ? details.subdivision.trim() : '';
+      process.env.SUBDIVISION = subdivision;
+      if (subdivision) {
+        console.log(`   🏘️  Setting subdivision: ${subdivision}`);
+      } else {
+        console.log('   🏘️  No subdivision found; running without subdivision filter');
+      }
+    } catch {
+      process.env.SUBDIVISION = '';
+      console.log('   🏘️  Subdivision lookup failed; running without subdivision filter');
     }
 
     const search1 = await this.compService.findComparables(address, undefined, 50, 3, 18, subjectDetails);

@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { ComprehensiveCompSearch } from './server/comprehensive-comp-search.js';
+import { ComprehensiveCompSearch } from '../server/comprehensive-comp-search.js';
 
 async function runFullAnalysis() {
   const address = '185 Jordan Pl, Fayetteville, GA 30215';

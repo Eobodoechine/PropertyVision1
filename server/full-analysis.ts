@@ -115,18 +115,17 @@ class FullAnalysisService {
 
       for (const step of searchPlan) {
         console.log(`\n🔎 Attempting search: ${step.label}`);
+        const subjectDetails = (propertyDetails?.sqft && propertyDetails?.beds && propertyDetails?.baths && propertyDetails?.yearBuilt)
+          ? { sqft: propertyDetails.sqft, beds: propertyDetails.beds, baths: propertyDetails.baths, yearBuilt: propertyDetails.yearBuilt }
+          : undefined;
+
         const res = await this.comparableService.findComparables(
           address,
-          geocodingResult.lat,
-          geocodingResult.lon,
-          step.radius,
-          10,              // max results
-          step.months,     // time window
-          propertyDetails.beds,
-          propertyDetails.baths,
-          propertyDetails.sqft,
-          propertyDetails.yearBuilt,
-          propertyDetails.propertyType
+          propertyDetails?.propertyType || undefined,
+          50,                // max results to allow enough candidates
+          step.radius,       // search radius (mi)
+          step.months,       // time window (months)
+          subjectDetails
         );
 
         if (!res.success) {

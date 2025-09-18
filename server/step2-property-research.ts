@@ -8,6 +8,7 @@ interface PropertyDetails {
   baths: number | null;
   yearBuilt: number | null;
   lotSize: number | null;
+  subdivision?: string | null;
   propertyType?: string | null;
   success: boolean;
   error?: string;
@@ -36,6 +37,7 @@ class VertexPropertyResearchService {
           baths: viaVertex.baths,
           yearBuilt: viaVertex.yearBuilt,
           lotSize: viaVertex.lotSize,
+          subdivision: viaVertex.subdivision ?? null,
           success: true,
         };
         console.log('   ✅ Vertex details:', details);
@@ -94,6 +96,7 @@ async function testPropertyResearch() {
     console.log(`   Bathrooms: ${result.baths || 'Unknown'}`);
     console.log(`   Year Built: ${result.yearBuilt || 'Unknown'}`);
     console.log(`   Lot Size: ${result.lotSize || 'Unknown'}`);
+    console.log(`   Subdivision: ${result.subdivision || 'Unknown'}`);
     console.log(`   Property Type: ${result.propertyType || 'Unknown'}`);
   } else {
     console.log('❌ Property research failed');
@@ -111,3 +114,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 export { VertexPropertyResearchService, type PropertyDetails };
+// Backward-compatible alias to match existing imports
+export { VertexPropertyResearchService as PropertyResearchService };

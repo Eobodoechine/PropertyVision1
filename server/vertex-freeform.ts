@@ -18,7 +18,7 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string, 
       });
     });
     req.on('error', reject);
-    req.setTimeout(timeoutMs, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
+    req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
     req.write(body);
     req.end();
   });
@@ -39,7 +39,7 @@ export async function groundedFreeform(opts: {
     generationConfig: { temperature: 0, maxOutputTokens: opts.maxOutputTokens ?? 1500 },
     tools: [{ google_search: {} } as any]
   };
-  const res = await httpsPostJson(url, payload, { Authorization: `Bearer ${opts.accessToken}` }, opts.timeoutMs ?? 90000);
+  const res = await httpsPostJson(url, payload, { Authorization: `Bearer ${opts.accessToken}` }, opts.timeoutMs ?? 60000);
   const parts: any[] = res?.candidates?.[0]?.content?.parts || [];
   const text = parts.map((p: any) => p?.text || '').join('');
   return { text, response: res };
@@ -53,8 +53,10 @@ async function getServiceAccountToken(sa: any, scope: string): Promise<string> {
   const claims = { iss: sa.client_email, scope, aud: sa.token_uri, exp, iat };
   const base64url = (obj: any) => Buffer.from(JSON.stringify(obj)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
   const unsigned = `${base64url(header)}.${base64url(claims)}`;
-  const crypto = await import('crypto');
-  const sign = crypto.default.createSign('RSA-SHA256');
+
+  // Import crypto synchronously for ES modules
+  const { createSign } = await import('node:crypto');
+  const sign = createSign('RSA-SHA256');
   sign.update(unsigned);
   const signature = sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
   const assertion = `${unsigned}.${signature}`;
@@ -73,7 +75,7 @@ async function httpsPostForm(url: string, body: string, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
-    req.setTimeout(timeoutMs, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
+    req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
     req.write(body);
     req.end();
   });
@@ -109,4 +111,3 @@ export async function vertexGenerate(opts: {
   const text = res?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || '').join('') || '';
   return text;
 }
-
