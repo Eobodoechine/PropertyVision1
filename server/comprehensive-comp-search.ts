@@ -1,4 +1,5 @@
 import { VertexComparableSearchService } from './step3-find-comparables.js';
+import { ARVCalculationService } from './step4-arv-calculation.js';
 import { fetchPropertyDetailsViaVertex } from './vertex-details.js';
 
 interface ComprehensiveSearchResult {
@@ -10,13 +11,21 @@ interface ComprehensiveSearchResult {
     likely_unrenovated: any[];
     market_average: any[];
   };
+  arv?: {
+    method: string;
+    estimate: number;
+    confidence: 'high' | 'medium' | 'low';
+    dataPoints: number;
+  };
 }
 
 export class ComprehensiveCompSearch {
   private compService: VertexComparableSearchService;
+  private arvService: ARVCalculationService;
 
   constructor() {
     this.compService = new VertexComparableSearchService();
+    this.arvService = new ARVCalculationService();
   }
 
   async performOptimalSearch(
@@ -122,7 +131,35 @@ export class ComprehensiveCompSearch {
     process.env.SUBDIVISION = originalSubdivision;
 
     // Analyze results
-    return this.analyzeComprehensiveResults(allComps, compFrequency);
+    const analysis = this.analyzeComprehensiveResults(allComps, compFrequency);
+
+    // Feed ARV calculator using qualified comps when subject sqft is known
+    try {
+      const sqft = subjectDetails?.sqft;
+      if (Number.isFinite(sqft) && sqft! > 0 && analysis.qualified_comps.length > 0) {
+        console.log('\n💰 ARV FROM COMPREHENSIVE COMPS');
+        console.log('------------------------------------------------------------');
+        const result = this.arvService.calculateARV(
+          analysis.qualified_comps as any,
+          sqft!,
+          subjectDetails?.baths ?? null
+        );
+        console.log(`   Method: ${result.method}`);
+        console.log(`   ARV: $${result.arv.toLocaleString()} (${result.confidence} confidence)`);
+        analysis.arv = {
+          method: result.method,
+          estimate: result.arv,
+          confidence: result.confidence,
+          dataPoints: result.dataPoints,
+        };
+      } else {
+        console.log('\n💡 Skipping ARV: missing subject sqft or no qualified comps');
+      }
+    } catch (e: any) {
+      console.log(`\n⚠️  ARV calculation failed: ${e?.message || e}`);
+    }
+
+    return analysis;
   }
 
   private processSearchResults(
