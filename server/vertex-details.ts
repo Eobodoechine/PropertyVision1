@@ -45,7 +45,6 @@ async function httpsPostForm(url: string, body: string, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
-    req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
     req.write(body);
     req.end();
   });
@@ -61,7 +60,6 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
-    req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
     req.write(body);
     req.end();
   });

@@ -71,55 +71,41 @@ class VertexComparableSearchService {
 
       // Build subdivision filter if specified
       const subdivision = process.env.SUBDIVISION?.trim();
-      const subLine = subdivision ? `Only include properties in subdivision "${subdivision}".` : '';
 
-      const typeWanted = (subjectPropertyType || process.env.SUBJECT_TYPE || '').toLowerCase();
-      const typeLine = typeWanted ? `Only include property type: ${typeWanted} (use synonyms: townhome/townhouse/rowhouse for townhome).` : '';
+      // Compose an analyst-style prompt but enforce pipe-separated output for parsing
+      const composeAnalystPipePrompt = (
+        withSubdivision: boolean
+      ) => {
+        const sd = subjectDetails || null;
+        const subjBeds = sd?.beds ?? undefined;
+        const subjBaths = sd?.baths ?? undefined;
+        const subjSqft = sd?.sqft ?? undefined;
+        const subjYear = sd?.yearBuilt ?? undefined;
+        const lowSqft = subjSqft ? Math.round(subjSqft * 0.8) : '±20% lower bound';
+        const highSqft = subjSqft ? Math.round(subjSqft * 1.2) : '±20% upper bound';
+        const lowYear = subjYear ? subjYear - 10 : 'subject-10';
+        const highYear = subjYear ? subjYear + 10 : 'subject+10';
 
-      const prompt = `REAL ESTATE COMPARABLE SEARCH - VERTEX AI GROUNDED ANALYSIS
+        return `You are an experienced real estate analyst.
 
-Use Google Search grounding with authoritative MLS data sources to find recently SOLD comparable properties.
+Your task is to identify the best comparable sales ("comps") for the subject property below.
+Follow the step-by-step instructions exactly and only return comps that meet the criteria.
 
-TARGET PROPERTY: ${subjectAddress}
+SUBJECT PROPERTY:
+- Address: ${subjectAddress}
+${subjBeds != null ? `- Beds: ${subjBeds}\n` : ''}${subjBaths != null ? `- Baths: ${subjBaths}\n` : ''}${subjSqft != null ? `- Square Footage: ${subjSqft} sqft\n` : ''}${subjYear != null ? `- Year Built: ${subjYear}\n` : ''}${withSubdivision && subdivision ? `- Subdivision: ${subdivision}\n` : ''}
+COMPARABLE SELECTION CRITERIA:
+1. Location: Within ${searchRadius} miles of the subject property.
+2. Sale Date: Sold within the last ${timeWindowMonths} months.
+3. Size: Between ~${lowSqft} sqft and ~${highSqft} sqft (±20% of subject).
+4. Bedrooms: ${subjBeds != null ? `${Math.max(1, subjBeds - 1)}–${subjBeds + 1}` : '±1 of subject'} bedrooms.
+5. Bathrooms: ${subjBaths != null ? `${Math.max(1, Math.floor(subjBaths - 1))}–${Math.ceil(subjBaths + 1)}` : '±1 of subject'} bathrooms.
+6. Year Built: Between ${lowYear} and ${highYear} (within ±10 years of subject’s build year).
 
-SEARCH CRITERIA (STRICT REQUIREMENTS):
-- Location: Within ${searchRadius} miles of ${subjectAddress}
-- Time frame: Sold within last ${timeWindowMonths} months (SOLD properties only, not listings)
-- Property type: Single-family homes, townhomes, condos
-${subLine ? `- Subdivision: ${subLine}` : ''}
-${typeLine ? `- Type filter: ${typeLine}` : ''}
-
-SEARCH METHODOLOGY FOR CONSISTENT RESULTS:
-1. Query multiple authoritative sources in this order:
-   - MLS data via Zillow, Redfin, Realtor.com
-   - County records for verification
-   - Real estate databases
-2. Use consistent search terms: "recently sold" + "${subjectAddress.split(',').slice(1).join(',').trim()}"
-3. Filter for properties with complete sale data only
-
-REQUIRED DATA FOR EACH PROPERTY:
-- Complete street address with city, state, ZIP
-- Actual sale price (not listing price)
-- Sale date in YYYY-MM-DD format
-- Bedrooms and bathrooms (exact numbers)
-- Square footage (living area)
-- Year built
-- Source website (Zillow, Redfin, Realtor.com, etc.)
-
-SEARCH SOURCES:
-Use authoritative real estate sources like:
-- site:zillow.com "${subjectAddress.split(',')[1]?.trim() || ''}" recently sold
-- site:redfin.com "${subjectAddress.split(',')[1]?.trim() || ''}" sold
-- site:realtor.com "${subjectAddress.split(',')[1]?.trim() || ''}" sold properties
-
-OUTPUT FORMAT:
-One property per line, pipe-separated:
-address | sold_price | sold_date | beds | baths | sqft | year_built | source_url
-
-Example:
-123 Main St, Fayetteville, GA 30215 | 425000 | 2024-03-15 | 4 | 3 | 2100 | 1998 | zillow.com
-
-Find ${maxResults} best comparable properties with complete, verified data.`;
+OUTPUT FORMAT (STRICT):
+Return ONLY pipe-separated lines, one per property, no commentary, no headers:
+address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url`;
+      };
 
       // Always perform 3 subdivision runs (if subdivision is set), then 3 expanded runs, aggregate all
       const aggregatedComps = new Map<string, ComparableProperty>();
@@ -140,7 +126,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       if (subdivision) {
         for (let i = 1; i <= 3; i++) {
           console.log(`   📞 Subdivision run ${i}/3...`);
-          const list = await fetchAndParse(prompt);
+          const list = await fetchAndParse(composeAnalystPipePrompt(true));
           list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
           await new Promise(r => setTimeout(r, 800));
         }
@@ -149,21 +135,9 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       }
 
       // 3 expanded runs (no subdivision filter)
-      const expandedPrompt = `Use Google Search grounding to find recently SOLD properties near "${subjectAddress}" (expanded search - no subdivision filter).
-
-SEARCH CRITERIA:
-- Location: Within ${searchRadius} miles of ${subjectAddress}
-- Time frame: Sold within last ${timeWindowMonths} months
-- Property type: Single-family homes, townhomes, condos
-${typeLine ? `- Type filter: ${typeLine}` : ''}
-
-OUTPUT FORMAT:
-One property per line, pipe-separated:
-address | sold_price | sold_date | beds | baths | sqft | year_built | source_url`;
-
       for (let i = 1; i <= 3; i++) {
         console.log(`   🌐 Expanded run ${i}/3...`);
-        const list = await fetchAndParse(expandedPrompt);
+        const list = await fetchAndParse(composeAnalystPipePrompt(false));
         list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
         await new Promise(r => setTimeout(r, 800));
       }
@@ -245,6 +219,27 @@ address | sold_price | sold_date | beds | baths | sqft | year_built | source_url
       console.log(`   ✅ QUALIFIED COMPARABLES: ${finalComps.length}`);
       console.log(`   📊 Time Quality: ${recentComps.length} recent (≤12mo), ${finalComps.length - recentComps.length} extended (12-18mo)`);
       console.log(`   📊 Distance Quality: ${idealDistance.length} ideal (≤1mi), ${extendedDistance.length} extended (1-2mi)`);
+
+      // Optional: write final comps cache with distances
+      try {
+        const outPath = process.env.FINAL_COMPS_CACHE;
+        if (outPath) {
+          const payload = finalComps.map(c => ({
+            address: c.address,
+            price: c.price,
+            soldDate: c.soldDate,
+            beds: c.beds,
+            baths: c.baths,
+            sqft: c.sqft,
+            yearBuilt: c.yearBuilt,
+            distance: c.distance,
+            source: c.source,
+            confidence: c.confidence
+          }));
+          fs.writeFileSync(outPath, JSON.stringify({ comps: payload }, null, 2));
+          console.log(`   💾 Wrote final comps cache: ${outPath}`);
+        }
+      } catch {}
 
       return {
         comparables: finalComps,
@@ -427,19 +422,77 @@ Return exactly this JSON structure:
     const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
     const comps: ComparableProperty[] = [];
 
+    const useLazyParse = String(process.env.LAZY_PARSE || 'true').toLowerCase() !== 'false';
+
+    const cheapParse = (parts: string[]) => {
+      if (parts.length < 7) return null;
+      const [addrOld, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts;
+      if (!addrOld) return null;
+      const address = addrOld.trim();
+      const price = parseInt(String(priceStr).replace(/[^\d]/g, ''), 10);
+      const beds = parseFloat(String(bedsStr).replace(/[^\d.]/g, ''));
+      const baths = parseFloat(String(bathsStr).replace(/[^\d.]/g, '').replace(/½/g, '.5'));
+      const sqft = parseInt(String(sqftStr).replace(/[^\d]/g, ''), 10);
+      const yearBuilt = parseInt(String(ybStr).replace(/[^\d]/g, ''), 10);
+
+      // Date parsing
+      let soldDate: Date | null = null;
+      const ds = (dateStr || '').trim();
+      if (ds) {
+        let d = new Date(ds);
+        if (!isNaN(d.getTime())) soldDate = d; else {
+          let m = ds.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (m) {
+            soldDate = new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+          } else {
+            m = ds.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+            if (m) soldDate = new Date(parseInt(m[3],10), parseInt(m[1],10)-1, parseInt(m[2],10));
+          }
+        }
+      }
+
+      // Basic sanity checks; leave business rules (±20%, etc.) to later filters
+      const hasAddress = !!address;
+      const hasPrice = Number.isFinite(price) && price > 0;
+      const hasDate = soldDate != null && !isNaN(soldDate.getTime());
+      const hasSqft = Number.isFinite(sqft) && sqft > 0;
+      const hasYear = Number.isFinite(yearBuilt) && yearBuilt >= 1900 && yearBuilt <= new Date().getFullYear();
+      const hasBeds = Number.isFinite(beds) && beds > 0;
+      const hasBaths = Number.isFinite(baths) && baths > 0;
+
+      if (!hasAddress || !hasPrice || !hasDate) return null; // Core fields required
+
+      return {
+        address,
+        price,
+        soldDate,
+        beds: hasBeds ? beds : NaN,
+        baths: hasBaths ? baths : NaN,
+        sqft: hasSqft ? sqft : NaN,
+        yearBuilt: hasYear ? yearBuilt : NaN,
+        source: (url || '').trim() || 'unknown'
+      } as any;
+    };
+
     for (const line of lines) {
       const parts = line.split('|').map(s => s.trim());
       if (parts.length < 7) continue;
 
-      const [addrOld, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts;
+      const [addrOld] = parts;
 
       // Skip header lines or examples
       if (!addrOld || /^(address|123\s+main\s+st|example)/i.test(addrOld)) continue;
 
       this.rawCompsFound++; // Count raw comp found
 
-      // LLM PARSING FOR ALL FIELDS
-      const parsedData = await this.parsePropertyDataWithLLM(line);
+      // Lazy parsing: try cheap parse first, fallback to LLM only if needed
+      let parsedData: any = null;
+      if (useLazyParse) {
+        parsedData = cheapParse(parts);
+      }
+      if (!parsedData) {
+        parsedData = await this.parsePropertyDataWithLLM(line);
+      }
 
       // Start with whatever the LLM returned (may be partial)
       let address = parsedData?.address;
@@ -663,22 +716,37 @@ Return exactly this JSON structure:
     maxMiles = 2.0
   ): Promise<ComparableProperty[]> {
     const out: ComparableProperty[] = [];
-    for (const c of comps) {
-      let dist = await this.calculateDistance(c.address, subjectLat, subjectLon, 7000);
-      if (!Number.isFinite(dist)) {
-        console.log(`   ⚠️  Skipping distance filter for ${c.address}: geocoding failed`);
-        out.push({ ...c, distance: NaN as any });
-        continue;
-      }
-      if (dist > maxMiles) {
-        console.log(`   ❌ REJECTED ${c.address}: Too far (${dist.toFixed(2)}mi > ${maxMiles}mi limit)`);
-        continue;
-      }
-      if (dist > idealMiles) {
-        console.log(`   ⚠️  EXTENDED DISTANCE ${c.address}: (${dist.toFixed(2)}mi > ${idealMiles}mi ideal)`);
-      }
-      out.push({ ...c, distance: dist });
-    }
+    const GEOCODE_CONCURRENCY = parseInt(process.env.GEOCODE_CONCURRENCY || '6', 10);
+
+    let index = 0;
+    let active = 0;
+    await new Promise<void>((resolve) => {
+      const next = () => {
+        if (index >= comps.length && active === 0) return resolve();
+        while (active < GEOCODE_CONCURRENCY && index < comps.length) {
+          const c = comps[index++];
+          active++;
+          (async () => {
+            let dist = await this.calculateDistance(c.address, subjectLat, subjectLon, 7000);
+            if (!Number.isFinite(dist)) {
+              console.log(`   ⚠️  Skipping distance filter for ${c.address}: geocoding failed`);
+              out.push({ ...c, distance: NaN as any });
+              return;
+            }
+            if (dist > maxMiles) {
+              console.log(`   ❌ REJECTED ${c.address}: Too far (${dist.toFixed(2)}mi > ${maxMiles}mi limit)`);
+              return;
+            }
+            if (dist > idealMiles) {
+              console.log(`   ⚠️  EXTENDED DISTANCE ${c.address}: (${dist.toFixed(2)}mi > ${idealMiles}mi ideal)`);
+            }
+            out.push({ ...c, distance: dist });
+          })().finally(() => { active--; next(); });
+        }
+      };
+      next();
+    });
+
     return out;
   }
 
@@ -841,7 +909,6 @@ Return exactly this JSON structure:
         res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
       });
       req.on('error', reject);
-      req.setTimeout(60000, () => { try { req.destroy(new Error('timeout')); } catch {}; reject(new Error('timeout')); });
       req.write(body);
       req.end();
     });

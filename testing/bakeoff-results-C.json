@@ -1,0 +1,91 @@
+[
+  {
+    "name": "street-cluster-strict-2mi",
+    "strict": true,
+    "hits": [
+      "560 ridgemont",
+      "125 winter valley"
+    ],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "12558 lakeside pkwy",
+      "280 ridgemont"
+    ],
+    "text": "285 Ridgemont Dr, Fayetteville, GA 30215 | 438500 | 2025-09-17 | 3 | 2 | 2200 | 1988 | | https://www.zillow.com/homedetails/285-Ridgemont-Dr-Fayetteville-GA-30215/14689919_zpid/\n350 Ridgemont Dr, Fayetteville, GA 30215 | 470000 | 2025-07-07 | 5 | 4 | 2850 | 1990 | | https://www.zillow.com/homedetails/350-Ridgemont-Dr-Fayetteville-GA-30215/14689899_zpid/\n100 Bailey Ct, Fayetteville, GA 30215 | 310000 | 2025-04-08 | 3 | 3 | 1762 | 1994 | | https://www.zillow.com/homedetails/100-Bailey-Ct-Fayetteville-GA-30215/14690073_zpid/\n560 Ridgemont DR, Fayetteville, GA 30215 | 350000 | 2025-01-03 | 4 | 2.5 | 2577 | 1994 | | https://kristimorris.com/homes-for-sale/GA/fayetteville/30215/560-ridgemont-dr/lid-63b73832c531b96d7c35b33e\n105 Bailey Ct, Fayetteville, GA 30215 | 392000 | 2024-05-08 | 4 | 2 | 2134 | 1994 | | https://www.zillow.com/homedetails/105-Bailey-Ct-Fayetteville-GA-30215/14690068_zpid/\n240 Ridgemont Dr, Fayetteville, GA 30215 | 530000 | 2024-04-30 | 4 | 3 | 2900 | 1988 | | https://www.realtor.com/realestateandhomes-detail/240-Ridgemont-Dr_Fayetteville_GA_30215_M68390-38749\n120 Oak Shadow Way, Fayetteville, GA 30215 | 908000 | 2025-07-08 | 5 | 5 | 4730 | 2006 | | https://www.redfin.com/GA/Fayetteville/120-Oak-Shadow-Way-30215/home/25199333\n110 Isleworth Way, Fayetteville, GA 30215 | 1095000 | 2025-06-23 | - | 6 | 4621 | 2022 | | https://www.redfin.com/GA/Fayetteville/110-Isleworth-Way-30215/home/180183933\n160 Isleworth Way, Fayetteville, GA 30215 | 846000 | 2025-08-22 | 5 | 4 | 3719 | 2022 | | https://www.zillow.com/homedetails/160-Isleworth-Way-Fayetteville-GA-30215/2058189893_zpid/\n545 Discovery Lake Dr LOT 409, Fayetteville, GA 30215 | 709900 | 2025-08-21 | 4 | 5 | 3011 | 2024 | | https://www.zillow.com/homedetails/545-Discovery-Lake-Dr-LOT-409-Fayetteville-GA-30215/2055398393_zpid/\n220 Broadmoor Dr, Fayetteville, GA 30215 | 895000 | 2025-08-15 | 4 | 5 | 4559 | 2023 | | https://www.zillow.com/homedetails/220-Broadmoor-Dr-Fayetteville-GA-30215/2053318084_zpid/\n125 Winter Valley Ct, Fayetteville, GA 30215 | 440000 | 2025-08-09 | 4 | 3 | 2605 | 1996 | | https://www.zillow.com/homedetails/125-Winter-Valley-Ct-Fayetteville-GA-30215/14688381_zpid/\n140 Discovery Lake Dr, Fayetteville, GA 30215 | 715000 | 2025-08-08 | 5 | 4 | 3316 | 2023 | | https://www.zillow.com/homedetails/140-Discovery-Lake-Dr-Fayetteville-GA-30215/2053993984_zpid/\n110 Kari Glen Way, Fayetteville, GA 30215 | 390000 | 2025-08-02 | 4 | 3 | 2777 | 1993 | | https://www.zillow.com/homedetails/110-Kari-Glen-Way-Fayetteville-GA-30215/14688011_zpid/\n155 Lakemont Cir, Fayetteville, GA 30215 | 475000 | 2025-07-25 | 4 | 4 | 3990 | 1987 | | https://www.zillow.com/homedetails/155-Lakemont-Cir-Fayetteville-GA-30215/14687881_zpid/\n275 Zelkova Dr, Fayetteville, GA 30215 | 550000 | 2025-09-15 | 4 | 3.5 | 2949 | 1993 | | https://www.realtor.com/realestateandhomes-detail/275-Zelkova-Dr_Fayetteville_GA_30215_M59969-58699\n150 Browns Crossing Dr, Fayetteville, GA 30215 | 610000 | 2025-09-12 | 5 | 4 | 3600 | 2023 | | https://www.zillow.com/homedetails/150-Browns-Crossing-Dr-Fayetteville-GA-30215/2054288719_zpid/\n175 Stillwood Dr, Fayetteville, GA 30215 | 810000 | 2025-09-15 | 5 | 4 | 4300 | 2023 | | https://www.zillow.com/homedetails/175-Stillwood-Dr-Fayetteville-GA-30215/2053318083_zpid/\n115 Brookwood Ln, Fayetteville, GA 30215 | 450350 | 2025-09-12 | 4 | 3 | 2885 | 2024 | | https://www.zillow.com/homedetails/115-Brookwood-Ln-Fayetteville-GA-30215/2055610996_zpid/\n203 Shelby Ln, Fayetteville, GA 30215 | 1051466 | 2025-09-12 | 4 | 5 | 5695 | 2006 | | https://www.zillow.com/homedetails/203-Shelby-Ln-Fayetteville-GA-30215/83701171_zpid/"
+  },
+  {
+    "name": "subdivision-default-30",
+    "strict": false,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "## Recently Sold Comparable Properties Near 185 Jordan Pl, Fayetteville, GA\n\nBelow is a comprehensive list of 30 recently sold single-family homes within a 3-mile radius of 185 Jordan Pl, Fayetteville, GA 30215, including properties in the desirable Bailey Oaks subdivision. The sales data reflects transactions within the last 18 months, providing a current and relevant market overview.\n\n### Properties in Bailey Oaks Subdivision\n\n| Address | Sold Price | Sold Date | Beds | Baths | Sq. Ft. | Year Built | Source URL |\n|---|---|---|---|---|---|---|---|\n| 105 Bailey Ct, Fayetteville, GA 30215 | $392,000 | May 8, 2024 | 4 | 2 | 2,134 | 1994 | [Zillow](https://www.zillow.com/homedetails/105-Bailey-Ct-Fayetteville-GA-30215/14650018_zpid/) |\n| 100 Bailey Ct, Fayetteville, GA 30215 | $310,000 | April 8, 2025 | 3 | 2.5 | 1,761 | 1994 | [Realtor.com](https://www.realtor.com/realestateandhomes-detail/100-Bailey-Ct_Fayetteville_GA_30215_M68000-89399) |\n\n### Properties Within 3 Miles\n\n| Address | Sold Price | Sold Date | Beds | Baths | Sq. Ft. | Year Built | Source URL |\n|---|---|---|---|---|---|---|---|\n| 110 Isleworth Way, Fayetteville, GA 30215 | $1,095,000 | June 23, 2025 | 6 | 6 | 4,621 | 2006 | [Redfin](https://www.redfin.com/GA/Fayetteville/110-Isleworth-Way-30215/home/25230380) |\n| 120 Oak Shadow Way, Fayetteville, GA 30215 | $908,000 | July 8, 2025 | 5 | 5 | 4,730 | 2005 | [Redfin](https://www.redfin.com/GA/Fayetteville/120-Oak-Shadow-Way-30215/home/25230789) |\n| 155 Thorne Ridge Trl, Fayetteville, GA 30214 | $1,000,000 | July 21, 2025 | 6 | 6 | 4,712 | 2007 | [Redfin](https://www.redfin.com/GA/Fayetteville/155-Thorne-Ridge-Trl-30214/home/25223456) |\n| 135 Adam Ridge Ln, Fayetteville, GA 30214 | $474,900 | August 1, 2025 | 4 | 2.5 | 2,400 | 2018 | [Redfin](https://www.redfin.com/GA/Fayetteville/135-Adam-Ridge-Ln-30214/home/145072184) |\n| 185 Stayman Park, Fayetteville, GA 30215 | $385,500 | September 10, 2025 | 3 | 2.5 | 1,906 | 1999 | [Trulia](https://www.trulia.com/p/ga/fayetteville/185-stayman-park-fayetteville-ga-30215--2033378629) |\n| 275 Zelkova Dr, Fayetteville, GA 30215 | $550,000 | September 15, 2025 | 4 | 3.5 | 2,949 | 2003 | [Zillow](https://www.zillow.com/homedetails/275-Zelkova-Dr-Fayetteville-GA-30215/68883396_zpid/) |\n| 150 Browns Crossing Dr, Fayetteville, GA 30215 | $515,000 | September 15, 2025 | 4 | 3 | 2,800 | 2001 | [Zillow](https://www.zillow.com/homedetails/150-Browns-Crossing-Dr-Fayetteville-GA-30215/59399999_zpid/) |\n| 175 Stillwood Dr, Fayetteville, GA 30215 | $810,000 | September 15, 2025 | 5 | 4.5 | 4,500 | 2005 | [Zillow](https://www.zillow.com/homedetails/175-Stillwood-Dr-Fayetteville-GA-30215/79340739_zpid/) |\n| 115 Brookwood Ln, Fayetteville, GA 30215 | $1,051,466 | September 12, 2025 | 5 | 5 | 5,000 | 2023 | [Zillow](https://www.zillow.com/homedetails/115-Brookwood-Ln-Fayetteville-GA-30215/2060388140_zpid/) |\n| 203 Shelby Ln, Fayetteville, GA 30215 | $269,900 | September 12, 2025 | 3 | 2 | 1,500 | 1985 | [Zillow](https://www.zillow.com/homedetails/203-Shelby-Ln-Fayetteville-GA-30215/14645831_zpid/) |\n| 310 Discovery Lake Dr, Fayetteville, GA 30215 | $450,350 | September 12, 2025 | 4 | 3 | 2,600 | 2022 | [Zillow](https://www.zillow.com/homedetails/310-Discovery-Lake-Dr-Fayetteville-GA-30215/2069594868_zpid/) |\n| 105 Postwood Dr, Fayetteville, GA 30215 | $537,000 | September 16, 2025 | 4 | 3.5 | 3,200 | 1995 | [Trulia](https://www.trulia.com/p/ga/fayetteville/105-postwood-dr-fayetteville-ga-30215--2033380574) |\n| 125 Stratford Way, Fayetteville, GA 30214 | $319,000 | August 22, 2025 | 2 | 2 | 1,800 | 1998 | [Redfin](https://www.redfin.com/GA/Fayetteville/125-Stratford-Way-30214/home/25211183) |\n| 145 Hillside Dr, Fayetteville, GA 30214 | $523,000 | August 22, 2025 | 4 | 2.5 | 2,900 | 1986 | [Redfin](https://www.redfin.com/GA/Fayetteville/145-Hillside-Dr-30214/home/25203454) |\n| 120 Creekwood Ln, Fayetteville, GA 30214 | $350,000 | July 8,"
+  },
+  {
+    "name": "broader-strict-30",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "zip-city-default-20",
+    "strict": false,
+    "hits": [
+      "280 ridgemont"
+    ],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "125 winter valley"
+    ],
+    "text": "Here are 20 single-family properties that have recently sold near 185 Jordan Pl, Fayetteville, GA 30215.\n\n| Address | Price | Date | Beds | Baths | Sqft | Year | Source |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| 110 Green Meadow Ln, Fayetteville, GA 30215 | $1,300,000 | 06/20/2025 | 4 | 5 | 6,400 | 2002 | Zillow, Redfin |\n| 110 Isleworth Way, Fayetteville, GA 30215 | $1,095,000 | 06/23/2025 | 6 | 5 | 6,020 | 1996 | Zillow, Realtor.com |\n| 203 Shelby Ln, Fayetteville, GA 30215 | $1,020,000 | 2025 | 4 | 5 | 4,457 | 2006 | Realtor.com, Engel & Völkers |\n| 120 Oak Shadow Way, Fayetteville, GA 30215 | $908,000 | 07/08/2025 | 5 | 5 | 4,730 | 1999 | Zillow, Redfin |\n| 140 Silvermere, Fayetteville, GA 30215 | $900,000 | 08/26/2025 | 5 | 6 | 5,695 | 1991 | Zillow, Realtor.com |\n| 426 Old Senoia Rd, Fayetteville, GA 30215 | $549,900 | 09/05/2025 | 4 | 2 | 2,730 | 1982 | Redfin, crye-leike.com |\n| 275 Zelkova Dr, Fayetteville, GA 30215 | $550,000 | 2025 | 4 | 4 | 2,949 | 1994 | Zillow, Realtor.com |\n| 175 Stillwood Dr, Fayetteville, GA 30215 | $450,350 | 09/12/2025 | 4 | 4 | 3,006 | 2004 | Zillow, Realtor.com |\n| 185 Stayman Park, Fayetteville, GA 30215 | $385,500 | 09/10/2025 | 3 | 2.5 | 1,906 | 2002 | Realtor.com, Redfin |\n| 115 Brookwood Ln, Fayetteville, GA 30215 | $360,000 | 09/10/2025 | 3 | 2 | 1,897 | 1985 | Zillow, Homes.com |\n| 125 Seawright Dr, Fayetteville, GA 30215 | $650,000 | Not specified | 5 | 4 | 4,380 | Not specified | Redfin |\n| 265 Lake Cir, Fayetteville, GA 30215 | $385,000 | Not specified | 3 | 2 | 2,361 | Not specified | Redfin |\n| 175 Robin Ct, Fayetteville, GA 30215 | $299,900 | 08/26/2025 | 3 | 2 | 1,547 | Not specified | Trulia |\n| 280 Ridgemont Dr, Fayetteville, GA 30215 | $420,000 | Not specified | Not specified | Not specified | 2,350 | Not specified | Zillow |\n| 150 Browns Crossing Dr, Fayetteville, GA 30215 | Not specified | Not specified | Not specified | Not specified | Not specified | Not specified | Zillow |\n| 115 Brookwood Ln, Fayetteville, GA 30215 | Not specified | Not specified | Not specified | Not specified | Not specified | Not specified | Zillow |\n| 203 Shelby Ln, Fayetteville, GA 30215 | Not specified | Not specified | Not specified | Not specified | Not specified | 2006 | Zillow |\n| 400 Plainfield St, Fayetteville, GA 30215 | $408,000 | Not specified | 2 | 2 | 1,803 | Not specified | Zillow |\n| 310 Discovery Lake Dr, Fayetteville, GA 30215 | Not specified | Not specified | Not specified | Not specified | Not specified | Not specified | Zillow |\n| 105 Postwood Dr, Fayetteville, GA 30215 | Not specified | Not specified | Not specified | Not specified | Not specified | Not specified | Zillow |"
+  },
+  {
+    "name": "price-band-strict",
+    "strict": true,
+    "hits": [
+      "280 ridgemont"
+    ],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "125 winter valley"
+    ],
+    "text": "I was unable to retrieve the full 20 lines of sold properties that precisely match all the specified criteria, particularly the distance from the subject property, within the given time and tool constraints. The available tools do not allow for a systematic search and filtering of real estate data based on proximity to a specific address.\n\nHowever, I have compiled a partial list of recently sold single-family homes in the same zip code that meet the price and timeframe requirements, with most of the requested data points. The \"distance_miles\" and for some, the \"year_built\" or \"sold_date\" are missing as this information was not consistently available in the search results.\n\nHere is the data I was able to gather:\n\n125 Bergen DR, Fayetteville, GA 30215 | $537,000 | 2025-09-16 | 5 | 4.5 | 4106 | N/A | N/A | https://www.reponzellmorris.com/areas/ga/sold-listing/\n275 Zelkova Dr, Fayetteville, GA 30215 | $550,000 | 2025-09-15 | 4 | 4 | 2949 | 1994 | 2.1 | https://www.zillow.com/homedetails/275-Zelkova-Dr-Fayetteville-GA-30215/14633385_zpid/\n280 Ridgemont Dr, Fayetteville, GA 30215 | $429,000 | 2025-09-12 | 3 | 2 | 2350 | 1988 | 1.1 | https://www.homes.com/property/280-ridgemont-dr-fayetteville-ga-30215/id-300014633413/\n120 Emily Park, Fayetteville, GA 30215 | $299,000 | 2025-08-28 | 2 | 2 | 1535 | 2002 | 2.8 | https://www.zillow.com/homedetails/120-Emily-Park-Fayetteville-GA-30215/68782391_zpid/\n160 Isleworth WAY, Fayetteville, GA 30215 | $846,000 | 2025-07-11 | 5 | 3.5 | 3719 | 1997 | N/A | https://theatlantic.realestate/homes-for-sale/160-isleworth-way-fayetteville-ga-30215-7582378\n110 Emily Park, Fayetteville, GA 30215 | $279,900 | 2025-06-24 | 2 | 2 | 1555 | 2002 | 2.8 | https://www.zillow.com/homedetails/110-Emily-Park-Fayetteville-GA-30215/68782392_zpid/\n459 Lester Rd, Fayetteville, GA 30215 | $510,000 | 2023-09-12 | 4 | 4 | 3078 | 1979 | N/A | https://www.trulia.com/p/ga/fayetteville/459-lester-rd-fayetteville-ga-30215--2032391995\n165 Jordan Pl, Fayetteville, GA 30215 | $402,000 | 2023-01-01 | N/A | N/A | N/A | 1998 | 0.0 | https://www.realtor.com/realestateandhomes-detail/165-Jordan-Pl_Fayetteville_GA_30215_M68853-44429\n230 County Line CT, Fayetteville, GA 30215 | $328,000 | 2025-02-05 | 3 | 2 | 1858 | 2002 | N/A | https://savvyestatesatl.com/homes-for-sale/230-county-line-ct-fayetteville-ga-30215-10433039\n105 Dawn DR, Fayetteville, GA 30215 | N/A | 2024-08-30 | 3 | 2 | 1834 | 1980 | N/A | https://www.watsonrealtyco.com/homes-for-sale/105-dawn-dr-fayetteville-ga-30215-10352621"
+  },
+  {
+    "name": "sqft-cap-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  }
+]

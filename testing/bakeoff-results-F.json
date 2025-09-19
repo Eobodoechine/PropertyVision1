@@ -1,0 +1,90 @@
+[
+  {
+    "name": "analyst-user",
+    "strict": false,
+    "hits": [
+      "280 ridgemont"
+    ],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "125 winter valley"
+    ],
+    "text": "Here are the best comparable sales for the subject property at 185 Jordan Pl, Fayetteville, GA 30215, based on the specified criteria.\n\n***\n\n- **185 Stayman Park, Fayetteville, GA 30215** — Sold September 2025 for $385,500, 3 bed / 2.5 bath, 1,906 sqft, built 2002, 1.1 miles away. *This is a strong comparable due to its recent sale date, close proximity, and similar age. While it has one less bedroom, its square footage is within the acceptable range, making it a useful indicator of value for slightly smaller homes in the area.*\n\n- **265 Lake Cir, Fayetteville, GA 30215** — Sold August 2025 for $385,000, 3 bed / 2 bath, 2,361 sqft, built 2003, 1.8 miles away. *This property is an excellent comparable because its square footage is very close to the subject property, and it is also a recent sale within a similar age bracket. This demonstrates the market value for a home of a nearly identical size.*\n\n- **280 Ridgemont Dr, Fayetteville, GA 30215** — Sold September 2025 for $420,000, 3 bed / 2 bath, 2,350 sqft, built 1993, 1.5 miles away. *This property is a great indicator of value due to its very similar square footage and recent sale date. Its year built is also well within the desired range, providing a solid comparison to the subject property.*\n\n- **426 Old Senoia Rd, Fayetteville, GA 30215** — Sold September 2025 for $549,900, 4 bed / 2 bath, 2,730 sqft, built 1990, 1.9 miles away. *As a 4-bedroom home, this property matches the subject's bedroom count, which is a significant factor. Although it is at the higher end of the square footage range and slightly older, it is a valuable comparable that shows the upper end of the price spectrum for similar homes in the vicinity.*"
+  },
+  {
+    "name": "street-cluster-strict-1mi",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "100 Bailey Ct, Fayetteville, GA 30215 | 310000 | 2025-04-08 | 3 | 2.5 | 1761 | 1994 | 0.2 | https://www.realtor.com/realestateandhomes-detail/100-Bailey-Ct_Fayetteville_GA_30215_M66764-97445\n350 Ridgemont Dr, Fayetteville, GA 30215 | 470000 | 2025-07-07 | 5 | 3.5 | 2850 | 1990 | 0.8 | https://www.realtor.com/realestateandhomes-detail/350-Ridgemont-Dr_Fayetteville_GA_30215_M53996-49349\n100 Bailey Ct, Fayetteville, GA 30215 | 310000 | 2025-04-08 | 3 | 2.5 | 1762 | 1994 | 0.2 | https://www.redfin.com/GA/Fayetteville/100-Bailey-Ct-30215/home/24783859\n100 Bailey Ct, Fayetteville, GA 30215 | 310000 | 2025-04-08 | 3 | 2.5 | 1762 | 1994 | 0.2 | https://www.homes.com/property/100-bailey-ct-fayetteville-ga-30215/id-330000048031/\n100 Bailey Ct, Fayetteville, GA 30215 | 310000 | 2025-04-08 | 3 | 2.5 | 1761 | 1994 | 0.2 | https://www.orchard.com/homes/100-bailey-ct-fayetteville-ga-30215"
+  },
+  {
+    "name": "street-cluster-strict-2mi",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "subdivision-default-30",
+    "strict": false,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "Here is a list of 30 recently sold single-family homes near 185 Jordan Pl, Fayetteville, GA 30215, within a 3-mile radius and sold in the last 18 months.\n\n### Bailey Oaks Subdivision\n\n| Address | Sold Price | Sold Date | Beds | Baths | Sqft | Year Built | Source URL |\n|---|---|---|---|---|---|---|---|\n| 105 Bailey Ct, Fayetteville, GA 30215 | $392,000 | 2024-05-08 | 4 | 2 | 2,134 | 1994 | [Zillow](https://www.zillow.com/homedetails/105-Bailey-Ct-Fayetteville-GA-30215/14650058_zpid/) |\n| 100 Bailey Ct, Fayetteville, GA 30215 | $310,000 | 2025-04-08 | 3 | 2.5 | 1,761 | 1994 | [Realtor.com](https://www.realtor.com/realestateandhomes-detail/100-Bailey-Ct_Fayetteville_GA_30215_M62054-83189) |\n\n### Nearby Comparable Properties\n\n| Address | Sold Price | Sold Date | Beds | Baths | Sqft | Year Built | Source URL |\n|---|---|---|---|---|---|---|---|\n| 120 Oak Shadow Way, Fayetteville, GA 30215 | $908,000 | 2025-07-08 | 5 | 5 | 4,730 | 1999 | [Redfin](https://www.redfin.com/GA/Fayetteville/120-Oak-Shadow-Way-30215/home/25018999) |\n| 396 Ebenezer Rd, Fayetteville, GA 30215 | $699,900 | 2025-07-28 | 4 | 3 | 3,075 | 1964 | [Redfin](https://www.redfin.com/GA/Fayetteville/396-Ebenezer-Rd-30215/home/25042088) |\n| 426 Old Senoia Rd, Fayetteville, GA 30215 | $549,900 | 2025-09-05 | 4 | 2 | 2,730 | 1982 | [Realtor.com](https://www.realtor.com/realestateandhomes-detail/426-Old-Senoia-Rd_Fayetteville_GA_30215_M50964-33981) |\n| 152 Dana Dr, Fayetteville, GA 30215 | $439,"
+  },
+  {
+    "name": "ring-2mi-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "subject-card-subdivision-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  }
+]
