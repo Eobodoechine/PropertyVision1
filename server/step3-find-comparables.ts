@@ -1098,11 +1098,6 @@ Return exactly this JSON structure:
           }
         });
       });
-      // Add 60s timeout for geocoding
-      req.setTimeout(60000, () => {
-        try { req.destroy(new Error('timeout')); } catch {}
-        resolve(null);
-      });
       req.on('error', () => resolve(null));
     });
   }
