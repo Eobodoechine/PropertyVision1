@@ -413,6 +413,121 @@ Return exactly this JSON structure:
     }
   }
 
+  // Batch LLM parsing for multiple problematic lines in one request
+  private async batchParsePropertyDataWithLLM(propertyLines: { id: number; line: string }[]): Promise<Record<number, {
+    address?: string;
+    price?: number;
+    soldDate?: Date | null;
+    beds?: number;
+    baths?: number;
+    sqft?: number;
+    yearBuilt?: number;
+    source?: string;
+  }>> {
+    const results: Record<number, any> = {};
+    if (propertyLines.length === 0) return results;
+
+    try {
+      const { vertexGenerate } = await import('./vertex-freeform.js');
+      const { serviceAccount, projectId, location, model } = this.getVertexConfig();
+
+      // Build a compact, deterministic prompt with IDs for mapping
+      const header = `Parse each of the following real-estate comp lines into JSON. Return ONLY a JSON array (no prose). Each element MUST include the provided id and these fields: address, price (number), soldDate (YYYY-MM-DD or INVALID), beds (number), baths (number), sqft (number), yearBuilt (number), source (string).`;
+      const items = propertyLines.map(({ id, line }) => `${id}) ${line}`).join('\n');
+      const prompt = `${header}\n\nLINES:\n${items}`;
+
+      // Response schema to strongly bias correct structure
+      const responseSchema = {
+        type: 'ARRAY',
+        items: {
+          type: 'OBJECT',
+          properties: {
+            id: { type: 'NUMBER' },
+            address: { type: 'STRING' },
+            price: { type: 'NUMBER' },
+            soldDate: { type: 'STRING' },
+            beds: { type: 'NUMBER' },
+            baths: { type: 'NUMBER' },
+            sqft: { type: 'NUMBER' },
+            yearBuilt: { type: 'NUMBER' },
+            source: { type: 'STRING' },
+          }
+        }
+      } as any;
+
+      const text = await vertexGenerate({
+        sa: serviceAccount,
+        projectId,
+        location,
+        model,
+        prompt,
+        grounded: false,
+        json: true,
+        timeoutMs: 25000,
+        responseSchema
+      });
+
+      // Extract JSON robustly
+      const extractJsonBlock = (t: string): string | null => {
+        if (!t) return null;
+        const fenced = t.match(/```(?:json)?\s*([\s\S]*?)```/i);
+        if (fenced && fenced[1]) return fenced[1].trim();
+        const start = t.indexOf('[');
+        const end = t.lastIndexOf(']');
+        if (start !== -1 && end !== -1 && end > start) return t.slice(start, end + 1);
+        return null;
+      };
+
+      let arr: any[] | null = null;
+      try {
+        arr = JSON.parse(text);
+      } catch {
+        const block = extractJsonBlock(text);
+        if (block) {
+          try { arr = JSON.parse(block); } catch { arr = null; }
+        }
+      }
+
+      if (!Array.isArray(arr)) return results;
+
+      for (const item of arr) {
+        if (!item || typeof item !== 'object') continue;
+        const id = Number(item.id);
+        if (!Number.isFinite(id)) continue;
+        // Normalize and coerce types
+        const soldDateStr = String(item.soldDate || '').trim();
+        let soldDate: Date | null = null;
+        if (soldDateStr && soldDateStr.toUpperCase() !== 'INVALID') {
+          let d = new Date(soldDateStr);
+          if (!isNaN(d.getTime())) soldDate = d; else {
+            let m = soldDateStr.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
+            if (m) soldDate = new Date(parseInt(m[1],10), parseInt(m[2],10)-1, parseInt(m[3],10));
+            else {
+              m = soldDateStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+              if (m) soldDate = new Date(parseInt(m[3],10), parseInt(m[1],10)-1, parseInt(m[2],10));
+            }
+          }
+        }
+
+        results[id] = {
+          address: item.address || undefined,
+          price: Number.isFinite(Number(item.price)) ? Number(item.price) : undefined,
+          soldDate,
+          beds: Number.isFinite(Number(item.beds)) ? Number(item.beds) : undefined,
+          baths: Number.isFinite(Number(item.baths)) ? Number(item.baths) : undefined,
+          sqft: Number.isFinite(Number(item.sqft)) ? Number(item.sqft) : undefined,
+          yearBuilt: Number.isFinite(Number(item.yearBuilt)) ? Number(item.yearBuilt) : undefined,
+          source: item.source || undefined,
+        };
+      }
+
+      return results;
+    } catch (err) {
+      console.log(`   ⚠️ Batch LLM parsing error: ${err}`);
+      return results;
+    }
+  }
+
   private async parseVertexResponse(
     text: string,
     subjectLat: number,
@@ -474,23 +589,50 @@ Return exactly this JSON structure:
       } as any;
     };
 
-    for (const line of lines) {
+    // First pass: identify bad lines and attempt cheap parse
+    const lineParts: string[][] = [];
+    const validLineIndex: number[] = [];
+    const initialParsed: (any | null)[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       const parts = line.split('|').map(s => s.trim());
-      if (parts.length < 7) continue;
-
+      lineParts[i] = parts;
+      if (parts.length < 7) { initialParsed[i] = null; continue; }
       const [addrOld] = parts;
+      if (!addrOld || /^(address|123\s+main\s+st|example)/i.test(addrOld)) { initialParsed[i] = null; continue; }
+      validLineIndex.push(i);
+      this.rawCompsFound++;
+      initialParsed[i] = useLazyParse ? cheapParse(parts) : null;
+    }
 
-      // Skip header lines or examples
-      if (!addrOld || /^(address|123\s+main\s+st|example)/i.test(addrOld)) continue;
-
-      this.rawCompsFound++; // Count raw comp found
-
-      // Lazy parsing: try cheap parse first, fallback to LLM only if needed
-      let parsedData: any = null;
-      if (useLazyParse) {
-        parsedData = cheapParse(parts);
+    // Collect bad lines for batch LLM parsing
+    const badEntries: { id: number; line: string }[] = [];
+    for (const idx of validLineIndex) {
+      if (!initialParsed[idx]) {
+        badEntries.push({ id: idx, line: lines[idx] });
       }
+    }
+
+    // Batch in chunks
+    const batchSize = Math.max(1, parseInt(String(process.env.LLM_BATCH_SIZE || '12'), 10));
+    const batchedParsed: Record<number, any> = {};
+    for (let i = 0; i < badEntries.length; i += batchSize) {
+      const slice = badEntries.slice(i, i + batchSize);
+      const mapped = await this.batchParsePropertyDataWithLLM(slice);
+      Object.assign(batchedParsed, mapped);
+      // Small delay to be polite and avoid rate limits
+      await new Promise(r => setTimeout(r, 150));
+    }
+
+    // Second pass: build comps using parsed data (cheap or batched), fallback to single-line LLM if still missing
+    for (const idx of validLineIndex) {
+      const parts = lineParts[idx];
+      const line = lines[idx];
+      const [addrOld, priceStr, dateStr, bedsStr, bathsStr, sqftStr, ybStr, url] = parts as any;
+
+      let parsedData: any = initialParsed[idx] || batchedParsed[idx] || null;
       if (!parsedData) {
+        // Last resort: single-line LLM
         parsedData = await this.parsePropertyDataWithLLM(line);
       }
 
