@@ -2,20 +2,22 @@ import 'dotenv/config';
 import { ComprehensiveCompSearch } from '../server/comprehensive-comp-search.js';
 
 async function runFullAnalysis() {
-  const address = '185 Jordan Pl, Fayetteville, GA 30215';
+  const address = process.env.ADDRESS || '185 Jordan Pl, Fayetteville, GA 30215';
 
-  // Subject details from our property research
-  const subjectDetails = {
-    sqft: 2331,
-    beds: 4,
-    baths: 2.5,
-    yearBuilt: 1998
-  };
+  // Optional subject details; if absent, service will fetch via Vertex
+  const subjectDetails = process.env.SUBJECT_SQFT ? {
+    sqft: Number(process.env.SUBJECT_SQFT),
+    beds: process.env.SUBJECT_BEDS ? Number(process.env.SUBJECT_BEDS) : undefined as any,
+    baths: process.env.SUBJECT_BATHS ? Number(process.env.SUBJECT_BATHS) : undefined as any,
+    yearBuilt: process.env.SUBJECT_YEAR ? Number(process.env.SUBJECT_YEAR) : undefined as any,
+  } : undefined as any;
 
   console.log('🎯 FULL COMPREHENSIVE ANALYSIS');
   console.log('============================================================');
   console.log(`📍 Subject: ${address}`);
-  console.log(`🏠 Details: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft, Built: ${subjectDetails.yearBuilt}`);
+  if (subjectDetails && subjectDetails.sqft) {
+    console.log(`🏠 Details: ${subjectDetails.beds ?? '?'}BR/${subjectDetails.baths ?? '?'}BA, ${subjectDetails.sqft}sqft, Built: ${subjectDetails.yearBuilt ?? '?'}`);
+  }
   console.log('');
 
   const compSearch = new ComprehensiveCompSearch();
@@ -30,6 +32,16 @@ async function runFullAnalysis() {
     console.log(`🔢 Total unique comps found: ${result.all_comps.length}`);
     console.log(`✅ Qualified comps (2+ appearances): ${result.qualified_comps.length}`);
     console.log('');
+
+    // Prefer ARV computed by the service (renovated-only when available)
+    if ((result as any).arv) {
+      console.log('💰 ARV SUMMARY (service result)');
+      console.log('------------------------------------------------------------');
+      console.log(`   Method: ${result.arv.method}`);
+      console.log(`   ARV: $${result.arv.estimate.toLocaleString()} (${result.arv.confidence} confidence)`);
+      console.log(`   Data points: ${result.arv.dataPoints}`);
+      console.log('');
+    }
 
     if (result.qualified_comps.length > 0) {
       console.log('🏆 QUALIFIED COMPARABLES (DETAILED):');
@@ -58,14 +70,20 @@ async function runFullAnalysis() {
       console.log(`📊 Market Average: ${result.renovation_analysis.market_average.length} properties (baseline)`);
 
       if (result.renovation_analysis.likely_renovated.length > 0) {
-        const renovatedPpsf = result.renovation_analysis.likely_renovated.map(c => c.price / c.sqft);
-        const avgRenovatedPpsf = renovatedPpsf.reduce((a, b) => a + b, 0) / renovatedPpsf.length;
-        const estimatedArv = Math.round(avgRenovatedPpsf * subjectDetails.sqft);
+        const renovatedValid = result.renovation_analysis.likely_renovated
+          .filter((c: any) => c && Number.isFinite(Number(c.price)) && Number.isFinite(Number(c.sqft)) && Number(c.sqft) > 0);
+        const renovatedPpsf = renovatedValid.map((c: any) => Number(c.price) / Number(c.sqft));
+        const avgRenovatedPpsf = renovatedPpsf.length ? (renovatedPpsf.reduce((a: number, b: number) => a + b, 0) / renovatedPpsf.length) : NaN;
 
-        console.log('');
-        console.log(`🎯 ESTIMATED ARV: $${estimatedArv.toLocaleString()}`);
-        console.log(`   Based on ${result.renovation_analysis.likely_renovated.length} renovated comps`);
-        console.log(`   Average renovated PPSF: $${avgRenovatedPpsf.toFixed(2)}`);
+        // Only show fallback estimate if we have subject sqft and no service ARV
+        const canShowFallback = !((result as any).arv) && Number.isFinite(avgRenovatedPpsf) && Number.isFinite(Number(subjectDetails?.sqft));
+        if (canShowFallback) {
+          const estimatedArv = Math.round(avgRenovatedPpsf * Number(subjectDetails!.sqft));
+          console.log('');
+          console.log(`🎯 ESTIMATED ARV (fallback): $${estimatedArv.toLocaleString()}`);
+          console.log(`   Based on ${renovatedValid.length} renovated comps (valid PPSF)`);
+          console.log(`   Average renovated PPSF: $${avgRenovatedPpsf.toFixed(2)}`);
+        }
       }
     } else {
       console.log('❌ No qualified comparables found');

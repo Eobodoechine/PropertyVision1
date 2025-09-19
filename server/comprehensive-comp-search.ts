@@ -132,14 +132,24 @@ export class ComprehensiveCompSearch {
     // Analyze results
     const analysis = this.analyzeComprehensiveResults(allComps, compFrequency);
 
-    // Feed ARV calculator using qualified comps when subject sqft is known
+    // Feed ARV calculator using renovated-only comps when subject sqft is known
     try {
       const sqft = subjectDetails?.sqft;
       if (Number.isFinite(sqft) && sqft! > 0 && analysis.qualified_comps.length > 0) {
         console.log('\n💰 ARV FROM COMPREHENSIVE COMPS');
         console.log('------------------------------------------------------------');
+        const renovatedOnly = (analysis.renovation_analysis?.likely_renovated || [])
+          .filter((c: any) => Number.isFinite(Number(c?.price)) && Number.isFinite(Number(c?.sqft)) && Number(c?.sqft) > 0);
+        let compsForArv = renovatedOnly;
+        if (renovatedOnly.length < 3) {
+          const fallbackAll = (analysis.qualified_comps as any[]).filter((c: any) => Number.isFinite(Number(c?.price)) && Number.isFinite(Number(c?.sqft)) && Number(c?.sqft) > 0);
+          console.log(`   ℹ️  Only ${renovatedOnly.length} renovated comps with valid PPSF — falling back to all qualified (${fallbackAll.length})`);
+          compsForArv = fallbackAll;
+        } else {
+          console.log(`   🎯 Using renovated-only comps for ARV: ${renovatedOnly.length}`);
+        }
         const result = this.arvService.calculateARV(
-          analysis.qualified_comps as any,
+          compsForArv as any,
           sqft!,
           subjectDetails?.baths ?? null
         );
@@ -218,91 +228,53 @@ export class ComprehensiveCompSearch {
     };
   }
 
-  private categorizePropsByRenovationStatus(comps: any[]): {
-    likely_renovated: any[];
-    likely_unrenovated: any[];
-    market_average: any[];
-  } {
-    if (comps.length < 2) {
-      // Insufficient data for any analysis
-      console.log(`   ❌ Insufficient data (${comps.length} comps) - need minimum 2 comps for renovation analysis`);
-      return {
-        likely_renovated: [],
-        likely_unrenovated: [],
-        market_average: comps // Use all as baseline
-      };
+  private categorizePropsByRenovationStatus(comps: any[]): { likely_renovated: any[]; likely_unrenovated: any[]; market_average: any[] } {
+    if (comps.length === 0) {
+      console.log(`   ❌ No comps for renovation analysis`);
+      return { likely_renovated: [], likely_unrenovated: [], market_average: [] };
     }
 
-    if (comps.length < 4) {
-      // Limited data - use simple high/low split instead of quartiles
-      console.log(`   ⚠️  Limited data (${comps.length} comps) - using simplified renovation detection`);
+    const items = comps.map((c: any) => ({ c, ppsf: Number(c.price) / Number(c.sqft) }))
+      .filter((x: any) => Number.isFinite(x.ppsf));
+    if (items.length === 0) return { likely_renovated: [], likely_unrenovated: [], market_average: [] };
 
-      const ppsfValues = comps.map(c => c.price / c.sqft).sort((a, b) => a - b);
+    const sorted = [...items].sort((a, b) => a.ppsf - b.ppsf);
+    const mid = Math.floor(sorted.length / 2);
+    const median = sorted.length % 2 ? sorted[mid].ppsf : (sorted[mid - 1].ppsf + sorted[mid].ppsf) / 2;
 
-      if (comps.length === 2) {
-        // With 2 comps: lowest = unrenovated, highest = renovated
-        const [lowPpsf, highPpsf] = ppsfValues;
-        console.log(`   💲 PPSF range: $${lowPpsf.toFixed(2)} (unrenovated) → $${highPpsf.toFixed(2)} (renovated)`);
+    const basePct = parseFloat(process.env.RENOVATED_BAND_PCT || '0.075');
+    const maxPct = parseFloat(process.env.RENOVATED_BAND_MAX || '0.15');
+    const minCount = parseInt(process.env.RENOVATED_MIN_COUNT || '3', 10);
 
-        const likely_unrenovated = comps.filter(c => c.price / c.sqft === lowPpsf);
-        const likely_renovated = comps.filter(c => c.price / c.sqft === highPpsf);
-
-        return { likely_renovated, likely_unrenovated, market_average: [] };
-      } else {
-        // With 3 comps: use median split
-        const median = ppsfValues[Math.floor(ppsfValues.length / 2)];
-        console.log(`   💲 Median PPSF: $${median.toFixed(2)} (renovation threshold)`);
-
-        const likely_renovated = comps.filter(c => {
-          const ppsf = c.price / c.sqft;
-          return ppsf >= median; // Above median = likely renovated
-        });
-
-        const likely_unrenovated = comps.filter(c => {
-          const ppsf = c.price / c.sqft;
-          return ppsf < median; // Below median = likely unrenovated
-        });
-
-        return { likely_renovated, likely_unrenovated, market_average: [] };
-      }
+    let pct = basePct;
+    let renovated: any[] = [];
+    while (true) {
+      const lo = median * (1 - pct);
+      const hi = median * (1 + pct);
+      renovated = items.filter((x: any) => x.ppsf >= lo && x.ppsf <= hi).map((x: any) => x.c);
+      console.log(`   🎯 Renovated band: median=$${median.toFixed(2)} ± ${(pct*100).toFixed(1)}% → [${lo.toFixed(2)}, ${hi.toFixed(2)}], count=${renovated.length}`);
+      if (renovated.length >= minCount || pct >= maxPct) break;
+      pct = Math.min(maxPct, pct + 0.025);
     }
 
-    const ppsfValues = comps.map(c => c.price / c.sqft).sort((a, b) => a - b);
+    if (renovated.length < Math.min(minCount, items.length)) {
+      const need = Math.min(minCount, items.length) - renovated.length;
+      const set = new Set(renovated.map((c: any) => c.address));
+      const nearest = items
+        .filter((x: any) => !set.has(x.c.address))
+        .sort((a: any, b: any) => Math.abs(a.ppsf - median) - Math.abs(b.ppsf - median))
+        .slice(0, need)
+        .map((x: any) => x.c);
+      renovated = renovated.concat(nearest);
+      console.log(`   ➕ Added ${nearest.length} nearest-to-median to reach minimum ${minCount}`);
+    }
 
-    // Calculate quartiles for renovation status detection
-    const q1 = ppsfValues[Math.floor(ppsfValues.length * 0.25)]; // 25th percentile
-    const q3 = ppsfValues[Math.floor(ppsfValues.length * 0.75)]; // 75th percentile
+    const rset = new Set(renovated.map((c: any) => c.address));
+    const likely_unrenovated = comps.filter((c: any) => !rset.has(c.address));
+    const market_average: any[] = [];
 
-    console.log(`   💲 PPSF Analysis: Q1=$${q1.toFixed(2)}, Q3=$${q3.toFixed(2)}`);
-
-    const likely_unrenovated = comps.filter(c => {
-      const ppsf = c.price / c.sqft;
-      return ppsf <= q1; // Bottom quartile - likely needs work
-    });
-
-    const likely_renovated = comps.filter(c => {
-      const ppsf = c.price / c.sqft;
-      return ppsf >= q3; // Top quartile - likely renovated
-    });
-
-    const market_average = comps.filter(c => {
-      const ppsf = c.price / c.sqft;
-      return ppsf > q1 && ppsf < q3; // Middle 50%
-    });
-
-    // Log details
-    console.log(`   🔧 Renovated Comps (PPSF ≥ $${q3.toFixed(2)}):`);
-    likely_renovated.forEach(c => {
-      const ppsf = c.price / c.sqft;
-      console.log(`      ${c.address} - $${ppsf.toFixed(2)} PPSF`);
-    });
-
-    console.log(`   🔨 Unrenovated Comps (PPSF ≤ $${q1.toFixed(2)}):`);
-    likely_unrenovated.forEach(c => {
-      const ppsf = c.price / c.sqft;
-      console.log(`      ${c.address} - $${ppsf.toFixed(2)} PPSF`);
-    });
-
-    return { likely_renovated, likely_unrenovated, market_average };
+    console.log(`   🔧 Renovated (band) comps:`);
+    renovated.slice(0, 6).forEach((c: any) => { const p = c.price / c.sqft; console.log(`      ${c.address} - $${p.toFixed(2)} PPSF`); });
+    return { likely_renovated: renovated, likely_unrenovated, market_average };
   }
 }
