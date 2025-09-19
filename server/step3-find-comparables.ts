@@ -44,7 +44,8 @@ class VertexComparableSearchService {
     maxResults: number = 10,
     searchRadius: number = 3,
     timeWindowMonths: number = 18,
-    subjectDetails?: { sqft: number; beds: number; baths: number; yearBuilt: number }
+    subjectDetails?: { sqft: number; beds: number; baths: number; yearBuilt: number },
+    extra?: { subdivision?: string }
   ): Promise<FindComparablesResult> {
     try {
       console.log(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
@@ -69,8 +70,8 @@ class VertexComparableSearchService {
       const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
       const token = await this.getServiceAccountToken(sa, 'https://www.googleapis.com/auth/cloud-platform');
 
-      // Build subdivision filter if specified
-      const subdivision = process.env.SUBDIVISION?.trim();
+      // Build subdivision filter from override or env
+      const subdivision = (extra?.subdivision?.trim() || process.env.SUBDIVISION)?.trim();
 
       // Compose an analyst-style prompt but enforce pipe-separated output for parsing
       const composeAnalystPipePrompt = (
@@ -122,24 +123,20 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         return parsed;
       };
 
-      // 3 subdivision runs
+      // Prepare prompts and run all Vertex searches in parallel
+      const prompts: string[] = [];
       if (subdivision) {
-        for (let i = 1; i <= 3; i++) {
-          console.log(`   📞 Subdivision run ${i}/3...`);
-          const list = await fetchAndParse(composeAnalystPipePrompt(true));
-          list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
-          await new Promise(r => setTimeout(r, 800));
-        }
+        console.log('   🏘️  Subdivision specified — scheduling 3 subdivision searches');
+        for (let i = 1; i <= 3; i++) prompts.push(composeAnalystPipePrompt(true));
       } else {
         console.log('   🏘️  No subdivision specified — skipping subdivision runs');
       }
+      for (let i = 1; i <= 3; i++) prompts.push(composeAnalystPipePrompt(false));
 
-      // 3 expanded runs (no subdivision filter)
-      for (let i = 1; i <= 3; i++) {
-        console.log(`   🌐 Expanded run ${i}/3...`);
-        const list = await fetchAndParse(composeAnalystPipePrompt(false));
+      console.log(`   🚀 Launching ${prompts.length} Vertex searches in parallel...`);
+      const batches = await Promise.all(prompts.map(p => fetchAndParse(p)));
+      for (const list of batches) {
         list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
-        await new Promise(r => setTimeout(r, 800));
       }
 
       // Use aggregated results
