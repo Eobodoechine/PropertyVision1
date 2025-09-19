@@ -97,7 +97,6 @@ export class ComprehensiveCompSearch {
     // SEARCH 3: Consistency validation
     console.log('🔄 SEARCH 3: CONSISTENCY VALIDATION');
     console.log('------------------------------------------------------------');
-    await new Promise(resolve => setTimeout(resolve, 2000)); // Rate limiting
 
     const search3 = await this.compService.findComparables(address, undefined, 50, 3, 18, subjectDetails);
     this.processSearchResults(search3, 'consistency', allComps, compFrequency);
