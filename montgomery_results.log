@@ -1,0 +1,45 @@
+🏠 MONTGOMERY ANALYSIS - COMPLETELY SILENT
+==========================================
+📍 Address: 6901 Eastern Shore Rd, Montgomery, AL 36117
+
+🔇 STARTING COMPLETELY SILENT SEARCH...
+=====================================
+✅ Service initialized (all output captured)
+✅ Silent search completed in 156843ms
+📊 Total captured log entries: 527
+
+🔍 ANALYZING CAPTURED LOGS
+==========================
+📈 PHASE BREAKDOWN:
+   initialization: 3 log entries
+   subjectDetails: 2 log entries
+   searchLevels: 2 log entries
+   vertexSearches: 2 log entries
+   propertyFiltering: 164 log entries
+   errors: 10 log entries
+   finalResults: 11 log entries
+
+🎯 SEARCH LEVELS EXECUTED:
+   Level 1: Tight Local
+   Level 2: Extended Local
+
+🚀 VERTEX AI API CALLS:
+   Batch: 6 parallel searches
+   Batch: 6 parallel searches
+   Total API calls: 12
+
+🏠 PROPERTY PROCESSING:
+   Properties evaluated: 164
+   Qualified: 54
+   Rejected: 0
+
+📊 SEARCH RESULTS:
+   ❌ Search failed: Cannot read properties of undefined (reading 'toLocaleString')
+
+⏱️  Total execution time: 156843ms
+
+🎯 SILENT ANALYSIS COMPLETE
+===========================
+✅ Successfully captured 527 log entries
+📈 Analysis completed in 156843ms (156843ms search)
+🔇 No flashing output during execution

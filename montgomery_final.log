@@ -1,0 +1,50 @@
+🏠 MONTGOMERY ANALYSIS - COMPLETELY SILENT
+==========================================
+📍 Address: 6901 Eastern Shore Rd, Montgomery, AL 36117
+
+🔇 STARTING COMPLETELY SILENT SEARCH...
+=====================================
+✅ Service initialized (all output captured)
+✅ Silent search completed in 63694ms
+📊 Total captured log entries: 376
+
+🔍 ANALYZING CAPTURED LOGS
+==========================
+📈 PHASE BREAKDOWN:
+   initialization: 3 log entries
+   subjectDetails: 2 log entries
+   searchLevels: 1 log entries
+   vertexSearches: 1 log entries
+   propertyFiltering: 103 log entries
+   errors: 8 log entries
+   finalResults: 11 log entries
+
+🎯 SEARCH LEVELS EXECUTED:
+   Level 1: Tight Local
+
+🚀 VERTEX AI API CALLS:
+   Batch: 6 parallel searches
+   Total API calls: 6
+
+🏠 PROPERTY PROCESSING:
+   Properties evaluated: 103
+   Qualified: 34
+   Rejected: 0
+
+📊 SEARCH RESULTS:
+   ✅ Search completed successfully
+   All comps found: 9
+   Qualified comps: 9
+   ARV calculated: Yes
+   ARV estimate: $N/A
+   ARV confidence: high
+   Search strategy: progressive_expansion
+   Quality score: excellent
+
+⏱️  Total execution time: 63694ms
+
+🎯 SILENT ANALYSIS COMPLETE
+===========================
+✅ Successfully captured 376 log entries
+📈 Analysis completed in 63694ms (63694ms search)
+🔇 No flashing output during execution

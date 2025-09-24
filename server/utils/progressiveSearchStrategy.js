@@ -17,7 +17,7 @@ export class ProgressiveSearchStrategy {
                     radius: 1.0,
                     timeWindow: 12,
                     subdivision: hasSubdivision,
-                    sizeVariance: 15,
+                    sizeVariance: 20,
                     maxResults: 30
                 },
                 targetComps: 6,
