@@ -125,7 +125,7 @@ async function main() {
   console.log(JSON.stringify({ details, comps: comps.slice(0, 6) }, null, 2));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   main().catch(err => { console.error('FUNCTIONS TEST ERROR:', err?.message || err); process.exit(1); });
 }
 

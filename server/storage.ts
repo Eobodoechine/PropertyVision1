@@ -1,6 +1,19 @@
 import { type PropertyAnalysis, type InsertPropertyAnalysis, type AddressSearch } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { GeminiRealEstateSearch } from "./gemini-real-estate-search";
+
+// Simple logged fetch wrapper
+async function loggedFetch(url: string, options?: RequestInit): Promise<Response> {
+  console.log(`🌐 FETCH: ${url}`);
+  const headers = {
+    'X-RapidAPI-Key': process.env.RAPIDAPI_KEY || '',
+    'X-RapidAPI-Host': 'realty-in-us.p.rapidapi.com',
+    'Content-Type': 'application/json',
+    ...options?.headers
+  };
+  return fetch(url, { ...options, headers });
+}
+
 // Simple in-memory cache for geocoding to reduce external calls
 const geocodeCache = new Map<string, { lat: number; lon: number; ts: number }>();
 

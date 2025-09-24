@@ -1,0 +1,28 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+11:34:14 PM [express] 🛠️ Vite dev middleware mounted (UI + HMR)
+11:34:15 PM [express] ✅ API routes mounted successfully
+11:34:15 PM [express] 🧪 Dev mode: Vite middleware serves UI with HMR
+11:34:15 PM [express] 🌟 PropertyVision server running on http://0.0.0.0:3001
+11:34:15 PM [express] 📱 Frontend: http://0.0.0.0:3001
+11:34:15 PM [express] 🔌 API: http://0.0.0.0:3001/api
+11:34:15 PM [express] DEV INFO: CORS_ORIGIN=(any)
+11:34:15 PM [express] DEV INFO: Note: VITE_API_BASE is a client env; verify it in the client build if requests misroute.
+11:36:46 PM [vite] Internal server error: Cannot apply unknown utility class `font-sans`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+  Plugin: @tailwindcss/vite:generate:serve
+  File: /Users/eobodoechine/PropertyVision1/client/src/index.css
+      at onInvalidCandidate (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:18:1332)
+      at pe (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:13:29888)
+      at file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:18:373
+      at D (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:3:1656)
+      at Oe (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:18:172)
+      at ti (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:35:780)
+      at async mn (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:35:1123)
+      at async $a (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/node_modules/tailwindcss/dist/chunk-U5SIPDGO.mjs:35:1898)
+      at async $a (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/node/dist/index.mjs:10:3433)
+      at async C.generate (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/vite/dist/index.mjs:1:3571)
+      at async TransformPluginContext.transform (file:///Users/eobodoechine/PropertyVision1/node_modules/@tailwindcss/vite/dist/index.mjs:1:1949)
+      at async PluginContainer.transform (file:///Users/eobodoechine/PropertyVision1/node_modules/vite/dist/node/chunks/dep-D_zLpgQd.js:49099:18)
+      at async loadAndTransform (file:///Users/eobodoechine/PropertyVision1/node_modules/vite/dist/node/chunks/dep-D_zLpgQd.js:51977:27)

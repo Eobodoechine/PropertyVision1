@@ -1,0 +1,12 @@
+
+> rest-express@1.0.0 dev
+> NODE_ENV=development tsx server/index.ts
+
+6:57:59 PM [express] 🛠️ Vite dev middleware mounted (UI + HMR)
+6:57:59 PM [express] ✅ API routes mounted successfully
+6:57:59 PM [express] 🌟 PropertyVision server running on http://0.0.0.0:3002
+6:57:59 PM [express] 📱 Frontend: http://0.0.0.0:3002
+6:57:59 PM [express] 🔌 API: http://0.0.0.0:3002/api
+6:57:59 PM [express] DEV INFO: CORS_ORIGIN=(any)
+6:57:59 PM [express] DEV INFO: Note: VITE_API_BASE is a client env; verify it in the client build if requests misroute.
+7:02:05 PM [express] SIGTERM received. Shutting down...

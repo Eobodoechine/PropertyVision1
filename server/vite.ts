@@ -26,6 +26,9 @@ export async function setupVite(app: Express, server: Server) {
     allowedHosts: true as const,
   };
 
+  // Resolve module directory for reliable path operations in ESM
+  const moduleDir = path.dirname(new URL(import.meta.url).pathname);
+
   const vite = await createViteServer({
     ...viteConfig,
     configFile: false,
@@ -47,12 +50,7 @@ export async function setupVite(app: Express, server: Server) {
     const url = req.originalUrl;
 
     try {
-      const clientTemplate = path.resolve(
-        import.meta.dirname,
-        "..",
-        "client",
-        "index.html",
-      );
+      const clientTemplate = path.resolve(moduleDir, "..", "client", "index.html");
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
@@ -70,7 +68,11 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
+  // Resolve the dist/public directory relative to the project root
+  const moduleDir = path.dirname(new URL(import.meta.url).pathname);
+  // Go up from dist/ to project root, then to dist/public
+  const projectRoot = path.resolve(moduleDir, "..");
+  const distPath = path.resolve(projectRoot, "dist", "public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(

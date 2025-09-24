@@ -1,11 +1,11 @@
 export default function Header() {
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm">
+    <header className="bg-white/70 backdrop-blur border-b border-gray-200/70">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <h1 className="text-xl font-bold text-gray-900" data-testid="app-title">
-              PropertyAnalyzer
+              PropertyVision
             </h1>
             <span className="ml-2 text-sm text-gray-500">ARV & Comps</span>
           </div>

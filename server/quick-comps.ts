@@ -148,8 +148,8 @@ If any field is unknown, use null. Do not omit the object because of missing fie
     stagesTried.push(step.label);
     const res = await compsSvc.findComparables(
       address,
-      geo.lat,
-      geo.lon,
+      geo.lat.toString(),
+      geo.lon.toString(),
       step.radius,
       10,
       step.months
@@ -269,7 +269,7 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
   });
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   main().catch(err => { console.error(err?.message || err); process.exit(1); });
 }
 

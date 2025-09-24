@@ -3,9 +3,13 @@ import 'dotenv/config';
 import express, { Router, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
+import fs from 'fs';
+import https from 'https';
+import crypto from 'crypto';
 import { setupVite, serveStatic, log } from './vite';
 import { addLog, getLast, clearLogs } from './utils/devLog';
 import { setupGlobalErrorLogging, logError } from './utils/errorFileLogger';
+import { randomUUID } from 'crypto';
 
 const app = express();
 // Attach global error logging (uncaught/unhandled + console.error mirroring)
@@ -19,6 +23,19 @@ if (CORS_ORIGIN && CORS_ORIGIN.trim().length > 0) {
   app.use(cors());
 }
 app.use(express.json({ limit: '1mb' }));
+
+// Lightweight request ID + timing for API routes
+app.use('/api', (req, res, next) => {
+  const id = (req.headers['x-request-id'] as string) || randomUUID();
+  (req as any).reqId = id;
+  const started = Date.now();
+  res.setHeader('x-request-id', id);
+  res.on('finish', () => {
+    const ms = Date.now() - started;
+    try { addLog(`REQ ${id} ${req.method} ${req.originalUrl} -> ${res.statusCode} (${ms}ms)`); } catch {}
+  });
+  next();
+});
 
 const server = createServer(app);
 
@@ -45,6 +62,16 @@ app.use((err: any, req: Request, _res: Response, next: NextFunction) => {
   } catch {}
   next(err);
 });
+
+// In development, only mount Vite middleware if explicitly enabled
+if ((process.env.NODE_ENV || 'development') === 'development' && process.env.USE_VITE_MIDDLEWARE === '1') {
+  try {
+    await setupVite(app, server);
+    log('🛠️ Vite dev middleware mounted (UI + HMR)');
+  } catch (err: any) {
+    console.warn('[server] setupVite failed:', err?.message || err);
+  }
+}
 
 // Import routes with flexible shapes (default export, named {router}, or directly a Router)
 let mounted = false;
@@ -288,15 +315,13 @@ if (!mounted) {
   console.warn('[server] No router mounted (server/routes.* not exporting a router).');
 }
 
-// Setup Vite development server or serve static files
-if (process.env.NODE_ENV === 'development') {
-  log('🚀 Skipping Vite setup for now - running API only');
-  // TODO: Fix Vite integration later
-  // await setupVite(app, server);
-  // log('✅ Vite development server ready');
-} else {
-  log('📦 Serving static files...');
+// API-only by default: do not serve static client unless explicitly enabled
+const ENABLE_STATIC = String(process.env.ENABLE_STATIC || '').toLowerCase() === '1';
+if (ENABLE_STATIC) {
+  log('📦 Serving static files (ENABLE_STATIC=1)...');
   serveStatic(app);
+} else {
+  log('🧩 API-only mode (no static client). Use separate Vite dev server for UI on port 3000.');
 }
 
 // API 404 handler (only for /api routes)

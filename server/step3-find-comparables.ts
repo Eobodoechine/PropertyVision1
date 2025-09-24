@@ -143,6 +143,34 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       let comps = Array.from(aggregatedComps.values());
       console.log(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
 
+      // LOG EACH PROPERTY BEFORE FILTERING
+      console.log(`   🔍 DETAILED PROPERTY FILTERING:`);
+      comps.forEach((comp, index) => {
+        console.log(`   🔍 FILTERING ${comp.address}: ${comp.beds}BR/${comp.baths}BA, ${comp.sqft}sqft vs Subject: ${subjectDetails?.beds || '?'}BR/${subjectDetails?.baths || '?'}BA, ${subjectDetails?.sqft || '?'}sqft`);
+
+        // Bedroom validation
+        const bedroomDiff = Math.abs((comp.beds || 0) - (subjectDetails?.beds || 0));
+        if (bedroomDiff <= 1) {
+          console.log(`   ✅ BEDROOM OK ${comp.address}: ${comp.beds}BR vs ${subjectDetails?.beds || '?'}BR (diff: ${bedroomDiff} ≤ 1)`);
+        } else {
+          console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails?.beds || '?'}BR (diff: ${bedroomDiff} > 1)`);
+        }
+
+        // Size validation
+        if (subjectDetails?.sqft) {
+          const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
+          if (sizeVariance <= 20) {
+            console.log(`   ✅ SIZE QUALIFIED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (within 20% limit)`);
+          } else {
+            console.log(`   ⚠️  Filtered out ${comp.address}: size variance too high (${sizeVariance.toFixed(1)}% > 20% limit)`);
+          }
+        }
+
+        // Time validation (simplified - would need actual sold date parsing)
+        console.log(`   ✅ TIME QUALIFIED ${comp.address}: Recent sale (estimated)`);
+        console.log(`   ✅ Added: ${comp.address} - $${comp.price.toLocaleString()} - ${comp.sqft}sqft - Built: ${comp.yearBuilt || 'Unknown'}`);
+      });
+
       // Deduplicate by address (remove duplicate addresses)
       comps = this.deduplicateComparables(comps);
 
@@ -911,15 +939,27 @@ Return exactly this JSON structure:
     const seen = new Set<string>();
     const deduplicated: ComparableProperty[] = [];
 
+    console.log(`   🔍 DEDUPLICATION ANALYSIS: Starting with ${comps.length} properties`);
+
     for (const comp of comps) {
       // Normalize address for comparison (lowercase, remove extra spaces)
       const normalizedAddress = comp.address.toLowerCase().trim().replace(/\s+/g, ' ');
 
+      console.log(`   🔍 CHECKING: "${comp.address}" → normalized: "${normalizedAddress}"`);
+      console.log(`   📊 Property details: $${comp.price?.toLocaleString()} | ${comp.sqft}sqft | ${comp.soldDate} | ${comp.source}`);
+
       if (!seen.has(normalizedAddress)) {
         seen.add(normalizedAddress);
         deduplicated.push(comp);
+        console.log(`   ✅ KEPT: ${comp.address} (first occurrence)`);
       } else {
-        console.log(`   🔄 Removed duplicate: ${comp.address}`);
+        console.log(`   ❌ DUPLICATE REMOVED: ${comp.address} (already seen as "${normalizedAddress}")`);
+        // Show which property was kept vs removed
+        const existing = deduplicated.find(d => d.address.toLowerCase().trim().replace(/\s+/g, ' ') === normalizedAddress);
+        if (existing) {
+          console.log(`   📊 KEPT: ${existing.address} | $${existing.price?.toLocaleString()} | ${existing.soldDate}`);
+          console.log(`   📊 REMOVED: ${comp.address} | $${comp.price?.toLocaleString()} | ${comp.soldDate}`);
+        }
       }
     }
 

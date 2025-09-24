@@ -178,3 +178,56 @@ STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type stri
     at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2200:26)
     at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2596:3 
 CTX {"type":"uncaughtException"}
+[2025-09-20T18:08:09.177Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2423:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2819:3 
+CTX {"type":"uncaughtException"}
+[2025-09-20T18:11:03.511Z] ERROR The "path" argument must be of type string. Received undefined 
+STACK TypeError [ERR_INVALID_ARG_TYPE]: The "path" argument must be of type string. Received undefined
+    at new NodeError (node:internal/errors:399:5)
+    at validateString (node:internal/validators:163:11)
+    at Object.resolve (node:path:1098:7)
+    at serveStatic (file:///Users/eobodoechine/PropertyVision1/dist/index.js:2423:26)
+    at file:///Users/eobodoechine/PropertyVision1/dist/index.js:2819:3 
+CTX {"type":"uncaughtException"}
+[2025-09-20T18:15:34.703Z] ERROR listen EPERM: operation not permitted 0.0.0.0:5050 
+STACK Error: listen EPERM: operation not permitted 0.0.0.0:5050
+    at Server.setupListenHandle [as _listen2] (node:net:1723:21)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-20T18:16:10.089Z] ERROR listen EPERM: operation not permitted 0.0.0.0:5052 
+STACK Error: listen EPERM: operation not permitted 0.0.0.0:5052
+    at Server.setupListenHandle [as _listen2] (node:net:1723:21)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-20T22:12:43.018Z] ERROR "❌ ADDRESS environment variable is required" 
+CTX {"type":"console.error"}
+[2025-09-20T22:14:53.323Z] ERROR listen EPERM: operation not permitted 0.0.0.0:3001 
+STACK Error: listen EPERM: operation not permitted 0.0.0.0:3001
+    at Server.setupListenHandle [as _listen2] (node:net:1723:21)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-21T02:23:45.790Z] ERROR listen EPERM: operation not permitted 0.0.0.0:3001 
+STACK Error: listen EPERM: operation not permitted 0.0.0.0:3001
+    at Server.setupListenHandle [as _listen2] (node:net:1723:21)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-21T22:30:59.065Z] ERROR listen EPERM: operation not permitted 0.0.0.0:3001 
+STACK Error: listen EPERM: operation not permitted 0.0.0.0:3001
+    at Server.setupListenHandle [as _listen2] (node:net:1723:21)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}

@@ -1,0 +1,21 @@
+
+> rest-express@1.0.0 ui:dev
+> vite --host 0.0.0.0 --port 3000
+
+
+  VITE v5.4.20  ready in 128 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: http://192.168.1.189:3000/
+1:20:31 AM [vite] http proxy error: /api/analyze
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+1:22:27 AM [vite] http proxy error: /api/analyze
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+1:26:41 AM [vite] http proxy error: /api/analyze
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+1:27:54 AM [vite] http proxy error: /api/analyze
+Error: connect ECONNREFUSED ::1:3001
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)

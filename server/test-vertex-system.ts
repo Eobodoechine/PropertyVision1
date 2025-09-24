@@ -119,7 +119,7 @@ async function testVertexSystem() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   testVertexSystem().catch(err => {
     console.error('❌ Test failed:', err.message);
     process.exit(1);

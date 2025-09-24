@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle, AlertCircle } from "lucide-react";
 import { type PropertyAnalysisResult, type ComparableProperty } from "@shared/schema";
 import { useState, useEffect } from "react";
 import WholesaleCalculator from "./wholesale-calculator";
@@ -23,20 +23,38 @@ export default function PropertyResults({ results, error, isLoading, onClearErro
     }
   }, [results]);
 
+  // Minimal loading UI with progress percentage (no process description)
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    let t: number | null = null;
+    if (isLoading) {
+      setProgress(0);
+      const tick = () => {
+        setProgress((p) => {
+          const next = p < 90 ? p + Math.random() * 6 + 4 : p; // ease to 90%
+          return Math.min(90, Math.round(next));
+        });
+        t = window.setTimeout(tick, 450) as unknown as number;
+      };
+      t = window.setTimeout(tick, 450) as unknown as number;
+    } else {
+      // Finish to 100% then reset shortly
+      setProgress(100);
+      const done = window.setTimeout(() => setProgress(0), 600) as unknown as number;
+      return () => window.clearTimeout(done);
+    }
+    return () => { if (t) window.clearTimeout(t); };
+  }, [isLoading]);
+
   if (isLoading) {
     return (
       <div className="max-w-2xl mx-auto" data-testid="loading-section">
         <Card className="shadow-lg border border-gray-200">
-          <CardContent className="p-8">
-            <div className="flex items-center justify-center">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-600 mr-3" />
-              <p className="text-gray-600">Analyzing property...</p>
+          <CardContent className="p-6">
+            <div className="h-2 w-full bg-slate-200/80 rounded-full overflow-hidden">
+              <div className="h-full bg-teal-600 rounded-full transition-[width] duration-500" style={{ width: `${progress}%` }} />
             </div>
-            <div className="mt-4 space-y-2">
-              <div className="bg-gray-200 rounded h-2 animate-pulse"></div>
-              <div className="bg-gray-200 rounded h-2 w-3/4 animate-pulse"></div>
-              <div className="bg-gray-200 rounded h-2 w-1/2 animate-pulse"></div>
-            </div>
+            <div className="mt-2 text-sm text-slate-600">{progress}%</div>
           </CardContent>
         </Card>
       </div>

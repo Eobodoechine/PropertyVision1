@@ -535,8 +535,8 @@ class ARVCalculationService {
         return this.applyComplexEscalation(originalComparables, subjectSqft, 2);
         
       case 2:
-        stepName = "GLA Bucket Expansion (±20%)";
-        console.log(`🔄 Step 2: Expanding GLA bucket to ±20%...`);
+        stepName = "GLA Bucket Expansion (±25%)";
+        console.log(`🔄 Step 2: Expanding GLA bucket to ±25%...`);
         currentComps = this.applyExpandedGLABucketing(originalComparables, subjectSqft);
         break;
         
@@ -649,11 +649,11 @@ class ARVCalculationService {
    * Expanded GLA bucketing for thin-data escalation
    */
   private applyExpandedGLABucketing(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
-    const expandedRange = subjectSqft * 0.20; // ±20%
+    const expandedRange = subjectSqft * 0.25; // ±25%
     const minSqft = subjectSqft - expandedRange;
     const maxSqft = subjectSqft + expandedRange;
 
-    console.log(`   📏 Expanded GLA bucket: ${minSqft.toFixed(0)} - ${maxSqft.toFixed(0)} sqft (±20%)`);
+    console.log(`   📏 Expanded GLA bucket: ${minSqft.toFixed(0)} - ${maxSqft.toFixed(0)} sqft (±25%)`);
 
     const filtered = comparables.filter(comp => {
       const inRange = comp.sqft >= minSqft && comp.sqft <= maxSqft;
@@ -785,18 +785,18 @@ class ARVCalculationService {
       };
       console.log(`🏠 Large home: using ±10% margin (${margin} sqft)`);
     } else {
-      // Default houses (800-2500 sf): ±10% target, expand to ±15% if thin inventory
-      const margin10 = Math.round(subjectSqft * 0.10);
-      const margin15 = Math.round(subjectSqft * 0.15);
-      
-      // Start with ±10% bucket
+      // Default houses (800-3000 sf): ±20% standard, expand to ±25% if thin inventory
+      const margin20 = Math.round(subjectSqft * 0.20);
+      const margin25 = Math.round(subjectSqft * 0.25);
+
+      // Start with ±20% bucket (industry standard)
       bucketRange = {
-        min: subjectSqft - margin10,
-        max: subjectSqft + margin10
+        min: subjectSqft - margin20,
+        max: subjectSqft + margin20
       };
-      
-      console.log(`🏠 Default house: starting with ±10% bucket (${margin10} sqft)`);
-      console.log(`   ±10% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
+
+      console.log(`🏠 Default house: starting with ±20% bucket (${margin20} sqft)`);
+      console.log(`   ±20% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
     }
 
     // Filter comparables by GLA bucket
@@ -806,17 +806,17 @@ class ARVCalculationService {
       return inBucket;
     });
 
-    // If inventory is thin (< 3 comps), expand to ±15% for default houses
+    // If inventory is thin (< 3 comps), expand to ±25% for default houses
     if (glaFiltered.length < 3 && subjectSqft >= 800 && subjectSqft <= 3000) {
-      console.log(`⚠️ Thin inventory (${glaFiltered.length} comps), expanding to ±15% bucket`);
-      
-      const margin15 = Math.round(subjectSqft * 0.15);
+      console.log(`⚠️ Thin inventory (${glaFiltered.length} comps), expanding to ±25% bucket`);
+
+      const margin25 = Math.round(subjectSqft * 0.25);
       bucketRange = {
-        min: subjectSqft - margin15,
-        max: subjectSqft + margin15
+        min: subjectSqft - margin25,
+        max: subjectSqft + margin25
       };
-      
-      console.log(`   ±15% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
+
+      console.log(`   ±25% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
       
       const expandedFiltered = comparables.filter(comp => {
         const inBucket = comp.sqft >= bucketRange.min && comp.sqft <= bucketRange.max;

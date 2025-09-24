@@ -1,0 +1,302 @@
+// Progressive Expansion Search Strategy
+// Replaces redundant identical searches with intelligent expansion
+export class ProgressiveSearchStrategy {
+    constructor() {
+        this.cache = new Map();
+        this.CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+    }
+    /**
+     * Define search levels with progressive expansion
+     */
+    getSearchLevels(hasSubdivision) {
+        const levels = [
+            {
+                level: 1,
+                name: 'Tight Local',
+                criteria: {
+                    radius: 1.0,
+                    timeWindow: 12,
+                    subdivision: hasSubdivision,
+                    sizeVariance: 15,
+                    maxResults: 30
+                },
+                targetComps: 6,
+                description: hasSubdivision ? 'Same subdivision, 1 mile, 12 months' : 'Local area, 1 mile, 12 months'
+            },
+            {
+                level: 2,
+                name: 'Extended Local',
+                criteria: {
+                    radius: 2.0,
+                    timeWindow: 15,
+                    subdivision: hasSubdivision,
+                    sizeVariance: 20,
+                    maxResults: 40
+                },
+                targetComps: 4,
+                description: hasSubdivision ? 'Same subdivision, 2 miles, 15 months' : 'Local area, 2 miles, 15 months'
+            },
+            {
+                level: 3,
+                name: 'Broader Market',
+                criteria: {
+                    radius: 3.0,
+                    timeWindow: 18,
+                    subdivision: false, // Remove subdivision filter
+                    sizeVariance: 20,
+                    maxResults: 50
+                },
+                targetComps: 3,
+                description: 'Market area, 3 miles, 18 months, no subdivision filter'
+            },
+            {
+                level: 4,
+                name: 'Extended Market',
+                criteria: {
+                    radius: 4.0,
+                    timeWindow: 24,
+                    subdivision: false,
+                    sizeVariance: 25,
+                    maxResults: 75
+                },
+                targetComps: 2,
+                description: 'Extended market, 4 miles, 24 months, relaxed size criteria'
+            }
+        ];
+        return levels;
+    }
+    /**
+     * Generate cache key for search parameters
+     */
+    generateCacheKey(address, level, subjectDetails) {
+        const key = [
+            address.toLowerCase().trim(),
+            level.level,
+            level.criteria.radius,
+            level.criteria.timeWindow,
+            level.criteria.subdivision ? 'sub' : 'nosub',
+            level.criteria.sizeVariance,
+            subjectDetails ? `${subjectDetails.sqft}_${subjectDetails.beds}_${subjectDetails.baths}` : 'nosubject'
+        ].join('|');
+        return key;
+    }
+    /**
+     * Check if we have a valid cached result
+     */
+    getCachedResult(cacheKey) {
+        const cached = this.cache.get(cacheKey);
+        if (!cached)
+            return null;
+        const isExpired = Date.now() - cached.timestamp > this.CACHE_TTL;
+        if (isExpired) {
+            this.cache.delete(cacheKey);
+            return null;
+        }
+        return cached.result;
+    }
+    /**
+     * Cache search result
+     */
+    setCachedResult(cacheKey, result) {
+        this.cache.set(cacheKey, {
+            result: [...result], // Deep copy
+            timestamp: Date.now()
+        });
+    }
+    /**
+     * Calculate quality score based on results
+     */
+    calculateQualityScore(finalProperties, searchHistory) {
+        const count = finalProperties.length;
+        const stoppedAtLevel = Math.max(...searchHistory.map(s => s.level.level));
+        // Check distance quality
+        const avgDistance = finalProperties.reduce((sum, p) => sum + (p.distance || 0), 0) / count;
+        // Check time quality
+        const recentComps = finalProperties.filter(p => {
+            if (!p.soldDate)
+                return false;
+            const soldDate = new Date(p.soldDate);
+            const monthsAgo = (Date.now() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30);
+            return monthsAgo <= 12;
+        }).length;
+        if (count >= 6 && stoppedAtLevel <= 2 && avgDistance <= 1.5 && recentComps >= 4) {
+            return 'excellent';
+        }
+        else if (count >= 4 && stoppedAtLevel <= 3 && avgDistance <= 2.5 && recentComps >= 2) {
+            return 'good';
+        }
+        else if (count >= 3 && avgDistance <= 3.5) {
+            return 'fair';
+        }
+        else {
+            return 'poor';
+        }
+    }
+    /**
+     * Execute search at specific level
+     */
+    async executeSearchLevel(level, address, subjectDetails, searchService, subdivision // VertexComparableSearchService
+    ) {
+        const startTime = Date.now();
+        const cacheKey = this.generateCacheKey(address, level, subjectDetails);
+        console.log(`🔍 Level ${level.level}: ${level.name}`);
+        console.log(`   📐 ${level.description}`);
+        // Check cache first
+        const cachedResult = this.getCachedResult(cacheKey);
+        if (cachedResult) {
+            console.log(`   💾 Cache hit - returning ${cachedResult.length} cached properties`);
+            return {
+                level,
+                properties: cachedResult,
+                qualified: cachedResult, // Assume cached results are already qualified
+                searchTime: Date.now() - startTime,
+                success: true,
+                cacheHit: true
+            };
+        }
+        try {
+            // Set search parameters
+            const originalSubdivision = process.env.SUBDIVISION;
+            if (level.criteria.subdivision && subdivision) {
+                // Use the subdivision from property details
+                process.env.SUBDIVISION = subdivision;
+                console.log(`   🏘️  Using subdivision: ${subdivision}`);
+            }
+            else {
+                process.env.SUBDIVISION = '';
+                if (level.criteria.subdivision) {
+                    console.log(`   ⚠️  Subdivision required but not available - skipping subdivision filtering`);
+                }
+            }
+            // Execute search
+            const searchResult = await searchService.findComparables(address, undefined, // propertyType
+            level.criteria.maxResults, level.criteria.radius, level.criteria.timeWindow, subjectDetails);
+            // Restore original subdivision
+            process.env.SUBDIVISION = originalSubdivision;
+            const searchTime = Date.now() - startTime;
+            const qualified = searchResult.comparables || [];
+            console.log(`   ✅ Found ${qualified.length} qualified comps in ${searchTime}ms`);
+            // Cache the result
+            this.setCachedResult(cacheKey, qualified);
+            return {
+                level,
+                properties: qualified,
+                qualified,
+                searchTime,
+                success: true,
+                cacheHit: false
+            };
+        }
+        catch (error) {
+            console.log(`   ❌ Level ${level.level} failed: ${error.message}`);
+            return {
+                level,
+                properties: [],
+                qualified: [],
+                searchTime: Date.now() - startTime,
+                success: false,
+                cacheHit: false
+            };
+        }
+    }
+    /**
+     * Execute progressive search with early termination
+     */
+    async executeProgressiveSearch(address, subjectDetails, searchService, subdivision) {
+        console.log('🎯 PROGRESSIVE EXPANSION SEARCH');
+        console.log('===============================');
+        console.log(`📍 Subject: ${address}`);
+        if (subjectDetails) {
+            console.log(`🏠 Subject: ${subjectDetails.sqft}sqft, ${subjectDetails.beds}BR/${subjectDetails.baths}BA, built ${subjectDetails.yearBuilt}`);
+        }
+        const hasSubdivision = Boolean(subdivision || process.env.SUBDIVISION);
+        const searchLevels = this.getSearchLevels(hasSubdivision);
+        const searchHistory = [];
+        const allProperties = new Map(); // Use Map to avoid duplicates
+        let stoppedAtLevel = 0;
+        const startTime = Date.now();
+        for (const level of searchLevels) {
+            const result = await this.executeSearchLevel(level, address, subjectDetails, searchService, subdivision);
+            searchHistory.push(result);
+            stoppedAtLevel = level.level;
+            if (result.success && result.qualified.length > 0) {
+                // Add properties to collection (Map handles duplicates by address)
+                result.qualified.forEach(prop => {
+                    const key = `${prop.address}|${prop.price}|${prop.sqft}`;
+                    if (!allProperties.has(key)) {
+                        allProperties.set(key, { ...prop, foundAtLevel: level.level });
+                    }
+                });
+                const totalQualified = allProperties.size;
+                console.log(`   📊 Total qualified so far: ${totalQualified}`);
+                // Check if we have enough comps to stop
+                if (totalQualified >= level.targetComps) {
+                    console.log(`   🎯 Target reached (${totalQualified} ≥ ${level.targetComps}) - stopping search`);
+                    break;
+                }
+                else {
+                    console.log(`   ⏭️  Need more comps (${totalQualified} < ${level.targetComps}) - continuing to next level`);
+                }
+            }
+            else {
+                console.log(`   ⚠️  Level ${level.level} produced no results - continuing`);
+            }
+        }
+        const finalProperties = Array.from(allProperties.values());
+        const totalTime = Date.now() - startTime;
+        const cacheHits = searchHistory.filter(s => s.cacheHit).length;
+        const qualityScore = this.calculateQualityScore(finalProperties, searchHistory);
+        console.log('\n📊 PROGRESSIVE SEARCH SUMMARY:');
+        console.log(`   🔍 Searches executed: ${searchHistory.length}`);
+        console.log(`   💾 Cache hits: ${cacheHits}/${searchHistory.length}`);
+        console.log(`   ⏱️  Total time: ${totalTime}ms`);
+        console.log(`   🏁 Stopped at level: ${stoppedAtLevel}`);
+        console.log(`   📈 Final count: ${finalProperties.length} properties`);
+        console.log(`   🎯 Quality score: ${qualityScore.toUpperCase()}`);
+        // Log level breakdown
+        console.log('\n📋 LEVEL BREAKDOWN:');
+        searchHistory.forEach(result => {
+            const icon = result.success ? '✅' : '❌';
+            const cache = result.cacheHit ? '💾' : '🔍';
+            console.log(`   ${icon} ${cache} Level ${result.level.level}: ${result.qualified.length} comps (${result.searchTime}ms)`);
+        });
+        return {
+            finalProperties,
+            searchHistory,
+            stoppedAtLevel,
+            summary: {
+                totalSearches: searchHistory.length,
+                totalTime,
+                cacheHits,
+                finalCount: finalProperties.length,
+                qualityScore
+            }
+        };
+    }
+    /**
+     * Clear cache (useful for testing)
+     */
+    clearCache() {
+        this.cache.clear();
+        console.log('🗑️  Progressive search cache cleared');
+    }
+    /**
+     * Get cache statistics
+     */
+    getCacheStats() {
+        const now = Date.now();
+        let oldestEntry = now;
+        let totalSize = 0;
+        for (const [key, entry] of this.cache) {
+            if (entry.timestamp < oldestEntry) {
+                oldestEntry = entry.timestamp;
+            }
+            totalSize += entry.result.length;
+        }
+        return {
+            entries: this.cache.size,
+            oldestEntry: now - oldestEntry,
+            totalSize
+        };
+    }
+}

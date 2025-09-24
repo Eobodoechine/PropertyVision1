@@ -8,15 +8,15 @@ async function main() {
   const location = process.env.VERTEX_LOCATION || 'us-central1';
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
 
-  const mod = await import('../PropertyVision1-1/PropertyVision1/server/vertex-analyze.ts');
-  const { researchProperty } = mod as any;
-  const details = await researchProperty(address);
+  const mod = await import('./step2-property-research.js');
+  const { PropertyResearchService } = mod as any;
+  const researchService = new PropertyResearchService();
+  const details = await researchService.researchProperty(address);
   console.log(JSON.stringify({ address, details, model, location }, null, 2));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   main().catch(err => { console.error('RUN RESEARCH ERROR:', err?.message || err); process.exit(1); });
 }
 
 export {};
-
