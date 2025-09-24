@@ -107,21 +107,29 @@ export class ComprehensiveCompSearchV2 {
 
         if (subjectDetails && subjectDetails.sqft && qualifiedComps.length >= 3) {
             try {
-                const renovatedComps = renovationAnalysis.likely_renovated.length >= 3
-                    ? renovationAnalysis.likely_renovated
-                    : qualifiedComps;
+                // Use renovated + market average properties, exclude only unrenovated
+                const arvComps = [
+                    ...renovationAnalysis.likely_renovated,
+                    ...renovationAnalysis.market_average
+                ];
+                const renovatedComps = arvComps.length >= 3 ? arvComps : qualifiedComps;
                 console.log(`   🎯 Using ${renovatedComps.length} comps for ARV calculation`);
+                console.log(`   📊 Breakdown: ${renovationAnalysis.likely_renovated.length} renovated + ${renovationAnalysis.market_average.length} market average (excluding ${renovationAnalysis.likely_unrenovated.length} unrenovated)`);
                 console.log(`   🏠 Subject property: ${subjectDetails.sqft} sqft`);
 
                 arv = this.arvService.calculateARV(renovatedComps, subjectDetails.sqft);
 
                 if (arv && (arv.estimate || arv.arv)) {
                     const estimate = arv.estimate || arv.arv;
-                    console.log(`   💰 ARV: $${estimate.toLocaleString()} (${arv.confidence} confidence)`);
-                    console.log(`   📊 Based on ${arv.dataPoints} comparable properties`);
+                    if (estimate && typeof estimate === 'number') {
+                        console.log(`   💰 ARV: $${estimate.toLocaleString()} (${arv.confidence} confidence)`);
+                        console.log(`   📊 Based on ${arv.dataPoints} comparable properties`);
 
-                    // Ensure we have estimate field for display compatibility
-                    arv.estimate = estimate;
+                        // Ensure we have estimate field for display compatibility
+                        arv.estimate = estimate;
+                    } else {
+                        console.log(`   ⚠️  ARV estimate is not a valid number: ${estimate}`);
+                    }
                 } else {
                     console.log(`   ⚠️  ARV calculated but estimate is undefined`);
                     console.log(`   🔍 ARV object:`, JSON.stringify(arv, null, 2));
