@@ -315,28 +315,35 @@ export class ComprehensiveCompSearchV3 {
   /**
    * Enhanced bathroom computation from run-analysis.ts
    */
-  private computeSubjectBathrooms(propertyDetails: any): number {
-    if (!propertyDetails?.description) return 1; // Default fallback
-
-    const desc = propertyDetails.description;
-
-    // Direct baths field
-    const directBaths = Number(desc.baths);
+  private computeSubjectBathrooms(subjectDetails: any): number {
+    // Direct baths field from subjectDetails (already parsed)
+    const directBaths = Number(subjectDetails.baths);
     if (Number.isFinite(directBaths) && directBaths > 0) {
       return directBaths;
     }
 
-    // Calculated approach (full + half baths)
-    const fullCalc = Number(desc.baths_full_calc) || 0;
-    const halfCalc = Number(desc.baths_partial_calc) || 0;
-    const full = Number(desc.baths_full) || 0;
-    const half = Number(desc.baths_half) || 0;
+    // Fallback: try description if available
+    if (subjectDetails?.description) {
+      const desc = subjectDetails.description;
+      const descBaths = Number(desc.baths);
+      if (Number.isFinite(descBaths) && descBaths > 0) {
+        return descBaths;
+      }
 
-    let total = 0;
-    total += (fullCalc || full);
-    total += 0.5 * (halfCalc || half);
+      // Calculated approach (full + half baths)
+      const fullCalc = Number(desc.baths_full_calc) || 0;
+      const halfCalc = Number(desc.baths_partial_calc) || 0;
+      const full = Number(desc.baths_full) || 0;
+      const half = Number(desc.baths_half) || 0;
 
-    return Math.max(total, 1); // Never less than 1
+      let total = 0;
+      total += (fullCalc || full);
+      total += 0.5 * (halfCalc || half);
+
+      if (total > 0) return total;
+    }
+
+    return 1; // Default fallback
   }
 
   /**
@@ -369,11 +376,8 @@ export class ComprehensiveCompSearchV3 {
     return comps.filter(comp => {
       const compBaths = parseFloat(comp.baths?.toString() || 'NaN');
 
-      // Must have 2+ bathrooms for upgrade scenario
-      if (!Number.isFinite(compBaths) || compBaths < 2) return false;
-
-      // Don't go too high - cap at 3 bathrooms to stay comparable
-      if (compBaths > 3) return false;
+      // Must have 2-3 bathrooms for upgrade scenario
+      if (!Number.isFinite(compBaths) || compBaths < 2 || compBaths > 3) return false;
 
       // Still apply other quality filters
       if (!Number.isFinite(comp.price) || !Number.isFinite(comp.sqft)) return false;
