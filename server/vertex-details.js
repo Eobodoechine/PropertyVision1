@@ -1,7 +1,10 @@
-import 'dotenv/config';
-import fs from 'fs';
-import https from 'https';
-import crypto from 'crypto';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.fetchPropertyDetailsViaVertex = fetchPropertyDetailsViaVertex;
+require("dotenv/config");
+const fs_1 = require("fs");
+const https_1 = require("https");
+const crypto_1 = require("crypto");
 function hasServiceAccount() {
     const p = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
     return Boolean(p && p.trim().length > 0);
@@ -13,7 +16,7 @@ async function getServiceAccountToken(sa, scope) {
     const claims = { iss: sa.client_email, scope, aud: sa.token_uri, exp, iat };
     const base64url = (obj) => Buffer.from(JSON.stringify(obj)).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const unsigned = `${base64url(header)}.${base64url(claims)}`;
-    const sign = crypto.createSign('RSA-SHA256');
+    const sign = crypto_1.default.createSign('RSA-SHA256');
     sign.update(unsigned);
     const signature = sign.sign(sa.private_key).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const assertion = `${unsigned}.${signature}`;
@@ -26,7 +29,7 @@ async function getServiceAccountToken(sa, scope) {
 async function httpsPostForm(url, body, headers, timeoutMs) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
-        const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { ...headers, 'Content-Length': Buffer.byteLength(body).toString() } }, (res) => {
+        const req = https_1.default.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { ...headers, 'Content-Length': Buffer.byteLength(body).toString() } }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => { try {
@@ -45,7 +48,7 @@ async function httpsPostJson(url, payload, headers, timeoutMs) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const body = JSON.stringify(payload);
-        const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), ...headers } }, (res) => {
+        const req = https_1.default.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), ...headers } }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => { try {
@@ -182,11 +185,11 @@ function parseFreeformRegex(text) {
     const yearBuilt = yearMatch ? Number(yearMatch[0]) : null;
     return { sqft, beds, baths, yearBuilt, lotSize: null };
 }
-export async function fetchPropertyDetailsViaVertex(address) {
+async function fetchPropertyDetailsViaVertex(address) {
     if (!hasServiceAccount())
         return null;
     const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-    const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
+    const sa = JSON.parse(fs_1.default.readFileSync(saPath, 'utf-8'));
     const projectId = sa.project_id;
     const location = process.env.VERTEX_LOCATION || 'us-central1';
     const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';

@@ -1,6 +1,9 @@
+"use strict";
 // Smart Deduplication with Intelligent Conflict Resolution
 // Replaces simple address-based deduplication with composite key matching
-export class SmartDeduplicator {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SmartDeduplicator = void 0;
+class SmartDeduplicator {
     constructor() {
         this.duplicateGroups = new Map();
         this.processedProperties = new Set();
@@ -294,3 +297,4 @@ export class SmartDeduplicator {
         this.processedProperties.clear();
     }
 }
+exports.SmartDeduplicator = SmartDeduplicator;

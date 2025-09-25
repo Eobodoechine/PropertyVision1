@@ -708,20 +708,24 @@ Return exactly this JSON structure:
       }
 
       // Basic validation
-      if (Number.isFinite(price) && (price! < 50000 || price! > 5000000)) {
-        console.log(`   ❌ Rejected ${address}: Invalid price ($${price})`);
+      if (!Number.isFinite(price) || price <= 0) {
+        console.log(`   ❌ Rejected ${address}: Invalid or missing price (${price})`);
         continue;
       }
-      if (Number.isFinite(sqft) && (sqft! < 500 || sqft! > 10000)) {
-        console.log(`   ❌ Rejected ${address}: Invalid sqft (${sqft})`);
+      if (!Number.isFinite(sqft) || sqft <= 0) {
+        console.log(`   ❌ Rejected ${address}: Invalid or missing sqft (${sqft})`);
         continue;
       }
-      if (Number.isFinite(beds) && (beds < 1 || beds > 10)) {
-        console.log(`   ❌ Rejected ${address}: Invalid beds (${beds})`);
+      if (sqft < 500 || sqft > 10000) {
+        console.log(`   ❌ Rejected ${address}: Sqft out of range (${sqft})`);
         continue;
       }
-      if (Number.isFinite(baths) && (baths < 1 || baths > 10)) {
-        console.log(`   ❌ Rejected ${address}: Invalid baths (${baths})`);
+      if (!Number.isFinite(beds) || beds < 1 || beds > 10) {
+        console.log(`   ❌ Rejected ${address}: Invalid or missing beds (${beds})`);
+        continue;
+      }
+      if (!Number.isFinite(baths) || baths < 1 || baths > 10) {
+        console.log(`   ❌ Rejected ${address}: Invalid or missing baths (${baths})`);
         continue;
       }
       if (Number.isFinite(yearBuilt) && (yearBuilt < 1900 || yearBuilt > new Date().getFullYear())) {
@@ -1029,7 +1033,7 @@ Return exactly this JSON structure:
       if (!hasAll) continue;
 
       // Re-validate after enrichment; drop if disqualified
-      if (Number.isFinite(updated.price) && (updated.price < 50000 || updated.price > 5000000)) continue;
+      if (!Number.isFinite(updated.price) || updated.price <= 0) continue;
       if (Number.isFinite(updated.sqft) && (updated.sqft < 500 || updated.sqft > 10000)) continue;
       if (Number.isFinite(updated.beds) && (updated.beds! < 1 || updated.beds! > 10)) continue;
       if (Number.isFinite(updated.baths) && (updated.baths! < 1 || updated.baths! > 10)) continue;

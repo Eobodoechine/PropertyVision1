@@ -1,7 +1,10 @@
+"use strict";
 // Distance Validation and Geocoding Cache
 // Fixes inconsistent distance calculations and geocoding issues
-import https from 'https';
-export class DistanceValidator {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DistanceValidator = void 0;
+const https_1 = require("https");
+class DistanceValidator {
     constructor() {
         this.geocodeCache = new Map();
         this.distanceCache = new Map();
@@ -67,7 +70,7 @@ export class DistanceValidator {
                 console.log(`⏰ Geocoding timeout for ${address}`);
                 resolve(this.estimateCoordinates(address));
             }, 5000);
-            https.get(url, (res) => {
+            https_1.default.get(url, (res) => {
                 let body = '';
                 res.on('data', chunk => body += chunk);
                 res.on('end', () => {
@@ -359,3 +362,4 @@ export class DistanceValidator {
         };
     }
 }
+exports.DistanceValidator = DistanceValidator;

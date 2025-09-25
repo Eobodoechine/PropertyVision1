@@ -151,6 +151,68 @@ export class ProgressiveSearchStrategy {
   }
 
   /**
+   * Check if we have enough comps for dual ARV analysis (baseline + upgrade)
+   */
+  private checkDualARVRequirements(
+    properties: any[],
+    subjectDetails: { baths: number } | undefined
+  ): { sufficient: boolean; reason: string; baseline: number; upgrade: number } {
+    if (!subjectDetails) {
+      return { sufficient: true, reason: 'no subject details for bathroom analysis', baseline: 0, upgrade: 0 };
+    }
+
+    const subjectBaths = subjectDetails.baths;
+    const epsilon = 1e-9; // Float comparison tolerance
+
+    // Count baseline comps (≤ subject bathrooms)
+    const baselineComps = properties.filter(prop => {
+      const compBaths = parseFloat(prop.baths?.toString() || 'NaN');
+      return Number.isFinite(compBaths) && compBaths <= subjectBaths + epsilon;
+    });
+
+    // Count upgrade comps (2+ bathrooms) - only relevant if subject has < 2 baths
+    const upgradeComps = properties.filter(prop => {
+      const compBaths = parseFloat(prop.baths?.toString() || 'NaN');
+      return Number.isFinite(compBaths) && compBaths >= 2;
+    });
+
+    const needsUpgradeAnalysis = subjectBaths < 2;
+    const hasEnoughBaseline = baselineComps.length >= 3;
+    const hasEnoughUpgrade = upgradeComps.length >= 3;
+
+    if (!needsUpgradeAnalysis) {
+      // Subject has 2+ baths - only need baseline comps
+      return {
+        sufficient: hasEnoughBaseline,
+        reason: hasEnoughBaseline ? 'sufficient baseline comps' : `need ${3 - baselineComps.length} more baseline comps (≤${subjectBaths} baths)`,
+        baseline: baselineComps.length,
+        upgrade: upgradeComps.length
+      };
+    } else {
+      // Subject has < 2 baths - need both baseline AND upgrade comps for dual ARV
+      const sufficient = hasEnoughBaseline && hasEnoughUpgrade;
+      let reason = 'dual ARV requirements: ';
+
+      if (!hasEnoughBaseline && !hasEnoughUpgrade) {
+        reason += `need ${3 - baselineComps.length} more baseline (≤${subjectBaths} baths) and ${3 - upgradeComps.length} more upgrade (2+ baths) comps`;
+      } else if (!hasEnoughBaseline) {
+        reason += `need ${3 - baselineComps.length} more baseline comps (≤${subjectBaths} baths)`;
+      } else if (!hasEnoughUpgrade) {
+        reason += `need ${3 - upgradeComps.length} more upgrade comps (2+ baths)`;
+      } else {
+        reason = 'dual ARV requirements satisfied';
+      }
+
+      return {
+        sufficient,
+        reason,
+        baseline: baselineComps.length,
+        upgrade: upgradeComps.length
+      };
+    }
+  }
+
+  /**
    * Calculate quality score based on results
    */
   private calculateQualityScore(
@@ -306,12 +368,17 @@ export class ProgressiveSearchStrategy {
         const totalQualified = allProperties.size;
         console.log(`   📊 Total qualified so far: ${totalQualified}`);
 
-        // Check if we have enough comps to stop
-        if (totalQualified >= level.targetComps) {
-          console.log(`   🎯 Target reached (${totalQualified} ≥ ${level.targetComps}) - stopping search`);
+        // Check if we have enough comps to stop (including bathroom-specific requirements)
+        const hasEnoughForDualARV = this.checkDualARVRequirements(Array.from(allProperties.values()), subjectDetails);
+
+        if (totalQualified >= level.targetComps && hasEnoughForDualARV.sufficient) {
+          console.log(`   🎯 Target reached (${totalQualified} ≥ ${level.targetComps}) and dual ARV requirements met - stopping search`);
           break;
         } else {
-          console.log(`   ⏭️  Need more comps (${totalQualified} < ${level.targetComps}) - continuing to next level`);
+          const reason = hasEnoughForDualARV.sufficient ?
+            `need ${level.targetComps - totalQualified} more general comps` :
+            hasEnoughForDualARV.reason;
+          console.log(`   ⏭️  ${reason} - continuing to next level`);
         }
       } else {
         console.log(`   ⚠️  Level ${level.level} produced no results - continuing`);

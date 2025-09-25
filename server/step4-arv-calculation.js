@@ -1,3 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ARVCalculationService = void 0;
+exports.testARVCalculation = testARVCalculation;
 class ARVCalculationService {
     /**
      * Calculate ARV using zero-intercept linear regression (y = mx)
@@ -661,6 +665,7 @@ class ARVCalculationService {
         return glaFiltered;
     }
 }
+exports.ARVCalculationService = ARVCalculationService;
 // Test function
 async function testARVCalculation() {
     // Get real data from previous steps
@@ -696,4 +701,3 @@ async function testARVCalculation() {
 if (import.meta.url === `file://${process.argv[1]}`) {
     testARVCalculation().catch(console.error);
 }
-export { ARVCalculationService, testARVCalculation };

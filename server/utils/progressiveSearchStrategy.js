@@ -1,6 +1,9 @@
+"use strict";
 // Progressive Expansion Search Strategy
 // Replaces redundant identical searches with intelligent expansion
-export class ProgressiveSearchStrategy {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ProgressiveSearchStrategy = void 0;
+class ProgressiveSearchStrategy {
     constructor() {
         this.cache = new Map();
         this.CACHE_TTL = 15 * 60 * 1000; // 15 minutes
@@ -17,7 +20,7 @@ export class ProgressiveSearchStrategy {
                     radius: 1.0,
                     timeWindow: 12,
                     subdivision: hasSubdivision,
-                    sizeVariance: 20,
+                    sizeVariance: 15,
                     maxResults: 30
                 },
                 targetComps: 6,
@@ -135,7 +138,7 @@ export class ProgressiveSearchStrategy {
     /**
      * Execute search at specific level
      */
-    async executeSearchLevel(level, address, subjectDetails, searchService, subdivision // VertexComparableSearchService
+    async executeSearchLevel(level, address, subjectDetails, searchService // VertexComparableSearchService
     ) {
         const startTime = Date.now();
         const cacheKey = this.generateCacheKey(address, level, subjectDetails);
@@ -157,16 +160,12 @@ export class ProgressiveSearchStrategy {
         try {
             // Set search parameters
             const originalSubdivision = process.env.SUBDIVISION;
-            if (level.criteria.subdivision && subdivision) {
-                // Use the subdivision from property details
-                process.env.SUBDIVISION = subdivision;
-                console.log(`   🏘️  Using subdivision: ${subdivision}`);
+            if (level.criteria.subdivision && subjectDetails) {
+                // We need subdivision info - this would come from property details
+                // For now, keep existing subdivision setting
             }
             else {
                 process.env.SUBDIVISION = '';
-                if (level.criteria.subdivision) {
-                    console.log(`   ⚠️  Subdivision required but not available - skipping subdivision filtering`);
-                }
             }
             // Execute search
             const searchResult = await searchService.findComparables(address, undefined, // propertyType
@@ -216,7 +215,7 @@ export class ProgressiveSearchStrategy {
         let stoppedAtLevel = 0;
         const startTime = Date.now();
         for (const level of searchLevels) {
-            const result = await this.executeSearchLevel(level, address, subjectDetails, searchService, subdivision);
+            const result = await this.executeSearchLevel(level, address, subjectDetails, searchService);
             searchHistory.push(result);
             stoppedAtLevel = level.level;
             if (result.success && result.qualified.length > 0) {
@@ -300,3 +299,4 @@ export class ProgressiveSearchStrategy {
         };
     }
 }
+exports.ProgressiveSearchStrategy = ProgressiveSearchStrategy;

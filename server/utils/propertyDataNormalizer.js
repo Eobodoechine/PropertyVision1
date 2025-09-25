@@ -1,6 +1,9 @@
+"use strict";
 // Property Data Normalization and Validation
 // Fixes inconsistent parsing and conflicting property data
-export class PropertyDataNormalizer {
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.PropertyDataNormalizer = void 0;
+class PropertyDataNormalizer {
     constructor() {
         this.seenProperties = new Map();
         this.conflictLog = [];
@@ -227,3 +230,4 @@ export class PropertyDataNormalizer {
         this.conflictLog = [];
     }
 }
+exports.PropertyDataNormalizer = PropertyDataNormalizer;
