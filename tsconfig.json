@@ -13,19 +13,15 @@
     "resolveJsonModule": true,
     "allowImportingTsExtensions": false,
     "noEmit": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": false,
-    "jsx": "react-jsx"
+    "isolatedModules": true
   },
   "include": [
-    "server/**/*",
-    "client/**/*",
-    "shared/**/*",
-    "vite.config.ts"
+    "server/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
+    "archive",
     "**/*.test.ts",
     "**/*.spec.ts"
   ]

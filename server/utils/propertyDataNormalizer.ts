@@ -153,7 +153,7 @@ export class PropertyDataNormalizer {
           }, {} as Record<any, number>);
 
           const mostCommon = Object.entries(valueCounts)
-            .sort(([,a], [,b]) => b - a)[0][0];
+            .sort(([,a], [,b]) => Number(b) - Number(a))[0][0];
 
           resolution = Number(mostCommon);
           reason = `most_common_value (${valueCounts[mostCommon]}/${values.length} instances)`;
@@ -165,7 +165,7 @@ export class PropertyDataNormalizer {
         }
 
         conflicts.push({
-          field,
+          field: String(field),
           values: uniqueValues,
           sources,
           resolution,

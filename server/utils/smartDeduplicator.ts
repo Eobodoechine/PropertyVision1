@@ -3,10 +3,10 @@
 
 interface PropertyData {
   address: string;
-  price: number;
-  sqft: number;
-  beds: number;
-  baths: number;
+  price?: number;
+  sqft?: number;
+  beds?: number;
+  baths?: number;
   yearBuilt?: number | null;
   soldDate?: string;
   distance?: number;
@@ -189,7 +189,7 @@ export class SmartDeduplicator {
             return acc;
           }, {} as Record<any, number>);
           resolution = Object.entries(counts)
-            .sort(([,a], [,b]) => b - a)[0][0];
+            .sort(([,a], [,b]) => Number(b) - Number(a))[0][0];
           method = 'most_common_value';
           break;
 

@@ -27,7 +27,8 @@ class ARVCalculationService {
         slope: 0,
         r2: 0,
         dataPoints: 0,
-        confidence: 'low'
+        confidence: 'low',
+        method: 'no-data'
       };
     }
 
@@ -78,8 +79,8 @@ class ARVCalculationService {
         x: comp.sqft,
         y: comp.price,
         address: comp.address,
-        originalPrice: comp.originalPrice || comp.price,
-        bathroomAdjusted: comp.bathroomAdjusted || false
+        originalPrice: (comp as any).originalPrice || comp.price,
+        bathroomAdjusted: (comp as any).bathroomAdjusted || false
       }));
     } else {
       // No bathroom adjustments needed
@@ -253,7 +254,8 @@ class ARVCalculationService {
         slope: 0,
         r2: 0,
         dataPoints: 0,
-        confidence: 'low'
+        confidence: 'low',
+        method: 'weighted-no-data'
       };
     }
 
@@ -295,7 +297,8 @@ class ARVCalculationService {
       slope: regression.slope,
       r2: regression.r2,
       dataPoints: dataPoints.length,
-      confidence
+      confidence,
+      method: 'weighted-regression'
     };
   }
 

@@ -3,13 +3,14 @@
 
 import { VertexComparableSearchService } from './step3-find-comparables.js';
 import { ARVCalculationService } from './step4-arv-calculation.js';
-import { fetchPropertyDetailsViaVertex } from './vertex-details.js';
+import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details.js';
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer.js';
 import { SmartDeduplicator } from './utils/smartDeduplicator.js';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy.js';
 import { DistanceValidator } from './utils/distanceValidator.js';
 
 interface ComprehensiveSearchResultV3 {
+  subject: SubjectSummary;
   all_comps: any[];
   qualified_comps: any[];
   consistency_scores: Map<string, number>;
@@ -52,6 +53,10 @@ interface ComprehensiveSearchResultV3 {
     distanceValidationSummary: any;
   };
 }
+
+type SubjectSummary = Pick<BasicDetails,
+  'address' | 'sqft' | 'beds' | 'baths' | 'yearBuilt' | 'lotSize' | 'subdivision' | 'success'
+>;
 
 export class ComprehensiveCompSearchV3 {
   private compService: VertexComparableSearchService;
@@ -285,7 +290,10 @@ export class ComprehensiveCompSearchV3 {
       console.log(`   Final Comps: ${qualifiedComps.length}`);
       console.log(`============================================================\n`);
 
+      const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
+
       return {
+        subject: subjectSummary,
         all_comps: allComps,
         qualified_comps: qualifiedComps,
         consistency_scores: consistencyScores,
@@ -313,7 +321,7 @@ export class ComprehensiveCompSearchV3 {
   }
 
   /**
-   * Enhanced bathroom computation from run-analysis.ts
+   * Enhanced bathroom computation derived from legacy CLI tooling
    */
   private computeSubjectBathrooms(subjectDetails: any): number {
     // Direct baths field from subjectDetails (already parsed)
@@ -492,6 +500,24 @@ export class ComprehensiveCompSearchV3 {
     if (compCount >= 5 && avgConsistency >= 0.7) return 'good';
     if (compCount >= 3 && avgConsistency >= 0.6) return 'fair';
     return 'poor';
+  }
+
+  private buildSubjectSummary(address: string, details: any): SubjectSummary {
+    const toNumber = (value: any): number | null => {
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    return {
+      address: (details?.address as string) || address,
+      sqft: toNumber(details?.sqft),
+      beds: toNumber(details?.beds),
+      baths: toNumber(details?.baths),
+      yearBuilt: toNumber(details?.yearBuilt),
+      lotSize: toNumber(details?.lotSize),
+      subdivision: details?.subdivision ?? null,
+      success: details?.success ?? true,
+    };
   }
 }
 
