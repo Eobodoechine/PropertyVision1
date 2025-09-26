@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "agile-device-472202-i8",
+  "private_key_id": "319f002d9438e1e15d050f31dce7fbeae2c806f6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDRPAAd5j4KGBgl\nm33WRDjH/TQMJPy3ajIi8dotvcFPbr7/ABgU1EtYDriFt4vyUJyfAtngMplT3Uf5\na0YlyfC9ajejrsiMLuVYXdPXDtmMSiEs5HN2O1uS85rJTJn/QuOkMRqNNIKwk6ft\nYktjK4NI+UNqV2rZoj5pMR7LQRzdVqxy0Ujkp2QDqloLuKVcWQ9wwJwVjyK92Vxt\nOThOnE4hdwxr+68t6PU+m+M5/MzdJuIMTJ0L9vLwbNAsqceLm7BO0Frge9UHY5L6\nUF0A+u2qiOSiHSBOsDFmwpMG/uF267C14xF5ij9nZ6FiEHORAdcwYhMgNuOnS/ZT\nCowuskVNAgMBAAECggEAENDnhNT9inZ6Rld+CxZLkU3ZJ4ViJuRAPaJoxxas7n3i\nQtYBRCH1y5DPUAvlkabcl5kKkA7GV5ZSvl8v8Zc5I81hcGR6lhhUyBUuZ+aNIc3O\nvHAV6YbcFW5CXp2rSM0u74IfdgF7jsZ8j23AIlXGb5B8/xMh3CDtLtYgTp9KkG1N\ngKe+ulLLseuO4dEEc4aP0yE/FZ5VSayQOpJsmvMYa1L9TPD7/vLT+dI7pS/tIe8z\nh7Kfa74y+z+tQOA+FhRoHSk3F+s9h/j0OCNykX/7FhQTWc0uxf/mUCt3fxD9eepQ\n92Pp+CiTtH89W/dMqrTJV5Tm6wiVTMdgMdx6olbXjwKBgQDoyWoj1XgcFeoMmENp\nJ795vIzmVplSEWfY9lf6xs6etfIsEyCrNm9UHxRF2Aul5uLebAGfUkM9rhZ/zX65\n7Gt66niIII3idAn4gT6FP1FhRfsJY1vSKKDRzuFJHbg0K7oi2EuL38zoP61xPtFj\npSV2uvW4AsDcn6L0TnbvOJafDwKBgQDmGVb5R+lMxTpxfwfErCV81YxcBfcPHrdc\nWT2kZ6J93XT8N1aI8Iqi0SfHiImSYZ8dNE5OekkUEeN095yTTgvFboR6HZyYwUnl\nNCBZTVxvgvrV+km/E7InZZIIki4hXs6OPo+GgRh8W2953dNRsnR0AvezX4VBorgu\ncAVxCHkV4wKBgQC/r8t1An1LM0htYpxv5MkpJ3gm3DyYdbi70e6UlEzkKBLo9D88\nfTCjZow9DzBYRo2edfXICedQzR+90at+0g2XQ6hI//WV+dOUDGk9M+yBWyziiCy+\nG7KB0gd1O8HJRBCcTNu4rGuA+56I2B94HC+DW2SnR60kf1eiMVKCnmh5RQKBgFuP\nLbqX0M/Jk03iPFcYIPqhhu5/OSX9FP1cTVkEG/Z1jr1lz7tB7AiJrYiKXiOvUL8w\nNxCnPDkOPTIn7Vf4MFrpdTGaYtut3hekPFMMo4GD3wgSRhIQZk2i7w8WC+EfdpXH\ncxkUeYfSYnNdv1684fXf0GzBz6akdyGTVbb6piP9AoGAeNlp5V6gVoAcoSbdX5xI\n+nWBCqRtCbO0ysrhUuwqQk8BYMyrtk/bgQi55wYWTUN+kbd3qj4//MVC/4a9KRgq\nOjVkl1/HhPyZS0uM2HNIiZ9uLHaVoUbIxSXcaSW2ih3abzFLLK0cRlTq3inoMtVN\nkgtTCLPiPEoR/h8xYbYlrT8=\n-----END PRIVATE KEY-----\n",
+  "client_email": "reo-160@agile-device-472202-i8.iam.gserviceaccount.com",
+  "client_id": "114544585089429999824",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/reo-160%40agile-device-472202-i8.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

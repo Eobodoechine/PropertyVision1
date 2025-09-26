@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { useAuth } from '@/contexts/AuthContext';
+import { Auth } from '@/components/Auth';
 import { ArrowRight, ExternalLink, Loader2, MapPin } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -72,6 +74,7 @@ function formatSoldDate(date?: string) {
 }
 
 export default function HomePage() {
+  const { user, loading: authLoading } = useAuth();
   const [formState, setFormState] = React.useState<FormState>({ address: DEFAULT_ADDRESS });
   const [progress, setProgress] = React.useState(0);
 
@@ -108,6 +111,18 @@ export default function HomePage() {
   const result = mutation.data;
   const loading = mutation.isPending;
   const error = mutation.isError ? (mutation.error as Error) : null;
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Auth />;
+  }
 
   return (
     <main className="w-full">
@@ -163,11 +178,21 @@ export default function HomePage() {
 }
 
 function Header() {
+  const { user, userProfile, logout } = useAuth();
+
   return (
     <header className="flex flex-col justify-between gap-4 rounded-3xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm shadow-slate-200/40 backdrop-blur md:flex-row md:items-center">
       <div>
         <p className="text-sm font-medium text-slate-500">PropertyAnalyzer</p>
         <h1 className="text-2xl font-semibold text-slate-900">ARV &amp; Comps Dashboard</h1>
+      </div>
+      <div className="flex items-center gap-3">
+        <span className="text-sm text-slate-600">
+          {userProfile?.name || user?.displayName || user?.email}
+        </span>
+        <Button variant="outline" size="sm" onClick={logout}>
+          Sign out
+        </Button>
       </div>
     </header>
   );
