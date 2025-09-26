@@ -39,7 +39,6 @@ export class DistanceValidator {
   constructor() {
     this.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || '';
     if (!this.googleMapsApiKey) {
-      console.log('⚠️  No Google Maps API key - using estimated coordinates');
     }
   }
 
@@ -101,7 +100,6 @@ export class DistanceValidator {
       const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.googleMapsApiKey}`;
 
       const timeout = setTimeout(() => {
-        console.log(`⏰ Geocoding timeout for ${address}`);
         resolve(this.estimateCoordinates(address));
       }, 5000);
 
@@ -135,17 +133,14 @@ export class DistanceValidator {
                 timestamp: Date.now()
               });
             } else {
-              console.log(`❌ Geocoding failed for ${address}: ${data.status}`);
               resolve(this.estimateCoordinates(address));
             }
           } catch (e) {
-            console.log(`❌ Geocoding parse error for ${address}:`, e);
             resolve(this.estimateCoordinates(address));
           }
         });
       }).on('error', () => {
         clearTimeout(timeout);
-        console.log(`❌ Geocoding network error for ${address}`);
         resolve(this.estimateCoordinates(address));
       });
     });
@@ -242,7 +237,6 @@ export class DistanceValidator {
     ]);
 
     if (!result1.coords || !result2.coords) {
-      console.log(`❌ Cannot calculate distance: missing coordinates for ${address1} or ${address2}`);
       return null;
     }
 
@@ -301,8 +295,6 @@ export class DistanceValidator {
       cacheHits: number;
     };
   }> {
-    console.log(`📍 Validating distances for ${comparables.length} comparables...`);
-    console.log(`   🎯 Max distance: ${maxDistance} miles from ${subjectAddress}`);
 
     const validated: any[] = [];
     const rejected: any[] = [];
@@ -386,17 +378,10 @@ export class DistanceValidator {
       cacheHits
     };
 
-    console.log(`✅ Distance validation complete:`);
-    console.log(`   📊 ${validationSummary.validCount}/${validationSummary.totalProcessed} passed validation`);
-    console.log(`   📍 Average distance: ${avgDistance.toFixed(2)} miles`);
-    console.log(`   💾 Cache hits: ${cacheHits}`);
-    console.log(`   ❌ Geocoding errors: ${geocodingErrors}`);
 
     // Log rejected properties
     if (rejected.length > 0) {
-      console.log(`   🚫 Rejected properties:`);
       rejected.forEach(r => {
-        console.log(`      ${r.address}: ${r.rejectionReason}`);
       });
     }
 
@@ -440,7 +425,6 @@ export class DistanceValidator {
     this.geocodeCache.clear();
     this.distanceCache.clear();
     this.failedAddresses.clear();
-    console.log('🗑️  Distance validation caches cleared');
   }
 
   /**

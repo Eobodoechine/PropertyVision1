@@ -25,7 +25,6 @@ class VertexPropertyResearchService {
 
   async researchProperty(address: string): Promise<PropertyDetails> {
     try {
-      console.log(`🔍 RESEARCHING: ${address}`);
 
       // Use Vertex AI details fetcher
       const viaVertex = await fetchPropertyDetailsViaVertex(address);
@@ -40,12 +39,10 @@ class VertexPropertyResearchService {
           subdivision: viaVertex.subdivision ?? null,
           success: true,
         };
-        console.log('   ✅ Vertex details:', details);
         return details;
       }
 
       // If Vertex fails, return error
-      console.log('   ❌ Vertex AI research failed');
       return {
         address,
         sqft: null,
@@ -58,7 +55,6 @@ class VertexPropertyResearchService {
       };
 
     } catch (error: any) {
-      console.log(`   ❌ Research failed: ${error.message}`);
       return {
         address,
         sqft: null,
@@ -81,27 +77,13 @@ async function testPropertyResearch() {
     process.exit(1);
   }
 
-  console.log('\n🔍 STEP 2: PROPERTY RESEARCH');
-  console.log('============================================================');
 
   const service = new VertexPropertyResearchService();
   const result = await service.researchProperty(address);
 
   if (result.success) {
-    console.log('✅ Property research completed successfully');
-    console.log('Property Details:');
-    console.log(`   Address: ${result.address}`);
-    console.log(`   Square Feet: ${result.sqft || 'Unknown'}`);
-    console.log(`   Bedrooms: ${result.beds || 'Unknown'}`);
-    console.log(`   Bathrooms: ${result.baths || 'Unknown'}`);
-    console.log(`   Year Built: ${result.yearBuilt || 'Unknown'}`);
-    console.log(`   Lot Size: ${result.lotSize || 'Unknown'}`);
-    console.log(`   Subdivision: ${result.subdivision || 'Unknown'}`);
-    console.log(`   Property Type: ${result.propertyType || 'Unknown'}`);
   } else {
-    console.log('❌ Property research failed');
     if (result.error) {
-      console.log(`   Error: ${result.error}`);
     }
   }
 }

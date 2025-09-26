@@ -274,7 +274,7 @@ Return exactly this JSON structure:
                 prompt: allFieldsPrompt,
                 grounded: false,
                 json: true,
-                timeoutMs: 15000,
+                timeoutMs: 600000,
                 responseSchema
             });
             // Be robust to code fences or stray prose
@@ -399,7 +399,7 @@ Return exactly this JSON structure:
                 prompt,
                 grounded: false,
                 json: true,
-                timeoutMs: 25000,
+                timeoutMs: 600000,
                 responseSchema
             });
             // Extract JSON robustly

@@ -147,7 +147,7 @@ Give only the 4-digit year.`;
         let subdivision = null;
         try {
             const subPrompt = `From this text, what is the subdivision or neighborhood name of the property? If not present, answer UNKNOWN.\n\n"${text}"\n\nRespond with only the name or UNKNOWN.`;
-            const subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: false, json: false, timeoutMs: 15000 });
+            const subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: false, json: false, timeoutMs: 600000 });
             const cleaned = (subResp || '').trim();
             if (cleaned && !/^unknown$/i.test(cleaned)) {
                 subdivision = cleaned.replace(/^[-\s:]+/, '').trim();
@@ -193,7 +193,7 @@ async function fetchPropertyDetailsViaVertex(address) {
     const projectId = sa.project_id;
     const location = process.env.VERTEX_LOCATION || 'us-central1';
     const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-    const timeoutMs = Number(process.env.VERTEX_TIMEOUT_MS || '45000');
+    const timeoutMs = Number(process.env.VERTEX_TIMEOUT_MS || '600000');
     // PRIMARY: Comprehensive grounded search for CRITICAL data
     let propertyDetails = {};
     try {

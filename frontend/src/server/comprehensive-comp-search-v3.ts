@@ -98,6 +98,10 @@ export class ComprehensiveCompSearchV3 {
       // Step 2: Progressive comparable search
       console.log(`\n🔍 Step 2: Progressive Comparable Search`);
 
+      // Determine subject property type for filtering - let Vertex AI find matching property types
+      const subjectPropertyType = undefined; // No filtering - let AI find similar properties regardless of type
+      console.log(`   🏠 Property Type: Not filtered - will match similar properties`);
+
       let allComps: any[] = [];
       let searchLevel = 0;
       const maxSearchLevels = 3;
@@ -130,7 +134,7 @@ export class ComprehensiveCompSearchV3 {
 
           const result = await this.compService.findComparables(
             address,
-            undefined, // propertyType
+            subjectPropertyType, // propertyType - match subject property type
             maxResults,
             radius,
             timeWindow,

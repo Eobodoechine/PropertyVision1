@@ -92,7 +92,7 @@ const webComparables = [
   }
 ];
 
-async function testProductionAddress() {
+function testProductionAddress() {
   console.log(`🧪 TESTING PRODUCTION ADDRESS: ${subjectAddress}`);
   console.log(`=================================================`);
   console.log(`Website shows: $296,904 ARV with 9 comparables`);
@@ -100,11 +100,9 @@ async function testProductionAddress() {
 
   try {
     // Test with the comparables shown on the website
-    const result = await arvService.calculateARV(
-      subjectAddress,
+    const result = arvService.calculateARV(
       webComparables,
       2684, // sqft from website
-      4,    // beds from website
       2.5   // baths from website
     );
 
@@ -119,30 +117,17 @@ async function testProductionAddress() {
 
     console.log(`\n📊 COMPARABLE COUNT COMPARISON:`);
     console.log(`   Website Comps Used: 9`);
-    console.log(`   MCP Comps Used: ${result.comparablesUsed.length}`);
+    console.log(`   MCP Comps Used: ${result.dataPoints}`);
     console.log(`   Original Comps: ${webComparables.length}`);
-    console.log(`   Outliers Removed: ${webComparables.length - result.comparablesUsed.length}`);
+    console.log(`   Outliers Removed: ${webComparables.length - result.dataPoints}`);
 
     console.log(`\n🎯 CONFIDENCE: ${result.confidence}`);
-    console.log(`📊 Price Range: $${result.lowEstimate.toLocaleString()} - $${result.highEstimate.toLocaleString()}`);
+    console.log(`📊 Method: ${result.method}`);
+    console.log(`📊 R²: ${result.r2 ? result.r2.toFixed(3) : 'N/A'}`);
 
-    console.log(`\n📋 COMPARABLES USED BY MCP:`);
-    result.comparablesUsed.forEach((comp, i) => {
-      const ppsf = comp.price / comp.sqft;
-      console.log(`   ${i + 1}. ${comp.address}`);
-      console.log(`      $${comp.price.toLocaleString()} ($${ppsf.toFixed(0)}/sqft)`);
-    });
-
-    if (webComparables.length > result.comparablesUsed.length) {
-      console.log(`\n❌ OUTLIERS REMOVED BY SEQUENTIAL GAP DETECTION:`);
-      const removedComps = webComparables.filter(comp =>
-        !result.comparablesUsed.some(used => used.address === comp.address)
-      );
-      removedComps.forEach(comp => {
-        const ppsf = comp.price / comp.sqft;
-        console.log(`   - ${comp.address}: $${comp.price.toLocaleString()} ($${ppsf.toFixed(0)}/sqft)`);
-      });
-    }
+    console.log(`\n📋 SEQUENTIAL GAP OUTLIER DETECTION ANALYSIS:`);
+    console.log(`This test shows how our new algorithm filters the website's comparables.`);
+    console.log(`The difference in comparable count shows outliers removed by sequential gap detection.`);
 
     console.log(`\n✅ PRODUCTION TEST COMPLETED!`);
 

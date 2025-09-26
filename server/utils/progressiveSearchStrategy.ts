@@ -256,13 +256,10 @@ export class ProgressiveSearchStrategy {
     const startTime = Date.now();
     const cacheKey = this.generateCacheKey(address, level, subjectDetails);
 
-    console.log(`🔍 Level ${level.level}: ${level.name}`);
-    console.log(`   📐 ${level.description}`);
 
     // Check cache first
     const cachedResult = this.getCachedResult(cacheKey);
     if (cachedResult) {
-      console.log(`   💾 Cache hit - returning ${cachedResult.length} cached properties`);
       return {
         level,
         properties: cachedResult,
@@ -299,7 +296,6 @@ export class ProgressiveSearchStrategy {
       const searchTime = Date.now() - startTime;
       const qualified = searchResult.comparables || [];
 
-      console.log(`   ✅ Found ${qualified.length} qualified comps in ${searchTime}ms`);
 
       // Cache the result
       this.setCachedResult(cacheKey, qualified);
@@ -314,7 +310,6 @@ export class ProgressiveSearchStrategy {
       };
 
     } catch (error) {
-      console.log(`   ❌ Level ${level.level} failed: ${error.message}`);
 
       return {
         level,
@@ -336,11 +331,7 @@ export class ProgressiveSearchStrategy {
     searchService: any,
     subdivision?: string
   ): Promise<ProgressiveSearchResult> {
-    console.log('🎯 PROGRESSIVE EXPANSION SEARCH');
-    console.log('===============================');
-    console.log(`📍 Subject: ${address}`);
     if (subjectDetails) {
-      console.log(`🏠 Subject: ${subjectDetails.sqft}sqft, ${subjectDetails.beds}BR/${subjectDetails.baths}BA, built ${subjectDetails.yearBuilt}`);
     }
 
     const hasSubdivision = Boolean(subdivision || process.env.SUBDIVISION);
@@ -366,22 +357,18 @@ export class ProgressiveSearchStrategy {
         });
 
         const totalQualified = allProperties.size;
-        console.log(`   📊 Total qualified so far: ${totalQualified}`);
 
         // Check if we have enough comps to stop (including bathroom-specific requirements)
         const hasEnoughForDualARV = this.checkDualARVRequirements(Array.from(allProperties.values()), subjectDetails);
 
         if (totalQualified >= level.targetComps && hasEnoughForDualARV.sufficient) {
-          console.log(`   🎯 Target reached (${totalQualified} ≥ ${level.targetComps}) and dual ARV requirements met - stopping search`);
           break;
         } else {
           const reason = hasEnoughForDualARV.sufficient ?
             `need ${level.targetComps - totalQualified} more general comps` :
             hasEnoughForDualARV.reason;
-          console.log(`   ⏭️  ${reason} - continuing to next level`);
         }
       } else {
-        console.log(`   ⚠️  Level ${level.level} produced no results - continuing`);
       }
     }
 
@@ -390,20 +377,11 @@ export class ProgressiveSearchStrategy {
     const cacheHits = searchHistory.filter(s => s.cacheHit).length;
     const qualityScore = this.calculateQualityScore(finalProperties, searchHistory);
 
-    console.log('\n📊 PROGRESSIVE SEARCH SUMMARY:');
-    console.log(`   🔍 Searches executed: ${searchHistory.length}`);
-    console.log(`   💾 Cache hits: ${cacheHits}/${searchHistory.length}`);
-    console.log(`   ⏱️  Total time: ${totalTime}ms`);
-    console.log(`   🏁 Stopped at level: ${stoppedAtLevel}`);
-    console.log(`   📈 Final count: ${finalProperties.length} properties`);
-    console.log(`   🎯 Quality score: ${qualityScore.toUpperCase()}`);
 
     // Log level breakdown
-    console.log('\n📋 LEVEL BREAKDOWN:');
     searchHistory.forEach(result => {
       const icon = result.success ? '✅' : '❌';
       const cache = result.cacheHit ? '💾' : '🔍';
-      console.log(`   ${icon} ${cache} Level ${result.level.level}: ${result.qualified.length} comps (${result.searchTime}ms)`);
     });
 
     return {
@@ -425,7 +403,6 @@ export class ProgressiveSearchStrategy {
    */
   clearCache(): void {
     this.cache.clear();
-    console.log('🗑️  Progressive search cache cleared');
   }
 
   /**

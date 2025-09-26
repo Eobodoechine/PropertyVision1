@@ -20,7 +20,6 @@ class GeocodingService {
 
   async geocodeAddress(address: string): Promise<GeocodingResult> {
     try {
-      console.log(`📍 GEOCODING: ${address}`);
       
       const https = await import('https');
       const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.googleMapsApiKey}`;
@@ -43,7 +42,6 @@ class GeocodingService {
         const result = data.results[0];
         const location = result.geometry.location;
         
-        console.log(`   ✅ Coordinates: ${location.lat}, ${location.lng}`);
         
         return {
           address: address,
@@ -52,7 +50,6 @@ class GeocodingService {
           success: true
         };
       } else {
-        console.log(`   ❌ Geocoding failed: ${data.status}`);
         return {
           address: address,
           lat: 0,
@@ -81,18 +78,12 @@ async function testGeocoding() {
     throw new Error('ADDRESS environment variable is required');
   }
   
-  console.log(`\n📍 STEP 1: GEOCODING ADDRESS`);
-  console.log(`============================================================`);
   
   const geocodingService = new GeocodingService();
   const result = await geocodingService.geocodeAddress(address);
   
   if (result.success) {
-    console.log(`✅ Geocoding successful:`);
-    console.log(`   Address: ${result.address}`);
-    console.log(`   Coordinates: ${result.lat}, ${result.lon}`);
   } else {
-    console.log(`❌ Geocoding failed: ${result.error}`);
   }
   
   return result;
