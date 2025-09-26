@@ -2,7 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import crypto from 'crypto';
 import https from 'https';
-import { groundedFreeform } from './vertex-freeform';
+// import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 
 interface ComparableProperty {
@@ -101,7 +101,10 @@ COMPARABLE SELECTION CRITERIA:
 3. Size: Between ~${lowSqft} sqft and ~${highSqft} sqft (±20% of subject).
 4. Bedrooms: ${subjBeds != null ? `${Math.max(1, subjBeds - 1)}–${subjBeds + 1}` : '±1 of subject'} bedrooms.
 5. Bathrooms: ${subjBaths != null ? `${Math.max(1, Math.floor(subjBaths - 1))}–${Math.ceil(subjBaths + 1)}` : '±1 of subject'} bathrooms.
-6. Year Built: Between ${lowYear} and ${highYear} (within ±10 years of subject’s build year).
+6. Year Built: Between ${lowYear} and ${highYear} (within ±10 years of subject's build year).
+7. Property Type: MUST match the same property type as the subject property. If subject is a single family home, only return single family homes. If subject is a condo, only return condos. If subject is a townhome, only return townhomes.
+
+CRITICAL: Determine the property type of the subject property and ONLY include comparable properties of the SAME type. Do not mix property types.
 
 OUTPUT FORMAT (STRICT):
 Return ONLY pipe-separated lines, one per property, no commentary, no headers:
@@ -112,13 +115,30 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       const aggregatedComps = new Map<string, ComparableProperty>();
 
       const fetchAndParse = async (p: string): Promise<ComparableProperty[]> => {
-        const r = await groundedFreeform({ accessToken: token, projectId, location, model, prompt: p, maxOutputTokens: 2500 });
-        let parsed = await this.parseVertexResponse(r.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+        const { vertexGenerate } = await import('./vertex-freeform.js');
+        const r = await vertexGenerate({
+          sa: sa,
+          projectId,
+          location,
+          model,
+          prompt: p,
+          grounded: true,
+          timeoutMs: 60000
+        });
+        let parsed = await this.parseVertexResponse(r, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         if (parsed.length === 0) {
           const strictP = `Return ONLY pipe-separated lines for SOLD properties near "${subjectAddress}" within ${searchRadius} miles and ${timeWindowMonths} months. No commentary, no headers.
 address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url`;
-          const sr = await groundedFreeform({ accessToken: token, projectId, location, model, prompt: strictP, maxOutputTokens: 2000 });
-          parsed = await this.parseVertexResponse(sr.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+          const sr = await vertexGenerate({
+            sa: sa,
+            projectId,
+            location,
+            model,
+            prompt: strictP,
+            grounded: true,
+            timeoutMs: 60000
+          });
+          parsed = await this.parseVertexResponse(sr, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         }
         return parsed;
       };
@@ -349,7 +369,7 @@ Return exactly this JSON structure:
         prompt: allFieldsPrompt,
         grounded: false,
         json: true,
-        timeoutMs: 15000,
+        timeoutMs: 600000,
         responseSchema
       });
 
@@ -488,7 +508,7 @@ Return exactly this JSON structure:
         prompt,
         grounded: false,
         json: true,
-        timeoutMs: 25000,
+        timeoutMs: 600000,
         responseSchema
       });
 

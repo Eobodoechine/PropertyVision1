@@ -2,7 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import crypto from 'crypto';
 import https from 'https';
-import { groundedFreeform } from './vertex-freeform';
+// import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 
 interface ComparableProperty {
@@ -48,9 +48,6 @@ class VertexComparableSearchService {
     extra?: { subdivision?: string }
   ): Promise<FindComparablesResult> {
     try {
-      console.log(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
-      console.log(`   • Radius: ${searchRadius} miles`);
-      console.log(`   • Max results: ${maxResults}`);
 
       // Get subject property coordinates
       const subjectCoords = await this.geocodeWithTimeout(subjectAddress, 5000);
@@ -112,13 +109,30 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       const aggregatedComps = new Map<string, ComparableProperty>();
 
       const fetchAndParse = async (p: string): Promise<ComparableProperty[]> => {
-        const r = await groundedFreeform({ accessToken: token, projectId, location, model, prompt: p, maxOutputTokens: 2500 });
-        let parsed = await this.parseVertexResponse(r.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+        const { vertexGenerate } = await import('./vertex-freeform.js');
+        const r = await vertexGenerate({
+          sa: sa,
+          projectId,
+          location,
+          model,
+          prompt: p,
+          grounded: true,
+          timeoutMs: 60000
+        });
+        let parsed = await this.parseVertexResponse(r, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         if (parsed.length === 0) {
           const strictP = `Return ONLY pipe-separated lines for SOLD properties near "${subjectAddress}" within ${searchRadius} miles and ${timeWindowMonths} months. No commentary, no headers.
 address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url`;
-          const sr = await groundedFreeform({ accessToken: token, projectId, location, model, prompt: strictP, maxOutputTokens: 2000 });
-          parsed = await this.parseVertexResponse(sr.text, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+          const sr = await vertexGenerate({
+            sa: sa,
+            projectId,
+            location,
+            model,
+            prompt: strictP,
+            grounded: true,
+            timeoutMs: 60000
+          });
+          parsed = await this.parseVertexResponse(sr, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         }
         return parsed;
       };
@@ -126,14 +140,11 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // Prepare prompts and run all Vertex searches in parallel
       const prompts: string[] = [];
       if (subdivision) {
-        console.log('   🏘️  Subdivision specified — scheduling 3 subdivision searches');
         for (let i = 1; i <= 3; i++) prompts.push(composeAnalystPipePrompt(true));
       } else {
-        console.log('   🏘️  No subdivision specified — skipping subdivision runs');
       }
       for (let i = 1; i <= 3; i++) prompts.push(composeAnalystPipePrompt(false));
 
-      console.log(`   🚀 Launching ${prompts.length} Vertex searches in parallel...`);
       const batches = await Promise.all(prompts.map(p => fetchAndParse(p)));
       for (const list of batches) {
         list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
@@ -141,34 +152,25 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       // Use aggregated results
       let comps = Array.from(aggregatedComps.values());
-      console.log(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
 
       // LOG EACH PROPERTY BEFORE FILTERING
-      console.log(`   🔍 DETAILED PROPERTY FILTERING:`);
       comps.forEach((comp, index) => {
-        console.log(`   🔍 FILTERING ${comp.address}: ${comp.beds}BR/${comp.baths}BA, ${comp.sqft}sqft vs Subject: ${subjectDetails?.beds || '?'}BR/${subjectDetails?.baths || '?'}BA, ${subjectDetails?.sqft || '?'}sqft`);
 
         // Bedroom validation
         const bedroomDiff = Math.abs((comp.beds || 0) - (subjectDetails?.beds || 0));
         if (bedroomDiff <= 1) {
-          console.log(`   ✅ BEDROOM OK ${comp.address}: ${comp.beds}BR vs ${subjectDetails?.beds || '?'}BR (diff: ${bedroomDiff} ≤ 1)`);
         } else {
-          console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails?.beds || '?'}BR (diff: ${bedroomDiff} > 1)`);
         }
 
         // Size validation
         if (subjectDetails?.sqft) {
           const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
           if (sizeVariance <= 20) {
-            console.log(`   ✅ SIZE QUALIFIED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (within 20% limit)`);
           } else {
-            console.log(`   ⚠️  Filtered out ${comp.address}: size variance too high (${sizeVariance.toFixed(1)}% > 20% limit)`);
           }
         }
 
         // Time validation (simplified - would need actual sold date parsing)
-        console.log(`   ✅ TIME QUALIFIED ${comp.address}: Recent sale (estimated)`);
-        console.log(`   ✅ Added: ${comp.address} - $${comp.price.toLocaleString()} - ${comp.sqft}sqft - Built: ${comp.yearBuilt || 'Unknown'}`);
       });
 
       // Deduplicate by address (remove duplicate addresses)
@@ -198,29 +200,17 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       const qualifiedCount = finalComps.length;
       const rejectedCount = foundCount - qualifiedCount;
 
-      console.log(`   📊 SEARCH SUMMARY:`);
-      console.log(`      🔍 Found: ${foundCount} raw comps from Vertex AI`);
-      console.log(`      ✅ Qualified: ${qualifiedCount} comps (passed all filters)`);
-      console.log(`      ❌ Rejected: ${rejectedCount} comps (failed validation)`);
 
       if (qualifiedCount > 0) {
         const distances = finalComps.map(c => c.distance);
         const sizes = finalComps.map(c => c.sqft);
         const ppsfValues = finalComps.map(c => c.price / c.sqft);
 
-        console.log(`      📍 Distance range: ${Math.min(...distances).toFixed(2)}mi - ${Math.max(...distances).toFixed(2)}mi`);
-        console.log(`      📐 Size range: ${Math.min(...sizes).toLocaleString()} - ${Math.max(...sizes).toLocaleString()} sqft`);
-        console.log(`      💲 PPSF range: $${Math.min(...ppsfValues).toFixed(2)} - $${Math.max(...ppsfValues).toFixed(2)}`);
       }
 
       // MINIMUM COMP COUNT VALIDATION
       const MIN_COMPS_REQUIRED = 3;
       if (finalComps.length < MIN_COMPS_REQUIRED) {
-        console.log(`   ⚠️  WARNING: Only ${finalComps.length} qualified comps (minimum ${MIN_COMPS_REQUIRED} recommended)`);
-        console.log(`   💡 SUGGESTED EXPANSIONS:`);
-        console.log(`      📅 Extend time window: 12 → 18 months`);
-        console.log(`      📍 Expand distance: 2 → 3 miles`);
-        console.log(`      📐 Relax size variance: ±20% → ±25%`);
 
         if (finalComps.length === 0) {
           return {
@@ -241,9 +231,6 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       const idealDistance = finalComps.filter(c => c.distance <= 1.0);
       const extendedDistance = finalComps.filter(c => c.distance > 1.0);
 
-      console.log(`   ✅ QUALIFIED COMPARABLES: ${finalComps.length}`);
-      console.log(`   📊 Time Quality: ${recentComps.length} recent (≤12mo), ${finalComps.length - recentComps.length} extended (12-18mo)`);
-      console.log(`   📊 Distance Quality: ${idealDistance.length} ideal (≤1mi), ${extendedDistance.length} extended (1-2mi)`);
 
       // Optional: write final comps cache with distances
       try {
@@ -262,7 +249,6 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
             confidence: c.confidence
           }));
           fs.writeFileSync(outPath, JSON.stringify({ comps: payload }, null, 2));
-          console.log(`   💾 Wrote final comps cache: ${outPath}`);
         }
       } catch {}
 
@@ -349,7 +335,7 @@ Return exactly this JSON structure:
         prompt: allFieldsPrompt,
         grounded: false,
         json: true,
-        timeoutMs: 15000,
+        timeoutMs: 600000,
         responseSchema
       });
 
@@ -433,7 +419,6 @@ Return exactly this JSON structure:
       };
 
     } catch (error) {
-      console.log(`   ⚠️ LLM parsing error: ${error}`);
       return null;
     }
   }
@@ -488,7 +473,7 @@ Return exactly this JSON structure:
         prompt,
         grounded: false,
         json: true,
-        timeoutMs: 25000,
+        timeoutMs: 600000,
         responseSchema
       });
 
@@ -548,7 +533,6 @@ Return exactly this JSON structure:
 
       return results;
     } catch (err) {
-      console.log(`   ⚠️ Batch LLM parsing error: ${err}`);
       return results;
     }
   }
@@ -703,33 +687,26 @@ Return exactly this JSON structure:
 
       // Only require address; other fields can be enriched later
       if (!address) {
-        console.log(`   ❌ Rejected line: missing address`);
         continue;
       }
 
       // Basic validation
       if (!Number.isFinite(price) || price <= 0) {
-        console.log(`   ❌ Rejected ${address}: Invalid or missing price (${price})`);
         continue;
       }
       if (!Number.isFinite(sqft) || sqft <= 0) {
-        console.log(`   ❌ Rejected ${address}: Invalid or missing sqft (${sqft})`);
         continue;
       }
       if (sqft < 500 || sqft > 10000) {
-        console.log(`   ❌ Rejected ${address}: Sqft out of range (${sqft})`);
         continue;
       }
       if (!Number.isFinite(beds) || beds < 1 || beds > 10) {
-        console.log(`   ❌ Rejected ${address}: Invalid or missing beds (${beds})`);
         continue;
       }
       if (!Number.isFinite(baths) || baths < 1 || baths > 10) {
-        console.log(`   ❌ Rejected ${address}: Invalid or missing baths (${baths})`);
         continue;
       }
       if (Number.isFinite(yearBuilt) && (yearBuilt < 1900 || yearBuilt > new Date().getFullYear())) {
-        console.log(`   ❌ Rejected ${address}: Invalid year built (${yearBuilt})`);
         continue;
       }
 
@@ -739,7 +716,6 @@ Return exactly this JSON structure:
         const today = new Date();
         const futureBuffer = new Date(today.getTime() + (7 * 24 * 60 * 60 * 1000)); // 7 days ahead
         if (soldDate > futureBuffer) {
-          console.log(`   ❌ Rejected ${address}: Future sold date (${soldDate.toISOString().split('T')[0]}) - today is ${today.toISOString().split('T')[0]}`);
           continue;
         }
         ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
@@ -747,35 +723,28 @@ Return exactly this JSON structure:
 
       // ENHANCED FILTERING based on subject property (if available)
       if (subjectDetails) {
-        console.log(`   🔍 FILTERING ${address}: ${beds}BR/${baths}BA, ${sqft}sqft vs Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft`);
 
         // 1. Bedroom count: ±1 bedroom max (if beds available)
         if (Number.isFinite(beds)) {
           const bedroomDiff = Math.abs((beds as number) - subjectDetails.beds);
           if (bedroomDiff > 1) {
-            console.log(`   ❌ FILTERED OUT ${address}: bedroom mismatch (${beds}BR vs ${subjectDetails.beds}BR, diff: ${bedroomDiff})`);
             continue;
           } else {
-            console.log(`   ✅ BEDROOM OK ${address}: ${beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff} ≤ 1)`);
           }
         } else {
-          console.log(`   ℹ️  Skipping bedroom filter: missing beds`);
         }
 
         // 2. Bathroom filtering with special logic for low bathroom count
         if (!Number.isFinite(baths)) {
-          console.log(`   ℹ️  Skipping bathroom filter: missing baths`);
         } else if (subjectDetails.baths <= 2) {
           // For subject with ≤2 baths, keep all comps with ≤2 baths + separate tracking for >2 bath comps
           if (baths > 2) {
-            console.log(`   📝 Flagged ${address}: high bathroom count for low-bath subject (${baths} vs ${subjectDetails.baths})`);
             // Still include but flag for separate ARV calculation
           }
         } else {
           // For subject with >2 baths, use ±1 bathroom rule (rounded for half baths)
           const bathDiff = Math.abs((baths as number) - subjectDetails.baths);
           if (bathDiff > 1.5) { // Allow up to 1.5 difference to handle half-bath variations
-            console.log(`   ⚠️  Filtered out ${address}: bathroom mismatch (${baths} vs ${subjectDetails.baths}, diff: ${bathDiff.toFixed(1)})`);
             continue;
           }
         }
@@ -783,7 +752,6 @@ Return exactly this JSON structure:
         // 3. Square footage: ±20% max
         const sqftVariance = Math.abs(sqft - subjectDetails.sqft) / subjectDetails.sqft;
         if (sqftVariance > 0.20) {
-          console.log(`   ⚠️  Filtered out ${address}: size variance too high (${(sqftVariance * 100).toFixed(1)}% > 20% limit)`);
           continue;
         }
 
@@ -792,11 +760,9 @@ Return exactly this JSON structure:
           const ageGroup = this.getAgeGroup(subjectDetails.yearBuilt);
           const compAgeGroup = this.getAgeGroup(yearBuilt as number);
           if (!this.isAdjacentAgeGroup(ageGroup, compAgeGroup)) {
-            console.log(`   ⚠️  Filtered out ${address}: age group mismatch (${compAgeGroup} vs ${ageGroup})`);
             continue;
           }
         } else {
-          console.log(`   ℹ️  Skipping age-group filter: missing year built`);
         }
       }
 
@@ -809,12 +775,9 @@ Return exactly this JSON structure:
         const MAX_SIZE_VARIANCE = 0.20; // 20%
 
         if (sizeVariance > MAX_SIZE_VARIANCE) {
-          console.log(`   ❌ REJECTED ${address}: Size variance too high (${(sizeVariance * 100).toFixed(1)}% > ${(MAX_SIZE_VARIANCE * 100)}%)`);
-          console.log(`      Subject: ${subjectDetails.sqft}sqft | Comp: ${sqft}sqft`);
           continue; // Hard rejection
         }
 
-        console.log(`   ✅ SIZE QUALIFIED ${address}: ${(sizeVariance * 100).toFixed(1)}% variance (within ${(MAX_SIZE_VARIANCE * 100)}% limit)`);
       }
 
       // TIERED TIME WINDOW FILTERING
@@ -822,13 +785,9 @@ Return exactly this JSON structure:
       const MAX_TIME_MONTHS = 18;
 
       if (Number.isFinite(ageInMonths) && ageInMonths <= IDEAL_TIME_MONTHS) {
-        console.log(`   ✅ TIME QUALIFIED ${address}: Recent sale (${ageInMonths} months)`);
       } else if (Number.isFinite(ageInMonths) && ageInMonths <= MAX_TIME_MONTHS) {
-        console.log(`   ⚠️  TIME EXTENDED ${address}: Extended time range (${ageInMonths} months) - may need market adjustments`);
       } else if (!Number.isFinite(ageInMonths)) {
-        console.log(`   ℹ️  Skipping time window filter for ${address}: missing sold date`);
       } else {
-        console.log(`   ❌ REJECTED ${address}: Too old (${ageInMonths} months > ${MAX_TIME_MONTHS} months)`);
         continue;
       }
 
@@ -853,7 +812,6 @@ Return exactly this JSON structure:
         condition: 'renovated' // Assume renovated for ARV analysis
       });
 
-      console.log(`   ✅ Added: ${address} - $${price.toLocaleString()} - ${sqft}sqft - Built: ${yearBuilt}`);
     }
 
     return comps;
@@ -900,16 +858,13 @@ Return exactly this JSON structure:
           (async () => {
             let dist = await this.calculateDistance(c.address, subjectLat, subjectLon, 7000);
             if (!Number.isFinite(dist)) {
-              console.log(`   ⚠️  Skipping distance filter for ${c.address}: geocoding failed`);
               out.push({ ...c, distance: NaN as any });
               return;
             }
             if (dist > maxMiles) {
-              console.log(`   ❌ REJECTED ${c.address}: Too far (${dist.toFixed(2)}mi > ${maxMiles}mi limit)`);
               return;
             }
             if (dist > idealMiles) {
-              console.log(`   ⚠️  EXTENDED DISTANCE ${c.address}: (${dist.toFixed(2)}mi > ${idealMiles}mi ideal)`);
             }
             out.push({ ...c, distance: dist });
           })().finally(() => { active--; next(); });
@@ -943,31 +898,23 @@ Return exactly this JSON structure:
     const seen = new Set<string>();
     const deduplicated: ComparableProperty[] = [];
 
-    console.log(`   🔍 DEDUPLICATION ANALYSIS: Starting with ${comps.length} properties`);
 
     for (const comp of comps) {
       // Normalize address for comparison (lowercase, remove extra spaces)
       const normalizedAddress = comp.address.toLowerCase().trim().replace(/\s+/g, ' ');
 
-      console.log(`   🔍 CHECKING: "${comp.address}" → normalized: "${normalizedAddress}"`);
-      console.log(`   📊 Property details: $${comp.price?.toLocaleString()} | ${comp.sqft}sqft | ${comp.soldDate} | ${comp.source}`);
 
       if (!seen.has(normalizedAddress)) {
         seen.add(normalizedAddress);
         deduplicated.push(comp);
-        console.log(`   ✅ KEPT: ${comp.address} (first occurrence)`);
       } else {
-        console.log(`   ❌ DUPLICATE REMOVED: ${comp.address} (already seen as "${normalizedAddress}")`);
         // Show which property was kept vs removed
         const existing = deduplicated.find(d => d.address.toLowerCase().trim().replace(/\s+/g, ' ') === normalizedAddress);
         if (existing) {
-          console.log(`   📊 KEPT: ${existing.address} | $${existing.price?.toLocaleString()} | ${existing.soldDate}`);
-          console.log(`   📊 REMOVED: ${comp.address} | $${comp.price?.toLocaleString()} | ${comp.soldDate}`);
         }
       }
     }
 
-    console.log(`   📊 Deduplication: ${comps.length} → ${deduplicated.length} unique properties`);
     return deduplicated;
   }
 
@@ -986,14 +933,12 @@ Return exactly this JSON structure:
     const kept = withPpsf.filter(c => {
       const variance = Math.abs(c.ppsf - median) / median;
       if (variance > 0.25) {
-        console.log(`   🚫 Removed outlier: ${c.address} - PPSF: $${c.ppsf.toFixed(2)} (${(variance * 100).toFixed(1)}% from median)`);
         return false;
       }
       return true;
     }).map(({ ppsf, ...rest }) => rest);
 
     const result = [...kept, ...missing];
-    console.log(`   📊 PPSF variance reduction: ${comps.length} → ${result.length} comps (median PPSF: $${median.toFixed(2)})`);
     return result;
   }
 
@@ -1152,36 +1097,21 @@ async function testFindComparables() {
     process.exit(1);
   }
 
-  console.log('📍 GEOCODING:', address);
   const service = new VertexComparableSearchService();
 
   // Get coordinates for display
   const coords = await service['geocodeWithTimeout'](address, 5000);
   if (coords) {
-    console.log(`   ✅ Coordinates: ${coords.lat}, ${coords.lon}`);
   }
 
-  console.log('\n🔍 STEP 3: FINDING COMPARABLES');
-  console.log('============================================================');
 
   const result = await service.findComparables(address);
 
   if (result.success && result.comparables.length > 0) {
-    console.log(`✅ Found ${result.comparables.length} comparables:`);
     result.comparables.forEach((comp, i) => {
-      console.log(`   ${i + 1}. ${comp.address}`);
-      console.log(`      Price: $${comp.price.toLocaleString()}`);
-      console.log(`      Size: ${comp.sqft} sqft (${comp.beds}bd/${comp.baths}ba)`);
-      console.log(`      Built: ${comp.yearBuilt}`);
-      console.log(`      Sold: ${comp.soldDate}`);
-      console.log(`      Distance: ${comp.distance.toFixed(2)} miles`);
-      console.log(`      Source: ${comp.source}`);
-      console.log('');
     });
   } else {
-    console.log('❌ No comparables found');
     if (result.error) {
-      console.log(`   Error: ${result.error}`);
     }
   }
 }

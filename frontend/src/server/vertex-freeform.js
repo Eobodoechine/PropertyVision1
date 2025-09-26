@@ -21,18 +21,7 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
         req.end();
     });
 }
-export async function groundedFreeform(opts) {
-    const url = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
-    const payload = {
-        contents: [{ role: 'user', parts: [{ text: opts.prompt }] }],
-        generationConfig: { temperature: 0, maxOutputTokens: opts.maxOutputTokens ?? 1500 },
-        tools: [{ google_search: {} }]
-    };
-    const res = await httpsPostJson(url, payload, { Authorization: `Bearer ${opts.accessToken}` }, opts.timeoutMs ?? 60000);
-    const parts = res?.candidates?.[0]?.content?.parts || [];
-    const text = parts.map((p) => p?.text || '').join('');
-    return { text, response: res };
-}
+// REMOVED: groundedFreeform function - replaced with deterministic vertexGenerate
 // Service account token generation
 async function getServiceAccountToken(sa, scope) {
     const iat = Math.floor(Date.now() / 1000);

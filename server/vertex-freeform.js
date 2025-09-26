@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import https from 'https';
-async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
+async function httpsPostJson(url, payload, headers, timeoutMs = 600000) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const body = JSON.stringify(payload);
@@ -8,6 +8,7 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
             let data = '';
             res.on('data', c => (data += c));
             res.on('end', () => {
+                clearTimeout(timer);
                 try {
                     resolve(JSON.parse(data));
                 }
@@ -16,23 +17,19 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
                 }
             });
         });
-        req.on('error', reject);
+        const timer = setTimeout(() => {
+            req.destroy(new Error('request-timeout'));
+        }, timeoutMs);
+        req.on('error', (err) => {
+            clearTimeout(timer);
+            reject(err);
+        });
+        req.on('close', () => clearTimeout(timer));
         req.write(body);
         req.end();
     });
 }
-export async function groundedFreeform(opts) {
-    const url = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
-    const payload = {
-        contents: [{ role: 'user', parts: [{ text: opts.prompt }] }],
-        generationConfig: { temperature: 0, maxOutputTokens: opts.maxOutputTokens ?? 1500 },
-        tools: [{ google_search: {} }]
-    };
-    const res = await httpsPostJson(url, payload, { Authorization: `Bearer ${opts.accessToken}` }, opts.timeoutMs ?? 60000);
-    const parts = res?.candidates?.[0]?.content?.parts || [];
-    const text = parts.map((p) => p?.text || '').join('');
-    return { text, response: res };
-}
+// REMOVED: groundedFreeform function - replaced with deterministic vertexGenerate
 // Service account token generation
 async function getServiceAccountToken(sa, scope) {
     const iat = Math.floor(Date.now() / 1000);
@@ -53,20 +50,30 @@ async function getServiceAccountToken(sa, scope) {
         throw new Error('sa-token-failed');
     return resp.access_token;
 }
-async function httpsPostForm(url, body, headers, timeoutMs) {
+async function httpsPostForm(url, body, headers, timeoutMs = 600000) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { ...headers, 'Content-Length': Buffer.byteLength(body).toString() } }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
-            res.on('end', () => { try {
-                resolve(JSON.parse(data));
-            }
-            catch {
-                resolve(null);
-            } });
+            res.on('end', () => {
+                clearTimeout(timer);
+                try {
+                    resolve(JSON.parse(data));
+                }
+                catch {
+                    resolve(null);
+                }
+            });
         });
-        req.on('error', reject);
+        const timer = setTimeout(() => {
+            req.destroy(new Error('request-timeout'));
+        }, timeoutMs);
+        req.on('error', (err) => {
+            clearTimeout(timer);
+            reject(err);
+        });
+        req.on('close', () => clearTimeout(timer));
         req.write(body);
         req.end();
     });
@@ -89,7 +96,7 @@ export async function vertexGenerate(opts) {
         payload.tools = [{ google_search: {} }];
     if (opts.responseSchema)
         payload.generationConfig.responseSchema = opts.responseSchema;
-    const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
+    const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs ?? 600000);
     const text = res?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('') || '';
     return text;
 }
