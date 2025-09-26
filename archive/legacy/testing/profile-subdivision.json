@@ -1,0 +1,74 @@
+{
+  "comps": [
+    {
+      "address": "235 Surrey Park Dr, Fayetteville, GA 30215",
+      "price": 428000,
+      "soldDate": "2025-09-17",
+      "beds": 4,
+      "baths": 2,
+      "sqft": 1914,
+      "yearBuilt": 1993,
+      "source": "https://www.realtor.com/realestateandhomes-detail/235-Surrey-Park-Dr_Fayetteville_GA_30215_M59654-29345"
+    },
+    {
+      "address": "185 Stayman Park, Fayetteville, GA 30215",
+      "price": 385500,
+      "soldDate": "2024-12-31",
+      "beds": 3,
+      "baths": 2.5,
+      "sqft": 1906,
+      "yearBuilt": 2002,
+      "source": "https://www.realtor.com/realestateandhomes-detail/185-Stayman-Park_Fayetteville_GA_30215_M67703-49354"
+    },
+    {
+      "address": "115 Sunderland Cir, Fayetteville, GA 30215",
+      "price": 410000,
+      "soldDate": "2025-08-21",
+      "beds": 4,
+      "baths": 3,
+      "sqft": 2313,
+      "yearBuilt": 2001,
+      "source": "https://www.zillow.com/homedetails/115-Sunderland-Cir-Fayetteville-GA-30215/68391895_zpid/"
+    },
+    {
+      "address": "835 Virginia Parks, Fayetteville, GA 30215",
+      "price": 423000,
+      "soldDate": "2025-08-21",
+      "beds": 4,
+      "baths": 3,
+      "sqft": 2735,
+      "yearBuilt": 2006,
+      "source": "https://www.zillow.com/homedetails/835-Virginia-Parks-Fayetteville-GA-30215/84434898_zpid/"
+    },
+    {
+      "address": "105 Bailey Ct, Fayetteville, GA 30215",
+      "price": 392000,
+      "soldDate": "2024-05-07",
+      "beds": 4,
+      "baths": 2,
+      "sqft": 2134,
+      "yearBuilt": 1994,
+      "source": "https://www.zillow.com/homedetails/105-Bailey-Ct-Fayetteville-GA-30215/14618392_zpid/"
+    },
+    {
+      "address": "115 Brookwood Ln, Fayetteville, GA 30215",
+      "price": 360000,
+      "soldDate": "2025-09-09",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 1897,
+      "yearBuilt": 1985,
+      "source": "https://www.zillow.com/homedetails/115-Brookwood-Ln-Fayetteville-GA-30215/14616949_zpid/"
+    },
+    {
+      "address": "280 Ridgemont Dr, Fayetteville, GA 30215",
+      "price": 429000,
+      "soldDate": "2025-09-05",
+      "beds": 3,
+      "baths": 2,
+      "sqft": 2350,
+      "yearBuilt": 1988,
+      "source": "https://www.redfin.com/GA/Fayetteville/280-Ridgemont-Dr-30215/home/25014938"
+    }
+  ]
+}

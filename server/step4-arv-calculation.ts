@@ -347,7 +347,7 @@ class ARVCalculationService {
       return comparables;
     }
 
-    console.log(`🔍 Starting enhanced outlier detection on ${comparables.length} comparables...`);
+    console.log(`🔍 Starting Sequential Gap Outlier Detection on ${comparables.length} comparables...`);
 
     // Apply GLA bucketing first
     const glaFilteredComps = this.applyGLABucketing(comparables, subjectSqft);
@@ -358,31 +358,23 @@ class ARVCalculationService {
       return comparables;
     }
 
-    // Determine sample-size mode
-    const n = glaFilteredComps.length;
-    const isLargeSample = n >= 8;
-    
-    console.log(`📊 Sample Size Mode: ${isLargeSample ? 'Mode A (n≥8)' : 'Mode B (n<8)'} - ${n} comparables`);
-
-    let filteredComps = [...glaFilteredComps];
-
-    if (isLargeSample) {
-      // Mode A (n ≥ 8): Log-PPSF robust z (MAD) approach
-      filteredComps = this.modeALargeSampleOutlierDetection(glaFilteredComps);
-    } else {
-      // Mode B (n < 8): Median-ratio and clustering approach
-      filteredComps = this.modeBSmallSampleOutlierDetection(glaFilteredComps);
+    if (glaFilteredComps.length < 3) {
+      console.log(`⚠️ Too few comparables for gap detection (${glaFilteredComps.length} < 3), keeping all`);
+      return glaFilteredComps;
     }
+
+    // Apply sequential gap outlier detection
+    const filteredComps = this.sequentialGapOutlierDetection(glaFilteredComps);
 
     // Check if we need complex escalation
     if (filteredComps.length < 3) {
       console.log(`⚠️ Thin data detected (${filteredComps.length} < 3 comps)`);
       console.log(`📋 Timeline expansion requires re-searching - handled at full-analysis level`);
       console.log(`📋 Proceeding with GLA bucketing escalation only...`);
-      filteredComps = this.applyComplexEscalation(comparables, subjectSqft, 2);
+      return this.applyComplexEscalation(comparables, subjectSqft, 2);
     }
 
-    console.log(`📊 Enhanced Outlier Detection Results:`);
+    console.log(`📊 Sequential Gap Outlier Detection Results:`);
     console.log(`   Original comparables: ${comparables.length}`);
     console.log(`   Filtered comparables: ${filteredComps.length}`);
     console.log(`   Removed outliers: ${comparables.length - filteredComps.length}`);
@@ -391,130 +383,134 @@ class ARVCalculationService {
   }
 
   /**
-   * Mode A (n ≥ 8): Log-PPSF robust z (MAD) outlier detection
+   * Sequential Gap Outlier Detection
+   * 1. Sort both price and PPSF arrays from highest to lowest
+   * 2. Remove single high anomalies at the top (if gap >10%)
+   * 3. Find first big gap (>10%) and remove everything below it
+   * 4. Only flag properties that fail BOTH price and PPSF tests
    */
-  private modeALargeSampleOutlierDetection(comparables: ComparableProperty[]): ComparableProperty[] {
-    console.log(`📊 Mode A: Large sample outlier detection (n=${comparables.length})`);
+  private sequentialGapOutlierDetection(comparables: ComparableProperty[], gapThreshold: number = 0.10): ComparableProperty[] {
+    console.log(`📊 Sequential Gap Detection: ${comparables.length} comparables, ${(gapThreshold * 100).toFixed(1)}% threshold`);
 
-    // Calculate log-PPSF for robust statistics
-    const logPpsfData = comparables.map(comp => ({
-      comp,
-      logPpsf: Math.log(comp.price / comp.sqft),
-      ppsf: comp.price / comp.sqft
-    }));
+    // Step 1: Sort both price and PPSF arrays from highest to lowest
+    const sortedByPrice = [...comparables].sort((a, b) => b.price - a.price);
+    const sortedByPpsf = [...comparables].sort((a, b) => (b.price / b.sqft) - (a.price / a.sqft));
 
-    // Calculate Median Absolute Deviation (MAD)
-    const logPpsfValues = logPpsfData.map(d => d.logPpsf).sort((a, b) => a - b);
-    const median = this.calculatePercentile(logPpsfValues, 50);
-    
-    // Calculate MAD
-    const deviations = logPpsfData.map(d => Math.abs(d.logPpsf - median));
-    const mad = this.calculatePercentile(deviations.sort((a, b) => a - b), 50);
-    
-    // Robust z-score threshold
-    const robustZThreshold = -2.5;
-    const threshold = median + robustZThreshold * (mad * 1.4826); // 1.4826 makes MAD consistent with std dev for normal distribution
+    console.log(`📊 Price range: $${sortedByPrice[0].price.toLocaleString()} → $${sortedByPrice[sortedByPrice.length-1].price.toLocaleString()}`);
+    console.log(`📊 PPSF range: $${(sortedByPpsf[0].price / sortedByPpsf[0].sqft).toFixed(2)} → $${(sortedByPpsf[sortedByPpsf.length-1].price / sortedByPpsf[sortedByPpsf.length-1].sqft).toFixed(2)}/sqft`);
 
-    console.log(`   Log-PPSF median: ${median.toFixed(4)}`);
-    console.log(`   MAD: ${mad.toFixed(4)}`);
-    console.log(`   Robust z threshold: ${robustZThreshold} (log-PPSF < ${threshold.toFixed(4)})`);
+    // Step 2: Check for gaps in price array
+    const priceFailures = new Set<string>();
+    let priceGapFound = false;
 
-    // Filter outliers
-    const filteredComps = logPpsfData
-      .filter(d => d.logPpsf >= threshold)
-      .map(d => d.comp);
+    // First check for single high anomaly at the top
+    if (sortedByPrice.length >= 3) {
+      const highest = sortedByPrice[0];
+      const second = sortedByPrice[1];
+      const gap = highest.price - second.price;
+      const gapPercentage = gap / highest.price;
 
-    const outliers = logPpsfData.filter(d => d.logPpsf < threshold);
-    if (outliers.length > 0) {
-      console.log(`❌ Dropped ${outliers.length} outliers (robust z < ${robustZThreshold}):`);
-      outliers.forEach(outlier => {
-        console.log(`   ${outlier.comp.address}: $${outlier.ppsf.toFixed(2)}/sqft (log-PPSF: ${outlier.logPpsf.toFixed(4)})`);
-      });
-    }
-
-    return filteredComps;
-  }
-
-  /**
-   * Mode B (n < 8): Median-ratio and clustering outlier detection
-   */
-  private modeBSmallSampleOutlierDetection(comparables: ComparableProperty[]): ComparableProperty[] {
-    console.log(`📊 Mode B: Small sample outlier detection (n=${comparables.length})`);
-
-    // Calculate PPSF and sort
-    const ppsfData = comparables.map(comp => ({
-      comp,
-      ppsf: comp.price / comp.sqft
-    })).sort((a, b) => a.ppsf - b.ppsf);
-
-    console.log(`   PPSF sorted: ${ppsfData.map(d => `$${d.ppsf.toFixed(2)}`).join(', ')}`);
-
-    // Median-ratio approach
-    const medianPpsf = this.calculatePercentile(ppsfData.map(d => d.ppsf), 50);
-    const [low, mid, high] = [
-      ppsfData[0].ppsf,
-      medianPpsf,
-      ppsfData[ppsfData.length - 1].ppsf
-    ];
-
-    console.log(`   [low, mid, high]: [$${low.toFixed(2)}, $${mid.toFixed(2)}, $${high.toFixed(2)}]`);
-
-    // Dynamic threshold based on high/median ratio
-    let tLow = 0.75; // Default threshold
-    if (high / medianPpsf >= 1.30) {
-      tLow = 0.70;
-      console.log(`   High/median ratio ≥ 1.30, using T_low = 0.70`);
-    } else {
-      console.log(`   Using default T_low = 0.75`);
-    }
-
-    // Flag low outliers - check ALL comps below threshold, not just the lowest
-    const flaggedOutliers: typeof ppsfData = [];
-    const keepComps: typeof ppsfData = [];
-
-    for (const data of ppsfData) {
-      const ratio = data.ppsf / medianPpsf;
-      if (ratio < tLow) {
-        flaggedOutliers.push(data);
-        console.log(`   🚩 FLAGGED: ${data.comp.address} - $${data.ppsf.toFixed(2)}/sqft (ratio: ${ratio.toFixed(2)} < ${tLow})`);
-      } else {
-        keepComps.push(data);
+      if (gapPercentage > gapThreshold) {
+        console.log(`❌ High price anomaly: ${highest.address} ($${highest.price.toLocaleString()}) vs ${second.address} ($${second.price.toLocaleString()}) = ${(gapPercentage * 100).toFixed(1)}% gap`);
+        priceFailures.add(highest.address);
       }
     }
 
-    // K=2 clustering on log(PPSF) to validate
-    if (flaggedOutliers.length > 0) {
-      const logPpsfValues = ppsfData.map(d => Math.log(d.ppsf));
-      const lowLogPpsf = Math.log(low);
-      
-      // Simple clustering: if low value is isolated
-      const otherLogPpsf = logPpsfValues.slice(1);
-      const avgOtherLogPpsf = otherLogPpsf.reduce((sum, val) => sum + val, 0) / otherLogPpsf.length;
-      const isolationThreshold = Math.abs(lowLogPpsf - avgOtherLogPpsf);
-      
-      console.log(`   K=2 clustering: low log-PPSF isolation = ${isolationThreshold.toFixed(4)}`);
-      
-      if (isolationThreshold > 0.3) { // Threshold for singleton cluster
-        console.log(`   ✅ Clustering confirms low outlier as singleton cluster`);
-      } else {
-        console.log(`   ⚠️ Clustering suggests low value may not be isolated`);
+    // Check for bottom cutoff starting from appropriate position
+    const startIndex = priceFailures.has(sortedByPrice[0].address) ? 2 : 1;
+
+    for (let i = startIndex; i < sortedByPrice.length; i++) {
+      const higher = sortedByPrice[i - 1];
+      const lower = sortedByPrice[i];
+
+      if (priceFailures.has(higher.address)) continue;
+
+      const gap = higher.price - lower.price;
+      const gapPercentage = gap / higher.price;
+
+      if (!priceGapFound && gapPercentage > gapThreshold) {
+        console.log(`❌ Price cutoff gap: ${higher.address} ($${higher.price.toLocaleString()}) vs ${lower.address} ($${lower.price.toLocaleString()}) = ${(gapPercentage * 100).toFixed(1)}% gap`);
+        priceGapFound = true;
+
+        // Flag this property and all remaining lower properties
+        for (let j = i; j < sortedByPrice.length; j++) {
+          priceFailures.add(sortedByPrice[j].address);
+        }
+        break;
       }
     }
 
-    // Keep flagged outliers as context floors only (not for ARV reconciliation)
-    console.log(`📊 Mode B Results:`);
-    console.log(`   Context floors (flagged but kept): ${flaggedOutliers.length}`);
-    console.log(`   Primary comps (for ARV): ${keepComps.length}`);
+    // Step 3: Check for gaps in PPSF array
+    const ppsfFailures = new Set<string>();
+    let ppsfGapFound = false;
 
-    // Return only the comps that are NOT flagged outliers for ARV calculation
-    const primaryComps = keepComps.map(data => data.comp);
-    
-    if (flaggedOutliers.length > 0) {
-      console.log(`⚠️ ${flaggedOutliers.length} comps flagged as context floors, using ${primaryComps.length} primary comps for ARV`);
+    // First check for single high anomaly at the top
+    if (sortedByPpsf.length >= 3) {
+      const highest = sortedByPpsf[0];
+      const second = sortedByPpsf[1];
+      const highestPpsf = highest.price / highest.sqft;
+      const secondPpsf = second.price / second.sqft;
+      const gap = highestPpsf - secondPpsf;
+      const gapPercentage = gap / highestPpsf;
+
+      if (gapPercentage > gapThreshold) {
+        console.log(`❌ High PPSF anomaly: ${highest.address} ($${highestPpsf.toFixed(2)}/sqft) vs ${second.address} ($${secondPpsf.toFixed(2)}/sqft) = ${(gapPercentage * 100).toFixed(1)}% gap`);
+        ppsfFailures.add(highest.address);
+      }
     }
-    
-    return primaryComps;
+
+    // Check for bottom cutoff starting from appropriate position
+    const ppsfStartIndex = ppsfFailures.has(sortedByPpsf[0].address) ? 2 : 1;
+
+    for (let i = ppsfStartIndex; i < sortedByPpsf.length; i++) {
+      const higher = sortedByPpsf[i - 1];
+      const lower = sortedByPpsf[i];
+
+      if (ppsfFailures.has(higher.address)) continue;
+
+      const higherPpsf = higher.price / higher.sqft;
+      const lowerPpsf = lower.price / lower.sqft;
+      const gap = higherPpsf - lowerPpsf;
+      const gapPercentage = gap / higherPpsf;
+
+      if (!ppsfGapFound && gapPercentage > gapThreshold) {
+        console.log(`❌ PPSF cutoff gap: ${higher.address} ($${higherPpsf.toFixed(2)}/sqft) vs ${lower.address} ($${lowerPpsf.toFixed(2)}/sqft) = ${(gapPercentage * 100).toFixed(1)}% gap`);
+        ppsfGapFound = true;
+
+        // Flag this property and all remaining lower properties
+        for (let j = i; j < sortedByPpsf.length; j++) {
+          ppsfFailures.add(sortedByPpsf[j].address);
+        }
+        break;
+      }
+    }
+
+    // Step 4: Only remove properties that fail BOTH tests
+    const outliers: ComparableProperty[] = [];
+    const kept: ComparableProperty[] = [];
+
+    comparables.forEach(comp => {
+      const failsPrice = priceFailures.has(comp.address);
+      const failsPpsf = ppsfFailures.has(comp.address);
+      const isOutlier = failsPrice && failsPpsf;
+
+      if (isOutlier) {
+        console.log(`❌ Outlier: ${comp.address} (fails both price and PPSF tests)`);
+        outliers.push(comp);
+      } else {
+        kept.push(comp);
+      }
+    });
+
+    console.log(`📊 Gap Detection Summary: ${outliers.length} outliers, ${kept.length} kept`);
+    console.log(`   Price failures: ${priceFailures.size}, PPSF failures: ${ppsfFailures.size}`);
+
+    return kept;
   }
+
+  // OLD OUTLIER DETECTION METHODS ARCHIVED
+  // Previous MAD-based and median-ratio methods moved to:
+  // /archive/legacy/server/outlier-detection-old-methods.ts
 
   /**
    * Complex escalation process with multiple steps
@@ -604,7 +600,7 @@ class ARVCalculationService {
     const glaFilteredComps = this.applyGLABucketing(comparables, subjectSqft);
     
     // Step 2: Outlier Detection
-    const outlierFilteredComps = this.applyCoreOutlierDetection(glaFilteredComps, subjectSqft);
+    const outlierFilteredComps = this.applyCoreOutlierDetection(glaFilteredComps);
     
     // Step 3: Bathroom Analysis & Penalties (if needed)
     // Note: This would be implemented based on subject property bathroom count
@@ -633,19 +629,13 @@ class ARVCalculationService {
   /**
    * Core outlier detection without escalation (to avoid recursion)
    */
-  private applyCoreOutlierDetection(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
+  private applyCoreOutlierDetection(comparables: ComparableProperty[]): ComparableProperty[] {
     if (comparables.length < 3) {
       return comparables;
     }
 
-    const n = comparables.length;
-    const isLargeSample = n >= 8;
-
-    if (isLargeSample) {
-      return this.modeALargeSampleOutlierDetection(comparables);
-    } else {
-      return this.modeBSmallSampleOutlierDetection(comparables);
-    }
+    // Use new sequential gap outlier detection
+    return this.sequentialGapOutlierDetection(comparables);
   }
 
   /**

@@ -1,0 +1,90 @@
+[
+  {
+    "name": "zip-city-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "165 McElwaney Way, Fayetteville, GA 30215 | $450,000 | 2025-09-18 | 4 | 2.5 | 2885 | | 0.0 | https://www.realtor.com/realestateandhomes-detail/30215/recently-sold\n185 Stayman Park, Fayetteville, GA 30215 | $385,500 | 2025-09-10 | 3 | 2.5 | 1906 | | 0.0 | https://www.trulia.com/GA/Fayetteville/sold/\n120 Oak Shadow Way, Fayetteville, GA 30215 | $908,000 | 2025-07-08 | 5 | 5 | 4730 | | 0.0 | https://www.redfin.com/GA/Fayetteville/zip-30215/recently-sold\n110 Isleworth Way, Fayetteville, GA 30215 | $1,095,000 | 2025-06-23 | | 6 | 4621 | | 0.0 | https://www.redfin.com/GA/Fayetteville/recently-sold\n275 Zelkova Dr, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.homes.com/fayetteville-ga/sold/\n115 Brookwood Ln, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.homes.com/fayetteville-ga/sold/\n310 Discovery Lake Dr, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.homes.com/fayetteville-ga/sold/\n203 Shelby Ln, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.homes.com/fayetteville-ga/sold/\n150 Browns Crossing Dr, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n175 Stillwood Dr, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n105 Postwood Dr, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n426 Old Senoia Rd, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n105 Holly Ave, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n100 Chantilly Ln, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n155 Lakemont Cir, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n220 Oak St, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n165 Nandover Way, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga-30215/sold/\n287 Players Cir, Fayetteville, GA 30215 | | | | | | | 0.0 | https://www.zillow.com/fayetteville-ga/sold/\n120 Emily Park, Fayetteville, GA 30215 | $299,000 | | 2 | 2 | 1535 | | 0.0 | https://www.zillow.com/fayetteville-ga/sold/\n228 Otter Cir, Fayetteville, GA 30215 | $475,000 | | 5 | 3 | 3003 | | 0.0 | https://www.zillow.com/fayetteville-ga/sold/"
+  },
+  {
+    "name": "ring-1mi-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "ring-2mi-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "ring-3mi-strict",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "renovated-terms-strict-20",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "table-default-20",
+    "strict": false,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "Below is a table of 20 single-family properties that have been sold within the last 18 months and are located within a 3-mile radius of 185 Jordan Pl, Fayetteville, GA 30215.\n\n| Address | Sold Price | Sold Date (YYYY-MM-DD) | Beds | Baths | Sqft | Year Built | Source URL |\n|---|---|---|---|---|---|---|---|\n| 125 Sterling Rd, Fayetteville, GA 30215 | $430,000 | 2024-06-14 | 4 | 2.5 | 2,450 | 1998 | [https://www.zillow.com/homedetails/125-Sterling-Rd-Fayetteville-GA-30215/14695917_zpid/](https://www.zillow.com/homedetails/125-Sterling-Rd-Fayetteville-GA-30215/14695917_zpid/) |\n| 115 Wendolyn Trce, Fayetteville, GA 30215 | $455,000 | 2024-05-24 | 4 | 3 | 2,600 | 1997 | [https://www.redfin.com/GA/Fayetteville/115-Wendolyn-Trce-30215/home/24757969](https://www.redfin.com/GA/Fayetteville/115-Wendolyn-Trce-30215/home/24757969) |\n| 210 Bailey Cir, Fayetteville, GA 30215 | $415,000 | 2024-05-17 | 4 | 2.5 | 2,300 | 1996 | [https://www.realtor.com/realestateandhomes-detail/210-Bailey-Cir_Fayetteville_GA_30215_M68734-18159](https://www.realtor.com/realestateandhomes-detail/210-Bailey-Cir_Fayetteville_GA_30215_M68734-18159) |\n| 150 Sheldon Way, Fayetteville, GA 30215 | $475,000 | 2024-04-26 | 5 | 3 | 2,800 | 1997 | [https://www.zillow.com/homedetails/150-Sheldon-Way-Fayetteville-GA-30215/14695933_zpid/](https://www.zillow.com/homedetails/150-Sheldon-Way-Fayetteville-GA-30215/14695933_zpid/) |\n| 190 Jordan Pl, Fayetteville, GA 30215 | $420,000 | 2024-04-19 | 4 | 2.5 | 2,400 | 1998 | [https://www.redfin.com/GA/Fayetteville/190-Jordan-Pl-30215/home/24757869](https://www.redfin.com/GA/Fayetteville/190-Jordan-Pl-30215/home/24757869) |\n| 130 Sterling Rd, Fayetteville, GA 30215 | $440,000 | 2024-03-22 | 4 | 3 | 2,550 | 1999 | [https://www.realtor.com/realestateandhomes-detail/130-Sterling-Rd_Fayetteville_GA_30215_M68734-18339](https://www.realtor.com/realestateandhomes-detail/130-Sterling-Rd_Fayetteville_GA_30215_M68734-18339) |\n| 225 Bailey Cir, Fayetteville, GA 30215 | $405,000 | 2024-03-15 | 4 | 2.5 | 2,250 | 1997 | [https://www.zillow.com/homedetails/225-Bailey-Cir-Fayetteville-GA-30215/14695903_zpid/](https://www.zillow.com/homedetails/225-Bailey-Cir-Fayetteville-GA-30215/14695903_zpid/) |\n| 165 Wendolyn Trce, Fayetteville, GA 30215 | $465,000 | 2024-02-16 | 5 | 3 | 2,750 | 1998 | [https://www.redfin.com/GA/Fayetteville/165-Wendolyn-Trce-30215/home/24757981](https://www.redfin.com/GA/Fayetteville/165-Wendolyn-Trce-30215/home/24757981) |\n| 205 Sheldon Way, Fayetteville, GA 30215 | $485,000 | 2024-01-26 | 5 | 3.5 | 3,000 | 1996 | [https://www.realtor.com/realestateandhomes-detail/205-Sheldon-Way_Fayetteville_GA_30215_M68734-18127](https://www.realtor.com/realestateandhomes-detail/205-Sheldon-Way_Fayetteville_GA_30215_M68734-18127) |\n| 140 Jordan Pl, Fayetteville, GA 30215 | $410,000 | 2024-01-19 | 4 | 2.5 | 2,350 | 1999 | [https://www.zillow.com/homedetails/140-Jordan-Pl-Fayetteville-GA-30215/14695881_zpid/](https://www.zillow.com/homedetails/140-Jordan-Pl-Fayetteville-GA-30215/14695881_zpid/) |\n| 175 Sterling Rd, Fayetteville, GA 30215 | $450,000 | 2023-12-15 | 4 | 3 | 2,650 | 1998 | [https://www.redfin.com/GA/Fayetteville/175-Sterling-Rd-30215/home/24757902](https://www.redfin.com/GA/Fayetteville/175-Sterling-Rd-30215/home/24757902) |\n| 240 Bailey Cir, Fayetteville, GA 30215 | $395,000 | 2023-11-17 | 4 | 2.5 | 2,200 | 1996 | [https://www.realtor.com/realestateandhomes-detail/240-Bailey-Cir_Fayetteville_GA_30215_M68734-18175](https://www.realtor.com/realestateandhomes-detail/240-Bailey-Cir_Fayetteville_GA_30215_M68734-18175) |\n| 180 Wendolyn Trce, Fayetteville, GA 30215 | $470,000 | 2023-10-20 | 5 | 3 | 2,850 | 1997 | [https://www.zillow.com/homedetails/180-Wendolyn-Trce-Fayetteville-GA-30215/14695954_zpid/](https://www.zillow.com/homedetails/180-Wendolyn-Trce-Fayetteville-GA-30215/14695954_zpid/) |\n| 220 Sheldon Way, Fayetteville, GA 30215 | $495,000 | 2023-09-22 | 5 | 3.5 | 3,100 | 1998 | [https://www.redfin.com/GA/Fayetteville/220-Sheldon-Way-30215/home/24757838](https://www.redfin.com/GA/Fayetteville/220-Sheldon-Way-30215/home/24757838) |\n|"
+  }
+]

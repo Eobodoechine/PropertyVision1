@@ -1,0 +1,159 @@
+🔍 DEBUG: MONTGOMERY HANGING ISSUE
+=================================
+📍 Address: 6901 Eastern Shore Rd, Montgomery, AL 36117
+
+TEST 1: PROPERTY DETAILS FETCH
+==============================
+🔍 Testing fetchPropertyDetailsViaVertex...
+   📄 Primary search response: ### Property Details for 6901 Eastern Shore Rd, Montgomery, AL 36117
+
+**Montgomery, AL** – The property at 6901 Eastern Shore Rd is a single-family home built in 1996, according to real estate listing...
+❌ Property details failed: Details fetch timeout after 30 seconds
+
+TEST 2: COMPARABLE SEARCH SERVICE INIT
+====================================
+🔍 Testing VertexComparableSearchService initialization...
+✅ Search service initialized in 0ms
+
+TEST 3: SIMPLE COMPARABLE SEARCH
+===============================
+🔍 Testing simple findComparables call...
+🔍 SEARCHING COMPARABLES: 6901 Eastern Shore Rd, Montgomery, AL 36117
+   • Radius: 1 miles
+   • Max results: 10
+   🤖 LLM Extraction: SQFT=1401, Beds=4, Baths=2, Built=1996, Subdivision=Eastern Oaks
+   📊 Parsed data: sqft=1401, beds=4, baths=2, yearBuilt=1996
+   ✅ All critical data found - Proceeding with analysis
+   🏘️  No subdivision specified — skipping subdivision runs
+   🚀 Launching 3 Vertex searches in parallel...
+   ⚠️  TIME EXTENDED 6912 Eastern Shore Rd, Montgomery, AL 36117: Extended time range (13 months) - may need market adjustments
+   ✅ Added: 6912 Eastern Shore Rd, Montgomery, AL 36117 - $170,000 - 1531sqft - Built: 1999
+   ✅ TIME QUALIFIED 2655 Queens Hollow Ct, Montgomery, AL 36117: Recent sale (6 months)
+   ✅ Added: 2655 Queens Hollow Ct, Montgomery, AL 36117 - $199,900 - 1519sqft - Built: 1994
+   ✅ TIME QUALIFIED 2643 Queens Hollow Ct, Montgomery, AL 36117: Recent sale (1 months)
+   ✅ Added: 2643 Queens Hollow Ct, Montgomery, AL 36117 - $170,000 - 1632sqft - Built: 1994
+   ✅ TIME QUALIFIED 968 Eastern Oaks Dr, Montgomery, AL 36117: Recent sale (7 months)
+   ✅ Added: 968 Eastern Oaks Dr, Montgomery, AL 36117 - $168,000 - 1377sqft - Built: 1997
+   ✅ TIME QUALIFIED 7660 Preservation Park Dr, Montgomery, AL 36117: Recent sale (0 months)
+   ✅ Added: 7660 Preservation Park Dr, Montgomery, AL 36117 - $250,000 - 1615sqft - Built: 2003
+   ✅ TIME QUALIFIED 6779 Overview Dr, Montgomery, AL 36117: Recent sale (1 months)
+   ✅ Added: 6779 Overview Dr, Montgomery, AL 36117 - $205,000 - 1558sqft - Built: 2006
+   ✅ TIME QUALIFIED 5608 Sweet Meadow Dr, Montgomery, AL 36117: Recent sale (1 months)
+   ✅ Added: 5608 Sweet Meadow Dr, Montgomery, AL 36117 - $180,000 - 1416sqft - Built: 2000
+   ✅ TIME QUALIFIED 968 Eastern Shore Rd, Montgomery, AL 36117: Recent sale (7 months)
+   ✅ Added: 968 Eastern Shore Rd, Montgomery, AL 36117 - $168,000 - 1377sqft - Built: 1997
+   ✅ TIME QUALIFIED 962 Eastern Oaks Dr, Montgomery, AL 36117: Recent sale (5 months)
+   ✅ Added: 962 Eastern Oaks Dr, Montgomery, AL 36117 - $185,000 - 1450sqft - Built: 1997
+   🔗 Aggregated total before filters: 9 unique properties
+   🔍 DETAILED PROPERTY FILTERING:
+   🔍 FILTERING 968 Eastern Oaks Dr, Montgomery, AL 36117: 3BR/2BA, 1377sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 968 Eastern Oaks Dr, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 968 Eastern Oaks Dr, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 968 Eastern Oaks Dr, Montgomery, AL 36117 - $168,000 - 1377sqft - Built: 1997
+   🔍 FILTERING 7660 Preservation Park Dr, Montgomery, AL 36117: 3BR/2BA, 1615sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 7660 Preservation Park Dr, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 7660 Preservation Park Dr, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 7660 Preservation Park Dr, Montgomery, AL 36117 - $250,000 - 1615sqft - Built: 2003
+   🔍 FILTERING 6779 Overview Dr, Montgomery, AL 36117: 3BR/2BA, 1558sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 6779 Overview Dr, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 6779 Overview Dr, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 6779 Overview Dr, Montgomery, AL 36117 - $205,000 - 1558sqft - Built: 2006
+   🔍 FILTERING 5608 Sweet Meadow Dr, Montgomery, AL 36117: 3BR/2BA, 1416sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 5608 Sweet Meadow Dr, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 5608 Sweet Meadow Dr, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 5608 Sweet Meadow Dr, Montgomery, AL 36117 - $180,000 - 1416sqft - Built: 2000
+   🔍 FILTERING 6912 Eastern Shore Rd, Montgomery, AL 36117: 3BR/1BA, 1531sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 6912 Eastern Shore Rd, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 6912 Eastern Shore Rd, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 6912 Eastern Shore Rd, Montgomery, AL 36117 - $170,000 - 1531sqft - Built: 1999
+   🔍 FILTERING 2655 Queens Hollow Ct, Montgomery, AL 36117: 3BR/2BA, 1519sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 2655 Queens Hollow Ct, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 2655 Queens Hollow Ct, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 2655 Queens Hollow Ct, Montgomery, AL 36117 - $199,900 - 1519sqft - Built: 1994
+   🔍 FILTERING 2643 Queens Hollow Ct, Montgomery, AL 36117: 3BR/2BA, 1632sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 2643 Queens Hollow Ct, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 2643 Queens Hollow Ct, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 2643 Queens Hollow Ct, Montgomery, AL 36117 - $170,000 - 1632sqft - Built: 1994
+   🔍 FILTERING 968 Eastern Shore Rd, Montgomery, AL 36117: 3BR/2BA, 1377sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 968 Eastern Shore Rd, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 968 Eastern Shore Rd, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 968 Eastern Shore Rd, Montgomery, AL 36117 - $168,000 - 1377sqft - Built: 1997
+   🔍 FILTERING 962 Eastern Oaks Dr, Montgomery, AL 36117: 3BR/1BA, 1450sqft vs Subject: ?BR/?BA, ?sqft
+   ❌ BEDROOM REJECTED 962 Eastern Oaks Dr, Montgomery, AL 36117: 3BR vs ?BR (diff: 3 > 1)
+   ✅ TIME QUALIFIED 962 Eastern Oaks Dr, Montgomery, AL 36117: Recent sale (estimated)
+   ✅ Added: 962 Eastern Oaks Dr, Montgomery, AL 36117 - $185,000 - 1450sqft - Built: 1997
+   🔍 DEDUPLICATION ANALYSIS: Starting with 9 properties
+   🔍 CHECKING: "968 Eastern Oaks Dr, Montgomery, AL 36117" → normalized: "968 eastern oaks dr, montgomery, al 36117"
+   📊 Property details: $168,000 | 1377sqft | 2025-02-18 | https://www.zillow.com/homedetails/968-Eastern-Oaks-Dr-Montgomery-AL-36117/72179158_zpid/
+   ✅ KEPT: 968 Eastern Oaks Dr, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "7660 Preservation Park Dr, Montgomery, AL 36117" → normalized: "7660 preservation park dr, montgomery, al 36117"
+   📊 Property details: $250,000 | 1615sqft | 2025-09-11 | https://www.redfin.com/AL/Montgomery/7660-Preservation-Park-Dr-36117/home/109790038
+   ✅ KEPT: 7660 Preservation Park Dr, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "6779 Overview Dr, Montgomery, AL 36117" → normalized: "6779 overview dr, montgomery, al 36117"
+   📊 Property details: $205,000 | 1558sqft | 2025-08-16 | https://www.trulia.com/p/al/montgomery/6779-overview-dr-montgomery-al-36117--2034198099
+   ✅ KEPT: 6779 Overview Dr, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "5608 Sweet Meadow Dr, Montgomery, AL 36117" → normalized: "5608 sweet meadow dr, montgomery, al 36117"
+   📊 Property details: $180,000 | 1416sqft | 2025-08-12 | https://www.realtor.com/realestateandhomes-detail/5608-Sweet-Meadow-Dr_Montgomery_AL_36117_M79984-52383
+   ✅ KEPT: 5608 Sweet Meadow Dr, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "6912 Eastern Shore Rd, Montgomery, AL 36117" → normalized: "6912 eastern shore rd, montgomery, al 36117"
+   📊 Property details: $170,000 | 1531sqft | 2024-08-20 | https://www.zillow.com/homedetails/6912-Eastern-Shore-Rd-Montgomery-AL-36117/71054188_zpid/
+   ✅ KEPT: 6912 Eastern Shore Rd, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "2655 Queens Hollow Ct, Montgomery, AL 36117" → normalized: "2655 queens hollow ct, montgomery, al 36117"
+   📊 Property details: $199,900 | 1519sqft | 2025-03-05 | https://www.zillow.com/homedetails/2655-Queens-Hollow-Ct-Montgomery-AL-36117/71054535_zpid/
+   ✅ KEPT: 2655 Queens Hollow Ct, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "2643 Queens Hollow Ct, Montgomery, AL 36117" → normalized: "2643 queens hollow ct, montgomery, al 36117"
+   📊 Property details: $170,000 | 1632sqft | 2025-08-06 | https://www.zillow.com/homedetails/2643-Queens-Hollow-Ct-Montgomery-AL-36117/71054541_zpid/
+   ✅ KEPT: 2643 Queens Hollow Ct, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "968 Eastern Shore Rd, Montgomery, AL 36117" → normalized: "968 eastern shore rd, montgomery, al 36117"
+   📊 Property details: $168,000 | 1377sqft | 2025-02-13 | https://www.realtor.com/realestateandhomes-detail/968-Eastern-Oaks-Dr_Montgomery_AL_36117_M72431-21417
+   ✅ KEPT: 968 Eastern Shore Rd, Montgomery, AL 36117 (first occurrence)
+   🔍 CHECKING: "962 Eastern Oaks Dr, Montgomery, AL 36117" → normalized: "962 eastern oaks dr, montgomery, al 36117"
+   📊 Property details: $185,000 | 1450sqft | 2025-04-17 | https://www.zillow.com/homedetails/962-Eastern-Oaks-Dr-Montgomery-AL-36117/72230137_zpid/
+   ✅ KEPT: 962 Eastern Oaks Dr, Montgomery, AL 36117 (first occurrence)
+   📊 Deduplication: 9 → 9 unique properties
+   📊 PPSF variance reduction: 9 → 9 comps (median PPSF: $127.12)
+   ❌ REJECTED 2655 Queens Hollow Ct, Montgomery, AL 36117: Too far (4.53mi > 2mi limit)
+   ❌ REJECTED 2643 Queens Hollow Ct, Montgomery, AL 36117: Too far (4.50mi > 2mi limit)
+   ❌ REJECTED 7660 Preservation Park Dr, Montgomery, AL 36117: Too far (2.93mi > 2mi limit)
+   ⚠️  EXTENDED DISTANCE 5608 Sweet Meadow Dr, Montgomery, AL 36117: (1.38mi > 1mi ideal)
+   📊 SEARCH SUMMARY:
+      🔍 Found: 9 raw comps from Vertex AI
+      ✅ Qualified: 6 comps (passed all filters)
+      ❌ Rejected: 3 comps (failed validation)
+      📍 Distance range: 0.06mi - 1.38mi
+      📐 Size range: 1,377 - 1,558 sqft
+      💲 PPSF range: $111.04 - $131.58
+   ✅ QUALIFIED COMPARABLES: 6
+   📊 Time Quality: 5 recent (≤12mo), 1 extended (12-18mo)
+   📊 Distance Quality: 5 ideal (≤1mi), 1 extended (1-2mi)
+✅ Simple search completed in 39743ms
+📊 Found 6 comparables
+🏠 Sample comparable:
+   6912 Eastern Shore Rd, Montgomery, AL 36117
+   $170,000 | 1531sqft
+
+TEST 4: ENVIRONMENT VARIABLES
+============================
+🔍 Checking critical environment variables...
+   GCP_SA_JSON: ✅ Set
+   SERVICE_ACCOUNT_JSON: ❌ Not set
+   GOOGLE_MAPS_API_KEY: ✅ Set
+   SUBDIVISION: ❌ Not set
+
+TEST 5: FILE SYSTEM ACCESS
+=========================
+🔍 Testing service account file access...
+   Service account file exists: ✅
+   Project ID: agile-device-472202-i8
+   Client email: reo-160@agile-device-472202-i8.iam.gserviceaccount.com
+
+🎯 DEBUG SUMMARY
+===============
+Property details: ❌ Failed
+Search service: ✅ Success
+
+🚨 DETAILS ERROR: Details fetch timeout after 30 seconds
+
+🔧 DEBUG COMPLETE
+================
+✅ Debug analysis completed

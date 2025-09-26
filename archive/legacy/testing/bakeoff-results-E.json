@@ -1,0 +1,31 @@
+[
+  {
+    "name": "street-cluster-no-targets-1mi",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "",
+    "error": "timeout"
+  },
+  {
+    "name": "street-cluster-no-targets-2mi",
+    "strict": true,
+    "hits": [],
+    "missing": [
+      "110 bailey ct",
+      "385 stoneridge way",
+      "560 ridgemont",
+      "12558 lakeside pkwy",
+      "280 ridgemont",
+      "125 winter valley"
+    ],
+    "text": "275 Zelkova Dr, Fayetteville, GA 30215 | $550,000 | 2024-05-24 | 4 | 4 | 2,949 | 2022 | 1.8 | https://www.zillow.com/homedetails/275-Zelkova-Dr-Fayetteville-GA-30215/2053598485_zpid/\n185 Stayman Park, Fayetteville, GA 30215 | $385,500 | 2025-09-10 | 3 | 3 | 1,906 | 2003 | 1.1 | https://www.realtor.com/realestateandhomes-detail/185-Stayman-Park_Fayetteville_GA_30215_M68341-94989\n310 Discovery Lake Dr, Fayetteville, GA 30215 | $670,000 | 2025-09-10 | 4 | 4 | 3,436 | 2005 | 1.5 | https://www.zillow.com/homedetails/310-Discovery-Lake-Dr-Fayetteville-GA-30215/68583959_zpid/\n105 Postwood Dr, Fayetteville, GA 30215 | $730,000 | 2025-09-08 | 6 | 4 | 4,796 | 1991 | 1.9 | https://www.zillow.com/homedetails/105-Postwood-Dr-Fayetteville-GA-30215/14698293_zpid/\n426 Old Senoia Rd, Fayetteville, GA 30215 | $549,900 | 2024-08-23 | 4 | 2 | 2,730 | 1970 | 0.8 | https://www.zillow.com/homedetails/426-Old-Senoia-Rd-Fayetteville-GA-30215/14699189_zpid/\n100 Chantilly Ln, Fayetteville, GA 30215 | $564,000 | 2024-08-30 | 4 | 3 | 3,133 | 2017 | 1.3 | https://www.zillow.com/homedetails/100-Chantilly-Ln-Fayetteville-GA-30215/211208333_zpid/\n145 Seawright Dr, Fayetteville, GA 30215 | $620,000 | 2024-07-26 | 5 | 5 | 3,885 | 2023 | 1.7 | https://www.zillow.com/homedetails/145-Seawright-Dr-Fayetteville-GA-30215/2058188998_zpid/\n110 Green Meadow Ln, Fayetteville, GA 30215 | $415,000 | 2024-07-12 | 4 | 3 | 2,452 | 1986 | 1.2 | https://www.redfin.com/GA/Fayetteville/110-Green-Meadow-Ln-30215/home/24783890\n265 Lake Cir, Fayetteville, GA 30215 | $430,000 | 2024-06-28 | 3 | 2 | 2,104 | 1977 | 1.4 | https://www.redfin.com/GA/Fayetteville/265-Lake-Cir-30215/home/24788188\n125 Inman Rd, Fayetteville, GA 30215 | $450,000 | 2024-05-17 | 3 | 2 | 1,974 | 1973 | 0.9 | https://www.zillow.com/homedetails/125-Inman-Rd-Fayetteville-GA-30215/14699006_zpid/\n195 McElwaney Way, Fayetteville, GA 30215 | $515,000 | 2024-08-09 | 4 | 3 | 2,800 | 2001 | 1.6 | https://www.redfin.com/GA/Fayetteville/195-McElwaney-Way-30215/home/24795339\n115 Surrey Park Dr, Fayetteville, GA 30215 | $485,000 | 2024-09-06 | 4 | 3 | 2,650 | 1995 | 1.8 | https://www.zillow.com/homedetails/115-Surrey-Park-Dr-Fayetteville-GA-30215/14698452_zpid/\n220 Wendolyn Trce, Fayetteville, GA 30215 | $610,000 | 2024-07-19 | 5 | 4 | 3,500 | 2018 | 1.4 | https://www.realtor.com/realestateandhomes-detail/220-Wendolyn-Trce_Fayetteville_GA_30215_M68321-12345\n140 Sterling Ct, Fayetteville, GA 30215 | $425,000 | 2024-06-21 | 3 | 3 | 2,200 | 1999 | 1.9 | https://www.zillow.com/homedetails/140-Sterling-Ct-Fayetteville-GA-30215/14698789_zpid/\n105 Johns Ct, Fayetteville, GA 30215 | $390,"
+  }
+]
