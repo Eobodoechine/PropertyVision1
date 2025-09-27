@@ -98,6 +98,7 @@ async function vertexGenerate(opts: {
 
 // LLM-based parsing to replace problematic regex
 async function parseFreeformWithLLM(text: string, sa: any, projectId: string, location: string, model: string): Promise<Partial<BasicDetails>> {
+  console.log(`   🤖 Starting LLM extraction for property details...`);
   try {
     // Extract square footage using LLM - this solves the house vs lot size confusion
     const sqftPrompt = `What is the house square footage (interior/living space only, not lot size) in this text?
@@ -181,8 +182,10 @@ Give only the 4-digit year.`;
     // Try to extract property type from text
     let propertyType: string | null = null;
     try {
+      console.log(`   🏠 Extracting property type from text...`);
       const typePrompt = `From this text, what is the property type? Answer with one of: single-family detached, townhome, condo, duplex, multi-family, or UNKNOWN.\n\n"${text}"\n\nRespond with only one of those exact terms.`;
       const typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: false, json: false, timeoutMs: 600000 });
+      console.log(`   🏠 Raw property type response: "${typeResp}"`);
       const cleaned = (typeResp || '').trim().toLowerCase();
       if (cleaned && !/^unknown$/i.test(cleaned)) {
         // Normalize property type terms
@@ -191,15 +194,21 @@ Give only the 4-digit year.`;
         else if (cleaned.includes('condo')) propertyType = 'condo';
         else if (cleaned.includes('townhome') || cleaned.includes('townhouse')) propertyType = 'townhome';
         else if (cleaned.includes('single-family') || cleaned.includes('single family')) propertyType = 'single-family detached';
+        console.log(`   🏠 Normalized property type: "${propertyType}"`);
+      } else {
+        console.log(`   🏠 Property type extraction returned: "${cleaned}" (treating as unknown)`);
       }
-    } catch {}
+    } catch (error) {
+      console.log(`   ❌ Property type extraction failed: ${error}`);
+    }
 
     console.log(`   🤖 LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
 
     return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision, propertyType };
 
   } catch (error) {
-    console.log(`   ⚠️  LLM parsing failed, falling back to regex: ${error}`);
+    console.log(`   ❌ LLM parsing completely failed, falling back to regex: ${error}`);
+    console.log(`   📄 Text that caused LLM parsing failure: ${text.substring(0, 300)}...`);
     return parseFreeformRegex(text);
   }
 }
@@ -282,8 +291,9 @@ Provide specific facts with numbers. If any critical data is missing, clearly st
     const text = await vertexGenerate({ sa, projectId, location, model, prompt, grounded: true, json: false, timeoutMs });
     console.log(`   📄 Primary search response: ${text.substring(0, 200)}...`);
 
+    console.log(`   🔄 Calling parseFreeformWithLLM for detailed extraction...`);
     propertyDetails = await parseFreeformWithLLM(text, sa, projectId, location, model);
-    console.log(`   📊 Parsed data: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}`);
+    console.log(`   📊 Parsed data: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}, propertyType=${propertyDetails.propertyType}`);
 
   } catch (err) {
     console.log(`   ⚠️  Primary grounded search failed: ${err}`);
