@@ -109,9 +109,15 @@ COMPARABLE SELECTION CRITERIA:
 4. Bedrooms: ${subjBeds != null ? `${Math.max(1, subjBeds - 1)}–${subjBeds + 1}` : '±1 of subject'} bedrooms.
 5. Bathrooms: ${subjBaths != null ? `${Math.max(1, Math.floor(subjBaths - 1))}–${Math.ceil(subjBaths + 1)}` : '±1 of subject'} bathrooms.
 6. Year Built: Between ${lowYear} and ${highYear} (within ±10 years of subject's build year).
-7. Property Type: ${subjectPropertyType ? `MUST be ${subjectPropertyType} properties ONLY. Do not include any other property types.` : 'MUST match the same property type as the subject property. If subject is a single family home, only return single family homes. If subject is a condo, only return condos. If subject is a townhome, only return townhomes.'}
+7. Property Type: ${subjectPropertyType === 'duplex' ?
+  `MUST be duplex or multi-family properties ONLY. Include properties listed as "duplex", "multi-family", "multifamily", "two-family", "2-family", or "2-unit". Focus on 2-unit residential buildings. Do not include single-family homes, condos, townhomes, or large apartment buildings.` :
+  subjectPropertyType ? `MUST be ${subjectPropertyType} properties ONLY. Do not include any other property types.` :
+  'MUST match the same property type as the subject property. If subject is a single family home, only return single family homes. If subject is a condo, only return condos. If subject is a townhome, only return townhomes.'}
 
-CRITICAL: ${subjectPropertyType ? `Only return ${subjectPropertyType} properties.` : 'Determine the property type of the subject property and ONLY include comparable properties of the SAME type.'} Do not mix property types.
+CRITICAL: ${subjectPropertyType === 'duplex' ?
+  `Only return duplex/multi-family properties that are 2-unit residential buildings. Exclude single-family homes, condos, townhomes, and large apartment complexes.` :
+  subjectPropertyType ? `Only return ${subjectPropertyType} properties.` :
+  'Determine the property type of the subject property and ONLY include comparable properties of the SAME type.'} Do not mix property types.
 
 OUTPUT FORMAT (STRICT):
 Return ONLY pipe-separated lines, one per property, no commentary, no headers:
@@ -169,6 +175,13 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // Use aggregated results
       let comps = Array.from(aggregatedComps.values());
       console.log(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
+
+      // If subject is duplex, verify each comparable is actually a duplex/multi-family
+      if (subjectPropertyType === 'duplex') {
+        console.log(`   🏠 Verifying duplex classification for ${comps.length} properties...`);
+        comps = await this.verifyDuplexComparables(comps, sa, projectId, location, model);
+        console.log(`   ✅ Duplex verification: ${comps.length} confirmed duplex/multi-family properties`);
+      }
 
       // LOG EACH PROPERTY BEFORE FILTERING
       console.log(`   🔍 DETAILED PROPERTY FILTERING:`);
@@ -306,6 +319,68 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         error: error.message
       };
     }
+  }
+
+  private async verifyDuplexComparables(
+    comps: ComparableProperty[],
+    sa: any,
+    projectId: string,
+    location: string,
+    model: string
+  ): Promise<ComparableProperty[]> {
+    const verifiedComps: ComparableProperty[] = [];
+
+    for (const comp of comps) {
+      try {
+        // Use LLM to verify if this property is actually a duplex/multi-family
+        const verificationPrompt = `Is this property a duplex, two-family, or multi-family building (2-4 units)? Analyze the description and respond with YES or NO.
+
+Property: ${comp.address}
+Bedrooms: ${comp.beds}
+Bathrooms: ${comp.baths}
+Square Feet: ${comp.sqft}
+Source: ${comp.source}
+
+Look for indicators like:
+- Listed as "duplex", "multi-family", "two-family", "2-unit"
+- Side-by-side or up/down configuration
+- Multiple kitchens or separate entrances
+- Investment property characteristics
+- Unit descriptions (Unit A/B, Upper/Lower)
+
+Respond with only YES (if duplex/multi-family) or NO (if single-family/other).`;
+
+        const { vertexGenerate } = await import('./vertex-freeform.js');
+        const response = await vertexGenerate({
+          sa,
+          projectId,
+          location,
+          model,
+          prompt: verificationPrompt,
+          grounded: true,
+          timeoutMs: 30000
+        });
+
+        const isDuplex = response.trim().toUpperCase().includes('YES');
+
+        if (isDuplex) {
+          console.log(`   ✅ VERIFIED DUPLEX: ${comp.address} - ${comp.beds}BR/${comp.baths}BA`);
+          verifiedComps.push(comp);
+        } else {
+          console.log(`   ❌ NOT DUPLEX: ${comp.address} - ${comp.beds}BR/${comp.baths}BA (excluded)`);
+        }
+
+        // Small delay to avoid rate limits
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+      } catch (error) {
+        console.log(`   ⚠️  Verification failed for ${comp.address}: ${error}`);
+        // If verification fails, include the property (conservative approach)
+        verifiedComps.push(comp);
+      }
+    }
+
+    return verifiedComps;
   }
 
   private getVertexConfig() {
