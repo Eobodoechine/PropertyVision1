@@ -36,18 +36,17 @@ docker push gcr.io/agile-device-472202-i8/frontend:latest
 - **Cloud Run URL**: https://frontend-839845580521.us-east1.run.app
 
 ### Latest Deployment
-- **Revision**: frontend-00005-56w
+- **Revision**: frontend-00017-9hh
 - **Date**: 2025-09-27
 - **Changes**:
-  - Fixed geocoding timeout implementation (3s timeout)
-  - Added address normalization for cache consistency
-  - Implemented property type detection and filtering
-  - Enhanced Vertex AI prompts for duplex property matching
-  - **CRITICAL**: Fixed missing environment variables in production
-    - Added GCP_SA_JSON_B64 (base64 encoded service account)
-    - Added GOOGLE_MAPS_API_KEY environment variable
-    - Increased Cloud Run timeout to 15 minutes (900s)
-    - Increased memory to 1Gi and CPU to 2 cores
+  - **MAJOR**: Fixed outlier detection system to use consistent 7.5% threshold
+  - Removed aggressive 25% PPSF filter that was excluding high-value comparables ($394k, $425k, $375k)
+  - Archived complex z-score and median-ratio outlier detection methods
+  - Enhanced progressive search strategy with proper propertyType parameter passing
+  - Added comprehensive debug logging for duplex verification process
+  - Improved property type detection with fallback methods
+  - Added search history functionality and UI improvements
+  - **RESULT**: ARV calculations now properly include high-value comparables instead of ~$320k undervaluation
 
 ### Testing
 After deployment, test with problematic address:
