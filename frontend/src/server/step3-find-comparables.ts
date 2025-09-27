@@ -401,12 +401,24 @@ Return exactly this JSON structure:
       let parsedJson: any;
       try {
         parsedJson = JSON.parse(response);
-      } catch {
+      } catch (parseError) {
+        console.log(`⚠️  Initial JSON parse failed, trying to extract JSON block from response:`, response.substring(0, 200));
         const block = extractJsonBlock(response);
-        parsedJson = block ? JSON.parse(block) : null;
+        if (block) {
+          try {
+            parsedJson = JSON.parse(block);
+          } catch (blockError) {
+            console.log(`❌ Failed to parse extracted JSON block:`, block.substring(0, 200));
+            parsedJson = null;
+          }
+        } else {
+          console.log(`❌ No JSON block found in response`);
+          parsedJson = null;
+        }
       }
 
       if (!parsedJson || typeof parsedJson !== 'object') {
+        console.log(`❌ LLM parsing error - Invalid JSON response:`, response.substring(0, 500));
         throw new Error('invalid-json-from-llm');
       }
 
