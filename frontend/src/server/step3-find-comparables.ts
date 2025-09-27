@@ -176,13 +176,6 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       let comps = Array.from(aggregatedComps.values());
       console.log(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
 
-      // If subject is duplex, verify each comparable is actually a duplex/multi-family
-      if (subjectPropertyType === 'duplex') {
-        console.log(`   🏠 Verifying duplex classification for ${comps.length} properties...`);
-        comps = await this.verifyDuplexComparables(comps, sa, projectId, location, model);
-        console.log(`   ✅ Duplex verification: ${comps.length} confirmed duplex/multi-family properties`);
-      }
-
       // LOG EACH PROPERTY BEFORE FILTERING
       console.log(`   🔍 DETAILED PROPERTY FILTERING:`);
       comps.forEach((comp, index) => {
@@ -224,6 +217,13 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       // Geocode at the very end for surviving comps and filter by distance limits
       comps = await this.geocodeAndFilterDistance(comps, subjectCoords.lat, subjectCoords.lon, 1.0, 2.0);
+
+      // If subject is duplex, verify each remaining comparable is actually a duplex/multi-family
+      if (subjectPropertyType === 'duplex' && comps.length > 0) {
+        console.log(`   🏠 Verifying duplex classification for ${comps.length} properties...`);
+        comps = await this.verifyDuplexComparables(comps, sa, projectId, location, model);
+        console.log(`   ✅ Duplex verification: ${comps.length} confirmed duplex/multi-family properties`);
+      }
 
       // Sort by distance (placing unknowns last) and limit results
       comps.sort((a, b) => {
