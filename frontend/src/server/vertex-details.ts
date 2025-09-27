@@ -242,6 +242,193 @@ function parseFreeformRegex(text: string): Partial<BasicDetails> {
   return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision: null, propertyType: null };
 }
 
+/**
+ * Comprehensive fallback property detection for all missing critical fields
+ */
+async function fallbackPropertyDetection(
+  address: string,
+  sa: any,
+  projectId: string,
+  location: string,
+  model: string,
+  missingFields: string[]
+): Promise<Partial<BasicDetails>> {
+  console.log(`   🔍 Enhanced Fallback Detection for fields: ${missingFields.join(', ')}`);
+
+  try {
+    // Import vertexGenerate here to avoid circular dependency
+    const { vertexGenerate } = await import('./vertex-freeform.js');
+
+    // Strategy 1: Comprehensive property search targeting missing fields
+    const fieldList = missingFields.map(field => {
+      switch (field) {
+        case 'sqft': return 'exact square footage (living area)';
+        case 'beds': return 'number of bedrooms';
+        case 'baths': return 'number of bathrooms (including half baths)';
+        case 'yearBuilt': return 'year built';
+        case 'propertyType': return 'property type (single-family, duplex, multi-family, townhome, condo)';
+        default: return field;
+      }
+    }).join(', ');
+
+    const comprehensiveSearch = `Search for detailed property information about "${address}". I need these specific details: ${fieldList}.
+
+Look in:
+- MLS listings with complete property details
+- County assessor records with official specifications
+- Real estate websites (Zillow, Redfin, Realtor.com) with verified data
+- Public records and tax assessor databases
+
+Respond with ONLY the specific information requested in this exact format:
+SQFT: [exact square footage number]
+BEDS: [number of bedrooms]
+BATHS: [number of bathrooms including half baths as decimals]
+YEAR: [4-digit year built]
+TYPE: [single-family detached, townhome, condo, duplex, or multi-family]`;
+
+    const result1 = await vertexGenerate({
+      sa,
+      projectId,
+      location,
+      model,
+      prompt: comprehensiveSearch,
+      grounded: true,
+      timeoutMs: 60000
+    });
+
+    console.log(`   📋 Fallback Strategy 1 response: "${result1}"`);
+    const parsed1 = parsePropertyResponse(result1);
+    if (hasRequiredFields(parsed1, missingFields)) {
+      console.log(`   ✅ Fallback Strategy 1 success: Found all missing fields`);
+      return parsed1;
+    }
+
+    console.log(`   🔍 Fallback Strategy 2: County records focus...`);
+
+    // Strategy 2: County records and official sources
+    const countySearch = `Search official county assessor records and public property databases for "${address}". Find:
+- Official property specifications from tax assessor
+- Building permits with construction details
+- County property records with exact measurements
+- Official property classification codes
+
+Return the official property data in this format:
+SQFT: [square footage]
+BEDS: [bedrooms]
+BATHS: [bathrooms]
+YEAR: [year built]
+TYPE: [property type]`;
+
+    const result2 = await vertexGenerate({
+      sa,
+      projectId,
+      location,
+      model,
+      prompt: countySearch,
+      grounded: true,
+      timeoutMs: 60000
+    });
+
+    console.log(`   📋 Fallback Strategy 2 response: "${result2}"`);
+    const parsed2 = parsePropertyResponse(result2);
+    if (hasRequiredFields(parsed2, missingFields)) {
+      console.log(`   ✅ Fallback Strategy 2 success: Found all missing fields`);
+      return parsed2;
+    }
+
+    // Return partial results if we found some fields
+    const combinedResults = { ...parsed1, ...parsed2 };
+    if (Object.keys(combinedResults).length > 0) {
+      console.log(`   ⚡ Partial fallback success: Found ${Object.keys(combinedResults).join(', ')}`);
+      return combinedResults;
+    }
+
+    console.log(`   ❌ All fallback strategies failed to find missing fields`);
+    return {};
+
+  } catch (error) {
+    console.log(`   ❌ Fallback property detection failed: ${error}`);
+    return {};
+  }
+}
+
+/**
+ * Parse structured property response from fallback detection
+ */
+function parsePropertyResponse(response: string): Partial<BasicDetails> {
+  if (!response) return {};
+
+  const result: Partial<BasicDetails> = {};
+  const lines = response.split('\n').map(line => line.trim());
+
+  for (const line of lines) {
+    const sqftMatch = line.match(/SQFT:\s*(\d+)/i);
+    if (sqftMatch) {
+      result.sqft = parseInt(sqftMatch[1], 10);
+      console.log(`   🔧 Parsed sqft: ${result.sqft}`);
+    }
+
+    const bedsMatch = line.match(/BEDS:\s*(\d+)/i);
+    if (bedsMatch) {
+      result.beds = parseInt(bedsMatch[1], 10);
+      console.log(`   🔧 Parsed beds: ${result.beds}`);
+    }
+
+    const bathsMatch = line.match(/BATHS:\s*([\d.]+)/i);
+    if (bathsMatch) {
+      result.baths = parseFloat(bathsMatch[1]);
+      console.log(`   🔧 Parsed baths: ${result.baths}`);
+    }
+
+    const yearMatch = line.match(/YEAR:\s*(\d{4})/i);
+    if (yearMatch) {
+      result.yearBuilt = parseInt(yearMatch[1], 10);
+      console.log(`   🔧 Parsed yearBuilt: ${result.yearBuilt}`);
+    }
+
+    const typeMatch = line.match(/TYPE:\s*(.+)/i);
+    if (typeMatch) {
+      result.propertyType = normalizePropertyType(typeMatch[1]);
+      console.log(`   🔧 Parsed propertyType: ${result.propertyType}`);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Check if required fields were found in fallback data
+ */
+function hasRequiredFields(data: Partial<BasicDetails>, missingFields: string[]): boolean {
+  for (const field of missingFields) {
+    if (field === 'sqft' && (!data.sqft || data.sqft <= 0)) return false;
+    if (field === 'beds' && (!data.beds || data.beds <= 0)) return false;
+    if (field === 'baths' && (!data.baths || data.baths <= 0)) return false;
+    if (field === 'yearBuilt' && !data.yearBuilt) return false;
+    if (field === 'propertyType' && !data.propertyType) return false;
+  }
+  return true;
+}
+
+/**
+ * Normalize property type response to standard values
+ */
+function normalizePropertyType(response: string): string | null {
+  if (!response) return null;
+
+  const cleaned = response.toLowerCase().trim();
+  console.log(`   🔧 Normalizing property type response: "${cleaned}"`);
+
+  if (cleaned.includes('duplex')) return 'duplex';
+  if (cleaned.includes('multi-family') || cleaned.includes('multifamily')) return 'multi-family';
+  if (cleaned.includes('condo')) return 'condo';
+  if (cleaned.includes('townhome') || cleaned.includes('townhouse')) return 'townhome';
+  if (cleaned.includes('single-family') || cleaned.includes('single family')) return 'single-family detached';
+
+  console.log(`   ⚠️  Could not normalize property type: "${cleaned}"`);
+  return null;
+}
+
 export async function fetchPropertyDetailsViaVertex(address: string): Promise<BasicDetails | null> {
   if (!hasServiceAccount()) return null;
 
@@ -359,6 +546,42 @@ Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
   }
 
   console.log(`   ✅ All critical data found - Proceeding with analysis`);
+
+  // FALLBACK: Enhanced detection for any missing critical fields
+  const missingFields = [];
+  if (!propertyDetails.sqft || propertyDetails.sqft <= 0) missingFields.push('sqft');
+  if (!propertyDetails.beds || propertyDetails.beds <= 0) missingFields.push('beds');
+  if (!propertyDetails.baths || propertyDetails.baths <= 0) missingFields.push('baths');
+  if (!propertyDetails.yearBuilt) missingFields.push('yearBuilt');
+  if (!propertyDetails.propertyType) missingFields.push('propertyType');
+
+  if (missingFields.length > 0) {
+    console.log(`   🔄 Missing critical fields: ${missingFields.join(', ')} - running enhanced fallback detection...`);
+    const fallbackData = await fallbackPropertyDetection(address, sa, projectId, location, model, missingFields);
+
+    // Fill in missing fields from fallback data
+    if (fallbackData.sqft && (!propertyDetails.sqft || propertyDetails.sqft <= 0)) {
+      propertyDetails.sqft = fallbackData.sqft;
+      console.log(`   ✅ Fallback: Found sqft = ${fallbackData.sqft}`);
+    }
+    if (fallbackData.beds && (!propertyDetails.beds || propertyDetails.beds <= 0)) {
+      propertyDetails.beds = fallbackData.beds;
+      console.log(`   ✅ Fallback: Found beds = ${fallbackData.beds}`);
+    }
+    if (fallbackData.baths && (!propertyDetails.baths || propertyDetails.baths <= 0)) {
+      propertyDetails.baths = fallbackData.baths;
+      console.log(`   ✅ Fallback: Found baths = ${fallbackData.baths}`);
+    }
+    if (fallbackData.yearBuilt && !propertyDetails.yearBuilt) {
+      propertyDetails.yearBuilt = fallbackData.yearBuilt;
+      console.log(`   ✅ Fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
+    }
+    if (fallbackData.propertyType && !propertyDetails.propertyType) {
+      propertyDetails.propertyType = fallbackData.propertyType;
+      console.log(`   ✅ Fallback: Found propertyType = ${fallbackData.propertyType}`);
+    }
+  }
+
   return normalize(address, propertyDetails);
 }
 

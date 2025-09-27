@@ -13,8 +13,9 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SearchHistory } from '@/components/SearchHistory';
 import { API_BASE_URL, cn } from '@/lib/utils';
-import type { ComparableProperty, PropertyAnalysisResponse } from '@/types/property';
+import type { ComparableProperty, PropertyAnalysisResponse, SearchHistoryEntry } from '@/types/property';
 
 const DEFAULT_ADDRESS = '';
 
@@ -77,6 +78,7 @@ export default function HomePage() {
   const { user, loading: authLoading } = useAuth();
   const [formState, setFormState] = React.useState<FormState>({ address: DEFAULT_ADDRESS });
   const [progress, setProgress] = React.useState(0);
+  const [selectedResult, setSelectedResult] = React.useState<PropertyAnalysisResponse | null>(null);
 
   const mutation = useMutation<PropertyAnalysisResponse, Error, string>({
     mutationFn: analyzeProperty,
@@ -108,7 +110,15 @@ export default function HomePage() {
     setFormState(prev => ({ ...prev, address: event.target.value }));
   };
 
-  const result = mutation.data;
+  const handleSelectSearch = (search: SearchHistoryEntry) => {
+    if (search.result) {
+      // Load the saved search result
+      setSelectedResult(search.result);
+      setFormState({ address: search.address });
+    }
+  };
+
+  const result = selectedResult || mutation.data;
   const loading = mutation.isPending;
   const error = mutation.isError ? (mutation.error as Error) : null;
 
@@ -126,52 +136,60 @@ export default function HomePage() {
 
   return (
     <main className="w-full">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-10 md:px-6">
-        <Header />
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-16 pt-10 md:px-6 lg:flex-row">
+        <div className="flex-1 space-y-8">
+          <Header />
 
-        <Card className="border-0 bg-white/90 shadow-lg shadow-slate-200/40 backdrop-blur">
-          <CardHeader className="gap-3">
-            <CardTitle className="text-2xl font-semibold">Analyze any property in seconds</CardTitle>
-            <CardDescription className="text-slate-500">
-              Enter a full street address to generate ARV, property insights, and comparable sales.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form className="flex flex-col gap-3 md:flex-row" onSubmit={handleSubmit}>
-              <Input
-                aria-label="Street address"
-                placeholder="Enter address"
-                value={formState.address}
-                onChange={handleChange}
-                disabled={loading}
-              />
-              <Button type="submit" className="md:w-44" disabled={loading}>
-                {loading ? (
-                  <span className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Analyzing...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    Analyze Property
-                    <ArrowRight className="h-4 w-4" />
-                  </span>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+          <Card className="border-0 bg-white/90 shadow-lg shadow-slate-200/40 backdrop-blur">
+            <CardHeader className="gap-3">
+              <CardTitle className="text-2xl font-semibold">Analyze Property</CardTitle>
+              <CardDescription className="text-slate-500">
+                Enter a full street address to generate ARV, property insights, and comparable sales.
+                <br />
+                <span className="text-xs text-slate-400 mt-1 block">Analysis may take up to 10 minutes to complete.</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form className="flex flex-col gap-3 md:flex-row" onSubmit={handleSubmit}>
+                <Input
+                  aria-label="Street address"
+                  placeholder="Enter address"
+                  value={formState.address}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <Button type="submit" className="md:w-44" disabled={loading}>
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Analyzing...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Analyze Property
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
 
-        {loading ? <LoadingState progress={progress} /> : null}
-        {error ? <ErrorState message={error.message} onRetry={() => mutation.reset()} /> : null}
+          {loading ? <LoadingState progress={progress} /> : null}
+          {error ? <ErrorState message={error.message} onRetry={() => mutation.reset()} /> : null}
 
-        {result ? (
-          <section className="space-y-8">
-            <AnalysisSummary data={result} />
-            <PropertyDetails data={result} />
-            <ComparableList comps={result.compsUsed} />
-          </section>
-        ) : null}
+          {result ? (
+            <section className="space-y-8">
+              <AnalysisSummary data={result} />
+              <PropertyDetails data={result} />
+              <ComparableList comps={result.compsUsed} />
+            </section>
+          ) : null}
+        </div>
+
+        <aside className="w-full space-y-6 lg:w-80">
+          {/* <SearchHistory onSelectSearch={handleSelectSearch} limit={15} /> */}
+        </aside>
       </div>
     </main>
   );

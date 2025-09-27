@@ -57,3 +57,23 @@ export interface PropertyAnalysisResponse {
     totalSearchTime: number;
   };
 }
+
+export interface SearchHistoryEntry {
+  id: string;
+  userId: string;
+  address: string;
+  status: 'pending' | 'completed' | 'failed';
+  createdAt: Date;
+  completedAt?: Date;
+  result?: PropertyAnalysisResponse;
+  error?: string;
+}
+
+export interface SearchHistoryFilters {
+  status?: 'all' | 'completed' | 'failed';
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
+  limit?: number;
+}

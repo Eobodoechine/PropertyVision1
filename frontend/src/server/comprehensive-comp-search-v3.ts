@@ -101,6 +101,7 @@ export class ComprehensiveCompSearchV3 {
       // Determine subject property type for filtering
       const subjectPropertyType = subjectDetails.propertyType || undefined;
       console.log(`   🏠 Property Type: ${subjectPropertyType || 'Not specified - will match similar properties'}`);
+      console.log(`   🔍 DEBUG: subjectPropertyType exact value = "${subjectPropertyType}" (type: ${typeof subjectPropertyType})`);
 
       let allComps: any[] = [];
       let searchLevel = 0;
@@ -119,7 +120,8 @@ export class ComprehensiveCompSearchV3 {
           address,
           subjectDetails,
           this.compService,
-          subjectDetails.subdivision
+          subjectDetails.subdivision,
+          subjectPropertyType
         );
         allComps = progressiveResult.finalProperties;
       } else {
