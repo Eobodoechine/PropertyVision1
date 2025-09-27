@@ -98,9 +98,9 @@ export class ComprehensiveCompSearchV3 {
       // Step 2: Progressive comparable search
       console.log(`\n🔍 Step 2: Progressive Comparable Search`);
 
-      // Determine subject property type for filtering - let Vertex AI find matching property types
-      const subjectPropertyType = undefined; // No filtering - let AI find similar properties regardless of type
-      console.log(`   🏠 Property Type: Not filtered - will match similar properties`);
+      // Determine subject property type for filtering
+      const subjectPropertyType = subjectDetails.propertyType || undefined;
+      console.log(`   🏠 Property Type: ${subjectPropertyType || 'Not specified - will match similar properties'}`);
 
       let allComps: any[] = [];
       let searchLevel = 0;

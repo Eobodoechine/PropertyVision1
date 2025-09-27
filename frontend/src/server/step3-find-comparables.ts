@@ -59,12 +59,19 @@ class VertexComparableSearchService {
       }
 
       // Check for service account
-      const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-      if (!saPath) {
-        throw new Error('GCP_SA_JSON environment variable is required for Vertex AI');
+      let sa;
+      if (process.env.GCP_SA_JSON_B64) {
+        // Production: base64 encoded JSON
+        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
+        sa = JSON.parse(saJson);
+      } else {
+        // Local: file path
+        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+        if (!saPath) {
+          throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
+        }
+        sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
       }
-
-      const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
       const projectId = sa.project_id;
       const location = process.env.VERTEX_LOCATION || 'us-central1';
       const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
@@ -94,7 +101,7 @@ Follow the step-by-step instructions exactly and only return comps that meet the
 
 SUBJECT PROPERTY:
 - Address: ${subjectAddress}
-${subjBeds != null ? `- Beds: ${subjBeds}\n` : ''}${subjBaths != null ? `- Baths: ${subjBaths}\n` : ''}${subjSqft != null ? `- Square Footage: ${subjSqft} sqft\n` : ''}${subjYear != null ? `- Year Built: ${subjYear}\n` : ''}${withSubdivision && subdivision ? `- Subdivision: ${subdivision}\n` : ''}
+${subjBeds != null ? `- Beds: ${subjBeds}\n` : ''}${subjBaths != null ? `- Baths: ${subjBaths}\n` : ''}${subjSqft != null ? `- Square Footage: ${subjSqft} sqft\n` : ''}${subjYear != null ? `- Year Built: ${subjYear}\n` : ''}${subjectPropertyType ? `- Property Type: ${subjectPropertyType}\n` : ''}${withSubdivision && subdivision ? `- Subdivision: ${subdivision}\n` : ''}
 COMPARABLE SELECTION CRITERIA:
 1. Location: Within ${searchRadius} miles of the subject property.
 2. Sale Date: Sold within the last ${timeWindowMonths} months.
@@ -102,9 +109,9 @@ COMPARABLE SELECTION CRITERIA:
 4. Bedrooms: ${subjBeds != null ? `${Math.max(1, subjBeds - 1)}–${subjBeds + 1}` : '±1 of subject'} bedrooms.
 5. Bathrooms: ${subjBaths != null ? `${Math.max(1, Math.floor(subjBaths - 1))}–${Math.ceil(subjBaths + 1)}` : '±1 of subject'} bathrooms.
 6. Year Built: Between ${lowYear} and ${highYear} (within ±10 years of subject's build year).
-7. Property Type: MUST match the same property type as the subject property. If subject is a single family home, only return single family homes. If subject is a condo, only return condos. If subject is a townhome, only return townhomes.
+7. Property Type: ${subjectPropertyType ? `MUST be ${subjectPropertyType} properties ONLY. Do not include any other property types.` : 'MUST match the same property type as the subject property. If subject is a single family home, only return single family homes. If subject is a condo, only return condos. If subject is a townhome, only return townhomes.'}
 
-CRITICAL: Determine the property type of the subject property and ONLY include comparable properties of the SAME type. Do not mix property types.
+CRITICAL: ${subjectPropertyType ? `Only return ${subjectPropertyType} properties.` : 'Determine the property type of the subject property and ONLY include comparable properties of the SAME type.'} Do not mix property types.
 
 OUTPUT FORMAT (STRICT):
 Return ONLY pipe-separated lines, one per property, no commentary, no headers:
@@ -302,12 +309,19 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
   }
 
   private getVertexConfig() {
-    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-    if (!saPath) {
-      throw new Error('GCP_SA_JSON environment variable is required for Vertex AI');
+    let serviceAccount;
+    if (process.env.GCP_SA_JSON_B64) {
+      // Production: base64 encoded JSON
+      const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
+      serviceAccount = JSON.parse(saJson);
+    } else {
+      // Local: file path
+      const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+      if (!saPath) {
+        throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
+      }
+      serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
     }
-
-    const serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
     const projectId = serviceAccount.project_id;
     const location = process.env.VERTEX_LOCATION || 'us-central1';
     const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
@@ -1135,32 +1149,96 @@ Return exactly this JSON structure:
   }
 
   private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
-    if (this.geocodeCache.has(address)) {
-      return this.geocodeCache.get(address)!;
+    // Normalize address format for better geocoding success
+    const normalizedAddress = this.normalizeAddress(address);
+
+    if (this.geocodeCache.has(normalizedAddress)) {
+      return this.geocodeCache.get(normalizedAddress)!;
     }
 
     return new Promise((resolve) => {
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.googleMapsApiKey}`;
+      let completed = false;
+
+      // Set timeout
+      const timer = setTimeout(() => {
+        if (!completed) {
+          completed = true;
+          console.log(`⏰ Geocoding timeout for ${address}`);
+          resolve(null);
+        }
+      }, timeoutMs);
+
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(normalizedAddress)}&key=${this.googleMapsApiKey}&components=country:US&region=us`;
       const req = https.get(url, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
+          if (completed) return;
+          completed = true;
+          clearTimeout(timer);
+
           try {
             const parsed = JSON.parse(data);
-            if (parsed.results?.[0]?.geometry?.location) {
-              const coords = { lat: parsed.results[0].geometry.location.lat, lon: parsed.results[0].geometry.location.lng };
-              this.geocodeCache.set(address, coords);
+            if (parsed.results?.length > 0) {
+              // Use the best match (first result) even if it's partial
+              const result = parsed.results[0];
+              const coords = { lat: result.geometry.location.lat, lon: result.geometry.location.lng };
+
+              // Log if it's a partial match for debugging
+              if (result.partial_match) {
+                console.log(`🔍 Partial geocoding match for "${normalizedAddress}" → "${result.formatted_address}"`);
+              }
+
+              this.geocodeCache.set(normalizedAddress, coords);
               resolve(coords);
             } else {
+              console.log(`❌ No geocoding results for "${normalizedAddress}"`);
               resolve(null);
             }
-          } catch {
+          } catch (error) {
+            console.log(`❌ Geocoding parse error for "${normalizedAddress}":`, error);
             resolve(null);
           }
         });
       });
-      req.on('error', () => resolve(null));
+
+      req.on('error', () => {
+        if (completed) return;
+        completed = true;
+        clearTimeout(timer);
+        resolve(null);
+      });
+
+      req.setTimeout(timeoutMs, () => {
+        if (completed) return;
+        completed = true;
+        clearTimeout(timer);
+        req.destroy();
+        console.log(`⏰ Geocoding timeout for ${address}`);
+        resolve(null);
+      });
     });
+  }
+
+  private normalizeAddress(address: string): string {
+    return address
+      // Standardize street type abbreviations
+      .replace(/\bterrace\b/gi, 'Terrace')
+      .replace(/\bter\b/gi, 'Terrace')
+      .replace(/\bdr\b/gi, 'Drive')
+      .replace(/\bst\b/gi, 'Street')
+      .replace(/\bave\b/gi, 'Avenue')
+      .replace(/\brd\b/gi, 'Road')
+      .replace(/\bln\b/gi, 'Lane')
+      .replace(/\bct\b/gi, 'Court')
+      .replace(/\bpl\b/gi, 'Place')
+      // Normalize spacing and commas
+      .replace(/\s*,\s*/g, ', ')  // Standardize comma spacing
+      .replace(/,\s*(GA|Georgia)\s*,?\s*/gi, ', GA ')  // Fix GA comma placement
+      .replace(/\s+/g, ' ')  // Normalize multiple spaces
+      // Handle city name variations for East Point area
+      .replace(/\bAtlanta,\s*GA\s*30344\b/gi, 'East Point, GA 30344')
+      .trim();
   }
 }
 

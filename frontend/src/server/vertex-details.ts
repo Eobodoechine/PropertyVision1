@@ -11,11 +11,12 @@ export type BasicDetails = {
   yearBuilt: number | null;
   lotSize: number | null;
   subdivision: string | null;
+  propertyType: string | null;
   success: boolean;
 };
 
 function hasServiceAccount(): boolean {
-  const p = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+  const p = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GCP_SA_JSON_B64;
   return Boolean(p && p.trim().length > 0);
 }
 
@@ -177,9 +178,25 @@ Give only the 4-digit year.`;
       }
     } catch {}
 
-    console.log(`   🤖 LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}`);
+    // Try to extract property type from text
+    let propertyType: string | null = null;
+    try {
+      const typePrompt = `From this text, what is the property type? Answer with one of: single-family detached, townhome, condo, duplex, multi-family, or UNKNOWN.\n\n"${text}"\n\nRespond with only one of those exact terms.`;
+      const typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: false, json: false, timeoutMs: 600000 });
+      const cleaned = (typeResp || '').trim().toLowerCase();
+      if (cleaned && !/^unknown$/i.test(cleaned)) {
+        // Normalize property type terms
+        if (cleaned.includes('duplex')) propertyType = 'duplex';
+        else if (cleaned.includes('multi-family') || cleaned.includes('multifamily')) propertyType = 'multi-family';
+        else if (cleaned.includes('condo')) propertyType = 'condo';
+        else if (cleaned.includes('townhome') || cleaned.includes('townhouse')) propertyType = 'townhome';
+        else if (cleaned.includes('single-family') || cleaned.includes('single family')) propertyType = 'single-family detached';
+      }
+    } catch {}
 
-    return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision };
+    console.log(`   🤖 LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
+
+    return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision, propertyType };
 
   } catch (error) {
     console.log(`   ⚠️  LLM parsing failed, falling back to regex: ${error}`);
@@ -213,13 +230,22 @@ function parseFreeformRegex(text: string): Partial<BasicDetails> {
   const yearMatch = text.match(/\b(19|20)\d{2}\b/);
   const yearBuilt = yearMatch ? Number(yearMatch[0]) : null;
 
-  return { sqft, beds, baths, yearBuilt, lotSize: null };
+  return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision: null, propertyType: null };
 }
 
 export async function fetchPropertyDetailsViaVertex(address: string): Promise<BasicDetails | null> {
   if (!hasServiceAccount()) return null;
-  const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON as string;
-  const sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
+
+  let sa;
+  if (process.env.GCP_SA_JSON_B64) {
+    // Production: base64 encoded JSON
+    const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
+    sa = JSON.parse(saJson);
+  } else {
+    // Local: file path
+    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON as string;
+    sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
+  }
   const projectId = sa.project_id;
   const location = process.env.VERTEX_LOCATION || 'us-central1';
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
@@ -335,6 +361,7 @@ function normalize(address: string, obj: any): BasicDetails {
     yearBuilt: obj?.yearBuilt != null && Number.isFinite(Number(obj.yearBuilt)) ? Number(obj.yearBuilt) : null,
     lotSize: obj?.lotSize != null && Number.isFinite(Number(obj.lotSize)) ? Number(obj.lotSize) : null,
     subdivision: typeof obj?.subdivision === 'string' && obj.subdivision.trim().length > 0 ? obj.subdivision.trim() : null,
+    propertyType: typeof obj?.propertyType === 'string' && obj.propertyType.trim().length > 0 ? obj.propertyType.trim() : null,
     success: true,
   };
 }
