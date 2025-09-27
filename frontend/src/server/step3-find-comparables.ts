@@ -109,12 +109,12 @@ COMPARABLE SELECTION CRITERIA:
 4. Bedrooms: ${subjBeds != null ? `${Math.max(1, subjBeds - 1)}–${subjBeds + 1}` : '±1 of subject'} bedrooms.
 5. Bathrooms: ${subjBaths != null ? `${Math.max(1, Math.floor(subjBaths - 1))}–${Math.ceil(subjBaths + 1)}` : '±1 of subject'} bathrooms.
 6. Year Built: Between ${lowYear} and ${highYear} (within ±10 years of subject's build year).
-7. Property Type: ${subjectPropertyType === 'duplex' ?
+7. Property Type: ${(subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family') ?
   `MUST be duplex or multi-family properties ONLY. Include properties listed as "duplex", "multi-family", "multifamily", "two-family", "2-family", or "2-unit". Focus on 2-unit residential buildings. Do not include single-family homes, condos, townhomes, or large apartment buildings.` :
   subjectPropertyType ? `MUST be ${subjectPropertyType} properties ONLY. Do not include any other property types.` :
   'MUST match the same property type as the subject property. If subject is a single family home, only return single family homes. If subject is a condo, only return condos. If subject is a townhome, only return townhomes.'}
 
-CRITICAL: ${subjectPropertyType === 'duplex' ?
+CRITICAL: ${(subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family') ?
   `Only return duplex/multi-family properties that are 2-unit residential buildings. Exclude single-family homes, condos, townhomes, and large apartment complexes.` :
   subjectPropertyType ? `Only return ${subjectPropertyType} properties.` :
   'Determine the property type of the subject property and ONLY include comparable properties of the SAME type.'} Do not mix property types.
@@ -218,9 +218,9 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // Geocode at the very end for surviving comps and filter by distance limits
       comps = await this.geocodeAndFilterDistance(comps, subjectCoords.lat, subjectCoords.lon, 1.0, 2.0);
 
-      // If subject is duplex, verify each remaining comparable is actually a duplex/multi-family
-      if (subjectPropertyType === 'duplex' && comps.length > 0) {
-        console.log(`   🏠 Verifying duplex classification for ${comps.length} properties...`);
+      // If subject is duplex or multi-family, verify each remaining comparable is actually a duplex/multi-family
+      if ((subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family') && comps.length > 0) {
+        console.log(`   🏠 Verifying duplex/multi-family classification for ${comps.length} properties...`);
         comps = await this.verifyDuplexComparables(comps, sa, projectId, location, model);
         console.log(`   ✅ Duplex verification: ${comps.length} confirmed duplex/multi-family properties`);
       }
