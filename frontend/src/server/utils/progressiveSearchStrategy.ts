@@ -251,7 +251,8 @@ export class ProgressiveSearchStrategy {
     level: SearchLevel,
     address: string,
     subjectDetails: { sqft: number; beds: number; baths: number; yearBuilt: number } | undefined,
-    searchService: any // VertexComparableSearchService
+    searchService: any, // VertexComparableSearchService
+    propertyType?: string
   ): Promise<SearchResult> {
     const startTime = Date.now();
     const cacheKey = this.generateCacheKey(address, level, subjectDetails);
@@ -286,7 +287,7 @@ export class ProgressiveSearchStrategy {
       // Execute search
       const searchResult = await searchService.findComparables(
         address,
-        undefined, // propertyType
+        propertyType, // Pass through the propertyType parameter
         level.criteria.maxResults,
         level.criteria.radius,
         level.criteria.timeWindow,
@@ -334,11 +335,13 @@ export class ProgressiveSearchStrategy {
     address: string,
     subjectDetails: { sqft: number; beds: number; baths: number; yearBuilt: number; subdivision?: string } | undefined,
     searchService: any,
-    subdivision?: string
+    subdivision?: string,
+    propertyType?: string
   ): Promise<ProgressiveSearchResult> {
     console.log('🎯 PROGRESSIVE EXPANSION SEARCH');
     console.log('===============================');
     console.log(`📍 Subject: ${address}`);
+    console.log(`🚨 DEBUG PROGRESSIVE SEARCH: propertyType="${propertyType}" (type: ${typeof propertyType})`);
     if (subjectDetails) {
       console.log(`🏠 Subject: ${subjectDetails.sqft}sqft, ${subjectDetails.beds}BR/${subjectDetails.baths}BA, built ${subjectDetails.yearBuilt}`);
     }
@@ -352,7 +355,7 @@ export class ProgressiveSearchStrategy {
     const startTime = Date.now();
 
     for (const level of searchLevels) {
-      const result = await this.executeSearchLevel(level, address, subjectDetails, searchService);
+      const result = await this.executeSearchLevel(level, address, subjectDetails, searchService, propertyType);
       searchHistory.push(result);
       stoppedAtLevel = level.level;
 

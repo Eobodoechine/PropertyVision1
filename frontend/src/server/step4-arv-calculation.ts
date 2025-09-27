@@ -34,8 +34,8 @@ class ARVCalculationService {
 
     console.log(`📊 ARV Calculation: ${comparables.length} total comparables`);
 
-    // Step 1: Outlier Detection and Filtering
-    const filteredComparables = this.detectAndFilterOutliers(comparables, subjectSqft);
+    // Step 1: Use comparables as-is (7.5% filtering already applied upstream)
+    const filteredComparables = comparables;
     
     if (filteredComparables.length === 0) {
       console.log(`⚠️ All comparables filtered out as outliers, using original set`);
@@ -339,7 +339,7 @@ class ARVCalculationService {
   }
 
   /**
-   * Enhanced Outlier Detection using Ensemble approach with sample-size modes
+   * Use existing 7.5% outlier detection - archived complex z-score and median-ratio methods
    */
   private detectAndFilterOutliers(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
     if (comparables.length < 3) {
@@ -347,51 +347,48 @@ class ARVCalculationService {
       return comparables;
     }
 
-    console.log(`🔍 Starting enhanced outlier detection on ${comparables.length} comparables...`);
+    console.log(`🔍 Using 7.5% PPSF outlier detection (archived complex methods)`);
 
-    // Apply GLA bucketing first
-    const glaFilteredComps = this.applyGLABucketing(comparables, subjectSqft);
-    console.log(`📊 GLA Bucket Results: ${glaFilteredComps.length} comps within size range`);
-
-    if (glaFilteredComps.length === 0) {
-      console.log(`⚠️ No comparables within GLA bucket, using all comparables`);
-      return comparables;
-    }
-
-    // Determine sample-size mode
-    const n = glaFilteredComps.length;
-    const isLargeSample = n >= 8;
-    
-    console.log(`📊 Sample Size Mode: ${isLargeSample ? 'Mode A (n≥8)' : 'Mode B (n<8)'} - ${n} comparables`);
-
-    let filteredComps = [...glaFilteredComps];
-
-    if (isLargeSample) {
-      // Mode A (n ≥ 8): Log-PPSF robust z (MAD) approach
-      filteredComps = this.modeALargeSampleOutlierDetection(glaFilteredComps);
-    } else {
-      // Mode B (n < 8): Median-ratio and clustering approach
-      filteredComps = this.modeBSmallSampleOutlierDetection(glaFilteredComps);
-    }
-
-    // Check if we need complex escalation
-    if (filteredComps.length < 3) {
-      console.log(`⚠️ Thin data detected (${filteredComps.length} < 3 comps)`);
-      console.log(`📋 Timeline expansion requires re-searching - handled at full-analysis level`);
-      console.log(`📋 Proceeding with GLA bucketing escalation only...`);
-      filteredComps = this.applyComplexEscalation(comparables, subjectSqft, 2);
-    }
-
-    console.log(`📊 Enhanced Outlier Detection Results:`);
-    console.log(`   Original comparables: ${comparables.length}`);
-    console.log(`   Filtered comparables: ${filteredComps.length}`);
-    console.log(`   Removed outliers: ${comparables.length - filteredComps.length}`);
-
-    return filteredComps;
+    // Use the existing 7.5% threshold method from comprehensive-comp-search-v3.ts
+    return this.apply75PercentOutlierFilter(comparables);
   }
 
   /**
-   * Mode A (n ≥ 8): Log-PPSF robust z (MAD) outlier detection
+   * Apply 7.5% PPSF outlier filter - consistent with comprehensive-comp-search-v3.ts
+   */
+  private apply75PercentOutlierFilter(comparables: ComparableProperty[]): ComparableProperty[] {
+    if (comparables.length < 3) return comparables;
+
+    // Calculate PPSF for all comparables
+    const withPpsf = comparables.map(comp => ({
+      comp,
+      ppsf: comp.price / comp.sqft
+    }));
+
+    // Calculate median PPSF (same logic as comprehensive-comp-search-v3.ts)
+    const ppsf = withPpsf.map(w => w.ppsf);
+    const sortedPpsf = ppsf.sort((a, b) => a - b);
+    const medianPpsf = sortedPpsf[Math.floor(sortedPpsf.length / 2)];
+    const threshold = medianPpsf * 1.075; // 7.5% above median (matches existing implementation)
+
+    console.log(`📊 7.5% Filter: Median PPSF $${medianPpsf.toFixed(2)}, Threshold $${threshold.toFixed(2)}`);
+
+    // Keep only properties within 7.5% tolerance
+    const filtered = withPpsf.filter(w => {
+      const variance = Math.abs(w.ppsf - medianPpsf) / medianPpsf;
+      if (variance > 0.075) {
+        console.log(`   🚫 Removed outlier: ${w.comp.address} - PPSF: $${w.ppsf.toFixed(2)} (${(variance * 100).toFixed(1)}% from median)`);
+        return false;
+      }
+      return true;
+    }).map(w => w.comp);
+
+    console.log(`📊 7.5% Filter Results: ${comparables.length} → ${filtered.length} comps`);
+    return filtered;
+  }
+
+  /**
+   * ARCHIVED: Mode A (n ≥ 8): Log-PPSF robust z (MAD) outlier detection
    */
   private modeALargeSampleOutlierDetection(comparables: ComparableProperty[]): ComparableProperty[] {
     console.log(`📊 Mode A: Large sample outlier detection (n=${comparables.length})`);

@@ -207,8 +207,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // Deduplicate by address (remove duplicate addresses)
       comps = this.deduplicateComparables(comps);
 
-      // Apply PPSF variance filtering to reduce outliers
-      comps = this.filterByPPSFVariance(comps);
+      // PPSF outlier filtering now handled by enhanced ARV calculation with 7.5% threshold
 
       // Enrich missing data and re-validate (drops any newly disqualified comps)
       // No top-N limit: enrich all surviving comps
@@ -218,11 +217,23 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // Geocode at the very end for surviving comps and filter by distance limits
       comps = await this.geocodeAndFilterDistance(comps, subjectCoords.lat, subjectCoords.lon, 1.0, 2.0);
 
+      // CRITICAL DEBUG LOGGING FOR DUPLEX VERIFICATION
+      console.log(`   🚨 DUPLEX VERIFICATION CHECK POINT:`);
+      console.log(`      🏠 subjectPropertyType = "${subjectPropertyType}" (type: ${typeof subjectPropertyType})`);
+      console.log(`      📊 comps.length = ${comps.length}`);
+      console.log(`      🔍 isDuplex = ${subjectPropertyType === 'duplex'}`);
+      console.log(`      🔍 isMultiFamily = ${subjectPropertyType === 'multi-family'}`);
+      console.log(`      🔍 condition1 = ${(subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family')}`);
+      console.log(`      🔍 condition2 = ${comps.length > 0}`);
+      console.log(`      🔍 shouldVerify = ${(subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family') && comps.length > 0}`);
+
       // If subject is duplex or multi-family, verify each remaining comparable is actually a duplex/multi-family
       if ((subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family') && comps.length > 0) {
-        console.log(`   🏠 Verifying duplex/multi-family classification for ${comps.length} properties...`);
+        console.log(`   🏠 STARTING DUPLEX VERIFICATION for ${comps.length} properties...`);
         comps = await this.verifyDuplexComparables(comps, sa, projectId, location, model);
-        console.log(`   ✅ Duplex verification: ${comps.length} confirmed duplex/multi-family properties`);
+        console.log(`   ✅ DUPLEX VERIFICATION COMPLETE: ${comps.length} confirmed duplex/multi-family properties`);
+      } else {
+        console.log(`   ⏭️  SKIPPING DUPLEX VERIFICATION: propertyType="${subjectPropertyType}", comps=${comps.length}`);
       }
 
       // Sort by distance (placing unknowns last) and limit results
@@ -1092,31 +1103,7 @@ Return exactly this JSON structure:
     return deduplicated;
   }
 
-  private filterByPPSFVariance(comps: ComparableProperty[]): ComparableProperty[] {
-    if (comps.length < 3) return comps;
-
-    // Separate comps with valid PPSF from those missing price/sqft
-    const valid = comps.filter(c => Number.isFinite(c.price) && Number.isFinite(c.sqft));
-    const missing = comps.filter(c => !Number.isFinite(c.price) || !Number.isFinite(c.sqft));
-    if (valid.length < 3) return comps; // Not enough to compute outliers
-
-    const withPpsf = valid.map(c => ({ ...c, ppsf: c.price / c.sqft }));
-    const ppsfValues = withPpsf.map(c => c.ppsf).sort((a, b) => a - b);
-    const median = ppsfValues[Math.floor(ppsfValues.length / 2)];
-
-    const kept = withPpsf.filter(c => {
-      const variance = Math.abs(c.ppsf - median) / median;
-      if (variance > 0.25) {
-        console.log(`   🚫 Removed outlier: ${c.address} - PPSF: $${c.ppsf.toFixed(2)} (${(variance * 100).toFixed(1)}% from median)`);
-        return false;
-      }
-      return true;
-    }).map(({ ppsf, ...rest }) => rest);
-
-    const result = [...kept, ...missing];
-    console.log(`   📊 PPSF variance reduction: ${comps.length} → ${result.length} comps (median PPSF: $${median.toFixed(2)})`);
-    return result;
-  }
+  // Removed filterByPPSFVariance method - using consistent 7.5% threshold in ARV calculation instead
 
   private async enrichAndRevalidate(
     comps: ComparableProperty[],
