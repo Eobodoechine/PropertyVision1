@@ -285,6 +285,8 @@ export class ProgressiveSearchStrategy {
       }
 
       // Execute search
+      console.log(`🔍 DEBUG LEVEL: About to call searchService.findComparables`);
+      console.log(`🔍 DEBUG LEVEL: Parameters - address="${address}", propertyType="${propertyType}", maxResults=${level.criteria.maxResults}, radius=${level.criteria.radius}, timeWindow=${level.criteria.timeWindow}`);
       const searchResult = await searchService.findComparables(
         address,
         propertyType, // Pass through the propertyType parameter
@@ -293,6 +295,9 @@ export class ProgressiveSearchStrategy {
         level.criteria.timeWindow,
         subjectDetails
       );
+      console.log(`🔍 DEBUG LEVEL: searchService.findComparables completed`);
+      console.log(`🔍 DEBUG LEVEL: searchResult type:`, typeof searchResult);
+      console.log(`🔍 DEBUG LEVEL: searchResult keys:`, searchResult ? Object.keys(searchResult) : 'null');
 
       // Restore original subdivision
       process.env.SUBDIVISION = originalSubdivision;

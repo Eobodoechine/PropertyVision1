@@ -128,7 +128,13 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       const aggregatedComps = new Map<string, ComparableProperty>();
 
       const fetchAndParse = async (p: string): Promise<ComparableProperty[]> => {
+        console.log(`🔍 FETCH DEBUG: fetchAndParse starting...`);
+        console.log(`🔍 FETCH DEBUG: About to import vertex-freeform.js`);
         const { vertexGenerate } = await import('./vertex-freeform.js');
+        console.log(`🔍 FETCH DEBUG: vertex-freeform.js imported successfully`);
+
+        console.log(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 60000ms`);
+        const startVertex = Date.now();
         const r = await vertexGenerate({
           sa: sa,
           projectId,
@@ -138,7 +144,12 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           grounded: true,
           timeoutMs: 60000
         });
+        const vertexTime = Date.now() - startVertex;
+        console.log(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
+
+        console.log(`🔍 FETCH DEBUG: About to parse vertex response`);
         let parsed = await this.parseVertexResponse(r, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+        console.log(`🔍 FETCH DEBUG: parseVertexResponse completed with ${parsed.length} results`);
         if (parsed.length === 0) {
           const strictP = `Return ONLY pipe-separated lines for SOLD properties near "${subjectAddress}" within ${searchRadius} miles and ${timeWindowMonths} months. No commentary, no headers.
 address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url`;
@@ -158,16 +169,42 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       // Prepare prompts and run all Vertex searches in parallel
       const prompts: string[] = [];
+      console.log(`🔍 PROMPT DEBUG: Starting prompt generation`);
       if (subdivision) {
         console.log('   🏘️  Subdivision specified — scheduling 3 subdivision searches');
-        for (let i = 1; i <= 3; i++) prompts.push(composeAnalystPipePrompt(true));
+        for (let i = 1; i <= 3; i++) {
+          console.log(`🔍 PROMPT DEBUG: About to call composeAnalystPipePrompt(true) for subdivision search ${i}`);
+          prompts.push(composeAnalystPipePrompt(true));
+          console.log(`🔍 PROMPT DEBUG: Subdivision search ${i} prompt created successfully`);
+        }
       } else {
         console.log('   🏘️  No subdivision specified — skipping subdivision runs');
       }
-      for (let i = 1; i <= 3; i++) prompts.push(composeAnalystPipePrompt(false));
+      for (let i = 1; i <= 3; i++) {
+        console.log(`🔍 PROMPT DEBUG: About to call composeAnalystPipePrompt(false) for regular search ${i}`);
+        prompts.push(composeAnalystPipePrompt(false));
+        console.log(`🔍 PROMPT DEBUG: Regular search ${i} prompt created successfully`);
+      }
 
+      console.log(`🔍 PROMPT DEBUG: All prompts generated successfully, total: ${prompts.length}`);
       console.log(`   🚀 Launching ${prompts.length} Vertex searches in parallel...`);
-      const batches = await Promise.all(prompts.map(p => fetchAndParse(p)));
+      console.log(`🔍 VERTEX DEBUG: About to execute Promise.all with ${prompts.length} prompts`);
+      console.log(`🔍 VERTEX DEBUG: Promise.all execution starting...`);
+      const startPromiseAll = Date.now();
+
+      const batches = await Promise.all(prompts.map((p, index) => {
+        console.log(`🔍 VERTEX DEBUG: Starting search ${index + 1}/${prompts.length}`);
+        return fetchAndParse(p).then(result => {
+          console.log(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with ${result ? result.length : 0} results`);
+          return result;
+        }).catch(error => {
+          console.log(`🔍 VERTEX DEBUG: Search ${index + 1} failed with error:`, error.message);
+          throw error;
+        });
+      }));
+
+      const promiseAllTime = Date.now() - startPromiseAll;
+      console.log(`🔍 VERTEX DEBUG: Promise.all completed successfully in ${promiseAllTime}ms`);
       for (const list of batches) {
         list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
       }
@@ -179,7 +216,9 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // LOG EACH PROPERTY BEFORE FILTERING
       console.log(`   🔍 DETAILED PROPERTY FILTERING:`);
       comps.forEach((comp, index) => {
-        console.log(`   🔍 FILTERING ${comp.address}: ${comp.beds}BR/${comp.baths}BA, ${comp.sqft}sqft vs Subject: ${subjectDetails?.beds || '?'}BR/${subjectDetails?.baths || '?'}BA, ${subjectDetails?.sqft || '?'}sqft`);
+        // Safe formatting to prevent hangs with very large numbers
+        const safeSqft = (subjectDetails?.sqft && subjectDetails.sqft < 100000) ? subjectDetails.sqft : '?';
+        console.log(`   🔍 FILTERING ${comp.address}: ${comp.beds}BR/${comp.baths}BA, ${comp.sqft}sqft vs Subject: ${subjectDetails?.beds || '?'}BR/${subjectDetails?.baths || '?'}BA, ${safeSqft}sqft`);
 
         // Bedroom validation
         const bedroomDiff = Math.abs((comp.beds || 0) - (subjectDetails?.beds || 0));
@@ -201,21 +240,34 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
         // Time validation (simplified - would need actual sold date parsing)
         console.log(`   ✅ TIME QUALIFIED ${comp.address}: Recent sale (estimated)`);
-        console.log(`   ✅ Added: ${comp.address} - $${comp.price.toLocaleString()} - ${comp.sqft}sqft - Built: ${comp.yearBuilt || 'Unknown'}`);
+        console.log(`🔍 DEBUG STEP A: After TIME QUALIFIED log for ${comp.address}`);
+        console.log(`🔍 DEBUG STEP: About to format price for ${comp.address}, price = ${comp.price} (type: ${typeof comp.price})`);
+        const safePrice = (typeof comp.price === 'number' && !isNaN(comp.price)) ? comp.price.toLocaleString() : comp.price;
+        console.log(`🔍 DEBUG STEP: Price formatted successfully: ${safePrice}`);
+        console.log(`   ✅ Added: ${comp.address} - $${safePrice} - ${comp.sqft}sqft - Built: ${comp.yearBuilt || 'Unknown'}`);
       });
+      console.log(`🔍 EXACT DEBUG: forEach loop completed, processed ${comps.length} properties`);
 
       // Deduplicate by address (remove duplicate addresses)
+      console.log(`🔍 EXACT DEBUG: About to call deduplicateComparables with ${comps.length} comps`);
       comps = this.deduplicateComparables(comps);
+      console.log(`🔍 EXACT DEBUG: deduplicateComparables completed, now have ${comps.length} comps`);
 
       // PPSF outlier filtering now handled by enhanced ARV calculation with 7.5% threshold
 
       // Enrich missing data and re-validate (drops any newly disqualified comps)
       // No top-N limit: enrich all surviving comps
+      console.log(`🔍 EXACT DEBUG: About to call prioritizeForEnrichment with ${comps.length} comps`);
       const prioritized = this.prioritizeForEnrichment(comps);
+      console.log(`🔍 EXACT DEBUG: prioritizeForEnrichment completed, got ${prioritized.length} prioritized`);
+      console.log(`🔍 EXACT DEBUG: About to call enrichAndRevalidate`);
       comps = await this.enrichAndRevalidate(prioritized, subjectDetails);
+      console.log(`🔍 EXACT DEBUG: enrichAndRevalidate completed, now have ${comps.length} comps`);
 
       // Geocode at the very end for surviving comps and filter by distance limits
+      console.log(`🔍 EXACT DEBUG: About to call geocodeAndFilterDistance with ${comps.length} comps`);
       comps = await this.geocodeAndFilterDistance(comps, subjectCoords.lat, subjectCoords.lon, 1.0, 2.0);
+      console.log(`🔍 EXACT DEBUG: geocodeAndFilterDistance completed, now have ${comps.length} comps`);
 
       // CRITICAL DEBUG LOGGING FOR DUPLEX VERIFICATION
       console.log(`   🚨 DUPLEX VERIFICATION CHECK POINT:`);

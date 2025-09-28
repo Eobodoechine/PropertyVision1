@@ -97,15 +97,65 @@ async function vertexGenerate(opts: {
 }
 
 // LLM-based parsing to replace problematic regex
-async function parseFreeformWithLLM(text: string, sa: any, projectId: string, location: string, model: string): Promise<Partial<BasicDetails>> {
+async function parseFreeformWithLLM(text: string, sa: any, projectId: string, location: string, model: string, address?: string): Promise<Partial<BasicDetails>> {
   console.log(`   🤖 Starting LLM extraction for property details...`);
   try {
-    // Extract square footage using LLM - this solves the house vs lot size confusion
-    const sqftPrompt = `What is the house square footage (interior/living space only, not lot size) in this text?
+    // STEP 1: Validation extraction - send raw data back for clean parsing
+    console.log(`   🔍 Step 1: Validation extraction from raw data...`);
+    const validationPrompt = `Extract property details from this text. You MUST provide ALL five values - if any value is not found, write "UNKNOWN":
 
 "${text}"
 
-Give only the number, no commas or units.`;
+Find these details:
+- Square footage (house living area only, not lot size)
+- Number of bedrooms
+- Number of bathrooms (including half baths as decimals like 1.5)
+- Year built
+- Property type (single-family detached, townhome, condo, duplex, multi-family)
+
+Respond in this EXACT format (provide ALL five lines):
+SQFT: [number or UNKNOWN]
+BEDS: [number or UNKNOWN]
+BATHS: [number or UNKNOWN]
+YEAR: [4-digit year or UNKNOWN]
+TYPE: [property type or UNKNOWN]`;
+
+    const validationResponse = await vertexGenerate({
+      sa, projectId, location, model,
+      prompt: validationPrompt,
+      grounded: false,
+      json: false,
+      timeoutMs: 10000
+    });
+
+    console.log(`   🔍 Validation response: "${validationResponse}"`);
+    const validationData = parsePropertyResponse(validationResponse);
+    console.log(`   🔍 Validation extracted: sqft=${validationData.sqft}, beds=${validationData.beds}, baths=${validationData.baths}, year=${validationData.yearBuilt}`);
+
+    // Check if validation got all critical fields - if so, use it and stop
+    const hasAllCriticalFields = validationData.sqft && validationData.beds && validationData.baths && validationData.yearBuilt;
+    if (hasAllCriticalFields) {
+      console.log(`   ✅ Validation SUCCESS: All critical fields found - using validation result`);
+      return {
+        sqft: validationData.sqft,
+        beds: validationData.beds,
+        baths: validationData.baths,
+        yearBuilt: validationData.yearBuilt,
+        lotSize: null,
+        subdivision: validationData.subdivision || null,
+        propertyType: validationData.propertyType || null
+      };
+    }
+
+    console.log(`   ⚠️  Validation incomplete - missing some fields, trying original extraction...`);
+
+    // STEP 2: Original LLM extraction logic (only if validation incomplete)
+    console.log(`   🔍 Step 2: Original extraction logic for comparison...`);
+
+    // Extract square footage using LLM - ask for clean number only
+    const sqftPrompt = `Extract the house square footage (interior living space only, not lot size) from this text. Return ONLY the number with no commas, units, or other text:
+
+"${text}"`;
 
     const sqftResponse = await vertexGenerate({
       sa, projectId, location, model,
@@ -115,14 +165,14 @@ Give only the number, no commas or units.`;
       timeoutMs: 10000
     });
 
-    const sqft = sqftResponse.match(/\d+/) ? Number(sqftResponse.replace(/[^\d]/g, '')) : null;
+    console.log(`   🔍 Original sqft response: "${sqftResponse}"`);
+    const sqft = sqftResponse && sqftResponse.trim() ? Number(sqftResponse.trim()) : null;
+    console.log(`   🔍 Original sqft parsed: ${sqft}`);
 
     // Extract bedrooms using LLM
-    const bedsPrompt = `How many bedrooms are in this property?
+    const bedsPrompt = `Extract the number of bedrooms from this text. Return ONLY the number:
 
-"${text}"
-
-Give only the number.`;
+"${text}"`;
 
     const bedsResponse = await vertexGenerate({
       sa, projectId, location, model,
@@ -132,14 +182,14 @@ Give only the number.`;
       timeoutMs: 10000
     });
 
-    const beds = bedsResponse.match(/\d+/) ? Number(bedsResponse.replace(/[^\d]/g, '')) : null;
+    console.log(`   🔍 Original beds response: "${bedsResponse}"`);
+    const beds = bedsResponse && bedsResponse.trim() ? Number(bedsResponse.trim()) : null;
+    console.log(`   🔍 Original beds parsed: ${beds}`);
 
     // Extract bathrooms using LLM
-    const bathsPrompt = `How many bathrooms (including half baths as 0.5) are in this property?
+    const bathsPrompt = `Extract the number of bathrooms (including half baths as 0.5) from this text. Return ONLY the number (use decimals like 2.5):
 
-"${text}"
-
-Give only the number (use decimals like 2.5).`;
+"${text}"`;
 
     const bathsResponse = await vertexGenerate({
       sa, projectId, location, model,
@@ -149,14 +199,14 @@ Give only the number (use decimals like 2.5).`;
       timeoutMs: 10000
     });
 
-    const baths = bathsResponse.match(/[\d.]+/) ? Number(bathsResponse.match(/[\d.]+/)?.[0]) : null;
+    console.log(`   🔍 Original baths response: "${bathsResponse}"`);
+    const baths = bathsResponse && bathsResponse.trim() ? Number(bathsResponse.trim()) : null;
+    console.log(`   🔍 Original baths parsed: ${baths}`);
 
     // Extract year built using LLM
-    const yearPrompt = `What year was this property built?
+    const yearPrompt = `Extract the year this property was built from this text. Return ONLY the 4-digit year:
 
-"${text}"
-
-Give only the 4-digit year.`;
+"${text}"`;
 
     const yearResponse = await vertexGenerate({
       sa, projectId, location, model,
@@ -166,7 +216,9 @@ Give only the 4-digit year.`;
       timeoutMs: 10000
     });
 
-    const yearBuilt = yearResponse.match(/\b(19|20)\d{2}\b/) ? Number(yearResponse.match(/\b(19|20)\d{2}\b/)?.[0]) : null;
+    console.log(`   🔍 Original year response: "${yearResponse}"`);
+    const yearBuilt = yearResponse && yearResponse.trim() ? Number(yearResponse.trim()) : null;
+    console.log(`   🔍 Original year parsed: ${yearBuilt}`);
 
     // Try to extract subdivision/neighborhood from text
     let subdivision: string | null = null;
@@ -202,9 +254,94 @@ Give only the 4-digit year.`;
       console.log(`   ❌ Property type extraction failed: ${error}`);
     }
 
-    console.log(`   🤖 LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
+    const originalData = { sqft, beds, baths, yearBuilt, lotSize: null, subdivision, propertyType };
+    console.log(`   🤖 Original LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
 
-    return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision, propertyType };
+    // STEP 3: Enrich validation data with original extraction for missing fields only
+    console.log(`   🔄 Step 3: Enriching validation data with original extraction...`);
+
+    const finalData = { ...validationData };
+
+    // Only use original data to fill missing fields from validation
+    if (!finalData.sqft && sqft) {
+      finalData.sqft = sqft;
+      console.log(`   ✅ ENRICHED: Added sqft from original extraction: ${sqft}`);
+    }
+    if (!finalData.beds && beds) {
+      finalData.beds = beds;
+      console.log(`   ✅ ENRICHED: Added beds from original extraction: ${beds}`);
+    }
+    if (!finalData.baths && baths) {
+      finalData.baths = baths;
+      console.log(`   ✅ ENRICHED: Added baths from original extraction: ${baths}`);
+    }
+    if (!finalData.yearBuilt && yearBuilt) {
+      finalData.yearBuilt = yearBuilt;
+      console.log(`   ✅ ENRICHED: Added yearBuilt from original extraction: ${yearBuilt}`);
+    }
+    if (!finalData.subdivision && subdivision) {
+      finalData.subdivision = subdivision;
+      console.log(`   ✅ ENRICHED: Added subdivision from original extraction: ${subdivision}`);
+    }
+    if (!finalData.propertyType && propertyType) {
+      finalData.propertyType = propertyType;
+      console.log(`   ✅ ENRICHED: Added propertyType from original extraction: ${propertyType}`);
+    }
+
+    finalData.lotSize = null; // Always null for now
+
+    // Check if we have critical missing fields after both extractions
+    const missingCriticalFields = [];
+    if (!finalData.sqft || finalData.sqft <= 0) missingCriticalFields.push('sqft');
+    if (!finalData.beds || finalData.beds <= 0) missingCriticalFields.push('beds');
+    if (!finalData.baths || finalData.baths <= 0) missingCriticalFields.push('baths');
+    if (!finalData.yearBuilt) missingCriticalFields.push('yearBuilt');
+
+    if (missingCriticalFields.length > 0) {
+      console.log(`   ⚠️  Still missing critical fields after validation+original: ${missingCriticalFields.join(', ')}`);
+      console.log(`   🔄 Step 4: Enhanced fallback detection for missing fields...`);
+
+      // Try the existing fallback detection for missing fields
+      const fallbackData = address ? await fallbackPropertyDetection(address, sa, projectId, location, model, missingCriticalFields) : {};
+
+      // Fill in any missing critical fields from fallback
+      missingCriticalFields.forEach(field => {
+        if (field === 'sqft' && fallbackData.sqft && (!finalData.sqft || finalData.sqft <= 0)) {
+          finalData.sqft = fallbackData.sqft;
+          console.log(`   ✅ Enhanced fallback: Found sqft = ${fallbackData.sqft}`);
+        }
+        if (field === 'beds' && fallbackData.beds && (!finalData.beds || finalData.beds <= 0)) {
+          finalData.beds = fallbackData.beds;
+          console.log(`   ✅ Enhanced fallback: Found beds = ${fallbackData.beds}`);
+        }
+        if (field === 'baths' && fallbackData.baths && (!finalData.baths || finalData.baths <= 0)) {
+          finalData.baths = fallbackData.baths;
+          console.log(`   ✅ Enhanced fallback: Found baths = ${fallbackData.baths}`);
+        }
+        if (field === 'yearBuilt' && fallbackData.yearBuilt && !finalData.yearBuilt) {
+          finalData.yearBuilt = fallbackData.yearBuilt;
+          console.log(`   ✅ Enhanced fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
+        }
+      });
+
+      // Final check - if still missing critical fields, one more attempt
+      const stillMissing = [];
+      if (!finalData.sqft || finalData.sqft <= 0) stillMissing.push('sqft');
+      if (!finalData.beds || finalData.beds <= 0) stillMissing.push('beds');
+      if (!finalData.baths || finalData.baths <= 0) stillMissing.push('baths');
+      if (!finalData.yearBuilt) stillMissing.push('yearBuilt');
+
+      if (stillMissing.length > 0) {
+        console.log(`   🆘 Step 5: Last resort - manual extraction for: ${stillMissing.join(', ')}`);
+        console.log(`   ❌ EXTRACTION FAILED: Could not find ${stillMissing.join(', ')} after all attempts`);
+      } else {
+        console.log(`   🎉 Enhanced fallback SUCCESS: All critical fields now found!`);
+      }
+    }
+
+    console.log(`   📊 Final combined result: SQFT=${finalData.sqft}, Beds=${finalData.beds}, Baths=${finalData.baths}, Built=${finalData.yearBuilt}${finalData.subdivision ? `, Subdivision=${finalData.subdivision}` : ''}${finalData.propertyType ? `, Type=${finalData.propertyType}` : ''}`);
+
+    return finalData;
 
   } catch (error) {
     console.log(`   ❌ LLM parsing completely failed, falling back to regex: ${error}`);
@@ -479,7 +616,7 @@ Provide specific facts with numbers. If any critical data is missing, clearly st
     console.log(`   📄 Primary search response: ${text.substring(0, 200)}...`);
 
     console.log(`   🔄 Calling parseFreeformWithLLM for detailed extraction...`);
-    propertyDetails = await parseFreeformWithLLM(text, sa, projectId, location, model);
+    propertyDetails = await parseFreeformWithLLM(text, sa, projectId, location, model, address);
     console.log(`   📊 Parsed data: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}, propertyType=${propertyDetails.propertyType}`);
 
   } catch (err) {
@@ -513,7 +650,7 @@ Search county assessor and tax records:
 Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
 
       const countyText = await vertexGenerate({ sa, projectId, location, model, prompt: countyPrompt, grounded: true, json: false, timeoutMs });
-      const countyData = await parseFreeformWithLLM(countyText, sa, projectId, location, model);
+      const countyData = await parseFreeformWithLLM(countyText, sa, projectId, location, model, address);
 
       // Fill in missing critical data
       if (!propertyDetails.sqft && countyData.sqft) propertyDetails.sqft = countyData.sqft;
