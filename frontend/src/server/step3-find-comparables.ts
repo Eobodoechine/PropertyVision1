@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import https from 'https';
 // import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
+import { GeminiParser } from './utils/geminiParser';
 
 interface ComparableProperty {
   address: string;
@@ -29,6 +30,7 @@ class VertexComparableSearchService {
   private rawCompsFound: number = 0;
   private googleMapsApiKey: string;
   private geocodeCache: Map<string, { lat: number; lon: number }>;
+  private geminiParser: GeminiParser;
 
   constructor() {
     this.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || '';
@@ -36,6 +38,7 @@ class VertexComparableSearchService {
       throw new Error('GOOGLE_MAPS_API_KEY environment variable is required');
     }
     this.geocodeCache = new Map();
+    this.geminiParser = new GeminiParser();
   }
 
   async findComparables(
@@ -151,83 +154,18 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         const vertexTime = Date.now() - startVertex;
         console.log(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
 
-        console.log(`🔍 FETCH DEBUG: About to clean and parse vertex response`);
+        console.log(`🔍 FETCH DEBUG: About to parse with Gemini`);
         console.log(`🔍 RAW RESPONSE: Raw Vertex AI response: "${r}"`);
 
-        // First, ask Vertex AI to parse the raw search results into clean pipe-delimited format
-        const cleanupPrompt = `Parse the following property search results and convert them to clean pipe-delimited format.
+        // Use Gemini to parse the raw Vertex AI response directly
+        console.log(`🤖 GEMINI: Parsing raw Vertex response with Gemini API...`);
+        const geminiProperties = await this.geminiParser.parsePropertyData(r);
+        console.log(`🤖 GEMINI: Extracted ${geminiProperties.length} properties`);
 
-RAW SEARCH RESULTS:
-${r}
+        // Convert Gemini parsed properties to ComparableProperty format
+        const parsed = await this.convertGeminiToComparable(geminiProperties, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+        console.log(`🔍 FETCH DEBUG: convertGeminiToComparable completed with ${parsed.length} results`);
 
-Extract only the property data and format as pipe-delimited lines. Return ONLY the formatted data, no explanations.
-
-REQUIRED FORMAT for each property:
-address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url
-
-Skip any explanatory text or commentary. Only include actual property data.`;
-
-        console.log(`🔍 CLEANUP DEBUG: About to call Vertex AI to clean up response`);
-        const cleanedResponse = await vertexGenerate({
-          sa: sa,
-          projectId,
-          location,
-          model,
-          prompt: cleanupPrompt,
-          grounded: false,
-          timeoutMs: 30000
-        });
-        console.log(`🔍 CLEANUP DEBUG: Cleaned response: "${cleanedResponse}"`);
-
-        let parsed = await this.parseVertexResponse(cleanedResponse, subjectCoords.lat, subjectCoords.lon, subjectDetails);
-        console.log(`🔍 FETCH DEBUG: parseVertexResponse completed with ${parsed.length} results`);
-        if (parsed.length === 0) {
-          console.log(`🔍 FALLBACK DEBUG: About to create strictP with subjectAddress="${subjectAddress}"`);
-          console.log(`🔍 FALLBACK DEBUG: subjectAddress type check: ${typeof subjectAddress}`);
-          if (typeof subjectAddress === 'undefined') {
-            console.error(`❌ ERROR: subjectAddress is undefined in fallback`);
-            throw new Error('subjectAddress is not defined');
-          }
-          const strictP = `Return ONLY pipe-separated lines for SOLD properties near "${subjectAddress}" within ${searchRadius} miles and ${timeWindowMonths} months. No commentary, no headers.
-address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url`;
-          const sr = await vertexGenerate({
-            sa: sa,
-            projectId,
-            location,
-            model,
-            prompt: strictP,
-            grounded: true,
-            timeoutMs: 60000
-          });
-
-          console.log(`🔍 FALLBACK RAW: Fallback raw response: "${sr}"`);
-
-          // Apply same cleanup to fallback response
-          const fallbackCleanupPrompt = `Parse the following property search results and convert them to clean pipe-delimited format.
-
-RAW SEARCH RESULTS:
-${sr}
-
-Extract only the property data and format as pipe-delimited lines. Return ONLY the formatted data, no explanations.
-
-REQUIRED FORMAT for each property:
-address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url
-
-Skip any explanatory text or commentary. Only include actual property data.`;
-
-          const fallbackCleaned = await vertexGenerate({
-            sa: sa,
-            projectId,
-            location,
-            model,
-            prompt: fallbackCleanupPrompt,
-            grounded: false,
-            timeoutMs: 30000
-          });
-          console.log(`🔍 FALLBACK CLEANED: Fallback cleaned response: "${fallbackCleaned}"`);
-
-          parsed = await this.parseVertexResponse(fallbackCleaned, subjectCoords.lat, subjectCoords.lon, subjectDetails);
-        }
         return parsed;
       };
 
@@ -323,8 +261,25 @@ Skip any explanatory text or commentary. Only include actual property data.`;
           }
         }
 
-        // Time validation (simplified - would need actual sold date parsing)
-        console.log(`   ✅ TIME QUALIFIED ${comp.address}: Recent sale (estimated)`);
+        // Time validation with proper date calculation
+        let timeDescription = "Recent sale";
+        if (comp.soldDate) {
+          try {
+            const soldDate = new Date(comp.soldDate);
+            const today = new Date();
+            const ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+            if (Number.isFinite(ageInMonths)) {
+              timeDescription = `Recent sale (${Math.abs(ageInMonths)} months)`;
+            } else {
+              timeDescription = "Recent sale (calculated)";
+            }
+          } catch (error) {
+            timeDescription = "Recent sale (calculated)";
+          }
+        } else {
+          timeDescription = "Recent sale (calculated)";
+        }
+        console.log(`   ✅ TIME QUALIFIED ${comp.address}: ${timeDescription}`);
         console.log(`🔍 DEBUG STEP A: After TIME QUALIFIED log for ${comp.address}`);
         console.log(`🔍 DEBUG STEP: About to format price for ${comp.address}, price = ${comp.price} (type: ${typeof comp.price})`);
         const safePrice = (typeof comp.price === 'number' && !isNaN(comp.price)) ? comp.price.toLocaleString() : comp.price;
@@ -472,6 +427,79 @@ Skip any explanatory text or commentary. Only include actual property data.`;
         error: error.message
       };
     }
+  }
+
+  /**
+   * Convert Gemini parsed properties to ComparableProperty format with distances
+   */
+  private async convertGeminiToComparable(
+    geminiProperties: any[],
+    subjectLat: number,
+    subjectLon: number,
+    subjectDetails?: { sqft: number; beds: number; baths: number; yearBuilt: number }
+  ): Promise<ComparableProperty[]> {
+    const comparables: ComparableProperty[] = [];
+
+    for (const prop of geminiProperties) {
+      try {
+        // Get coordinates for this property
+        const coords = await this.geocodeWithTimeout(prop.address, 5000);
+        if (!coords) {
+          console.warn(`⚠️  Skipping property with no coordinates: ${prop.address}`);
+          continue;
+        }
+
+        // Calculate distance
+        const distance = this.calculateHaversineDistance(subjectLat, subjectLon, coords.lat, coords.lon);
+
+        // Convert to ComparableProperty format
+        const comparable: ComparableProperty = {
+          address: prop.address,
+          price: prop.sold_price || 0,
+          sqft: prop.sqft || 0,
+          beds: prop.beds || 0,
+          baths: prop.baths || 0,
+          yearBuilt: prop.year_built || null,
+          soldDate: prop.sold_date || '',
+          distance: distance,
+          source: prop.source_url || 'Unknown',
+          confidence: 'High' // Gemini parsing is generally high confidence
+        };
+
+        comparables.push(comparable);
+      } catch (error: any) {
+        console.warn(`⚠️  Error processing property ${prop.address}: ${error.message}`);
+        continue;
+      }
+    }
+
+    return comparables;
+  }
+
+  /**
+   * Calculate the Haversine distance between two points in miles
+   */
+  private calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 3959; // Earth's radius in miles
+    const dLat = this.degreesToRadians(lat2 - lat1);
+    const dLon = this.degreesToRadians(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degreesToRadians(lat1)) * Math.cos(this.degreesToRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    return distance;
+  }
+
+  /**
+   * Helper function to convert degrees to radians
+   */
+  private degreesToRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
   }
 
   private async verifyDuplexComparables(

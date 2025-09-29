@@ -1,5 +1,5 @@
 // Test Vertex AI Deduplication with real data from last analysis
-import { VertexDeduplicator } from './src/server/utils/vertexDeduplicator.js';
+import { VertexDeduplicator } from './src/server/utils/vertexDeduplicator.ts';
 
 const testData = [
   {

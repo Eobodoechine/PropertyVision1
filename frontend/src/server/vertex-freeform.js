@@ -21,9 +21,19 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
         req.end();
     });
 }
+console.log('🚨🚨🚨 VERTEX-FREEFORM.JS LOADED - TOKEN DEBUG VERSION 🚨🚨🚨');
 // REMOVED: groundedFreeform function - replaced with deterministic vertexGenerate
 // Service account token generation
 async function getServiceAccountToken(sa, scope) {
+    console.log('🔍 TOKEN DEBUG 1: getServiceAccountToken called');
+    console.log('🔍 TOKEN DEBUG 2: sa type:', typeof sa);
+    console.log('🔍 TOKEN DEBUG 3: sa is null/undefined:', sa === null || sa === undefined);
+    console.log('🔍 TOKEN DEBUG 4: sa keys:', sa ? Object.keys(sa) : 'NO SA OBJECT');
+    console.log('🔍 TOKEN DEBUG 5: sa.private_key exists:', !!sa?.private_key);
+    console.log('🔍 TOKEN DEBUG 6: sa.private_key type:', typeof sa?.private_key);
+    console.log('🔍 TOKEN DEBUG 7: sa.private_key length:', sa?.private_key?.length || 'NO LENGTH');
+    console.log('🔍 TOKEN DEBUG 8: sa.client_email:', sa?.client_email || 'NO CLIENT EMAIL');
+
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + 3600;
     const header = { alg: 'RS256', typ: 'JWT' };
@@ -34,6 +44,8 @@ async function getServiceAccountToken(sa, scope) {
     const { createSign } = await import('node:crypto');
     const sign = createSign('RSA-SHA256');
     sign.update(unsigned);
+    console.log('🔍 TOKEN DEBUG 9: About to call sign.sign(sa.private_key)');
+    console.log('🔍 TOKEN DEBUG 10: Final sa.private_key check:', !!sa.private_key);
     const signature = sign.sign(sa.private_key).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const assertion = `${unsigned}.${signature}`;
     const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion });
@@ -79,7 +91,7 @@ export async function vertexGenerate(opts) {
         generationConfig: {
             temperature: 0, // Maximum determinism
             seed: 12345, // Fixed seed for reproducibility
-            maxOutputTokens: 65535, // Maximum tokens for Gemini 2.5 Pro on Vertex AI (2025)
+            maxOutputTokens: 8192, // Maximum tokens for Gemini 2.0 Flash on Vertex AI (reduced from 65535)
             ...(opts.json ? { responseMimeType: 'application/json' } : {})
         },
     };

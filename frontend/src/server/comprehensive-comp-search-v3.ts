@@ -1,12 +1,12 @@
 // Comprehensive Comparable Search V3 - V2 with Dual ARV Analysis
 // Same as V2 but with dual ARV calculation: baseline + 2-bathroom upgrade scenarios
 
-import { VertexComparableSearchService } from './step3-find-comparables';
-import { ARVCalculationService } from './step4-arv-calculation';
-import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details';
-import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
-import { VertexDeduplicator } from './utils/vertexDeduplicator';
-import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
+import { VertexComparableSearchService } from './step3-find-comparables.js';
+import { ARVCalculationService } from './step4-arv-calculation.js';
+import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details.js';
+import { PropertyDataNormalizer } from './utils/propertyDataNormalizer.js';
+import { VertexDeduplicator } from './utils/vertexDeduplicator.js';
+import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy.js';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -57,7 +57,7 @@ type SubjectSummary = Pick<BasicDetails,
   'address' | 'sqft' | 'beds' | 'baths' | 'yearBuilt' | 'lotSize' | 'subdivision' | 'success'
 >;
 
-export class ComprehensiveCompSearchV3 {
+export class ComprehensiveComparableSearchV3 {
   private compService: VertexComparableSearchService;
   private arvService: ARVCalculationService;
   private normalizer: PropertyDataNormalizer;
@@ -191,13 +191,20 @@ export class ComprehensiveCompSearchV3 {
       };
       console.log(`   ✅ Distance validated: ${distanceValidatedComps.length}/${deduplicatedComps.length} within 2 miles (rejected ${distanceValidationResult.rejected.length})`);
 
-      // Step 6: Quality filtering and consistency scoring
-      console.log(`\n⭐ Step 6: Quality Assessment`);
-      const consistencyScores = this.calculateConsistencyScores(distanceValidatedComps);
-      const qualifiedComps = distanceValidatedComps.filter((_, index: number) =>
-        consistencyScores.get(index.toString()) && consistencyScores.get(index.toString())! > 0.6
-      );
-      console.log(`   ✅ Quality filtered: ${qualifiedComps.length}/${distanceValidatedComps.length} high-quality comps`);
+      // Step 6: High-tier property selection based on PPSF analysis
+      console.log(`\n🎯 Step 6: High-Tier Property Selection`);
+      const highTierResult = this.selectHighTierProperties(distanceValidatedComps);
+      const qualifiedComps = highTierResult.selectedComps;
+
+      console.log(`   ✅ High-tier selection: ${qualifiedComps.length}/${distanceValidatedComps.length} properties selected`);
+      if (highTierResult.droppedHighNoSupport.length > 0) {
+        console.log(`   📊 Dropped high-tier (no support): ${highTierResult.droppedHighNoSupport.length} properties`);
+      }
+
+      // Log detailed analysis
+      highTierResult.analysisLog.forEach(logLine => {
+        console.log(`   ${logLine}`);
+      });
 
       // Step 7: Renovation analysis
       console.log(`\n🔨 Step 7: Renovation Analysis`);
@@ -228,7 +235,9 @@ export class ComprehensiveCompSearchV3 {
         console.log(`   📊 Baseline comps (≤${subjectBaths} baths): ${baselineComps.length}`);
 
         if (baselineComps.length >= 3) {
-          const baselineARV = this.arvService.calculateARV(baselineComps, subjectDetails.sqft);
+          // Apply market-based bathroom adjustments to comparables
+          const adjustedComps = this.applyMarketBathroomAdjustments(baselineComps, subjectBaths);
+          const baselineARV = this.arvService.calculateARV(adjustedComps, subjectDetails.sqft);
           arvResult = {
             method: 'comprehensive_v3_baseline',
             estimate: baselineARV.arv,
@@ -290,8 +299,8 @@ export class ComprehensiveCompSearchV3 {
 
       console.log(`   🎯 Recommendation: ${bathroomAnalysis.recommendAction.toUpperCase().replace('_', ' ')}`);
 
-      // Calculate quality score
-      const qualityScore = this.assessOverallQuality(qualifiedComps.length, consistencyScores);
+      // Calculate quality score based on count and distance only
+      const qualityScore = this.assessOverallQuality(qualifiedComps.length);
       const totalSearchTime = Date.now() - startTime;
 
       console.log(`\n📊 COMPREHENSIVE SEARCH V3 COMPLETE`);
@@ -306,7 +315,7 @@ export class ComprehensiveCompSearchV3 {
         subject: subjectSummary,
         all_comps: allComps,
         qualified_comps: qualifiedComps,
-        consistency_scores: consistencyScores,
+        consistency_scores: new Map(), // Empty map since we removed quality filtering
         renovation_analysis: renovationAnalysis,
         arv: arvResult,
         twoBathARV,
@@ -365,7 +374,7 @@ export class ComprehensiveCompSearchV3 {
   }
 
   /**
-   * BASELINE filtering - Conservative estimate using similar/lower bathroom counts
+   * BASELINE filtering - Allow bathroom differences with market-based adjustments
    */
   private filterComparablesForBaseline(comps: any[], subjectBaths: number): any[] {
     const epsilon = 1e-9; // Float comparison tolerance
@@ -376,8 +385,9 @@ export class ComprehensiveCompSearchV3 {
       // Must have valid bathroom count
       if (!Number.isFinite(compBaths)) return false;
 
-      // Only use comps with baths <= subject (conservative approach)
-      if (compBaths > subjectBaths + epsilon) return false;
+      // Allow bathroom differences up to ±1 (relaxed from conservative ≤ subject)
+      const bathDiff = Math.abs(compBaths - subjectBaths);
+      if (bathDiff > 1.0 + epsilon) return false;
 
       // Additional quality filters
       if (!Number.isFinite(comp.price) || !Number.isFinite(comp.sqft)) return false;
@@ -411,6 +421,74 @@ export class ComprehensiveCompSearchV3 {
   }
 
   /**
+   * Apply market-based bathroom adjustments to comparables
+   */
+  private applyMarketBathroomAdjustments(comps: any[], subjectBaths: number): any[] {
+    // Group comparables by bathroom count to analyze market premiums
+    const bathGroups = new Map<number, any[]>();
+    comps.forEach(comp => {
+      const compBaths = parseFloat(comp.baths?.toString() || '0');
+      if (!bathGroups.has(compBaths)) {
+        bathGroups.set(compBaths, []);
+      }
+      bathGroups.get(compBaths)!.push(comp);
+    });
+
+    // Calculate average PPSF for each bathroom group
+    const bathPremiums = new Map<number, number>();
+    bathGroups.forEach((groupComps, bathCount) => {
+      const avgPpsf = groupComps.reduce((sum, comp) => sum + (comp.price / comp.sqft), 0) / groupComps.length;
+      bathPremiums.set(bathCount, avgPpsf);
+    });
+
+    // Calculate market-based adjustment per bathroom difference
+    let bathroomAdjustmentPerSqft = 0;
+    if (bathPremiums.size >= 2) {
+      // Use linear regression to estimate bathroom premium per sqft
+      const bathCounts = Array.from(bathPremiums.keys()).sort((a, b) => a - b);
+      const ppsfValues = bathCounts.map(count => bathPremiums.get(count)!);
+
+      if (bathCounts.length >= 2) {
+        // Simple slope calculation between min and max bathroom counts
+        const minIdx = 0;
+        const maxIdx = bathCounts.length - 1;
+        const bathDiff = bathCounts[maxIdx] - bathCounts[minIdx];
+        const ppsfDiff = ppsfValues[maxIdx] - ppsfValues[minIdx];
+
+        if (bathDiff > 0) {
+          bathroomAdjustmentPerSqft = ppsfDiff / bathDiff;
+        }
+      }
+    }
+
+    console.log(`   🛁 Market bathroom adjustment: $${bathroomAdjustmentPerSqft.toFixed(2)}/sqft per bathroom difference`);
+
+    // Apply adjustments to each comparable
+    return comps.map(comp => {
+      const compBaths = parseFloat(comp.baths?.toString() || '0');
+      const bathDiff = compBaths - subjectBaths;
+
+      if (Math.abs(bathDiff) < 1e-9) {
+        // No adjustment needed for exact bathroom match
+        return { ...comp };
+      }
+
+      // Calculate adjustment based on market analysis
+      const adjustment = -bathDiff * bathroomAdjustmentPerSqft * comp.sqft;
+      const adjustedPrice = comp.price + adjustment;
+
+      console.log(`      ${comp.address}: ${compBaths} baths → ${subjectBaths} baths (${bathDiff > 0 ? '-' : '+'}$${Math.abs(adjustment).toLocaleString()})`);
+
+      return {
+        ...comp,
+        price: Math.max(adjustedPrice, comp.price * 0.5), // Floor at 50% of original price
+        originalPrice: comp.price,
+        bathroomAdjustment: adjustment
+      };
+    });
+  }
+
+  /**
    * Generate renovation recommendation based on analysis
    */
   private generateRecommendation(
@@ -435,24 +513,6 @@ export class ComprehensiveCompSearchV3 {
     return 'sell_as_is';
   }
 
-  private calculateConsistencyScores(properties: any[]): Map<string, number> {
-    const scores = new Map<string, number>();
-
-    properties.forEach((prop, index) => {
-      let score = 1.0; // Start with perfect score
-
-      // Penalize missing critical data
-      if (!prop.price || prop.price <= 0) score -= 0.3;
-      if (!prop.sqft || prop.sqft <= 0) score -= 0.3;
-      if (!prop.beds || prop.beds <= 0) score -= 0.2;
-      if (!prop.baths || prop.baths <= 0) score -= 0.1;
-      if (!prop.soldDate) score -= 0.1;
-
-      scores.set(index.toString(), Math.max(0, score));
-    });
-
-    return scores;
-  }
 
   private analyzeRenovationLevels(properties: any[]): {
     likely_renovated: any[];
@@ -503,13 +563,246 @@ export class ComprehensiveCompSearchV3 {
     };
   }
 
-  private assessOverallQuality(compCount: number, consistencyScores: Map<string, number>): 'excellent' | 'good' | 'fair' | 'poor' {
-    const avgConsistency = Array.from(consistencyScores.values()).reduce((a, b) => a + b, 0) / consistencyScores.size;
-
-    if (compCount >= 8 && avgConsistency >= 0.8) return 'excellent';
-    if (compCount >= 5 && avgConsistency >= 0.7) return 'good';
-    if (compCount >= 3 && avgConsistency >= 0.6) return 'fair';
+  private assessOverallQuality(compCount: number): 'excellent' | 'good' | 'fair' | 'poor' {
+    // Simplified quality assessment based on comparable count only
+    if (compCount >= 8) return 'excellent';
+    if (compCount >= 5) return 'good';
+    if (compCount >= 3) return 'fair';
     return 'poor';
+  }
+
+  /**
+   * High-tier property selection based on PPSF analysis and clustering validation
+   */
+  private selectHighTierProperties(properties: any[]): {
+    selectedComps: any[];
+    droppedHighNoSupport: any[];
+    analysisLog: string[];
+  } {
+    const log: string[] = [];
+
+    if (properties.length === 0) {
+      return { selectedComps: [], droppedHighNoSupport: [], analysisLog: ['No properties to analyze'] };
+    }
+
+    log.push(`🎯 High-tier selection starting with ${properties.length} properties`);
+
+    // Step 1: Compute PPSF for each comp
+    const ppsfData = properties.map(comp => {
+      const sqft = comp.sqft >= 1 ? comp.sqft : 1; // Guard against sqft < 1
+      return {
+        comp,
+        ppsf: comp.price / sqft,
+        price: comp.price
+      };
+    }).filter(item => item.ppsf > 0); // Skip invalid PPSF
+
+    if (ppsfData.length === 0) {
+      log.push('❌ No valid PPSF data available');
+      return { selectedComps: [], droppedHighNoSupport: [], analysisLog: log };
+    }
+
+    log.push(`📊 PPSF calculated for ${ppsfData.length} properties`);
+
+    // Step 2: Robust z-score on PPSF (MAD-based)
+    const ppsfValues = ppsfData.map(item => item.ppsf).sort((a, b) => a - b);
+    const median = this.calculateMedian(ppsfValues);
+
+    // Calculate MAD
+    const deviations = ppsfData.map(item => Math.abs(item.ppsf - median));
+    const mad = this.calculateMedian(deviations.sort((a, b) => a - b));
+
+    log.push(`📈 Median PPSF: $${median.toFixed(2)}, MAD: ${mad.toFixed(6)}`);
+
+    // Calculate z-scores
+    const dataWithZ = ppsfData.map(item => {
+      let zScore: number;
+
+      if (mad > 0) {
+        // Standard MAD-based z-score
+        zScore = 0.6745 * (item.ppsf - median) / mad;
+      } else {
+        // MAD = 0 fallback: use IQR scaling
+        const q1 = this.calculatePercentile(ppsfValues, 25);
+        const q3 = this.calculatePercentile(ppsfValues, 75);
+        const iqr = q3 - q1;
+        const scale = Math.max(1e-9, iqr / 1.349);
+        zScore = 0.6745 * (item.ppsf - median) / scale;
+
+        if (mad === 0) {
+          log.push(`🔄 MAD = 0, using IQR fallback: IQR=${iqr.toFixed(6)}, scale=${scale.toFixed(9)}`);
+        }
+      }
+
+      return { ...item, zScore };
+    });
+
+    // Step 3: High-tier candidates (z ≥ 1.0)
+    const highTierCandidates = dataWithZ.filter(item => item.zScore >= 1.0);
+    log.push(`🎯 High-tier candidates (z ≥ 1.0): ${highTierCandidates.length}/${dataWithZ.length}`);
+
+    if (highTierCandidates.length === 0) {
+      log.push('🔄 No high-tier candidates found, triggering Pair-High Fallback');
+      return this.pairHighFallback(dataWithZ, log);
+    }
+
+    // Step 4: Support requirement (cluster ≥ 1 other high candidate)
+    const supportedHighTier: typeof highTierCandidates = [];
+    const droppedHighNoSupport: typeof highTierCandidates = [];
+
+    for (const candidate of highTierCandidates) {
+      let hasSupport = false;
+
+      for (const other of highTierCandidates) {
+        if (candidate === other) continue;
+
+        // Check PPSF-close: |z_i - z_j| ≤ 0.5
+        const zDiff = Math.abs(candidate.zScore - other.zScore);
+        const ppsfClose = zDiff <= 0.5;
+
+        // Check Price-close: |price_i - price_j| / min(price_i, price_j) ≤ 0.075
+        const priceDiff = Math.abs(candidate.price - other.price);
+        const minPrice = Math.min(candidate.price, other.price);
+        const priceClose = (priceDiff / minPrice) <= 0.075;
+
+        if (ppsfClose && priceClose) {
+          hasSupport = true;
+          log.push(`✅ ${candidate.comp.address} supported by ${other.comp.address} (z-diff: ${zDiff.toFixed(3)}, price-diff: ${(priceDiff/minPrice*100).toFixed(1)}%)`);
+          break;
+        }
+      }
+
+      if (hasSupport) {
+        supportedHighTier.push(candidate);
+      } else {
+        droppedHighNoSupport.push(candidate);
+        log.push(`❌ ${candidate.comp.address} dropped (no support) - z: ${candidate.zScore.toFixed(3)}, PPSF: $${candidate.ppsf.toFixed(2)}`);
+      }
+    }
+
+    log.push(`📊 Final selection: ${supportedHighTier.length} supported high-tier properties`);
+
+    return {
+      selectedComps: supportedHighTier.map(item => item.comp),
+      droppedHighNoSupport: droppedHighNoSupport.map(item => item.comp),
+      analysisLog: log
+    };
+  }
+
+  /**
+   * Pair-High Fallback: Select two highest-price comps if they're close in PPSF and price
+   */
+  private pairHighFallback(dataWithZ: any[], log: string[]): {
+    selectedComps: any[];
+    droppedHighNoSupport: any[];
+    analysisLog: string[];
+  } {
+    log.push('🔄 Executing Outlier Removal Fallback ARV');
+    if (dataWithZ.length < 3) {
+      log.push('❌ Insufficient properties for fallback (need ≥3)');
+      return { selectedComps: [], droppedHighNoSupport: [], analysisLog: log };
+    }
+
+    // Step 1: Drop low outliers (z ≤ -1.0)
+    const afterLowOutlierRemoval = dataWithZ.filter(item => item.zScore > -1.0);
+    const droppedLowOutliers = dataWithZ.filter(item => item.zScore <= -1.0);
+
+    log.push(`📊 Dropped ${droppedLowOutliers.length} low outliers (z ≤ -1.0)`);
+    droppedLowOutliers.forEach(item => {
+      log.push(`   ❌ ${item.comp.address}: z=${item.zScore.toFixed(3)}, PPSF=$${item.ppsf.toFixed(2)}`);
+    });
+
+    if (afterLowOutlierRemoval.length < 3) {
+      log.push('❌ Too few properties remain after low outlier removal');
+      return { selectedComps: [], droppedHighNoSupport: [], analysisLog: log };
+    }
+
+    // Step 2: Drop lone high-price outliers (7.5% price isolation rule)
+    const finalProperties = [];
+    const droppedIsolated = [];
+
+    for (const candidate of afterLowOutlierRemoval) {
+      let hasNeighbor = false;
+
+      for (const other of afterLowOutlierRemoval) {
+        if (candidate === other) continue;
+
+        const priceDiff = Math.abs(candidate.price - other.price);
+        const minPrice = Math.min(candidate.price, other.price);
+        const priceRatio = priceDiff / minPrice;
+
+        if (priceRatio <= 0.075) {
+          hasNeighbor = true;
+          break;
+        }
+      }
+
+      if (hasNeighbor) {
+        finalProperties.push(candidate);
+      } else {
+        droppedIsolated.push(candidate);
+        log.push(`   ❌ ${candidate.comp.address}: isolated price $${candidate.price.toLocaleString()}`);
+      }
+    }
+
+    log.push(`📊 Dropped ${droppedIsolated.length} isolated high-price outliers`);
+    log.push(`📊 Remaining for ARV calculation: ${finalProperties.length} properties`);
+
+    if (finalProperties.length < 3) {
+      log.push('❌ Too few properties remain for reliable ARV');
+      return { selectedComps: [], droppedHighNoSupport: [], analysisLog: log };
+    }
+
+    // Step 3: Optional trimming if >4 properties
+    let arvProperties = finalProperties;
+    if (finalProperties.length > 4) {
+      // Sort by PPSF and trim 1 lowest + 1 highest
+      const sortedByPpsf = finalProperties.slice().sort((a, b) => a.ppsf - b.ppsf);
+      arvProperties = sortedByPpsf.slice(1, -1); // Remove first and last
+      log.push(`📊 Trimmed 1 lowest + 1 highest PPSF, using ${arvProperties.length} for ARV`);
+    }
+
+    log.push(`✅ Fallback ARV will use ${arvProperties.length} properties`);
+    arvProperties.forEach(item => {
+      log.push(`   ✅ ${item.comp.address}: $${item.price.toLocaleString()}, PPSF=$${item.ppsf.toFixed(2)}`);
+    });
+
+    return {
+      selectedComps: arvProperties.map(item => item.comp),
+      droppedHighNoSupport: [...droppedLowOutliers, ...droppedIsolated].map(item => item.comp),
+      analysisLog: log
+    };
+  }
+
+  /**
+   * Calculate median of an array
+   */
+  private calculateMedian(values: number[]): number {
+    const sorted = values.slice().sort((a, b) => a - b);
+    const mid = Math.floor(sorted.length / 2);
+
+    if (sorted.length % 2 === 0) {
+      return (sorted[mid - 1] + sorted[mid]) / 2;
+    } else {
+      return sorted[mid];
+    }
+  }
+
+  /**
+   * Calculate percentile of an array
+   */
+  private calculatePercentile(values: number[], percentile: number): number {
+    const sorted = values.slice().sort((a, b) => a - b);
+    const index = (percentile / 100) * (sorted.length - 1);
+
+    if (Number.isInteger(index)) {
+      return sorted[index];
+    } else {
+      const lower = Math.floor(index);
+      const upper = Math.ceil(index);
+      const weight = index - lower;
+      return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+    }
   }
 
   private buildSubjectSummary(address: string, details: any): SubjectSummary {
@@ -755,7 +1048,7 @@ async function testComprehensiveSearchV3() {
   }
 
   try {
-    const service = new ComprehensiveCompSearchV3();
+    const service = new ComprehensiveComparableSearchV3();
     const result = await service.findComparables(address);
 
     console.log(`✅ Search completed successfully!`);

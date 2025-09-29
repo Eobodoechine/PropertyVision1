@@ -339,179 +339,14 @@ class ARVCalculationService {
   }
 
   /**
-   * Use existing 7.5% outlier detection - archived complex z-score and median-ratio methods
+   * REMOVED: Outlier detection disabled - use all comparables as-is
    */
   private detectAndFilterOutliers(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
-    if (comparables.length < 3) {
-      console.log(`📊 Not enough comparables for outlier detection (need ≥3, have ${comparables.length})`);
-      return comparables;
-    }
-
-    console.log(`🔍 Using 7.5% PPSF outlier detection (archived complex methods)`);
-
-    // Use the existing 7.5% threshold method from comprehensive-comp-search-v3.ts
-    return this.apply75PercentOutlierFilter(comparables);
+    console.log(`📊 Outlier detection disabled - using all ${comparables.length} comparables`);
+    return comparables; // Return all comparables without filtering
   }
 
-  /**
-   * Apply 7.5% PPSF outlier filter - consistent with comprehensive-comp-search-v3.ts
-   */
-  private apply75PercentOutlierFilter(comparables: ComparableProperty[]): ComparableProperty[] {
-    if (comparables.length < 3) return comparables;
 
-    // Calculate PPSF for all comparables
-    const withPpsf = comparables.map(comp => ({
-      comp,
-      ppsf: comp.price / comp.sqft
-    }));
-
-    // Calculate median PPSF (same logic as comprehensive-comp-search-v3.ts)
-    const ppsf = withPpsf.map(w => w.ppsf);
-    const sortedPpsf = ppsf.sort((a, b) => a - b);
-    const medianPpsf = sortedPpsf[Math.floor(sortedPpsf.length / 2)];
-    const threshold = medianPpsf * 1.075; // 7.5% above median (matches existing implementation)
-
-    console.log(`📊 7.5% Filter: Median PPSF $${medianPpsf.toFixed(2)}, Threshold $${threshold.toFixed(2)}`);
-
-    // Keep only properties within 7.5% tolerance
-    const filtered = withPpsf.filter(w => {
-      const variance = Math.abs(w.ppsf - medianPpsf) / medianPpsf;
-      if (variance > 0.075) {
-        console.log(`   🚫 Removed outlier: ${w.comp.address} - PPSF: $${w.ppsf.toFixed(2)} (${(variance * 100).toFixed(1)}% from median)`);
-        return false;
-      }
-      return true;
-    }).map(w => w.comp);
-
-    console.log(`📊 7.5% Filter Results: ${comparables.length} → ${filtered.length} comps`);
-    return filtered;
-  }
-
-  /**
-   * ARCHIVED: Mode A (n ≥ 8): Log-PPSF robust z (MAD) outlier detection
-   */
-  private modeALargeSampleOutlierDetection(comparables: ComparableProperty[]): ComparableProperty[] {
-    console.log(`📊 Mode A: Large sample outlier detection (n=${comparables.length})`);
-
-    // Calculate log-PPSF for robust statistics
-    const logPpsfData = comparables.map(comp => ({
-      comp,
-      logPpsf: Math.log(comp.price / comp.sqft),
-      ppsf: comp.price / comp.sqft
-    }));
-
-    // Calculate Median Absolute Deviation (MAD)
-    const logPpsfValues = logPpsfData.map(d => d.logPpsf).sort((a, b) => a - b);
-    const median = this.calculatePercentile(logPpsfValues, 50);
-    
-    // Calculate MAD
-    const deviations = logPpsfData.map(d => Math.abs(d.logPpsf - median));
-    const mad = this.calculatePercentile(deviations.sort((a, b) => a - b), 50);
-    
-    // Robust z-score threshold
-    const robustZThreshold = -2.5;
-    const threshold = median + robustZThreshold * (mad * 1.4826); // 1.4826 makes MAD consistent with std dev for normal distribution
-
-    console.log(`   Log-PPSF median: ${median.toFixed(4)}`);
-    console.log(`   MAD: ${mad.toFixed(4)}`);
-    console.log(`   Robust z threshold: ${robustZThreshold} (log-PPSF < ${threshold.toFixed(4)})`);
-
-    // Filter outliers
-    const filteredComps = logPpsfData
-      .filter(d => d.logPpsf >= threshold)
-      .map(d => d.comp);
-
-    const outliers = logPpsfData.filter(d => d.logPpsf < threshold);
-    if (outliers.length > 0) {
-      console.log(`❌ Dropped ${outliers.length} outliers (robust z < ${robustZThreshold}):`);
-      outliers.forEach(outlier => {
-        console.log(`   ${outlier.comp.address}: $${outlier.ppsf.toFixed(2)}/sqft (log-PPSF: ${outlier.logPpsf.toFixed(4)})`);
-      });
-    }
-
-    return filteredComps;
-  }
-
-  /**
-   * Mode B (n < 8): Median-ratio and clustering outlier detection
-   */
-  private modeBSmallSampleOutlierDetection(comparables: ComparableProperty[]): ComparableProperty[] {
-    console.log(`📊 Mode B: Small sample outlier detection (n=${comparables.length})`);
-
-    // Calculate PPSF and sort
-    const ppsfData = comparables.map(comp => ({
-      comp,
-      ppsf: comp.price / comp.sqft
-    })).sort((a, b) => a.ppsf - b.ppsf);
-
-    console.log(`   PPSF sorted: ${ppsfData.map(d => `$${d.ppsf.toFixed(2)}`).join(', ')}`);
-
-    // Median-ratio approach
-    const medianPpsf = this.calculatePercentile(ppsfData.map(d => d.ppsf), 50);
-    const [low, mid, high] = [
-      ppsfData[0].ppsf,
-      medianPpsf,
-      ppsfData[ppsfData.length - 1].ppsf
-    ];
-
-    console.log(`   [low, mid, high]: [$${low.toFixed(2)}, $${mid.toFixed(2)}, $${high.toFixed(2)}]`);
-
-    // Dynamic threshold based on high/median ratio
-    let tLow = 0.75; // Default threshold
-    if (high / medianPpsf >= 1.30) {
-      tLow = 0.70;
-      console.log(`   High/median ratio ≥ 1.30, using T_low = 0.70`);
-    } else {
-      console.log(`   Using default T_low = 0.75`);
-    }
-
-    // Flag low outliers - check ALL comps below threshold, not just the lowest
-    const flaggedOutliers: typeof ppsfData = [];
-    const keepComps: typeof ppsfData = [];
-
-    for (const data of ppsfData) {
-      const ratio = data.ppsf / medianPpsf;
-      if (ratio < tLow) {
-        flaggedOutliers.push(data);
-        console.log(`   🚩 FLAGGED: ${data.comp.address} - $${data.ppsf.toFixed(2)}/sqft (ratio: ${ratio.toFixed(2)} < ${tLow})`);
-      } else {
-        keepComps.push(data);
-      }
-    }
-
-    // K=2 clustering on log(PPSF) to validate
-    if (flaggedOutliers.length > 0) {
-      const logPpsfValues = ppsfData.map(d => Math.log(d.ppsf));
-      const lowLogPpsf = Math.log(low);
-      
-      // Simple clustering: if low value is isolated
-      const otherLogPpsf = logPpsfValues.slice(1);
-      const avgOtherLogPpsf = otherLogPpsf.reduce((sum, val) => sum + val, 0) / otherLogPpsf.length;
-      const isolationThreshold = Math.abs(lowLogPpsf - avgOtherLogPpsf);
-      
-      console.log(`   K=2 clustering: low log-PPSF isolation = ${isolationThreshold.toFixed(4)}`);
-      
-      if (isolationThreshold > 0.3) { // Threshold for singleton cluster
-        console.log(`   ✅ Clustering confirms low outlier as singleton cluster`);
-      } else {
-        console.log(`   ⚠️ Clustering suggests low value may not be isolated`);
-      }
-    }
-
-    // Keep flagged outliers as context floors only (not for ARV reconciliation)
-    console.log(`📊 Mode B Results:`);
-    console.log(`   Context floors (flagged but kept): ${flaggedOutliers.length}`);
-    console.log(`   Primary comps (for ARV): ${keepComps.length}`);
-
-    // Return only the comps that are NOT flagged outliers for ARV calculation
-    const primaryComps = keepComps.map(data => data.comp);
-    
-    if (flaggedOutliers.length > 0) {
-      console.log(`⚠️ ${flaggedOutliers.length} comps flagged as context floors, using ${primaryComps.length} primary comps for ARV`);
-    }
-    
-    return primaryComps;
-  }
 
   /**
    * Complex escalation process with multiple steps
@@ -628,21 +463,11 @@ class ARVCalculationService {
   }
 
   /**
-   * Core outlier detection without escalation (to avoid recursion)
+   * REMOVED: Core outlier detection disabled
    */
   private applyCoreOutlierDetection(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
-    if (comparables.length < 3) {
-      return comparables;
-    }
-
-    const n = comparables.length;
-    const isLargeSample = n >= 8;
-
-    if (isLargeSample) {
-      return this.modeALargeSampleOutlierDetection(comparables);
-    } else {
-      return this.modeBSmallSampleOutlierDetection(comparables);
-    }
+    console.log(`📊 Core outlier detection disabled - using all ${comparables.length} comparables`);
+    return comparables; // Return all comparables without filtering
   }
 
   /**
