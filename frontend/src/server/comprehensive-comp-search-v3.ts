@@ -682,6 +682,12 @@ export class ComprehensiveComparableSearchV3 {
 
     log.push(`📊 Final selection: ${supportedHighTier.length} supported high-tier properties`);
 
+    // If no supported high-tier properties found, trigger fallback
+    if (supportedHighTier.length === 0) {
+      log.push('🔄 No supported high-tier properties found, triggering Pair-High Fallback');
+      return this.pairHighFallback(dataWithZ, log);
+    }
+
     return {
       selectedComps: supportedHighTier.map(item => item.comp),
       droppedHighNoSupport: droppedHighNoSupport.map(item => item.comp),
