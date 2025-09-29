@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users collection - users can read/write their own profile
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Property searches collection - authenticated users can read/write their own searches
+    match /property-searches/{searchId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+
+    // Property analysis results - authenticated users can read/write their own analyses
+    match /property-analyses/{analysisId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+
+    // ARV calculations - authenticated users can read/write their own calculations
+    match /arv-calculations/{calculationId} {
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+
+    // Comparable properties - authenticated users can read/write
+    match /comparable-properties/{propertyId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Public read access for app metadata (if needed)
+    match /app-config/{document} {
+      allow read: if true;
+      allow write: if false; // Only admins can write app config
+    }
+
+    // Default deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

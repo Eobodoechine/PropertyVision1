@@ -34,7 +34,7 @@ class ARVCalculationService {
 
     console.log(`📊 ARV Calculation: ${comparables.length} total comparables`);
 
-    // Step 1: Use comparables as-is (7.5% filtering already applied upstream)
+    // Step 1: Use comparables as-is (no outlier filtering)
     const filteredComparables = comparables;
     
     if (filteredComparables.length === 0) {

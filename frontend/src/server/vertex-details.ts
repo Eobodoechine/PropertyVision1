@@ -123,7 +123,7 @@ TYPE: [property type or UNKNOWN]`;
     const validationResponse = await vertexGenerate({
       sa, projectId, location, model,
       prompt: validationPrompt,
-      grounded: false,
+      grounded: true,
       json: false,
       timeoutMs: 10000
     });
@@ -132,24 +132,16 @@ TYPE: [property type or UNKNOWN]`;
     const validationData = parsePropertyResponse(validationResponse);
     console.log(`   🔍 Validation extracted: sqft=${validationData.sqft}, beds=${validationData.beds}, baths=${validationData.baths}, year=${validationData.yearBuilt}`);
 
-    // Check if validation got all critical fields - if so, use it and stop
+    // Check if validation got all critical fields - but continue to verify with fallback
     const hasAllCriticalFields = validationData.sqft && validationData.beds && validationData.baths && validationData.yearBuilt;
     if (hasAllCriticalFields) {
-      console.log(`   ✅ Validation SUCCESS: All critical fields found - using validation result`);
-      return {
-        sqft: validationData.sqft,
-        beds: validationData.beds,
-        baths: validationData.baths,
-        yearBuilt: validationData.yearBuilt,
-        lotSize: null,
-        subdivision: validationData.subdivision || null,
-        propertyType: validationData.propertyType || null
-      };
+      console.log(`   ✅ Validation found all critical fields - but continuing to verify with fallback for accuracy`);
+      // Don't return early - continue to fallback to verify/improve the data
     }
 
-    console.log(`   ⚠️  Validation incomplete - missing some fields, trying original extraction...`);
+    console.log(`   🔍 Continuing with original extraction for comparison and verification...`);
 
-    // STEP 2: Original LLM extraction logic (only if validation incomplete)
+    // STEP 2: Original LLM extraction logic for comparison and verification
     console.log(`   🔍 Step 2: Original extraction logic for comparison...`);
 
     // Extract square footage using LLM - ask for clean number only
@@ -160,7 +152,7 @@ TYPE: [property type or UNKNOWN]`;
     const sqftResponse = await vertexGenerate({
       sa, projectId, location, model,
       prompt: sqftPrompt,
-      grounded: false,
+      grounded: true,
       json: false,
       timeoutMs: 10000
     });
@@ -177,7 +169,7 @@ TYPE: [property type or UNKNOWN]`;
     const bedsResponse = await vertexGenerate({
       sa, projectId, location, model,
       prompt: bedsPrompt,
-      grounded: false,
+      grounded: true,
       json: false,
       timeoutMs: 10000
     });
@@ -194,7 +186,7 @@ TYPE: [property type or UNKNOWN]`;
     const bathsResponse = await vertexGenerate({
       sa, projectId, location, model,
       prompt: bathsPrompt,
-      grounded: false,
+      grounded: true,
       json: false,
       timeoutMs: 10000
     });
@@ -211,7 +203,7 @@ TYPE: [property type or UNKNOWN]`;
     const yearResponse = await vertexGenerate({
       sa, projectId, location, model,
       prompt: yearPrompt,
-      grounded: false,
+      grounded: true,
       json: false,
       timeoutMs: 10000
     });
@@ -224,7 +216,7 @@ TYPE: [property type or UNKNOWN]`;
     let subdivision: string | null = null;
     try {
       const subPrompt = `From this text, what is the subdivision or neighborhood name of the property? If not present, answer UNKNOWN.\n\n"${text}"\n\nRespond with only the name or UNKNOWN.`;
-      const subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: false, json: false, timeoutMs: 600000 });
+      const subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: true, json: false, timeoutMs: 600000 });
       const cleaned = (subResp || '').trim();
       if (cleaned && !/^unknown$/i.test(cleaned)) {
         subdivision = cleaned.replace(/^[-\s:]+/, '').trim();
@@ -236,7 +228,7 @@ TYPE: [property type or UNKNOWN]`;
     try {
       console.log(`   🏠 Extracting property type from text...`);
       const typePrompt = `From this text, what is the property type? Answer with one of: single-family detached, townhome, condo, duplex, multi-family, or UNKNOWN.\n\n"${text}"\n\nRespond with only one of those exact terms.`;
-      const typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: false, json: false, timeoutMs: 600000 });
+      const typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: true, json: false, timeoutMs: 600000 });
       console.log(`   🏠 Raw property type response: "${typeResp}"`);
       const cleaned = (typeResp || '').trim().toLowerCase();
       if (cleaned && !/^unknown$/i.test(cleaned)) {
@@ -301,8 +293,9 @@ TYPE: [property type or UNKNOWN]`;
       console.log(`   ⚠️  Still missing critical fields after validation+original: ${missingCriticalFields.join(', ')}`);
       console.log(`   🔄 Step 4: Enhanced fallback detection for missing fields...`);
 
-      // Try the existing fallback detection for missing fields
-      const fallbackData = address ? await fallbackPropertyDetection(address, sa, projectId, location, model, missingCriticalFields) : {};
+      // Try the existing fallback detection for ALL fields to get complete data
+      console.log(`   🔍 Requesting complete fallback data for all fields to ensure accuracy...`);
+      const fallbackData = address ? await fallbackPropertyDetection(address, sa, projectId, location, model, ['sqft', 'beds', 'baths', 'yearBuilt', 'propertyType']) : {};
 
       // Fill in any missing critical fields from fallback
       missingCriticalFields.forEach(field => {
@@ -324,6 +317,72 @@ TYPE: [property type or UNKNOWN]`;
         }
       });
 
+      // VERIFICATION: If fallback found different values, do verification search to pick supported data
+      if (fallbackData.yearBuilt && fallbackData.propertyType) {
+        const hasConflicts =
+          (finalData.yearBuilt && fallbackData.yearBuilt !== finalData.yearBuilt) ||
+          (finalData.propertyType && fallbackData.propertyType !== finalData.propertyType);
+
+        if (hasConflicts) {
+          console.log(`   🔍 CONFLICT DETECTED: Verification search needed`);
+          console.log(`   📊 Current: yearBuilt=${finalData.yearBuilt}, propertyType=${finalData.propertyType}`);
+          console.log(`   📊 Fallback: yearBuilt=${fallbackData.yearBuilt}, propertyType=${fallbackData.propertyType}`);
+
+          try {
+            const verificationPrompt = `Search multiple real estate sources to verify conflicting property data for: ${address}
+
+CONFLICTING DATA TO VERIFY:
+- Year built: ${finalData.yearBuilt} vs ${fallbackData.yearBuilt}
+- Property type: ${finalData.propertyType} vs ${fallbackData.propertyType}
+
+Search these sources for consensus:
+- site:zillow.com "${address}" year built property type
+- site:redfin.com "${address}" year built property type
+- site:realtor.com "${address}" year built property type
+- "${address}" county records year built property type
+- "${address}" tax assessor year built property type
+
+Find which values have the most supporting evidence across multiple sources.
+
+Respond in this exact format:
+YEAR_BUILT: [the year with most evidence]
+PROPERTY_TYPE: [the type with most evidence: single-family detached, multi-family, duplex, etc.]
+EVIDENCE: [brief summary of which sources support the chosen values]`;
+
+            const verificationResult = await vertexGenerate({
+              sa, projectId, location, model,
+              prompt: verificationPrompt,
+              grounded: true,
+              json: false,
+              timeoutMs: 30000
+            });
+
+            console.log(`   🔍 Verification result: ${verificationResult}`);
+
+            // Parse verification result
+            const yearMatch = verificationResult.match(/YEAR_BUILT:\s*(\d{4})/i);
+            const typeMatch = verificationResult.match(/PROPERTY_TYPE:\s*([^\n]+)/i);
+
+            if (yearMatch) {
+              const verifiedYear = parseInt(yearMatch[1]);
+              finalData.yearBuilt = verifiedYear;
+              console.log(`   ✅ VERIFIED: Using year built = ${verifiedYear}`);
+            }
+
+            if (typeMatch) {
+              const verifiedType = typeMatch[1].trim();
+              finalData.propertyType = verifiedType;
+              console.log(`   ✅ VERIFIED: Using property type = ${verifiedType}`);
+            }
+
+          } catch (error) {
+            console.log(`   ⚠️  Verification search failed, using fallback data: ${error}`);
+            if (fallbackData.yearBuilt) finalData.yearBuilt = fallbackData.yearBuilt;
+            if (fallbackData.propertyType) finalData.propertyType = fallbackData.propertyType;
+          }
+        }
+      }
+
       // Final check - if still missing critical fields, one more attempt
       const stillMissing = [];
       if (!finalData.sqft || finalData.sqft <= 0) stillMissing.push('sqft');
@@ -337,6 +396,34 @@ TYPE: [property type or UNKNOWN]`;
       } else {
         console.log(`   🎉 Enhanced fallback SUCCESS: All critical fields now found!`);
       }
+    }
+
+    // CONFLICT RESOLUTION: Use existing fallback data to resolve conflicts with validation data
+    console.log(`   🔍 Conflict resolution: Using Step 2 fallback to validate Step 1 data...`);
+
+    // We already have fallbackData from the enhanced fallback detection above
+    // Let's also get the original validation conflicts we saw earlier
+    const hasConflictingData = originalData.yearBuilt !== validationData.yearBuilt ||
+                               originalData.propertyType !== validationData.propertyType;
+
+    if (hasConflictingData) {
+      console.log(`   🔍 CONFLICT DETECTED between validation and original extraction:`);
+      console.log(`   📊 Validation: yearBuilt=${validationData.yearBuilt}, propertyType=${validationData.propertyType}`);
+      console.log(`   📊 Original: yearBuilt=${originalData.yearBuilt}, propertyType=${originalData.propertyType}`);
+
+      // Use the more complete dataset - prefer original extraction data when it has both fields
+      if (originalData.yearBuilt && originalData.propertyType) {
+        console.log(`   ✅ CONFLICT RESOLVED: Using original extraction data (more complete)`);
+        finalData.yearBuilt = originalData.yearBuilt;
+        finalData.propertyType = originalData.propertyType;
+        console.log(`   ✅ RESOLVED: yearBuilt=${originalData.yearBuilt}, propertyType=${originalData.propertyType}`);
+      } else if (validationData.yearBuilt && validationData.propertyType) {
+        console.log(`   ✅ CONFLICT RESOLVED: Using validation data (more complete)`);
+        finalData.yearBuilt = validationData.yearBuilt;
+        finalData.propertyType = validationData.propertyType;
+      }
+    } else {
+      console.log(`   ✅ No conflicts detected between validation and original data`);
     }
 
     console.log(`   📊 Final combined result: SQFT=${finalData.sqft}, Beds=${finalData.beds}, Baths=${finalData.baths}, Built=${finalData.yearBuilt}${finalData.subdivision ? `, Subdivision=${finalData.subdivision}` : ''}${finalData.propertyType ? `, Type=${finalData.propertyType}` : ''}`);
@@ -499,34 +586,44 @@ function parsePropertyResponse(response: string): Partial<BasicDetails> {
   const lines = response.split('\n').map(line => line.trim());
 
   for (const line of lines) {
-    const sqftMatch = line.match(/SQFT:\s*(\d+)/i);
-    if (sqftMatch) {
-      result.sqft = parseInt(sqftMatch[1], 10);
-      console.log(`   🔧 Parsed sqft: ${result.sqft}`);
+    if (line.toUpperCase().startsWith('SQFT:')) {
+      const value = line.split(':')[1]?.trim();
+      if (value && value !== 'UNKNOWN') {
+        result.sqft = Number(value);
+        console.log(`   🔧 Parsed sqft: ${result.sqft}`);
+      }
     }
 
-    const bedsMatch = line.match(/BEDS:\s*(\d+)/i);
-    if (bedsMatch) {
-      result.beds = parseInt(bedsMatch[1], 10);
-      console.log(`   🔧 Parsed beds: ${result.beds}`);
+    if (line.toUpperCase().startsWith('BEDS:')) {
+      const value = line.split(':')[1]?.trim();
+      if (value && value !== 'UNKNOWN') {
+        result.beds = Number(value);
+        console.log(`   🔧 Parsed beds: ${result.beds}`);
+      }
     }
 
-    const bathsMatch = line.match(/BATHS:\s*([\d.]+)/i);
-    if (bathsMatch) {
-      result.baths = parseFloat(bathsMatch[1]);
-      console.log(`   🔧 Parsed baths: ${result.baths}`);
+    if (line.toUpperCase().startsWith('BATHS:')) {
+      const value = line.split(':')[1]?.trim();
+      if (value && value !== 'UNKNOWN') {
+        result.baths = Number(value);
+        console.log(`   🔧 Parsed baths: ${result.baths}`);
+      }
     }
 
-    const yearMatch = line.match(/YEAR:\s*(\d{4})/i);
-    if (yearMatch) {
-      result.yearBuilt = parseInt(yearMatch[1], 10);
-      console.log(`   🔧 Parsed yearBuilt: ${result.yearBuilt}`);
+    if (line.toUpperCase().startsWith('YEAR:')) {
+      const value = line.split(':')[1]?.trim();
+      if (value && value !== 'UNKNOWN') {
+        result.yearBuilt = Number(value);
+        console.log(`   🔧 Parsed yearBuilt: ${result.yearBuilt}`);
+      }
     }
 
-    const typeMatch = line.match(/TYPE:\s*(.+)/i);
-    if (typeMatch) {
-      result.propertyType = normalizePropertyType(typeMatch[1]);
-      console.log(`   🔧 Parsed propertyType: ${result.propertyType}`);
+    if (line.toUpperCase().startsWith('TYPE:')) {
+      const value = line.split(':')[1]?.trim();
+      if (value && value !== 'UNKNOWN') {
+        result.propertyType = normalizePropertyType(value);
+        console.log(`   🔧 Parsed propertyType: ${result.propertyType}`);
+      }
     }
   }
 
@@ -658,7 +755,18 @@ Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
       if (!propertyDetails.baths && countyData.baths) propertyDetails.baths = countyData.baths;
       if (!propertyDetails.yearBuilt && countyData.yearBuilt) propertyDetails.yearBuilt = countyData.yearBuilt;
 
-      console.log(`   🔍 County records filled: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}`);
+      // OVERRIDE: If county data is more complete, use it for ALL fields including property type
+      if (countyData.sqft && countyData.beds && countyData.baths && countyData.yearBuilt && countyData.propertyType) {
+        console.log(`   🔄 County records provided complete data - using ALL county values for accuracy`);
+        propertyDetails.sqft = countyData.sqft;
+        propertyDetails.beds = countyData.beds;
+        propertyDetails.baths = countyData.baths;
+        propertyDetails.yearBuilt = countyData.yearBuilt;
+        propertyDetails.propertyType = countyData.propertyType;
+        console.log(`   ✅ OVERRIDE: Using complete county data - sqft=${countyData.sqft}, beds=${countyData.beds}, baths=${countyData.baths}, yearBuilt=${countyData.yearBuilt}, propertyType=${countyData.propertyType}`);
+      } else {
+        console.log(`   🔍 County records filled: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}`);
+      }
 
     } catch (err) {
       console.log(`   ⚠️  County records search failed: ${err}`);
@@ -696,26 +804,37 @@ Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
     console.log(`   🔄 Missing critical fields: ${missingFields.join(', ')} - running enhanced fallback detection...`);
     const fallbackData = await fallbackPropertyDetection(address, sa, projectId, location, model, missingFields);
 
-    // Fill in missing fields from fallback data
-    if (fallbackData.sqft && (!propertyDetails.sqft || propertyDetails.sqft <= 0)) {
+    // OVERRIDE: If final fallback is more complete, use it for ALL fields
+    if (fallbackData.sqft && fallbackData.beds && fallbackData.baths && fallbackData.yearBuilt && fallbackData.propertyType) {
+      console.log(`   🔄 Final fallback provided complete data - using ALL fallback values for accuracy`);
       propertyDetails.sqft = fallbackData.sqft;
-      console.log(`   ✅ Fallback: Found sqft = ${fallbackData.sqft}`);
-    }
-    if (fallbackData.beds && (!propertyDetails.beds || propertyDetails.beds <= 0)) {
       propertyDetails.beds = fallbackData.beds;
-      console.log(`   ✅ Fallback: Found beds = ${fallbackData.beds}`);
-    }
-    if (fallbackData.baths && (!propertyDetails.baths || propertyDetails.baths <= 0)) {
       propertyDetails.baths = fallbackData.baths;
-      console.log(`   ✅ Fallback: Found baths = ${fallbackData.baths}`);
-    }
-    if (fallbackData.yearBuilt && !propertyDetails.yearBuilt) {
       propertyDetails.yearBuilt = fallbackData.yearBuilt;
-      console.log(`   ✅ Fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
-    }
-    if (fallbackData.propertyType && !propertyDetails.propertyType) {
       propertyDetails.propertyType = fallbackData.propertyType;
-      console.log(`   ✅ Fallback: Found propertyType = ${fallbackData.propertyType}`);
+      console.log(`   ✅ OVERRIDE: Using complete fallback data - sqft=${fallbackData.sqft}, beds=${fallbackData.beds}, baths=${fallbackData.baths}, yearBuilt=${fallbackData.yearBuilt}, propertyType=${fallbackData.propertyType}`);
+    } else {
+      // Fill in missing fields from fallback data
+      if (fallbackData.sqft && (!propertyDetails.sqft || propertyDetails.sqft <= 0)) {
+        propertyDetails.sqft = fallbackData.sqft;
+        console.log(`   ✅ Fallback: Found sqft = ${fallbackData.sqft}`);
+      }
+      if (fallbackData.beds && (!propertyDetails.beds || propertyDetails.beds <= 0)) {
+        propertyDetails.beds = fallbackData.beds;
+        console.log(`   ✅ Fallback: Found beds = ${fallbackData.beds}`);
+      }
+      if (fallbackData.baths && (!propertyDetails.baths || propertyDetails.baths <= 0)) {
+        propertyDetails.baths = fallbackData.baths;
+        console.log(`   ✅ Fallback: Found baths = ${fallbackData.baths}`);
+      }
+      if (fallbackData.yearBuilt && !propertyDetails.yearBuilt) {
+        propertyDetails.yearBuilt = fallbackData.yearBuilt;
+        console.log(`   ✅ Fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
+      }
+      if (fallbackData.propertyType && !propertyDetails.propertyType) {
+        propertyDetails.propertyType = fallbackData.propertyType;
+        console.log(`   ✅ Fallback: Found propertyType = ${fallbackData.propertyType}`);
+      }
     }
   }
 
@@ -735,3 +854,4 @@ function normalize(address: string, obj: any): BasicDetails {
     success: true,
   };
 }
+

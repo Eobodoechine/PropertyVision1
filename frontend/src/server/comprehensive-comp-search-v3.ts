@@ -5,9 +5,8 @@ import { VertexComparableSearchService } from './step3-find-comparables';
 import { ARVCalculationService } from './step4-arv-calculation';
 import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details';
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
-import { SmartDeduplicator } from './utils/smartDeduplicator';
+import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
-import { DistanceValidator } from './utils/distanceValidator';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -62,17 +61,14 @@ export class ComprehensiveCompSearchV3 {
   private compService: VertexComparableSearchService;
   private arvService: ARVCalculationService;
   private normalizer: PropertyDataNormalizer;
-  private deduplicator: SmartDeduplicator;
+  private deduplicator: VertexDeduplicator;
   private progressiveSearch: ProgressiveSearchStrategy;
-  private distanceValidator: DistanceValidator;
-
   constructor() {
     this.compService = new VertexComparableSearchService();
     this.arvService = new ARVCalculationService();
     this.normalizer = new PropertyDataNormalizer();
-    this.deduplicator = new SmartDeduplicator();
+    this.deduplicator = new VertexDeduplicator();
     this.progressiveSearch = new ProgressiveSearchStrategy();
-    this.distanceValidator = new DistanceValidator();
   }
 
   async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
@@ -169,28 +165,36 @@ export class ComprehensiveCompSearchV3 {
       const normalizationSummary = normalizationResult.summary;
       console.log(`   ✅ Normalized: ${normalizedComps.length}/${allComps.length} properties improved`);
 
-      // Step 4: Smart deduplication
-      console.log(`\n🔄 Step 4: Smart Deduplication`);
-      const deduplicationResult = this.deduplicator.deduplicateProperties(normalizedComps);
-      const deduplicatedComps = deduplicationResult.deduplicated;
-      const deduplicationSummary = deduplicationResult.summary;
-      console.log(`   ✅ Deduplicated: ${deduplicatedComps.length} unique (removed ${deduplicationSummary.duplicatesRemoved} duplicates)`);
+      // Step 4: Vertex AI deduplication
+      console.log(`\n🤖 Step 4: Vertex AI Deduplication`);
+      const deduplicationResult = await this.deduplicator.deduplicateProperties(normalizedComps);
+      const deduplicatedComps = deduplicationResult.uniqueProperties;
+      const deduplicationSummary = { duplicatesRemoved: deduplicationResult.duplicatesRemoved, mergedGroups: deduplicationResult.mergedGroups };
+      console.log(`   ✅ Deduplicated: ${deduplicatedComps.length} unique (removed ${deduplicationResult.duplicatesRemoved} duplicates)`);
 
-      // Step 5: Distance validation
+      // Step 5: Distance validation with coordinate-based filtering
       console.log(`\n📏 Step 5: Distance Validation`);
-      const distanceResult = await this.distanceValidator.validateComparableDistances(
-        address,
-        deduplicatedComps,
-        2.5 // max miles
-      );
-      const distanceValidatedComps = distanceResult.validated;
-      const distanceValidationSummary = distanceResult.validationSummary;
-      console.log(`   ✅ Distance validated: ${distanceValidatedComps.length} within range`);
+
+      // Get subject coordinates from the compService
+      const subjectCoords = await this.getSubjectCoordinates(address);
+      if (!subjectCoords) {
+        throw new Error('Failed to get subject property coordinates');
+      }
+      console.log(`   📍 Subject coordinates: ${subjectCoords.lat}, ${subjectCoords.lon}`);
+
+      // Extract coordinates for filtered comparables and calculate distances
+      const distanceValidationResult = await this.validateDistances(deduplicatedComps, subjectCoords, 2.0);
+      const distanceValidatedComps = distanceValidationResult.validated;
+      const distanceValidationSummary = {
+        validated: distanceValidatedComps.length,
+        rejected: distanceValidationResult.rejected.length
+      };
+      console.log(`   ✅ Distance validated: ${distanceValidatedComps.length}/${deduplicatedComps.length} within 2 miles (rejected ${distanceValidationResult.rejected.length})`);
 
       // Step 6: Quality filtering and consistency scoring
       console.log(`\n⭐ Step 6: Quality Assessment`);
       const consistencyScores = this.calculateConsistencyScores(distanceValidatedComps);
-      const qualifiedComps = distanceValidatedComps.filter((_, index) =>
+      const qualifiedComps = distanceValidatedComps.filter((_, index: number) =>
         consistencyScores.get(index.toString()) && consistencyScores.get(index.toString())! > 0.6
       );
       console.log(`   ✅ Quality filtered: ${qualifiedComps.length}/${distanceValidatedComps.length} high-quality comps`);
@@ -524,6 +528,221 @@ export class ComprehensiveCompSearchV3 {
       subdivision: details?.subdivision ?? null,
       success: details?.success ?? true,
     };
+  }
+
+  // Get subject coordinates from the compService
+  private async getSubjectCoordinates(address: string): Promise<{ lat: number; lon: number } | null> {
+    try {
+      console.log(`   🔍 Getting subject coordinates for: ${address}`);
+
+      // Access the geocoding method from the compService
+      const subjectCoords = await (this.compService as any).geocodeWithTimeout(address, 5000);
+
+      if (subjectCoords && subjectCoords.lat && subjectCoords.lon) {
+        console.log(`   📍 Subject coordinates retrieved: ${subjectCoords.lat}, ${subjectCoords.lon}`);
+        return subjectCoords;
+      } else {
+        console.log(`   ❌ Failed to get subject coordinates`);
+        return null;
+      }
+    } catch (error: any) {
+      console.log(`   ❌ Error getting subject coordinates: ${error.message}`);
+      return null;
+    }
+  }
+
+  // Validate distances using coordinate-based calculation
+  private async validateDistances(
+    properties: any[],
+    subjectCoords: { lat: number; lon: number },
+    maxDistanceMiles: number
+  ): Promise<{ validated: any[]; rejected: any[] }> {
+    console.log(`   🔍 Extracting coordinates for ${properties.length} comparables...`);
+
+    const validated: any[] = [];
+    const rejected: any[] = [];
+
+    // Extract coordinates using Vertex AI batch processing
+    const coordinatesMap = await this.extractCoordinatesBatch(properties);
+
+    console.log(`   📊 Successfully extracted coordinates for ${coordinatesMap.size}/${properties.length} properties`);
+
+    // Calculate distances and filter
+    for (let i = 0; i < properties.length; i++) {
+      const property = properties[i];
+      const propCoords = coordinatesMap.get(i);
+
+      if (propCoords) {
+        const distance = this.calculateHaversineDistance(
+          subjectCoords.lat,
+          subjectCoords.lon,
+          propCoords.lat,
+          propCoords.lon
+        );
+
+        if (distance <= maxDistanceMiles) {
+          // Add distance to property for future reference
+          property.distanceFromSubject = distance;
+          validated.push(property);
+          console.log(`   ✅ ${property.address}: ${distance.toFixed(2)} miles (within ${maxDistanceMiles} miles)`);
+        } else {
+          rejected.push(property);
+          console.log(`   ❌ ${property.address}: ${distance.toFixed(2)} miles (exceeds ${maxDistanceMiles} miles)`);
+        }
+      } else {
+        // If we can't get coordinates, reject the property
+        rejected.push(property);
+        console.log(`   ❌ ${property.address}: Could not extract coordinates`);
+      }
+    }
+
+    return { validated, rejected };
+  }
+
+  // Extract coordinates for a batch of properties using Vertex AI
+  private async extractCoordinatesBatch(properties: any[]): Promise<Map<number, { lat: number; lon: number }>> {
+    const coordinatesMap = new Map<number, { lat: number; lon: number }>();
+
+    try {
+      // Import vertex generation function
+      const { vertexGenerate } = await import('./vertex-freeform.js');
+
+      // Get service account configuration
+      let sa;
+      if (process.env.GCP_SA_JSON_B64) {
+        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
+        sa = JSON.parse(saJson);
+      } else {
+        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+        if (!saPath) throw new Error('No service account configured');
+        const fs = await import('fs');
+        sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
+      }
+
+      const projectId = sa.project_id;
+      const location = process.env.VERTEX_LOCATION || 'us-central1';
+      const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+
+      // Create batch prompt for coordinate extraction
+      const addressList = properties.map((prop, index) => `${index + 1}. "${prop.address}"`).join('\n');
+
+      const prompt = `You are a geocoding assistant. Given U.S. street addresses, return precise WGS84 coordinates.
+
+Rules:
+- Search authoritative sources only (Google Maps, county GIS, USPS/US Census TIGER, state/city GIS, assessor/parcel maps)
+- Prefer rooftop or parcel centroid points over street interpolation
+- If multiple candidates exist, pick the one that matches city + ZIP; otherwise return the best within the same city and note a lower precision
+- If you cannot verify a single match from authoritative sources, return "status":"NO_MATCH" and do not guess
+
+Addresses to geocode:
+${addressList}
+
+For each address, return a JSON object with exactly these fields:
+{
+"status": "OK" | "NO_MATCH" | "AMBIGUOUS",
+"formatted_address": "string",
+"latitude": number,
+"longitude": number,
+"precision": "rooftop" | "parcel_centroid" | "interpolated" | "city_centroid",
+"source": "google_maps" | "county_gis" | "state_gis" | "usps" | "other_gis",
+"notes": "string"
+}
+
+Quality checks:
+- Coordinates must be decimal degrees (WGS84)
+- Do not round more than 6 decimal places
+- If the result is not at least parcel-level, set precision accordingly and explain in notes
+
+Output format:
+ADDRESS 1:
+[JSON object]
+
+ADDRESS 2:
+[JSON object]
+
+(Continue for all ${properties.length} addresses)`;
+
+      console.log(`   🤖 Requesting coordinates for ${properties.length} properties from Vertex AI...`);
+
+      const response = await vertexGenerate({
+        sa,
+        projectId,
+        location,
+        model,
+        prompt,
+        grounded: true,
+        json: false,
+        timeoutMs: 60000
+      });
+
+      if (response && response.trim().length > 0) {
+        // Parse the batch response with new JSON format
+        const sections = response.split(/ADDRESS \d+:/);
+
+        for (let i = 0; i < properties.length; i++) {
+          const section = sections[i + 1]; // Skip first empty element
+
+          if (section) {
+            try {
+              // Extract JSON from the section
+              const jsonMatch = section.match(/\{[\s\S]*?\}/);
+              if (jsonMatch) {
+                const geocodeResult = JSON.parse(jsonMatch[0]);
+
+                if (geocodeResult.status === 'OK' && geocodeResult.latitude && geocodeResult.longitude) {
+                  const lat = parseFloat(geocodeResult.latitude);
+                  const lon = parseFloat(geocodeResult.longitude);
+
+                  if (!isNaN(lat) && !isNaN(lon)) {
+                    coordinatesMap.set(i, { lat, lon });
+                    console.log(`   📍 Property ${i + 1}: ${lat}, ${lon} (${geocodeResult.precision}, ${geocodeResult.source})`);
+                  } else {
+                    console.log(`   ❌ Property ${i + 1}: Invalid coordinates in response`);
+                  }
+                } else {
+                  console.log(`   ❌ Property ${i + 1}: ${geocodeResult.status} - ${geocodeResult.notes || 'No coordinates found'}`);
+                }
+              } else {
+                console.log(`   ❌ Property ${i + 1}: No JSON found in response section`);
+              }
+            } catch (error: any) {
+              console.log(`   ❌ Property ${i + 1}: JSON parse error - ${error.message}`);
+            }
+          } else {
+            console.log(`   ❌ Property ${i + 1}: No response section found`);
+          }
+        }
+      } else {
+        console.log(`   ❌ Empty or invalid response from Vertex AI`);
+      }
+
+    } catch (error: any) {
+      console.log(`   ❌ Batch coordinate extraction failed: ${error.message}`);
+    }
+
+    return coordinatesMap;
+  }
+
+  // Calculate distance between two coordinates using Haversine formula
+  private calculateHaversineDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 3959; // Earth's radius in miles
+    const dLat = this.degreesToRadians(lat2 - lat1);
+    const dLon = this.degreesToRadians(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degreesToRadians(lat1)) * Math.cos(this.degreesToRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c;
+
+    return distance;
+  }
+
+  // Helper function to convert degrees to radians
+  private degreesToRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
   }
 }
 

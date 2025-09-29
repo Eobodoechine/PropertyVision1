@@ -129,6 +129,10 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       const fetchAndParse = async (p: string): Promise<ComparableProperty[]> => {
         console.log(`🔍 FETCH DEBUG: fetchAndParse starting...`);
+        console.log(`🔍 SCOPE DEBUG: Checking subjectAddress availability: "${typeof subjectAddress}" = "${subjectAddress}"`);
+        console.log(`🔍 SCOPE DEBUG: Checking searchRadius availability: "${typeof searchRadius}" = "${searchRadius}"`);
+        console.log(`🔍 SCOPE DEBUG: Checking timeWindowMonths availability: "${typeof timeWindowMonths}" = "${timeWindowMonths}"`);
+
         console.log(`🔍 FETCH DEBUG: About to import vertex-freeform.js`);
         const { vertexGenerate } = await import('./vertex-freeform.js');
         console.log(`🔍 FETCH DEBUG: vertex-freeform.js imported successfully`);
@@ -147,10 +151,43 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         const vertexTime = Date.now() - startVertex;
         console.log(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
 
-        console.log(`🔍 FETCH DEBUG: About to parse vertex response`);
-        let parsed = await this.parseVertexResponse(r, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+        console.log(`🔍 FETCH DEBUG: About to clean and parse vertex response`);
+        console.log(`🔍 RAW RESPONSE: Raw Vertex AI response: "${r}"`);
+
+        // First, ask Vertex AI to parse the raw search results into clean pipe-delimited format
+        const cleanupPrompt = `Parse the following property search results and convert them to clean pipe-delimited format.
+
+RAW SEARCH RESULTS:
+${r}
+
+Extract only the property data and format as pipe-delimited lines. Return ONLY the formatted data, no explanations.
+
+REQUIRED FORMAT for each property:
+address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url
+
+Skip any explanatory text or commentary. Only include actual property data.`;
+
+        console.log(`🔍 CLEANUP DEBUG: About to call Vertex AI to clean up response`);
+        const cleanedResponse = await vertexGenerate({
+          sa: sa,
+          projectId,
+          location,
+          model,
+          prompt: cleanupPrompt,
+          grounded: false,
+          timeoutMs: 30000
+        });
+        console.log(`🔍 CLEANUP DEBUG: Cleaned response: "${cleanedResponse}"`);
+
+        let parsed = await this.parseVertexResponse(cleanedResponse, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         console.log(`🔍 FETCH DEBUG: parseVertexResponse completed with ${parsed.length} results`);
         if (parsed.length === 0) {
+          console.log(`🔍 FALLBACK DEBUG: About to create strictP with subjectAddress="${subjectAddress}"`);
+          console.log(`🔍 FALLBACK DEBUG: subjectAddress type check: ${typeof subjectAddress}`);
+          if (typeof subjectAddress === 'undefined') {
+            console.error(`❌ ERROR: subjectAddress is undefined in fallback`);
+            throw new Error('subjectAddress is not defined');
+          }
           const strictP = `Return ONLY pipe-separated lines for SOLD properties near "${subjectAddress}" within ${searchRadius} miles and ${timeWindowMonths} months. No commentary, no headers.
 address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url`;
           const sr = await vertexGenerate({
@@ -162,7 +199,34 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
             grounded: true,
             timeoutMs: 60000
           });
-          parsed = await this.parseVertexResponse(sr, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+
+          console.log(`🔍 FALLBACK RAW: Fallback raw response: "${sr}"`);
+
+          // Apply same cleanup to fallback response
+          const fallbackCleanupPrompt = `Parse the following property search results and convert them to clean pipe-delimited format.
+
+RAW SEARCH RESULTS:
+${sr}
+
+Extract only the property data and format as pipe-delimited lines. Return ONLY the formatted data, no explanations.
+
+REQUIRED FORMAT for each property:
+address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built | source_url
+
+Skip any explanatory text or commentary. Only include actual property data.`;
+
+          const fallbackCleaned = await vertexGenerate({
+            sa: sa,
+            projectId,
+            location,
+            model,
+            prompt: fallbackCleanupPrompt,
+            grounded: false,
+            timeoutMs: 30000
+          });
+          console.log(`🔍 FALLBACK CLEANED: Fallback cleaned response: "${fallbackCleaned}"`);
+
+          parsed = await this.parseVertexResponse(fallbackCleaned, subjectCoords.lat, subjectCoords.lon, subjectDetails);
         }
         return parsed;
       };
@@ -188,25 +252,46 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       console.log(`🔍 PROMPT DEBUG: All prompts generated successfully, total: ${prompts.length}`);
       console.log(`   🚀 Launching ${prompts.length} Vertex searches in parallel...`);
-      console.log(`🔍 VERTEX DEBUG: About to execute Promise.all with ${prompts.length} prompts`);
-      console.log(`🔍 VERTEX DEBUG: Promise.all execution starting...`);
+      console.log(`🔍 VERTEX DEBUG: About to execute Promise.allSettled with ${prompts.length} prompts`);
+      console.log(`🔍 VERTEX DEBUG: Promise.allSettled execution starting...`);
       const startPromiseAll = Date.now();
 
-      const batches = await Promise.all(prompts.map((p, index) => {
+      const results = await Promise.allSettled(prompts.map((p, index) => {
         console.log(`🔍 VERTEX DEBUG: Starting search ${index + 1}/${prompts.length}`);
+        console.log(`🔍 VERTEX DEBUG: Search ${index + 1} - subjectAddress scope check: "${typeof subjectAddress}" = "${subjectAddress}"`);
         return fetchAndParse(p).then(result => {
           console.log(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with ${result ? result.length : 0} results`);
           return result;
         }).catch(error => {
-          console.log(`🔍 VERTEX DEBUG: Search ${index + 1} failed with error:`, error.message);
+          console.error(`❌ VERTEX DEBUG: Search ${index + 1} failed with error: ${error.message}`);
+          console.error(`❌ VERTEX DEBUG: Search ${index + 1} error stack: ${error.stack}`);
+          console.error(`❌ VERTEX DEBUG: Search ${index + 1} - subjectAddress at error: "${typeof subjectAddress}" = "${subjectAddress}"`);
+          if (error.message.includes('subjectAddress is not defined')) {
+            console.error(`❌ CRITICAL: Found the subjectAddress error in search ${index + 1}!`);
+          }
           throw error;
         });
       }));
 
       const promiseAllTime = Date.now() - startPromiseAll;
-      console.log(`🔍 VERTEX DEBUG: Promise.all completed successfully in ${promiseAllTime}ms`);
+      console.log(`🔍 VERTEX DEBUG: Promise.allSettled completed in ${promiseAllTime}ms`);
+
+      // Extract successful results and handle failures
+      const batches: ComparableProperty[][] = [];
+      results.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          console.log(`✅ VERTEX DEBUG: Search ${index + 1} fulfilled with ${result.value ? result.value.length : 0} results`);
+          batches.push(result.value || []);
+        } else {
+          console.error(`❌ VERTEX DEBUG: Search ${index + 1} rejected: ${result.reason?.message || result.reason}`);
+          batches.push([]); // Add empty array for failed searches
+        }
+      });
+
       for (const list of batches) {
-        list.forEach(c => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
+        if (list && list.length > 0) {
+          list.forEach((c: ComparableProperty) => { if (!aggregatedComps.has(c.address)) aggregatedComps.set(c.address, c); });
+        }
       }
 
       // Use aggregated results
@@ -264,10 +349,8 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       comps = await this.enrichAndRevalidate(prioritized, subjectDetails);
       console.log(`🔍 EXACT DEBUG: enrichAndRevalidate completed, now have ${comps.length} comps`);
 
-      // Geocode at the very end for surviving comps and filter by distance limits
-      console.log(`🔍 EXACT DEBUG: About to call geocodeAndFilterDistance with ${comps.length} comps`);
-      comps = await this.geocodeAndFilterDistance(comps, subjectCoords.lat, subjectCoords.lon, 1.0, 2.0);
-      console.log(`🔍 EXACT DEBUG: geocodeAndFilterDistance completed, now have ${comps.length} comps`);
+      // Distance validation will be handled by comprehensive search coordinate-based filtering
+      console.log(`🔍 EXACT DEBUG: Skipping old distance filtering - will be handled by comprehensive search`);
 
       // CRITICAL DEBUG LOGGING FOR DUPLEX VERIFICATION
       console.log(`   🚨 DUPLEX VERIFICATION CHECK POINT:`);
@@ -375,7 +458,14 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       };
 
     } catch (error: any) {
-      console.error(`   ❌ Comparable search failed: ${error.message}`);
+      console.error(`❌ MAIN CATCH: Comparable search failed with error: ${error.message}`);
+      console.error(`❌ MAIN CATCH: Error stack: ${error.stack}`);
+      console.error(`❌ MAIN CATCH: subjectAddress at error: "${typeof subjectAddress}" = "${subjectAddress}"`);
+      console.error(`❌ MAIN CATCH: Full error object:`, error);
+      if (error.message && error.message.includes('subjectAddress is not defined')) {
+        console.error(`❌ CRITICAL: Found the subjectAddress error in main catch block!`);
+        console.error(`❌ CRITICAL: This means the error bubbled up from Promise.all or fetchAndParse`);
+      }
       return {
         comparables: [],
         success: false,
@@ -1062,48 +1152,6 @@ Return exactly this JSON structure:
     return [...comps].sort((a, b) => score(b) - score(a) || dateValue(b) - dateValue(a));
   }
 
-  // Geocode surviving comps at the end and filter by distance limits
-  private async geocodeAndFilterDistance(
-    comps: ComparableProperty[],
-    subjectLat: number,
-    subjectLon: number,
-    idealMiles = 1.0,
-    maxMiles = 2.0
-  ): Promise<ComparableProperty[]> {
-    const out: ComparableProperty[] = [];
-    const GEOCODE_CONCURRENCY = parseInt(process.env.GEOCODE_CONCURRENCY || '6', 10);
-
-    let index = 0;
-    let active = 0;
-    await new Promise<void>((resolve) => {
-      const next = () => {
-        if (index >= comps.length && active === 0) return resolve();
-        while (active < GEOCODE_CONCURRENCY && index < comps.length) {
-          const c = comps[index++];
-          active++;
-          (async () => {
-            let dist = await this.calculateDistance(c.address, subjectLat, subjectLon, 7000);
-            if (!Number.isFinite(dist)) {
-              console.log(`   ⚠️  Skipping distance filter for ${c.address}: geocoding failed`);
-              out.push({ ...c, distance: NaN as any });
-              return;
-            }
-            if (dist > maxMiles) {
-              console.log(`   ❌ REJECTED ${c.address}: Too far (${dist.toFixed(2)}mi > ${maxMiles}mi limit)`);
-              return;
-            }
-            if (dist > idealMiles) {
-              console.log(`   ⚠️  EXTENDED DISTANCE ${c.address}: (${dist.toFixed(2)}mi > ${idealMiles}mi ideal)`);
-            }
-            out.push({ ...c, distance: dist });
-          })().finally(() => { active--; next(); });
-        }
-      };
-      next();
-    });
-
-    return out;
-  }
 
   private getAgeGroup(yearBuilt: number): string {
     if (yearBuilt >= 2020) return '2020+';
@@ -1257,22 +1305,6 @@ Return exactly this JSON structure:
     });
   }
 
-  private async calculateDistance(address: string, subjectLat: number, subjectLon: number, timeoutMs: number = 3000): Promise<number> {
-    try {
-      const geocoded = await this.geocodeWithTimeout(address, timeoutMs);
-      if (!geocoded) throw new Error('geocode-timeout');
-
-      const lat1 = subjectLat * Math.PI / 180;
-      const lat2 = geocoded.lat * Math.PI / 180;
-      const deltaLat = (geocoded.lat - subjectLat) * Math.PI / 180;
-      const deltaLon = (geocoded.lon - subjectLon) * Math.PI / 180;
-      const a = Math.sin(deltaLat/2) * Math.sin(deltaLat/2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLon/2) * Math.sin(deltaLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return 3959 * c; // Earth radius in miles
-    } catch {
-      return NaN;
-    }
-  }
 
   private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
     // Normalize address format for better geocoding success
