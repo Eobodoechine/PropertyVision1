@@ -1,5 +1,5 @@
-// Google AI Studio (Gemini) property data parser
-import https from 'https';
+// Vertex AI Gemini property data parser
+import { vertexGenerate } from '../vertex-freeform.js';
 
 interface PropertyData {
   address: string;
@@ -13,8 +13,9 @@ interface PropertyData {
 }
 
 export class GeminiParser {
-  private apiKey = 'AIzaSyD0QA1Jc1mx48GlyQVvz8JTHGEJhQWSE5s';
-  private apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+  private projectId = 'agile-device-472202-i8';
+  private location = 'us-central1';
+  private model = 'gemini-2.0-flash-001';
 
   /**
    * Parse property data using Gemini API
@@ -38,7 +39,7 @@ export class GeminiParser {
   }
 
   /**
-   * Use Gemini API to extract property data
+   * Use Vertex AI Gemini to extract property data
    */
   private async extractWithGemini(rawText: string): Promise<string> {
     const prompt = `Parse this real estate data and return ONLY a JSON object with all properties.
@@ -62,81 +63,36 @@ Return JSON in exactly this format (no other text):
   ]
 }`;
 
-    const payload = {
-      contents: [
-        {
-          parts: [
-            {
-              text: prompt
-            }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0,
-        maxOutputTokens: 4096
+    console.log('🔄 GeminiParser: Calling Vertex AI Gemini...');
+
+    try {
+      // Load service account from environment
+      const saPath = process.env.GCP_SA_JSON;
+      if (!saPath) {
+        throw new Error('GCP_SA_JSON environment variable not set');
       }
-    };
 
-    console.log('🔄 GeminiParser: Calling Gemini API...');
+      const fs = await import('fs');
+      const serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf8'));
 
-    return new Promise((resolve, reject) => {
-      const data = JSON.stringify(payload);
-      const urlObj = new URL(this.apiUrl);
-
-      const options = {
-        hostname: urlObj.hostname,
-        port: 443,
-        path: urlObj.pathname,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': this.apiKey,
-          'Content-Length': Buffer.byteLength(data)
-        }
-      };
-
-      const req = https.request(options, (res) => {
-        let responseData = '';
-
-        res.on('data', (chunk) => {
-          responseData += chunk;
-        });
-
-        res.on('end', () => {
-          try {
-            const response = JSON.parse(responseData);
-
-            if (response.error) {
-              reject(new Error(`Gemini API error: ${response.error.message}`));
-              return;
-            }
-
-            const content = response.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!content) {
-              reject(new Error('No content returned from Gemini API'));
-              return;
-            }
-
-            resolve(content);
-          } catch (parseError) {
-            reject(new Error(`Failed to parse Gemini response: ${parseError}`));
-          }
-        });
+      const result = await vertexGenerate({
+        projectId: this.projectId,
+        location: this.location,
+        model: this.model,
+        prompt: prompt,
+        sa: serviceAccount,
+        json: true,
+        timeoutMs: 30000
       });
 
-      req.on('error', (error) => {
-        reject(new Error(`Gemini API request failed: ${error.message}`));
-      });
+      if (!result) {
+        throw new Error('No content returned from Vertex AI Gemini');
+      }
 
-      req.on('timeout', () => {
-        reject(new Error('Gemini API request timed out'));
-      });
-
-      req.setTimeout(30000); // 30 second timeout
-      req.write(data);
-      req.end();
-    });
+      return result;
+    } catch (error) {
+      throw new Error(`Vertex AI Gemini request failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
   }
 
   /**

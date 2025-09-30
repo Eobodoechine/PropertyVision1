@@ -46,7 +46,12 @@ async function getServiceAccountToken(sa, scope) {
     sign.update(unsigned);
     console.log('🔍 TOKEN DEBUG 9: About to call sign.sign(sa.private_key)');
     console.log('🔍 TOKEN DEBUG 10: Final sa.private_key check:', !!sa.private_key);
-    const signature = sign.sign(sa.private_key).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+
+    // Fix private key format - replace literal \n with actual newlines
+    const formattedPrivateKey = sa.private_key.replace(/\\n/g, '\n');
+    console.log('🔍 TOKEN DEBUG 11: Private key formatted, checking format...');
+
+    const signature = sign.sign(formattedPrivateKey).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const assertion = `${unsigned}.${signature}`;
     const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion });
     const resp = await httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' }, 20000);

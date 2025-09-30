@@ -1,5 +1,6 @@
-// Comprehensive Comparable Search V3 - V2 with Dual ARV Analysis
-// Same as V2 but with dual ARV calculation: baseline + 2-bathroom upgrade scenarios
+// Comprehensive Comparable Search V5 - Progressive Vertex AI Valuation
+// 4-level progressive search with Vertex AI valuation at each checkpoint
+// Replaces high-tier clustering with AI-driven PPSF analysis
 
 import { VertexComparableSearchService } from './step3-find-comparables.js';
 import { ARVCalculationService } from './step4-arv-calculation.js';
@@ -7,6 +8,7 @@ import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-detai
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer.js';
 import { VertexDeduplicator } from './utils/vertexDeduplicator.js';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy.js';
+import { VertexAIValuationService } from './vertexAIValuation.js';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -57,23 +59,25 @@ type SubjectSummary = Pick<BasicDetails,
   'address' | 'sqft' | 'beds' | 'baths' | 'yearBuilt' | 'lotSize' | 'subdivision' | 'success'
 >;
 
-export class ComprehensiveComparableSearchV3 {
+export class ComprehensiveComparableSearchV5 {
   private compService: VertexComparableSearchService;
   private arvService: ARVCalculationService;
   private normalizer: PropertyDataNormalizer;
   private deduplicator: VertexDeduplicator;
   private progressiveSearch: ProgressiveSearchStrategy;
+  private vertexAIService: VertexAIValuationService;
   constructor() {
     this.compService = new VertexComparableSearchService();
     this.arvService = new ARVCalculationService();
     this.normalizer = new PropertyDataNormalizer();
     this.deduplicator = new VertexDeduplicator();
     this.progressiveSearch = new ProgressiveSearchStrategy();
+    this.vertexAIService = new VertexAIValuationService();
   }
 
   async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
     const startTime = Date.now();
-    console.log(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V3`);
+    console.log(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI`);
     console.log(`============================================================`);
     console.log(`📍 Analyzing: ${address}`);
 
@@ -191,20 +195,78 @@ export class ComprehensiveComparableSearchV3 {
       };
       console.log(`   ✅ Distance validated: ${distanceValidatedComps.length}/${deduplicatedComps.length} within 2 miles (rejected ${distanceValidationResult.rejected.length})`);
 
-      // Step 6: High-tier property selection based on PPSF analysis
-      console.log(`\n🎯 Step 6: High-Tier Property Selection`);
-      const highTierResult = this.selectHighTierProperties(distanceValidatedComps);
-      const qualifiedComps = highTierResult.selectedComps;
+      // Prepare subject summary for potential early return
+      const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
+      const currentLevel = 1; // TODO: Make this dynamic based on progressive search
 
-      console.log(`   ✅ High-tier selection: ${qualifiedComps.length}/${distanceValidatedComps.length} properties selected`);
-      if (highTierResult.droppedHighNoSupport.length > 0) {
-        console.log(`   📊 Dropped high-tier (no support): ${highTierResult.droppedHighNoSupport.length} properties`);
+      // Step 6: Vertex AI Valuation (replaces high-tier clustering)
+      console.log(`\n🤖 Step 6: Vertex AI Valuation Analysis`);
+
+      // Try Vertex AI ARV calculation if we have sufficient comps
+      if (distanceValidatedComps.length >= 3) {
+        console.log(`   📊 Attempting Vertex AI ARV with ${distanceValidatedComps.length} comps...`);
+
+        const vertexResult = await this.vertexAIService.calculateARVWithAI(
+          subjectDetails,
+          distanceValidatedComps,
+          currentLevel
+        );
+
+        if (vertexResult.success) {
+          console.log(`   ✅ Vertex AI Success: ${vertexResult.arv?.method}`);
+          console.log(`   💰 ARV: $${vertexResult.arv?.estimate.toLocaleString()}`);
+
+          // Return early with Vertex AI result
+          const endTime = Date.now();
+          const searchTime = Math.round((endTime - startTime) / 1000);
+
+          return {
+            subject: subjectSummary,
+            all_comps: distanceValidatedComps,
+            qualified_comps: vertexResult.result.kept_comps,
+            consistency_scores: new Map(),
+            renovation_analysis: {
+              likely_renovated: [],
+              likely_unrenovated: [],
+              market_average: vertexResult.result.kept_comps
+            },
+            arv: {
+              method: vertexResult.arv?.method || 'vertex_ai',
+              estimate: vertexResult.arv?.estimate || 0,
+              confidence: (vertexResult.arv?.confidence === 'LOW' ? 'low' : vertexResult.arv?.confidence === 'HIGH' ? 'high' : 'medium') as 'high' | 'medium' | 'low',
+              dataPoints: vertexResult.arv?.dataPoints || 0
+            },
+            bathroomAnalysis: {
+              subjectBaths: subjectDetails.baths || 3,
+              recommendAction: 'hold',
+              baselineCompsUsed: vertexResult.result.kept_comps.length
+            },
+            searchMetadata: {
+              version: 'v5_vertex_ai',
+              strategy: 'progressive_expansion',
+              searchLevels: 1,
+              totalSearchTime: searchTime * 1000,
+              qualityScore: vertexResult.arv?.confidence === 'LOW' ? 'fair' : 'good',
+              cacheHits: 0,
+              normalizationSummary: {
+                method: 'vertex_ai_valuation',
+                notes: vertexResult.result.notes
+              },
+              deduplicationSummary: { duplicatesRemoved: 0, uniqueProperties: distanceValidatedComps.length },
+              distanceValidationSummary: { validated: distanceValidatedComps.length, rejected: 0 }
+            }
+          };
+        } else {
+          console.log(`   ❌ Vertex AI failed: ${vertexResult.reason}`);
+          console.log(`   🔄 Continuing to traditional ARV calculation...`);
+        }
+      } else {
+        console.log(`   ⚠️ Insufficient comps for Vertex AI (${distanceValidatedComps.length} < 3)`);
+        console.log(`   🔄 Continuing to find more comps...`);
       }
 
-      // Log detailed analysis
-      highTierResult.analysisLog.forEach(logLine => {
-        console.log(`   ${logLine}`);
-      });
+      // If we reach here, Vertex AI failed or insufficient comps
+      const qualifiedComps = distanceValidatedComps;
 
       // Step 7: Renovation analysis
       console.log(`\n🔨 Step 7: Renovation Analysis`);
@@ -308,8 +370,6 @@ export class ComprehensiveComparableSearchV3 {
       console.log(`   Total Time: ${totalSearchTime}ms`);
       console.log(`   Final Comps: ${qualifiedComps.length}`);
       console.log(`============================================================\n`);
-
-      const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
 
       return {
         subject: subjectSummary,
@@ -1148,7 +1208,7 @@ async function testComprehensiveSearchV3() {
   }
 
   try {
-    const service = new ComprehensiveComparableSearchV3();
+    const service = new ComprehensiveComparableSearchV5();
     const result = await service.findComparables(address);
 
     console.log(`✅ Search completed successfully!`);
