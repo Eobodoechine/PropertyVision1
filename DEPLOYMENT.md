@@ -6,7 +6,8 @@
 - Docker Desktop running: `/Applications/Docker.app/Contents/MacOS/Docker`
 - gcloud CLI: `/Users/eobodoechine/google-cloud-sdk/bin/gcloud`
 - Project: `agile-device-472202-i8`
-- Region: `us-east1`
+- Region: `us-central1`
+- Service: `propertyvision-frontend`
 
 ### Build Process
 ```bash
@@ -24,29 +25,26 @@ docker push gcr.io/agile-device-472202-i8/frontend:latest
 ### Deploy Process
 ```bash
 # Deploy to Cloud Run
-/Users/eobodoechine/google-cloud-sdk/bin/gcloud run deploy frontend \
+/Users/eobodoechine/google-cloud-sdk/bin/gcloud run deploy propertyvision-frontend \
   --image gcr.io/agile-device-472202-i8/frontend:latest \
-  --region us-east1 \
+  --region us-central1 \
   --platform managed \
   --allow-unauthenticated
 ```
 
 ### Production URLs
 - **Main Domain**: https://enohomebuyers.com/
-- **Cloud Run URL**: https://frontend-839845580521.us-east1.run.app
+- **Cloud Run URL**: https://propertyvision-frontend-839845580521.us-central1.run.app
 
 ### Latest Deployment
-- **Revision**: frontend-00017-9hh
-- **Date**: 2025-09-27
+- **Revision**: propertyvision-frontend-00016-4gb
+- **Date**: 2025-10-02
 - **Changes**:
-  - **MAJOR**: Fixed outlier detection system to use consistent 7.5% threshold
-  - Removed aggressive 25% PPSF filter that was excluding high-value comparables ($394k, $425k, $375k)
-  - Archived complex z-score and median-ratio outlier detection methods
-  - Enhanced progressive search strategy with proper propertyType parameter passing
-  - Added comprehensive debug logging for duplex verification process
-  - Improved property type detection with fallback methods
-  - Added search history functionality and UI improvements
-  - **RESULT**: ARV calculations now properly include high-value comparables instead of ~$320k undervaluation
+  - **MAJOR**: Fixed progressive comp accumulation to use raw comps instead of qualified comps
+  - Now properly accumulates ALL discovered properties across search levels before filtering
+  - Level 1: 10 raw comps, Level 2: +14 unique raw comps (5 duplicates) = 24 total accumulated
+  - Filtering applied to accumulated set: 24 → 16 (bedroom/size/time) → 6 (distance)
+  - Fixed deduplication logic using Map with compound key (address|price|sqft)
 
 ### Testing
 After deployment, test with problematic address:
