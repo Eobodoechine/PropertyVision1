@@ -38,3 +38,4 @@
 {"environment":"development","level":"error","message":" ⨯ uncaughtException:  {\"errno\":-32,\"code\":\"EPIPE\",\"syscall\":\"write\"}","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-02T07:53:16.208Z"}
 {"environment":"development","level":"error","message":"❌ Vertex deduplication failed, falling back to original properties: {}","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-02T15:38:22.312Z"}
 {"environment":"development","level":"error","message":"❌ Vertex deduplication failed, falling back to original properties: {}","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-02T15:38:22.492Z"}
+{"environment":"development","level":"error","message":"❌ Vertex deduplication failed, falling back to original properties: {}","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-02T18:32:13.500Z"}

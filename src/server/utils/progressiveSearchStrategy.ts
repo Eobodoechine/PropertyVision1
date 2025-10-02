@@ -1,6 +1,8 @@
 // Progressive Expansion Search Strategy
 // Replaces redundant identical searches with intelligent expansion
 
+import { getRedisCache } from './redisCache';
+
 interface SearchLevel {
   level: number;
   name: string;
@@ -43,9 +45,11 @@ interface ProgressiveSearchResult {
 export class ProgressiveSearchStrategy {
   // Global raw comps cache - stores ALL raw comps from every search run, keyed by subject address
   private static globalRawCompsCache = new Map<string, any[]>(); // key: subject address, value: array of all raw comps with full property details
+  private redisCache = getRedisCache();
 
   constructor() {
     // Global cache persists across all instances and requests
+    // Redis cache provides persistence across server restarts
   }
 
   /**
@@ -142,20 +146,34 @@ export class ProgressiveSearchStrategy {
   /**
    * Get cached raw comps for a specific subject address
    */
-  private getCachedRawComps(subjectAddress: string): any[] {
+  private async getCachedRawComps(subjectAddress: string): Promise<any[]> {
+    // Try Redis first
+    const redisComps = await this.redisCache.getRawComps(subjectAddress);
+    if (redisComps.length > 0) {
+      console.log(`   💾 Found ${redisComps.length} cached raw comps from Redis for ${subjectAddress}`);
+      // Sync to in-memory cache
+      ProgressiveSearchStrategy.globalRawCompsCache.set(subjectAddress, redisComps);
+      return redisComps;
+    }
+
+    // Fallback to in-memory cache
     const cached = ProgressiveSearchStrategy.globalRawCompsCache.get(subjectAddress);
     if (!cached) {
       console.log(`   💾 No cache found for ${subjectAddress}`);
       return [];
     }
-    console.log(`   💾 Found ${cached.length} cached raw comps for ${subjectAddress}`);
+    console.log(`   💾 Found ${cached.length} cached raw comps from in-memory for ${subjectAddress}`);
     return cached;
   }
 
   /**
    * Update global cache with new raw comps found in this run
    */
-  private updateGlobalCache(subjectAddress: string, allRawCompsFromRun: any[]): void {
+  private async updateGlobalCache(subjectAddress: string, allRawCompsFromRun: any[]): Promise<void> {
+    // Try Redis first
+    await this.redisCache.updateRawComps(subjectAddress, allRawCompsFromRun);
+
+    // Also update in-memory cache for immediate access
     const existingCache = ProgressiveSearchStrategy.globalRawCompsCache.get(subjectAddress) || [];
 
     // Create a map of existing cached comps by address for fast lookup
@@ -169,9 +187,9 @@ export class ProgressiveSearchStrategy {
     if (newComps.length > 0) {
       const updatedCache = [...existingCache, ...newComps];
       ProgressiveSearchStrategy.globalRawCompsCache.set(subjectAddress, updatedCache);
-      console.log(`   💾 Cache updated: Added ${newComps.length} new comps. Total cached: ${updatedCache.length}`);
+      console.log(`   💾 In-memory cache updated: Added ${newComps.length} new comps. Total cached: ${updatedCache.length}`);
     } else {
-      console.log(`   💾 Cache unchanged: No new comps found. Total cached: ${existingCache.length}`);
+      console.log(`   💾 In-memory cache unchanged: No new comps found. Total cached: ${existingCache.length}`);
     }
   }
 
@@ -422,7 +440,7 @@ export class ProgressiveSearchStrategy {
 
         // INJECT CACHED COMPS AFTER LEVEL 1 COMPLETES
         if (level.level === 1) {
-          const cachedComps = this.getCachedRawComps(address);
+          const cachedComps = await this.getCachedRawComps(address);
           if (cachedComps.length > 0) {
             console.log(`\n💾 Injecting ${cachedComps.length} cached raw comps from previous runs...`);
             cachedComps.forEach(cachedComp => {
@@ -545,7 +563,7 @@ export class ProgressiveSearchStrategy {
     const allRawCompsFromRun = Array.from(allDiscoveredComps.values()).filter(comp => comp.foundAtLevel > 0); // Exclude cached comps (foundAtLevel = 0)
     if (allRawCompsFromRun.length > 0) {
       console.log(`\n💾 Updating global cache with ${allRawCompsFromRun.length} raw comps from this run...`);
-      this.updateGlobalCache(address, allRawCompsFromRun);
+      await this.updateGlobalCache(address, allRawCompsFromRun);
     }
 
     return {
@@ -565,21 +583,28 @@ export class ProgressiveSearchStrategy {
   /**
    * Clear global cache (useful for testing)
    */
-  clearCache(): void {
+  async clearCache(): Promise<void> {
+    await this.redisCache.clearAll();
     ProgressiveSearchStrategy.globalRawCompsCache.clear();
-    console.log('🗑️  Global raw comps cache cleared');
+    console.log('🗑️  Global raw comps cache cleared (Redis + in-memory)');
   }
 
   /**
    * Get cache stats (for debugging)
    */
-  getCacheStats(): { totalAddresses: number; totalComps: number } {
+  async getCacheStats(): Promise<{ redis: { totalAddresses: number; totalComps: number }; inMemory: { totalAddresses: number; totalComps: number } }> {
+    const redisStats = await this.redisCache.getCacheStats();
+
     const totalAddresses = ProgressiveSearchStrategy.globalRawCompsCache.size;
     let totalComps = 0;
     ProgressiveSearchStrategy.globalRawCompsCache.forEach(comps => {
       totalComps += comps.length;
     });
-    return { totalAddresses, totalComps };
+
+    return {
+      redis: redisStats,
+      inMemory: { totalAddresses, totalComps }
+    };
   }
 
   /**
