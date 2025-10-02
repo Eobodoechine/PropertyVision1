@@ -41,11 +41,11 @@ interface ProgressiveSearchResult {
 }
 
 export class ProgressiveSearchStrategy {
-  private cache = new Map<string, { result: any[]; timestamp: number }>();
-  private readonly CACHE_TTL = 15 * 60 * 1000; // 15 minutes
+  // Global raw comps cache - stores ALL raw comps from every search run, keyed by subject address
+  private static globalRawCompsCache = new Map<string, any[]>(); // key: subject address, value: array of all raw comps with full property details
 
   constructor() {
-    // Cache enabled
+    // Global cache persists across all instances and requests
   }
 
   /**
@@ -140,29 +140,39 @@ export class ProgressiveSearchStrategy {
   }
 
   /**
-   * Check if we have a valid cached result
+   * Get cached raw comps for a specific subject address
    */
-  private getCachedResult(cacheKey: string): any[] | null {
-    const cached = this.cache.get(cacheKey);
-    if (!cached) return null;
-
-    const isExpired = Date.now() - cached.timestamp > this.CACHE_TTL;
-    if (isExpired) {
-      this.cache.delete(cacheKey);
-      return null;
+  private getCachedRawComps(subjectAddress: string): any[] {
+    const cached = ProgressiveSearchStrategy.globalRawCompsCache.get(subjectAddress);
+    if (!cached) {
+      console.log(`   💾 No cache found for ${subjectAddress}`);
+      return [];
     }
-
-    return cached.result;
+    console.log(`   💾 Found ${cached.length} cached raw comps for ${subjectAddress}`);
+    return cached;
   }
 
   /**
-   * Cache search result
+   * Update global cache with new raw comps found in this run
    */
-  private setCachedResult(cacheKey: string, result: any[]): void {
-    this.cache.set(cacheKey, {
-      result: [...result], // Deep copy
-      timestamp: Date.now()
-    });
+  private updateGlobalCache(subjectAddress: string, allRawCompsFromRun: any[]): void {
+    const existingCache = ProgressiveSearchStrategy.globalRawCompsCache.get(subjectAddress) || [];
+
+    // Create a map of existing cached comps by address for fast lookup
+    const existingAddresses = new Set(existingCache.map(comp => comp.address?.toLowerCase()));
+
+    // Find new comps not in cache
+    const newComps = allRawCompsFromRun.filter(comp =>
+      comp.address && !existingAddresses.has(comp.address.toLowerCase())
+    );
+
+    if (newComps.length > 0) {
+      const updatedCache = [...existingCache, ...newComps];
+      ProgressiveSearchStrategy.globalRawCompsCache.set(subjectAddress, updatedCache);
+      console.log(`   💾 Cache updated: Added ${newComps.length} new comps. Total cached: ${updatedCache.length}`);
+    } else {
+      console.log(`   💾 Cache unchanged: No new comps found. Total cached: ${existingCache.length}`);
+    }
   }
 
   /**
@@ -270,25 +280,9 @@ export class ProgressiveSearchStrategy {
     propertyType?: string
   ): Promise<SearchResult> {
     const startTime = Date.now();
-    const cacheKey = this.generateCacheKey(address, level, subjectDetails);
 
     console.log(`🔍 Level ${level.level}: ${level.name}`);
     console.log(`   📐 ${level.description}`);
-
-    // Check cache first
-    const cachedResult = this.getCachedResult(cacheKey);
-    if (cachedResult) {
-      console.log(`   💾 Cache hit - returning ${cachedResult.length} cached properties`);
-      return {
-        level,
-        properties: cachedResult,
-        qualified: cachedResult, // Assume cached results are already qualified
-        rawComps: [], // No raw comps available from cache
-        searchTime: Date.now() - startTime,
-        success: true,
-        cacheHit: true
-      };
-    }
 
     try {
       // Set search parameters
@@ -353,9 +347,6 @@ export class ProgressiveSearchStrategy {
 
 
       console.log(`   ✅ Found ${qualified.length} qualified comps and ${rawComps.length} raw comps in ${searchTime}ms`);
-
-      // Cache the result
-      this.setCachedResult(cacheKey, qualified);
 
       return {
         level,
@@ -429,6 +420,21 @@ export class ProgressiveSearchStrategy {
         console.log(`   📊 Level ${level.level}: Added ${newCompsAdded} new raw comps`);
         console.log(`   📦 Total accumulated raw comps: ${allDiscoveredComps.size}`);
 
+        // INJECT CACHED COMPS AFTER LEVEL 1 COMPLETES
+        if (level.level === 1) {
+          const cachedComps = this.getCachedRawComps(address);
+          if (cachedComps.length > 0) {
+            console.log(`\n💾 Injecting ${cachedComps.length} cached raw comps from previous runs...`);
+            cachedComps.forEach(cachedComp => {
+              const key = `${cachedComp.address}|${cachedComp.price}|${cachedComp.sqft}`;
+              if (!allDiscoveredComps.has(key)) {
+                allDiscoveredComps.set(key, { ...cachedComp, foundAtLevel: 0 }); // Mark as from cache
+              }
+            });
+            console.log(`   📦 Total after cache injection: ${allDiscoveredComps.size}`);
+          }
+        }
+
         // Step 2: Get all accumulated comps for filtering
         const accumulatedRawComps = Array.from(allDiscoveredComps.values());
 
@@ -436,20 +442,20 @@ export class ProgressiveSearchStrategy {
         console.log(`\n🔍 Level ${level.level} Filtering: Bedroom, Size, Time on ${accumulatedRawComps.length} accumulated comps`);
         const beforeFiltering = accumulatedRawComps.length;
         const filteredComps = accumulatedRawComps.filter(comp => {
-          // Bedroom filter: ±1 bedroom tolerance
+          // Bedroom filter: Use level's bedsVariance
           if (subjectDetails?.beds) {
             const bedroomDiff = Math.abs((comp.beds || 0) - subjectDetails.beds);
-            if (bedroomDiff > 1) {
-              console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff})`);
+            if (bedroomDiff > level.criteria.bedsVariance) {
+              console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff}, limit: ±${level.criteria.bedsVariance})`);
               return false;
             }
           }
 
-          // Size filter: ±20% variance
+          // Size filter: Use level's sizeVariance
           if (subjectDetails?.sqft) {
             const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
-            if (sizeVariance > 20) {
-              console.log(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> 20% limit)`);
+            if (sizeVariance > level.criteria.sizeVariance) {
+              console.log(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> ${level.criteria.sizeVariance}% limit)`);
               return false;
             }
           }
@@ -535,6 +541,13 @@ export class ProgressiveSearchStrategy {
       console.log(`   ${icon} ${cache} Level ${result.level.level}: ${result.qualified.length} comps (${result.searchTime}ms)`);
     });
 
+    // UPDATE GLOBAL CACHE: Add all raw comps from this run to the address-specific cache
+    const allRawCompsFromRun = Array.from(allDiscoveredComps.values()).filter(comp => comp.foundAtLevel > 0); // Exclude cached comps (foundAtLevel = 0)
+    if (allRawCompsFromRun.length > 0) {
+      console.log(`\n💾 Updating global cache with ${allRawCompsFromRun.length} raw comps from this run...`);
+      this.updateGlobalCache(address, allRawCompsFromRun);
+    }
+
     return {
       finalProperties,
       searchHistory,
@@ -550,33 +563,23 @@ export class ProgressiveSearchStrategy {
   }
 
   /**
-   * Clear cache (useful for testing)
+   * Clear global cache (useful for testing)
    */
   clearCache(): void {
-    this.cache.clear();
-    console.log('🗑️  Progressive search cache cleared');
+    ProgressiveSearchStrategy.globalRawCompsCache.clear();
+    console.log('🗑️  Global raw comps cache cleared');
   }
 
   /**
-   * Get cache statistics
+   * Get cache stats (for debugging)
    */
-  getCacheStats(): { entries: number; oldestEntry: number; totalSize: number } {
-    const now = Date.now();
-    let oldestEntry = now;
-    let totalSize = 0;
-
-    for (const [key, entry] of this.cache) {
-      if (entry.timestamp < oldestEntry) {
-        oldestEntry = entry.timestamp;
-      }
-      totalSize += entry.result.length;
-    }
-
-    return {
-      entries: this.cache.size,
-      oldestEntry: now - oldestEntry,
-      totalSize
-    };
+  getCacheStats(): { totalAddresses: number; totalComps: number } {
+    const totalAddresses = ProgressiveSearchStrategy.globalRawCompsCache.size;
+    let totalComps = 0;
+    ProgressiveSearchStrategy.globalRawCompsCache.forEach(comps => {
+      totalComps += comps.length;
+    });
+    return { totalAddresses, totalComps };
   }
 
   /**
