@@ -416,8 +416,9 @@ export class ProgressiveSearchStrategy {
 
       if (result.success) {
         // Step 1: Add ALL new raw discoveries to our accumulation (no filtering at this stage)
-        if (result.qualified && result.qualified.length > 0) {
-          result.qualified.forEach(prop => {
+        const newCompsAdded = result.rawComps?.length || 0;
+        if (result.rawComps && result.rawComps.length > 0) {
+          result.rawComps.forEach(prop => {
             const key = `${prop.address}|${prop.price}|${prop.sqft}`;
             if (!allDiscoveredComps.has(key)) {
               allDiscoveredComps.set(key, { ...prop, foundAtLevel: level.level });
@@ -425,7 +426,7 @@ export class ProgressiveSearchStrategy {
           });
         }
 
-        console.log(`   📊 Level ${level.level}: Added ${result.qualified?.length || 0} new comps`);
+        console.log(`   📊 Level ${level.level}: Added ${newCompsAdded} new raw comps`);
         console.log(`   📦 Total accumulated raw comps: ${allDiscoveredComps.size}`);
 
         // Step 2: Get all accumulated comps for filtering
