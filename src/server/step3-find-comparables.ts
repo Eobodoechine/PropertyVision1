@@ -21,7 +21,8 @@ interface ComparableProperty {
 }
 
 interface FindComparablesResult {
-  comparables: ComparableProperty[];
+  comparables: ComparableProperty[];  // Qualified/filtered comps
+  all_comps: ComparableProperty[];    // Raw/unfiltered comps (before validation/filtering)
   success: boolean;
   error?: string;
 }
@@ -234,6 +235,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       // Use aggregated results
       let comps = Array.from(aggregatedComps.values());
+      const rawCompsBeforeFiltering = [...comps]; // Save raw comps before any filtering
       console.log(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
 
       // LOG EACH PROPERTY BEFORE FILTERING
@@ -288,24 +290,84 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       });
       console.log(`🔍 EXACT DEBUG: forEach loop completed, processed ${comps.length} properties`);
 
+      // Apply bedroom, size, and time filters BEFORE deduplication to reduce API calls
+      console.log(`\n🔍 Step 3a: Bedroom, Size, and Time Filtering (before deduplication)`);
+      const beforeFiltering = comps.length;
+      comps = comps.filter(comp => {
+        // Bedroom filter: ±1 bedroom tolerance
+        if (subjectDetails?.beds) {
+          const bedroomDiff = Math.abs((comp.beds || 0) - subjectDetails.beds);
+          if (bedroomDiff > 1) {
+            console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff})`);
+            return false;
+          }
+        }
+
+        // Size filter: ±20% variance
+        if (subjectDetails?.sqft) {
+          const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
+          if (sizeVariance > 20) {
+            console.log(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> 20% limit)`);
+            return false;
+          }
+        }
+
+        // Time filter: Check against timeWindowMonths parameter
+        if (timeWindowMonths && comp.soldDate) {
+          try {
+            const soldDate = new Date(comp.soldDate);
+            const today = new Date();
+            const ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+            if (Number.isFinite(ageInMonths) && ageInMonths > timeWindowMonths) {
+              console.log(`   ❌ TIME REJECTED ${comp.address}: ${ageInMonths} months old (> ${timeWindowMonths} months limit)`);
+              return false;
+            }
+          } catch (error) {
+            console.log(`   ❌ TIME REJECTED ${comp.address}: Error parsing date`);
+            return false;
+          }
+        }
+
+        return true;
+      });
+      console.log(`   📊 Filter results: ${comps.length}/${beforeFiltering} passed bedroom, size, and time filters (rejected ${beforeFiltering - comps.length})`);
+
       // Deduplicate by address (remove duplicate addresses)
+      console.log(`\n🔍 Step 3b: Deduplication`);
       console.log(`🔍 EXACT DEBUG: About to call deduplicateComparables with ${comps.length} comps`);
       comps = this.deduplicateComparables(comps);
       console.log(`🔍 EXACT DEBUG: deduplicateComparables completed, now have ${comps.length} comps`);
 
       // PPSF outlier filtering now handled by enhanced ARV calculation with 7.5% threshold
 
+      // Step 3c: Distance Filtering (after deduplication)
+      // Note: Distance already calculated in convertGeminiToComparable via Google Maps API
+      console.log(`\n📏 Step 3c: Distance Filtering`);
+      const beforeDistanceFilter = comps.length;
+      comps = comps.filter((comp) => {
+        if (comp.distance === null || comp.distance === undefined) {
+          console.log(`   ❌ DISTANCE REJECTED ${comp.address}: No distance calculated`);
+          return false;
+        }
+        if (comp.distance <= searchRadius) {
+          console.log(`   ✅ DISTANCE OK ${comp.address}: ${comp.distance.toFixed(2)} miles (≤ ${searchRadius} miles)`);
+          return true;
+        } else {
+          console.log(`   ❌ DISTANCE REJECTED ${comp.address}: ${comp.distance.toFixed(2)} miles (> ${searchRadius} miles)`);
+          return false;
+        }
+      });
+      console.log(`   📏 Distance filter: ${comps.length}/${beforeDistanceFilter} within ${searchRadius} mile radius (rejected ${beforeDistanceFilter - comps.length})`);
+
       // Enrich missing data and re-validate (drops any newly disqualified comps)
       // No top-N limit: enrich all surviving comps
+      console.log(`\n🔍 Step 3d: Enrich and Re-validate`);
       console.log(`🔍 EXACT DEBUG: About to call prioritizeForEnrichment with ${comps.length} comps`);
       const prioritized = this.prioritizeForEnrichment(comps);
       console.log(`🔍 EXACT DEBUG: prioritizeForEnrichment completed, got ${prioritized.length} prioritized`);
       console.log(`🔍 EXACT DEBUG: About to call enrichAndRevalidate`);
       comps = await this.enrichAndRevalidate(prioritized, subjectDetails);
       console.log(`🔍 EXACT DEBUG: enrichAndRevalidate completed, now have ${comps.length} comps`);
-
-      // Distance validation will be handled by comprehensive search coordinate-based filtering
-      console.log(`🔍 EXACT DEBUG: Skipping old distance filtering - will be handled by comprehensive search`);
 
       // CRITICAL DEBUG LOGGING FOR DUPLEX VERIFICATION
       console.log(`   🚨 DUPLEX VERIFICATION CHECK POINT:`);
@@ -366,6 +428,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         if (finalComps.length === 0) {
           return {
             comparables: [],
+            all_comps: rawCompsBeforeFiltering,
             success: false,
             error: `No qualified comparables found after strict filtering. Consider expanding search criteria.`
           };
@@ -409,6 +472,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       return {
         comparables: finalComps,
+        all_comps: rawCompsBeforeFiltering,
         success: true
       };
 
@@ -423,6 +487,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       }
       return {
         comparables: [],
+        all_comps: [],
         success: false,
         error: error.message
       };

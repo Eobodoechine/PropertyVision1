@@ -8,7 +8,7 @@ import { vertexGenerate } from './vertex-freeform.js';
 export class VertexAIValuationService {
   constructor() {
     // Load service account credentials
-    const saPath = process.env.GCP_SA_JSON || '/Users/eobodoechine/PropertyVision1/agile-device-472202-i8-319f002d9438.json';
+    const saPath = process.env.GCP_SA_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS || '/app/agile-device-472202-i8-319f002d9438.json';
     this.sa = JSON.parse(readFileSync(saPath, 'utf8'));
     this.projectId = this.sa.project_id;
   }

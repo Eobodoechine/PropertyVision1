@@ -21,6 +21,7 @@ interface SearchResult {
   level: SearchLevel;
   properties: any[];
   qualified: any[];
+  rawComps: any[]; // Raw unfiltered comps from this level
   searchTime: number;
   success: boolean;
   cacheHit?: boolean;
@@ -266,17 +267,13 @@ export class ProgressiveSearchStrategy {
     address: string,
     subjectDetails: { sqft: number; beds: number; baths: number; yearBuilt: number } | undefined,
     searchService: any, // VertexComparableSearchService
-    propertyType?: string,
-    accumulatedComps: any[] = [] // Comps from previous levels for distance filtering
+    propertyType?: string
   ): Promise<SearchResult> {
     const startTime = Date.now();
     const cacheKey = this.generateCacheKey(address, level, subjectDetails);
 
     console.log(`🔍 Level ${level.level}: ${level.name}`);
     console.log(`   📐 ${level.description}`);
-    if (accumulatedComps.length > 0) {
-      console.log(`   📊 Using ${accumulatedComps.length} accumulated comps from previous levels for distance filtering`);
-    }
 
     // Check cache first
     const cachedResult = this.getCachedResult(cacheKey);
@@ -286,6 +283,7 @@ export class ProgressiveSearchStrategy {
         level,
         properties: cachedResult,
         qualified: cachedResult, // Assume cached results are already qualified
+        rawComps: [], // No raw comps available from cache
         searchTime: Date.now() - startTime,
         success: true,
         cacheHit: true
@@ -328,9 +326,6 @@ export class ProgressiveSearchStrategy {
         console.log(`🔍 SearchResult.comparables length: ${searchResult.comparables.length}`);
         searchResult.comparables.forEach((comp, index) => {
           console.log(`🔍   [${index}] ${comp.address || 'NO_ADDRESS'} - $${comp.price || 'NO_PRICE'} - ${comp.sqft || 'NO_SQFT'}sqft`);
-          if (comp.address && comp.address.toLowerCase().includes('lyle')) {
-            console.log(`🚨 1408 LYLE AVE FOUND IN SEARCHRESULT.COMPARABLES at index ${index}`);
-          }
         });
       } else {
         console.log(`🚨 SearchResult.comparables is NULL or UNDEFINED`);
@@ -342,11 +337,13 @@ export class ProgressiveSearchStrategy {
 
       const searchTime = Date.now() - startTime;
       const qualified = searchResult.comparables || [];
+      const rawComps = searchResult.all_comps || []; // Get raw unfiltered comps
 
       console.log(`\n🔍 CRITICAL STATE DUMP - POST_EXTRACTION`);
       console.log('========================================');
       console.log(`🔍 Stage: POST_QUALIFIED_EXTRACTION`);
       console.log(`🔍 qualified.length: ${qualified.length}`);
+      console.log(`🔍 rawComps.length: ${rawComps.length}`);
       console.log(`🔍 qualified array:`, qualified.map(comp => `${comp.address} - $${comp.price}`));
 
       if (qualified.length === 0) {
@@ -354,13 +351,8 @@ export class ProgressiveSearchStrategy {
         console.log(`🚨 This is the exact bug we're tracking!`);
       }
 
-      qualified.forEach((comp, index) => {
-        if (comp.address && comp.address.toLowerCase().includes('lyle')) {
-          console.log(`🚨 1408 LYLE AVE FOUND IN QUALIFIED ARRAY at index ${index}`);
-        }
-      });
 
-      console.log(`   ✅ Found ${qualified.length} qualified comps in ${searchTime}ms`);
+      console.log(`   ✅ Found ${qualified.length} qualified comps and ${rawComps.length} raw comps in ${searchTime}ms`);
 
       // Cache the result
       this.setCachedResult(cacheKey, qualified);
@@ -369,18 +361,20 @@ export class ProgressiveSearchStrategy {
         level,
         properties: qualified,
         qualified,
+        rawComps,
         searchTime,
         success: true,
         cacheHit: false
       };
 
-    } catch (error) {
+    } catch (error: any) {
       console.log(`   ❌ Level ${level.level} failed: ${error.message}`);
 
       return {
         level,
         properties: [],
         qualified: [],
+        rawComps: [],
         searchTime: Date.now() - startTime,
         success: false,
         cacheHit: false
@@ -409,57 +403,116 @@ export class ProgressiveSearchStrategy {
     const hasSubdivision = Boolean(subdivision || process.env.SUBDIVISION);
     const searchLevels = this.getSearchLevels(hasSubdivision);
     const searchHistory: SearchResult[] = [];
-    const allProperties = new Map<string, any>(); // Use Map to avoid duplicates
-    const allDiscoveredComps = new Map<string, any>(); // Track ALL discovered comps for re-evaluation
-    let accumulatedComps: any[] = []; // Track comps for cumulative use in distance filtering
+    const allDiscoveredComps = new Map<string, any>(); // Track ALL discovered raw comps across all levels
+    let lastFilteredComps: any[] = []; // Track the last filtered result from the loop
 
     let stoppedAtLevel = 0;
     const startTime = Date.now();
 
     for (const level of searchLevels) {
-      const result = await this.executeSearchLevel(level, address, subjectDetails, searchService, propertyType, []);
+      const result = await this.executeSearchLevel(level, address, subjectDetails, searchService, propertyType);
       searchHistory.push(result);
       stoppedAtLevel = level.level;
 
-      if (result.success && result.qualified.length > 0) {
-        // First, add ALL new discoveries to our accumulation (without distance filtering)
-        result.qualified.forEach(prop => {
-          const key = `${prop.address}|${prop.price}|${prop.sqft}`;
-          if (!allDiscoveredComps.has(key)) {
-            allDiscoveredComps.set(key, { ...prop, foundAtLevel: level.level });
+      if (result.success) {
+        // Step 1: Add ALL new raw discoveries to our accumulation (no filtering at this stage)
+        if (result.qualified && result.qualified.length > 0) {
+          result.qualified.forEach(prop => {
+            const key = `${prop.address}|${prop.price}|${prop.sqft}`;
+            if (!allDiscoveredComps.has(key)) {
+              allDiscoveredComps.set(key, { ...prop, foundAtLevel: level.level });
+            }
+          });
+        }
+
+        console.log(`   📊 Level ${level.level}: Added ${result.qualified?.length || 0} new comps`);
+        console.log(`   📦 Total accumulated raw comps: ${allDiscoveredComps.size}`);
+
+        // Step 2: Get all accumulated comps for filtering
+        const accumulatedRawComps = Array.from(allDiscoveredComps.values());
+
+        // Step 3: Apply bedroom, size, time filtering to ALL accumulated comps
+        console.log(`\n🔍 Level ${level.level} Filtering: Bedroom, Size, Time on ${accumulatedRawComps.length} accumulated comps`);
+        const beforeFiltering = accumulatedRawComps.length;
+        const filteredComps = accumulatedRawComps.filter(comp => {
+          // Bedroom filter: ±1 bedroom tolerance
+          if (subjectDetails?.beds) {
+            const bedroomDiff = Math.abs((comp.beds || 0) - subjectDetails.beds);
+            if (bedroomDiff > 1) {
+              console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff})`);
+              return false;
+            }
+          }
+
+          // Size filter: ±20% variance
+          if (subjectDetails?.sqft) {
+            const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
+            if (sizeVariance > 20) {
+              console.log(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> 20% limit)`);
+              return false;
+            }
+          }
+
+          // Time filter: Check against level's timeWindow parameter
+          if (level.criteria.timeWindow && comp.soldDate) {
+            try {
+              const soldDate = new Date(comp.soldDate);
+              const today = new Date();
+              const ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+              if (Number.isFinite(ageInMonths) && ageInMonths > level.criteria.timeWindow) {
+                console.log(`   ❌ TIME REJECTED ${comp.address}: ${ageInMonths} months old (> ${level.criteria.timeWindow} months limit)`);
+                return false;
+              }
+            } catch (error) {
+              console.log(`   ❌ TIME REJECTED ${comp.address}: Error parsing date`);
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+        const afterFiltering = filteredComps.length;
+        console.log(`   📊 Bedroom/Size/Time filtering: ${beforeFiltering} → ${afterFiltering} (removed ${beforeFiltering - afterFiltering})`);
+
+        // Step 4: Apply distance filtering to filtered comps
+        console.log(`\n📏 Level ${level.level} Filtering: Distance with radius ${level.criteria.radius}mi`);
+        const beforeDistanceFilter = filteredComps.length;
+        const distanceFilteredComps = filteredComps.filter((comp) => {
+          if (comp.distance === null || comp.distance === undefined) {
+            console.log(`   ❌ DISTANCE REJECTED ${comp.address}: No distance calculated`);
+            return false;
+          }
+          if (comp.distance <= level.criteria.radius) {
+            console.log(`   ✅ DISTANCE OK ${comp.address}: ${comp.distance.toFixed(2)} miles (≤ ${level.criteria.radius} miles)`);
+            return true;
+          } else {
+            console.log(`   ❌ DISTANCE REJECTED ${comp.address}: ${comp.distance.toFixed(2)} miles (> ${level.criteria.radius} miles)`);
+            return false;
           }
         });
 
-        // Now re-evaluate ALL accumulated properties with current level's radius
-        const allAccumulatedProps = Array.from(allDiscoveredComps.values());
-        console.log(`   📐 Re-evaluating ALL ${allAccumulatedProps.length} accumulated comps with Level ${level.level} radius (${level.criteria.radius}mi)`);
-        const levelValidatedComps = await this.applyDistanceFilteringToLevel(allAccumulatedProps, address, level);
-        console.log(`   📐 After re-evaluation: ${levelValidatedComps.length} valid comps at ${level.criteria.radius}mi radius`);
+        const afterDistanceFilter = distanceFilteredComps.length;
+        console.log(`   📊 Distance filtering: ${beforeDistanceFilter} → ${afterDistanceFilter} (removed ${beforeDistanceFilter - afterDistanceFilter})`);
 
-        // Update allProperties with ALL comps that pass current level's distance filter
-        allProperties.clear(); // Clear previous to rebuild with current radius
-        levelValidatedComps.forEach(prop => {
-          const key = `${prop.address}|${prop.price}|${prop.sqft}`;
-          allProperties.set(key, prop);
-        });
+        // Store the last filtered result
+        lastFilteredComps = distanceFilteredComps;
 
-        const totalValidated = allProperties.size;
-        console.log(`   📊 Total distance-validated comps so far: ${totalValidated}`);
-
-        // Simple termination criteria: just check if we have enough distance-validated comps
-        if (totalValidated >= level.targetComps) {
-          console.log(`   🎯 Progressive search target achieved: ${totalValidated} distance-validated comps found (≥ ${level.targetComps} required) - stopping search`);
+        // Termination criteria: check if we have enough qualified comps after ALL filtering
+        if (afterDistanceFilter >= level.targetComps) {
+          console.log(`   🎯 Progressive search target achieved: ${afterDistanceFilter} qualified comps found (≥ ${level.targetComps} required) - stopping search`);
           break;
         } else {
-          console.log(`   ⏭️  Need ${level.targetComps - totalValidated} more distance-validated comps - continuing to next level`);
+          console.log(`   ⏭️  Need ${level.targetComps - afterDistanceFilter} more qualified comps - continuing to next level`);
         }
       } else {
-        console.log(`   ⚠️  Level ${level.level} produced no results - continuing`);
+        console.log(`   ⚠️  Level ${level.level} failed - continuing`);
       }
     }
 
-    // Distance filtering already applied during each level, just get final results
-    const finalProperties = Array.from(allProperties.values());
+    // Use the last filtered comps from the loop (already fully filtered)
+    const finalProperties = lastFilteredComps.length > 0 ? lastFilteredComps : Array.from(allDiscoveredComps.values());
+    console.log(`\n✅ Final properties after progressive filtering: ${finalProperties.length}`);
 
     const totalTime = Date.now() - startTime;
     const cacheHits = searchHistory.filter(s => s.cacheHit).length;
@@ -523,6 +576,26 @@ export class ProgressiveSearchStrategy {
       oldestEntry: now - oldestEntry,
       totalSize
     };
+  }
+
+  /**
+   * Apply all filtering criteria to accumulated raw comps using current level's criteria
+   */
+  private async applyAllFilteringCriteria(
+    rawComps: any[],
+    subjectAddress: string,
+    subjectDetails: any,
+    level: SearchLevel
+  ): Promise<any[]> {
+    if (rawComps.length === 0) return rawComps;
+
+    console.log(`🔄 Applying all filtering criteria to ${rawComps.length} raw comps for Level ${level.level}`);
+
+    // For now, return all raw comps without filtering
+    // TODO: Implement proper filtering logic that reuses existing comprehensive search filtering
+    console.log(`✅ Raw comp accumulation working - returning ${rawComps.length} comps (filtering to be implemented)`);
+
+    return rawComps;
   }
 
   /**

@@ -1,0 +1,555 @@
+🚨🚨🚨 VERTEX-FREEFORM.JS LOADED - TOKEN DEBUG VERSION 🚨🚨🚨
+
+🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI
+============================================================
+📍 Analyzing: 35405 Airport Way, Pacific City, OR 97135
+
+📋 Step 1: Subject Property Research
+   📄 Primary search response: **Property Details for 35405 Airport Way, Pacific City, OR 97135**
+
+Following a comprehensive search of authoritative real estate sources and Tillamook County public records, several key details for t...
+   🔄 Calling parseFreeformWithLLM for detailed extraction...
+   🤖 Starting LLM extraction for property details...
+   🔍 Step 1: Validation extraction from raw data...
+   🔍 Validation response: "SQFT: UNKNOWN
+BEDS: UNKNOWN
+BATHS: UNKNOWN
+YEAR: UNKNOWN
+TYPE: Ranch"
+   🔧 Normalizing property type response: "ranch"
+   ⚠️  Could not normalize property type: "ranch"
+   🔧 Parsed propertyType: null
+   🔍 Validation extracted: sqft=undefined, beds=undefined, baths=undefined, year=undefined
+   🔍 Continuing with original extraction for comparison and verification...
+   🔍 Step 2: Original extraction logic for comparison...
+   🔍 Original sqft response: "The provided text explicitly states that the "Exact Square Footage" is "MISSING"."
+   🔍 Original sqft parsed: NaN
+   🔍 Original beds response: "MISSING"
+   🔍 Original beds parsed: NaN
+   🔍 Original baths response: "The provided text explicitly states that the number of bathrooms is "MISSING". Therefore, a number cannot be extracted."
+   🔍 Original baths parsed: NaN
+   🔍 Original year response: "MISSING"
+   🔍 Original year parsed: NaN
+   🏠 Extracting property type from text...
+   🏠 Raw property type response: "UNKNOWN"
+   🏠 Property type extraction returned: "unknown" (treating as unknown)
+   🤖 Original LLM Extraction: SQFT=NaN, Beds=NaN, Baths=NaN, Built=NaN
+   🔄 Step 3: Enriching validation data with original extraction...
+   ⚠️  Still missing critical fields after validation+original: sqft, beds, baths, yearBuilt
+   🔄 Step 4: Enhanced fallback detection for missing fields...
+   🔍 Requesting complete fallback data for all fields to ensure accuracy...
+   🔍 Enhanced Fallback Detection for fields: sqft, beds, baths, yearBuilt, propertyType
+🔍 VERTEX DEBUG 1: vertexGenerate called with opts keys: [
+  'sa',
+  'projectId',
+  'location',
+  'model',
+  'prompt',
+  'grounded',
+  'timeoutMs'
+]
+🔍 VERTEX DEBUG 2: projectId="agile-device-472202-i8", location="us-central1", model="gemini-2.5-pro"
+🔍 VERTEX DEBUG 3: prompt length=832, grounded=true, json=undefined
+🔍 VERTEX DEBUG 4: timeoutMs=60000
+🔍 VERTEX DEBUG 5: Getting service account token
+🔍 TOKEN DEBUG 1: getServiceAccountToken called
+🔍 TOKEN DEBUG 2: sa type: object
+🔍 TOKEN DEBUG 3: sa is null/undefined: false
+🔍 TOKEN DEBUG 4: sa keys: [
+  'type',
+  'project_id',
+  'private_key_id',
+  'private_key',
+  'client_email',
+  'client_id',
+  'auth_uri',
+  'token_uri',
+  'auth_provider_x509_cert_url',
+  'client_x509_cert_url',
+  'universe_domain'
+]
+🔍 TOKEN DEBUG 5: sa.private_key exists: true
+🔍 TOKEN DEBUG 6: sa.private_key type: string
+🔍 TOKEN DEBUG 7: sa.private_key length: 1704
+🔍 TOKEN DEBUG 8: sa.client_email: reo-160@agile-device-472202-i8.iam.gserviceaccount.com
+🔍 TOKEN DEBUG 9: About to call sign.sign(sa.private_key)
+🔍 TOKEN DEBUG 10: Final sa.private_key check: true
+🔍 TOKEN DEBUG 11: Private key formatted, checking format...
+🔍 VERTEX DEBUG 6: Token obtained, length=1024
+🔍 VERTEX DEBUG 7: Endpoint=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+🔍 VERTEX DEBUG 8: Payload created, contents length=1
+🔍 VERTEX DEBUG 9: Payload generationConfig: {"temperature":0,"seed":12345,"maxOutputTokens":8192}
+🔍 VERTEX DEBUG 10: About to call httpsPostJson
+🔍 VERTEX DEBUG 11: httpsPostJson returned, response type: object
+🔍 VERTEX DEBUG 12: Response keys: [
+  'candidates',
+  'usageMetadata',
+  'modelVersion',
+  'createTime',
+  'responseId'
+]
+🔍 VERTEX DEBUG 13: Full response: {
+  "candidates": [
+    {
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "I have been unable to find detailed property information for \"35405 Airport Way, Pacific City, OR 97135\". While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built.\n\nA search of public records and real estate websites consistently returned detailed information for a similarly addressed property: \"35405 Rueppell Ave, Pacific City, OR 97135\". This suggests a possible address discrepancy. The details for the Rueppell Avenue property are as follows:\n\nSQFT: 720\nBEDS: 2\nBATHS: 1.0\nYEAR: 1972\nTYPE: single-family detached\n\nInformation for \"35405 Airport Way\" on Redfin describes it as a \"Ranch\" style home but does not include further specifics. The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+          }
+        ]
+      },
+      "finishReason": "STOP",
+      "groundingMetadata": {
+        "webSearchQueries": [
+          "35405 Airport Way Pacific City OR 97135 Realtor.com",
+          "35405 Airport Way Pacific City OR 97135 Zillow",
+          "35405 Airport Way Pacific City OR 97135 property details",
+          "35405 Airport Way Pacific City OR 97135 Redfin",
+          "Tillamook County Assessor property records 35405 Airport Way Pacific City OR 97135",
+          "Tillamook County GIS mapping \"35405 Airport Way\"",
+          "Tillamook County property search \"35405 Airport Way\"",
+          "Tillamook County property records search \"35405 Airport Way, Pacific City, OR\"",
+          "Tillamook County assessor data \"35405 Airport Way\"",
+          "Tillamook County property information \"35405 Airport Way\"",
+          "Tillamook County Assessor online property search \"35405 Airport Way\"",
+          "Tillamook County Assessment and Taxation property search",
+          "35405 Airport Way Pacific City OR 97135 property information"
+        ],
+        "searchEntryPoint": {
+          "renderedContent": "<style>\n.container {\n  align-items: center;\n  border-radius: 8px;\n  display: flex;\n  font-family: Google Sans, Roboto, sans-serif;\n  font-size: 14px;\n  line-height: 20px;\n  padding: 8px 12px;\n}\n.chip {\n  display: inline-block;\n  border: solid 1px;\n  border-radius: 16px;\n  min-width: 14px;\n  padding: 5px 16px;\n  text-align: center;\n  user-select: none;\n  margin: 0 8px;\n  -webkit-tap-highlight-color: transparent;\n}\n.carousel {\n  overflow: auto;\n  scrollbar-width: none;\n  white-space: nowrap;\n  margin-right: -12px;\n}\n.headline {\n  display: flex;\n  margin-right: 4px;\n}\n.gradient-container {\n  position: relative;\n}\n.gradient {\n  position: absolute;\n  transform: translate(3px, -9px);\n  height: 36px;\n  width: 9px;\n}\n@media (prefers-color-scheme: light) {\n  .container {\n    background-color: #fafafa;\n    box-shadow: 0 0 0 1px #0000000f;\n  }\n  .headline-label {\n    color: #1f1f1f;\n  }\n  .chip {\n    background-color: #ffffff;\n    border-color: #d2d2d2;\n    color: #5e5e5e;\n    text-decoration: none;\n  }\n  .chip:hover {\n    background-color: #f2f2f2;\n  }\n  .chip:focus {\n    background-color: #f2f2f2;\n  }\n  .chip:active {\n    background-color: #d8d8d8;\n    border-color: #b6b6b6;\n  }\n  .logo-dark {\n    display: none;\n  }\n  .gradient {\n    background: linear-gradient(90deg, #fafafa 15%, #fafafa00 100%);\n  }\n}\n@media (prefers-color-scheme: dark) {\n  .container {\n    background-color: #1f1f1f;\n    box-shadow: 0 0 0 1px #ffffff26;\n  }\n  .headline-label {\n    color: #fff;\n  }\n  .chip {\n    background-color: #2c2c2c;\n    border-color: #3c4043;\n    color: #fff;\n    text-decoration: none;\n  }\n  .chip:hover {\n    background-color: #353536;\n  }\n  .chip:focus {\n    background-color: #353536;\n  }\n  .chip:active {\n    background-color: #464849;\n    border-color: #53575b;\n  }\n  .logo-light {\n    display: none;\n  }\n  .gradient {\n    background: linear-gradient(90deg, #1f1f1f 15%, #1f1f1f00 100%);\n  }\n}\n</style>\n<div class=\"container\">\n  <div class=\"headline\">\n    <svg class=\"logo-light\" width=\"18\" height=\"18\" viewBox=\"9 9 35 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M42.8622 27.0064C42.8622 25.7839 42.7525 24.6084 42.5487 23.4799H26.3109V30.1568H35.5897C35.1821 32.3041 33.9596 34.1222 32.1258 35.3448V39.6864H37.7213C40.9814 36.677 42.8622 32.2571 42.8622 27.0064V27.0064Z\" fill=\"#4285F4\"/>\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M26.3109 43.8555C30.9659 43.8555 34.8687 42.3195 37.7213 39.6863L32.1258 35.3447C30.5898 36.3792 28.6306 37.0061 26.3109 37.0061C21.8282 37.0061 18.0195 33.9811 16.6559 29.906H10.9194V34.3573C13.7563 39.9841 19.5712 43.8555 26.3109 43.8555V43.8555Z\" fill=\"#34A853\"/>\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M16.6559 29.8904C16.3111 28.8559 16.1074 27.7588 16.1074 26.6146C16.1074 25.4704 16.3111 24.3733 16.6559 23.3388V18.8875H10.9194C9.74388 21.2072 9.06992 23.8247 9.06992 26.6146C9.06992 29.4045 9.74388 32.022 10.9194 34.3417L15.3864 30.8621L16.6559 29.8904V29.8904Z\" fill=\"#FBBC05\"/>\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M26.3109 16.2386C28.85 16.2386 31.107 17.1164 32.9095 18.8091L37.8466 13.8719C34.853 11.082 30.9659 9.3736 26.3109 9.3736C19.5712 9.3736 13.7563 13.245 10.9194 18.8875L16.6559 23.3388C18.0195 19.2636 21.8282 16.2386 26.3109 16.2386V16.2386Z\" fill=\"#EA4335\"/>\n    </svg>\n    <svg class=\"logo-dark\" width=\"18\" height=\"18\" viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\">\n      <circle cx=\"24\" cy=\"23\" fill=\"#FFF\" r=\"22\"/>\n      <path d=\"M33.76 34.26c2.75-2.56 4.49-6.37 4.49-11.26 0-.89-.08-1.84-.29-3H24.01v5.99h8.03c-.4 2.02-1.5 3.56-3.07 4.56v.75l3.91 2.97h.88z\" fill=\"#4285F4\"/>\n      <path d=\"M15.58 25.77A8.845 8.845 0 0 0 24 31.86c1.92 0 3.62-.46 4.97-1.31l4.79 3.71C31.14 36.7 27.65 38 24 38c-5.93 0-11.01-3.4-13.45-8.36l.17-1.01 4.06-2.85h.8z\" fill=\"#34A853\"/>\n      <path d=\"M15.59 20.21a8.864 8.864 0 0 0 0 5.58l-5.03 3.86c-.98-2-1.53-4.25-1.53-6.64 0-2.39.55-4.64 1.53-6.64l1-.22 3.81 2.98.22 1.08z\" fill=\"#FBBC05\"/>\n      <path d=\"M24 14.14c2.11 0 4.02.75 5.52 1.98l4.36-4.36C31.22 9.43 27.81 8 24 8c-5.93 0-11.01 3.4-13.45 8.36l5.03 3.85A8.86 8.86 0 0 1 24 14.14z\" fill=\"#EA4335\"/>\n    </svg>\n    <div class=\"gradient-container\"><div class=\"gradient\"></div></div>\n  </div>\n  <div class=\"carousel\">\n    <a class=\"chip\" href=\"https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2KQicq18klnz_zhGGJS3XeJhpkeS21t0vWGS1zjkvP8lzSmVJGtCWA1arvxsjHrKSpXvY90AUEKDGsEbpx2u125XYy3B2RKmbtGPuCF_dlGHO9m5KaMDI9jht_xJ3y7Gp3Uzim__1ByyUZtrlw2mMq22fJodhTFnS8M2Xh4suBPZY_vE08AimJ9wvcnBWCY3lzifWKZNLrlkNs7t6oO2U8vVa2qeWuecOhFTOQfr0R85HAegpj9K24dpcAas5ZWY=\">35405 Airport Way Pacific City OR 97135 property information</a>\n    <a class=\"chip\" href=\"https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGz_ZFsbLb1iJT7a4QJIQA0UGDmIc5e_1Ebo3uTcW-vfV9fntqI2FcY_ySXTX7K5lKo1bCzkhHEOkSDk3LwOr95yt2MJV0glT4h-E9qvkLs3YcOYUH3gfs455FwENBHQMbVLd0BK3xDSmFC3OZoE4efag3HJWOBqGZt7xEJO1RdfjIQIYlBd-ESmHlEjCT6jqpm58yzokuoT366vLBXjdcvOrjJf7uZdLCdDO3-dhge_fatgSwoJKN1APazXQ==\">Tillamook County Assessment and Taxation property search</a>\n  </div>\n</div>\n"
+        },
+        "groundingChunks": [
+          {
+            "web": {
+              "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkJXhxg0ldjP94S8_WT0XaggRGN4dhokFQtIMzWebNR7ySEYxN2z05APCZVPjxiQluLTzkmVxUeYlV_XQbzxK44G4jesCrYLXogrIz2TDmINaLCL-Hc91P6McBroq0yKzcuiFdNGkXY8hLdIdkzy6hKRUwAG_ryPwSmSCErPijsiKTNYwKLEIH",
+              "title": "redfin.com",
+              "domain": "redfin.com"
+            }
+          },
+          {
+            "web": {
+              "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGsG5iwxARInLxbnGaf3A-4lVG37NAASPExWMXMwke7uLOxdihgUWZJX8LlX24CZkK3ZGSHmqYLnUh5HMxnUfyTweuC0UnzFQKUcLbDwRBuSE3jm-UDHbHmYxRjKQ2NU4O6wFOoUc_DLzoeWjO_bQ==",
+              "title": "propertychecker.com",
+              "domain": "propertychecker.com"
+            }
+          },
+          {
+            "web": {
+              "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqEBg5mQvmFByBsOnPkv-edXRz5cRrTZzsFooAAwIkvh4qV39Y7WtWBZzoOWP8FaTzBvEMC2EcmV6tJH7h8Ct76JzN3IC84F8P-7d455a1Ub3ck582i7fVyZM2zfQCPMo9HbQ4-9FLT2GjCjJvnOS7Ryw6bMCKIBtsnB4Dbo8xr_QbZxMRwRRx",
+              "title": "redfin.com",
+              "domain": "redfin.com"
+            }
+          },
+          {
+            "web": {
+              "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGkniRG6o4NYLKTTxUi-81lPVW-qF41_SIqwt_U62gI4rmzAIz8CdBpWdCyzg2zcgiaig39y_e7Hv8Y7jm7UGvfDe2KMc3jpCkThxxKrdlcds8hT6VzjLzRAJKcTbC3oISXolhh3R6_PDp_rHHyQ7mZPPSLGgDO612G5kJEgQUKCfHzuQFVKc0T",
+              "title": "trulia.com",
+              "domain": "trulia.com"
+            }
+          },
+          {
+            "web": {
+              "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHzSp_oluQZSHgle2rKTCTjjQ_YqCDqB3ywWmr6URX0RkR677k1chD1uaLsxLz3wHyPRF2CM4pYfaYlm_LHtbD1C1qzSqY90iFe5tw9y2XuHstb27jkWTxh7GeNbh1ZxIVH-QIXQxqIRRfAzj81FZpRGGDLWucENt27PQsWaOzQ0GjC8NbYjtgy83rXGKKu3fDsX-HORA==",
+              "title": "zillow.com",
+              "domain": "zillow.com"
+            }
+          },
+          {
+            "web": {
+              "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGcc2J8Du6oxoWJBCcFYPUcnZikPOseyxJ648NNTCPGddhUK3mc6qJN6akTGj-5r5ompZAX-S1imdrwWe1Ofr237igKJKYac-293pfNphFuKuKj6tHHP9NSD7JMqCoUUW6h9jWVw==",
+              "title": "tillamookcounty.gov",
+              "domain": "tillamookcounty.gov"
+            }
+          }
+        ],
+        "groundingSupports": [
+          {
+            "segment": {
+              "startIndex": 106,
+              "endIndex": 290,
+              "text": "While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built."
+            },
+            "groundingChunkIndices": [
+              0,
+              1
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 577,
+              "endIndex": 586,
+              "text": "SQFT: 720"
+            },
+            "groundingChunkIndices": [
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 587,
+              "endIndex": 594,
+              "text": "BEDS: 2"
+            },
+            "groundingChunkIndices": [
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 595,
+              "endIndex": 605,
+              "text": "BATHS: 1.0"
+            },
+            "groundingChunkIndices": [
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 606,
+              "endIndex": 616,
+              "text": "YEAR: 1972"
+            },
+            "groundingChunkIndices": [
+              2,
+              4
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 617,
+              "endIndex": 645,
+              "text": "TYPE: single-family detached"
+            },
+            "groundingChunkIndices": [
+              3,
+              4
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 647,
+              "endIndex": 769,
+              "text": "Information for \"35405 Airport Way\" on Redfin describes it as a \"Ranch\" style home but does not include further specifics."
+            },
+            "groundingChunkIndices": [
+              0
+            ]
+          },
+          {
+            "segment": {
+              "startIndex": 770,
+              "endIndex": 972,
+              "text": "The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+            },
+            "groundingChunkIndices": [
+              5
+            ]
+          }
+        ],
+        "retrievalMetadata": {}
+      }
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 196,
+    "candidatesTokenCount": 228,
+    "totalTokenCount": 5158,
+    "trafficType": "ON_DEMAND",
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 196
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 228
+      }
+    ],
+    "toolUsePromptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 3413
+      }
+    ],
+    "toolUsePromptTokenCount": 3413,
+    "thoughtsTokenCount": 1321
+  },
+  "modelVersion": "gemini-2.5-pro",
+  "createTime": "2025-10-01T17:36:08.190119Z",
+  "responseId": "iGbdaKfNC9qXnvgPpqqPkAo"
+}
+🔍 VERTEX DEBUG 16: Candidates found, length=1
+🔍 VERTEX DEBUG 18: First candidate: {
+  "content": {
+    "role": "model",
+    "parts": [
+      {
+        "text": "I have been unable to find detailed property information for \"35405 Airport Way, Pacific City, OR 97135\". While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built.\n\nA search of public records and real estate websites consistently returned detailed information for a similarly addressed property: \"35405 Rueppell Ave, Pacific City, OR 97135\". This suggests a possible address discrepancy. The details for the Rueppell Avenue property are as follows:\n\nSQFT: 720\nBEDS: 2\nBATHS: 1.0\nYEAR: 1972\nTYPE: single-family detached\n\nInformation for \"35405 Airport Way\" on Redfin describes it as a \"Ranch\" style home but does not include further specifics. The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+      }
+    ]
+  },
+  "finishReason": "STOP",
+  "groundingMetadata": {
+    "webSearchQueries": [
+      "35405 Airport Way Pacific City OR 97135 Realtor.com",
+      "35405 Airport Way Pacific City OR 97135 Zillow",
+      "35405 Airport Way Pacific City OR 97135 property details",
+      "35405 Airport Way Pacific City OR 97135 Redfin",
+      "Tillamook County Assessor property records 35405 Airport Way Pacific City OR 97135",
+      "Tillamook County GIS mapping \"35405 Airport Way\"",
+      "Tillamook County property search \"35405 Airport Way\"",
+      "Tillamook County property records search \"35405 Airport Way, Pacific City, OR\"",
+      "Tillamook County assessor data \"35405 Airport Way\"",
+      "Tillamook County property information \"35405 Airport Way\"",
+      "Tillamook County Assessor online property search \"35405 Airport Way\"",
+      "Tillamook County Assessment and Taxation property search",
+      "35405 Airport Way Pacific City OR 97135 property information"
+    ],
+    "searchEntryPoint": {
+      "renderedContent": "<style>\n.container {\n  align-items: center;\n  border-radius: 8px;\n  display: flex;\n  font-family: Google Sans, Roboto, sans-serif;\n  font-size: 14px;\n  line-height: 20px;\n  padding: 8px 12px;\n}\n.chip {\n  display: inline-block;\n  border: solid 1px;\n  border-radius: 16px;\n  min-width: 14px;\n  padding: 5px 16px;\n  text-align: center;\n  user-select: none;\n  margin: 0 8px;\n  -webkit-tap-highlight-color: transparent;\n}\n.carousel {\n  overflow: auto;\n  scrollbar-width: none;\n  white-space: nowrap;\n  margin-right: -12px;\n}\n.headline {\n  display: flex;\n  margin-right: 4px;\n}\n.gradient-container {\n  position: relative;\n}\n.gradient {\n  position: absolute;\n  transform: translate(3px, -9px);\n  height: 36px;\n  width: 9px;\n}\n@media (prefers-color-scheme: light) {\n  .container {\n    background-color: #fafafa;\n    box-shadow: 0 0 0 1px #0000000f;\n  }\n  .headline-label {\n    color: #1f1f1f;\n  }\n  .chip {\n    background-color: #ffffff;\n    border-color: #d2d2d2;\n    color: #5e5e5e;\n    text-decoration: none;\n  }\n  .chip:hover {\n    background-color: #f2f2f2;\n  }\n  .chip:focus {\n    background-color: #f2f2f2;\n  }\n  .chip:active {\n    background-color: #d8d8d8;\n    border-color: #b6b6b6;\n  }\n  .logo-dark {\n    display: none;\n  }\n  .gradient {\n    background: linear-gradient(90deg, #fafafa 15%, #fafafa00 100%);\n  }\n}\n@media (prefers-color-scheme: dark) {\n  .container {\n    background-color: #1f1f1f;\n    box-shadow: 0 0 0 1px #ffffff26;\n  }\n  .headline-label {\n    color: #fff;\n  }\n  .chip {\n    background-color: #2c2c2c;\n    border-color: #3c4043;\n    color: #fff;\n    text-decoration: none;\n  }\n  .chip:hover {\n    background-color: #353536;\n  }\n  .chip:focus {\n    background-color: #353536;\n  }\n  .chip:active {\n    background-color: #464849;\n    border-color: #53575b;\n  }\n  .logo-light {\n    display: none;\n  }\n  .gradient {\n    background: linear-gradient(90deg, #1f1f1f 15%, #1f1f1f00 100%);\n  }\n}\n</style>\n<div class=\"container\">\n  <div class=\"headline\">\n    <svg class=\"logo-light\" width=\"18\" height=\"18\" viewBox=\"9 9 35 35\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M42.8622 27.0064C42.8622 25.7839 42.7525 24.6084 42.5487 23.4799H26.3109V30.1568H35.5897C35.1821 32.3041 33.9596 34.1222 32.1258 35.3448V39.6864H37.7213C40.9814 36.677 42.8622 32.2571 42.8622 27.0064V27.0064Z\" fill=\"#4285F4\"/>\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M26.3109 43.8555C30.9659 43.8555 34.8687 42.3195 37.7213 39.6863L32.1258 35.3447C30.5898 36.3792 28.6306 37.0061 26.3109 37.0061C21.8282 37.0061 18.0195 33.9811 16.6559 29.906H10.9194V34.3573C13.7563 39.9841 19.5712 43.8555 26.3109 43.8555V43.8555Z\" fill=\"#34A853\"/>\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M16.6559 29.8904C16.3111 28.8559 16.1074 27.7588 16.1074 26.6146C16.1074 25.4704 16.3111 24.3733 16.6559 23.3388V18.8875H10.9194C9.74388 21.2072 9.06992 23.8247 9.06992 26.6146C9.06992 29.4045 9.74388 32.022 10.9194 34.3417L15.3864 30.8621L16.6559 29.8904V29.8904Z\" fill=\"#FBBC05\"/>\n      <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M26.3109 16.2386C28.85 16.2386 31.107 17.1164 32.9095 18.8091L37.8466 13.8719C34.853 11.082 30.9659 9.3736 26.3109 9.3736C19.5712 9.3736 13.7563 13.245 10.9194 18.8875L16.6559 23.3388C18.0195 19.2636 21.8282 16.2386 26.3109 16.2386V16.2386Z\" fill=\"#EA4335\"/>\n    </svg>\n    <svg class=\"logo-dark\" width=\"18\" height=\"18\" viewBox=\"0 0 48 48\" xmlns=\"http://www.w3.org/2000/svg\">\n      <circle cx=\"24\" cy=\"23\" fill=\"#FFF\" r=\"22\"/>\n      <path d=\"M33.76 34.26c2.75-2.56 4.49-6.37 4.49-11.26 0-.89-.08-1.84-.29-3H24.01v5.99h8.03c-.4 2.02-1.5 3.56-3.07 4.56v.75l3.91 2.97h.88z\" fill=\"#4285F4\"/>\n      <path d=\"M15.58 25.77A8.845 8.845 0 0 0 24 31.86c1.92 0 3.62-.46 4.97-1.31l4.79 3.71C31.14 36.7 27.65 38 24 38c-5.93 0-11.01-3.4-13.45-8.36l.17-1.01 4.06-2.85h.8z\" fill=\"#34A853\"/>\n      <path d=\"M15.59 20.21a8.864 8.864 0 0 0 0 5.58l-5.03 3.86c-.98-2-1.53-4.25-1.53-6.64 0-2.39.55-4.64 1.53-6.64l1-.22 3.81 2.98.22 1.08z\" fill=\"#FBBC05\"/>\n      <path d=\"M24 14.14c2.11 0 4.02.75 5.52 1.98l4.36-4.36C31.22 9.43 27.81 8 24 8c-5.93 0-11.01 3.4-13.45 8.36l5.03 3.85A8.86 8.86 0 0 1 24 14.14z\" fill=\"#EA4335\"/>\n    </svg>\n    <div class=\"gradient-container\"><div class=\"gradient\"></div></div>\n  </div>\n  <div class=\"carousel\">\n    <a class=\"chip\" href=\"https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQH2KQicq18klnz_zhGGJS3XeJhpkeS21t0vWGS1zjkvP8lzSmVJGtCWA1arvxsjHrKSpXvY90AUEKDGsEbpx2u125XYy3B2RKmbtGPuCF_dlGHO9m5KaMDI9jht_xJ3y7Gp3Uzim__1ByyUZtrlw2mMq22fJodhTFnS8M2Xh4suBPZY_vE08AimJ9wvcnBWCY3lzifWKZNLrlkNs7t6oO2U8vVa2qeWuecOhFTOQfr0R85HAegpj9K24dpcAas5ZWY=\">35405 Airport Way Pacific City OR 97135 property information</a>\n    <a class=\"chip\" href=\"https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGz_ZFsbLb1iJT7a4QJIQA0UGDmIc5e_1Ebo3uTcW-vfV9fntqI2FcY_ySXTX7K5lKo1bCzkhHEOkSDk3LwOr95yt2MJV0glT4h-E9qvkLs3YcOYUH3gfs455FwENBHQMbVLd0BK3xDSmFC3OZoE4efag3HJWOBqGZt7xEJO1RdfjIQIYlBd-ESmHlEjCT6jqpm58yzokuoT366vLBXjdcvOrjJf7uZdLCdDO3-dhge_fatgSwoJKN1APazXQ==\">Tillamook County Assessment and Taxation property search</a>\n  </div>\n</div>\n"
+    },
+    "groundingChunks": [
+      {
+        "web": {
+          "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHkJXhxg0ldjP94S8_WT0XaggRGN4dhokFQtIMzWebNR7ySEYxN2z05APCZVPjxiQluLTzkmVxUeYlV_XQbzxK44G4jesCrYLXogrIz2TDmINaLCL-Hc91P6McBroq0yKzcuiFdNGkXY8hLdIdkzy6hKRUwAG_ryPwSmSCErPijsiKTNYwKLEIH",
+          "title": "redfin.com",
+          "domain": "redfin.com"
+        }
+      },
+      {
+        "web": {
+          "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGsG5iwxARInLxbnGaf3A-4lVG37NAASPExWMXMwke7uLOxdihgUWZJX8LlX24CZkK3ZGSHmqYLnUh5HMxnUfyTweuC0UnzFQKUcLbDwRBuSE3jm-UDHbHmYxRjKQ2NU4O6wFOoUc_DLzoeWjO_bQ==",
+          "title": "propertychecker.com",
+          "domain": "propertychecker.com"
+        }
+      },
+      {
+        "web": {
+          "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHqEBg5mQvmFByBsOnPkv-edXRz5cRrTZzsFooAAwIkvh4qV39Y7WtWBZzoOWP8FaTzBvEMC2EcmV6tJH7h8Ct76JzN3IC84F8P-7d455a1Ub3ck582i7fVyZM2zfQCPMo9HbQ4-9FLT2GjCjJvnOS7Ryw6bMCKIBtsnB4Dbo8xr_QbZxMRwRRx",
+          "title": "redfin.com",
+          "domain": "redfin.com"
+        }
+      },
+      {
+        "web": {
+          "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGkniRG6o4NYLKTTxUi-81lPVW-qF41_SIqwt_U62gI4rmzAIz8CdBpWdCyzg2zcgiaig39y_e7Hv8Y7jm7UGvfDe2KMc3jpCkThxxKrdlcds8hT6VzjLzRAJKcTbC3oISXolhh3R6_PDp_rHHyQ7mZPPSLGgDO612G5kJEgQUKCfHzuQFVKc0T",
+          "title": "trulia.com",
+          "domain": "trulia.com"
+        }
+      },
+      {
+        "web": {
+          "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHzSp_oluQZSHgle2rKTCTjjQ_YqCDqB3ywWmr6URX0RkR677k1chD1uaLsxLz3wHyPRF2CM4pYfaYlm_LHtbD1C1qzSqY90iFe5tw9y2XuHstb27jkWTxh7GeNbh1ZxIVH-QIXQxqIRRfAzj81FZpRGGDLWucENt27PQsWaOzQ0GjC8NbYjtgy83rXGKKu3fDsX-HORA==",
+          "title": "zillow.com",
+          "domain": "zillow.com"
+        }
+      },
+      {
+        "web": {
+          "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEGcc2J8Du6oxoWJBCcFYPUcnZikPOseyxJ648NNTCPGddhUK3mc6qJN6akTGj-5r5ompZAX-S1imdrwWe1Ofr237igKJKYac-293pfNphFuKuKj6tHHP9NSD7JMqCoUUW6h9jWVw==",
+          "title": "tillamookcounty.gov",
+          "domain": "tillamookcounty.gov"
+        }
+      }
+    ],
+    "groundingSupports": [
+      {
+        "segment": {
+          "startIndex": 106,
+          "endIndex": 290,
+          "text": "While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built."
+        },
+        "groundingChunkIndices": [
+          0,
+          1
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 577,
+          "endIndex": 586,
+          "text": "SQFT: 720"
+        },
+        "groundingChunkIndices": [
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 587,
+          "endIndex": 594,
+          "text": "BEDS: 2"
+        },
+        "groundingChunkIndices": [
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 595,
+          "endIndex": 605,
+          "text": "BATHS: 1.0"
+        },
+        "groundingChunkIndices": [
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 606,
+          "endIndex": 616,
+          "text": "YEAR: 1972"
+        },
+        "groundingChunkIndices": [
+          2,
+          4
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 617,
+          "endIndex": 645,
+          "text": "TYPE: single-family detached"
+        },
+        "groundingChunkIndices": [
+          3,
+          4
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 647,
+          "endIndex": 769,
+          "text": "Information for \"35405 Airport Way\" on Redfin describes it as a \"Ranch\" style home but does not include further specifics."
+        },
+        "groundingChunkIndices": [
+          0
+        ]
+      },
+      {
+        "segment": {
+          "startIndex": 770,
+          "endIndex": 972,
+          "text": "The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+        },
+        "groundingChunkIndices": [
+          5
+        ]
+      }
+    ],
+    "retrievalMetadata": {}
+  }
+}
+🔍 VERTEX DEBUG 20: Content found: {
+  "role": "model",
+  "parts": [
+    {
+      "text": "I have been unable to find detailed property information for \"35405 Airport Way, Pacific City, OR 97135\". While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built.\n\nA search of public records and real estate websites consistently returned detailed information for a similarly addressed property: \"35405 Rueppell Ave, Pacific City, OR 97135\". This suggests a possible address discrepancy. The details for the Rueppell Avenue property are as follows:\n\nSQFT: 720\nBEDS: 2\nBATHS: 1.0\nYEAR: 1972\nTYPE: single-family detached\n\nInformation for \"35405 Airport Way\" on Redfin describes it as a \"Ranch\" style home but does not include further specifics. The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+    }
+  ]
+}
+🔍 VERTEX DEBUG 22: Parts found, length=1
+🔍 VERTEX DEBUG 23.0: Part 0: {
+  "text": "I have been unable to find detailed property information for \"35405 Airport Way, Pacific City, OR 97135\". While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built.\n\nA search of public records and real estate websites consistently returned detailed information for a similarly addressed property: \"35405 Rueppell Ave, Pacific City, OR 97135\". This suggests a possible address discrepancy. The details for the Rueppell Avenue property are as follows:\n\nSQFT: 720\nBEDS: 2\nBATHS: 1.0\nYEAR: 1972\nTYPE: single-family detached\n\nInformation for \"35405 Airport Way\" on Redfin describes it as a \"Ranch\" style home but does not include further specifics. The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+}
+🔍 VERTEX DEBUG 24: Final extracted text: "I have been unable to find detailed property information for "35405 Airport Way, Pacific City, OR 97135". While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built.
+
+A search of public records and real estate websites consistently returned detailed information for a similarly addressed property: "35405 Rueppell Ave, Pacific City, OR 97135". This suggests a possible address discrepancy. The details for the Rueppell Avenue property are as follows:
+
+SQFT: 720
+BEDS: 2
+BATHS: 1.0
+YEAR: 1972
+TYPE: single-family detached
+
+Information for "35405 Airport Way" on Redfin describes it as a "Ranch" style home but does not include further specifics. The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+🔍 VERTEX DEBUG 25: Final text length: 972
+   📋 Fallback Strategy 1 response: "I have been unable to find detailed property information for "35405 Airport Way, Pacific City, OR 97135". While some online real estate listings acknowledge the address, they do not provide specific details such as square footage, number of bedrooms and bathrooms, or the year it was built.
+
+A search of public records and real estate websites consistently returned detailed information for a similarly addressed property: "35405 Rueppell Ave, Pacific City, OR 97135". This suggests a possible address discrepancy. The details for the Rueppell Avenue property are as follows:
+
+SQFT: 720
+BEDS: 2
+BATHS: 1.0
+YEAR: 1972
+TYPE: single-family detached
+
+Information for "35405 Airport Way" on Redfin describes it as a "Ranch" style home but does not include further specifics. The Tillamook County Assessment and Taxation department is the official source for property information, but a direct search of their online records for this address did not yield the requested details."
+   🔧 Parsed sqft: 720
+   🔧 Parsed beds: 2
+   🔧 Parsed baths: 1
+   🔧 Parsed yearBuilt: 1972
+   🔧 Normalizing property type response: "single-family detached"
+   🔧 Parsed propertyType: single-family detached
+   ✅ Fallback Strategy 1 success: Found all missing fields
+   ✅ Enhanced fallback: Found sqft = 720
+   ✅ Enhanced fallback: Found beds = 2
+   ✅ Enhanced fallback: Found baths = 1
+   ✅ Enhanced fallback: Found yearBuilt = 1972
+   🎉 Enhanced fallback SUCCESS: All critical fields now found!
+   🔍 Conflict resolution: Using Step 2 fallback to validate Step 1 data...
+   🔍 CONFLICT DETECTED between validation and original extraction:
+   📊 Validation: yearBuilt=undefined, propertyType=null
+   📊 Original: yearBuilt=NaN, propertyType=null
+   📊 Final combined result: SQFT=720, Beds=2, Baths=1, Built=1972
+   📊 Parsed data: sqft=720, beds=2, baths=1, yearBuilt=1972, propertyType=null
+   ✅ All critical data found - Proceeding with analysis
+   🔄 Missing critical fields: propertyType - running enhanced fallback detection...
+   🔍 Enhanced Fallback Detection for fields: propertyType
+🔍 VERTEX DEBUG 1: vertexGenerate called with opts keys: [
+  'sa',
+  'projectId',
+  'location',
+  'model',
+  'prompt',
+  'grounded',
+  'timeoutMs'
+]
+🔍 VERTEX DEBUG 2: projectId="agile-device-472202-i8", location="us-central1", model="gemini-2.5-pro"
+🔍 VERTEX DEBUG 3: prompt length=720, grounded=true, json=undefined
+🔍 VERTEX DEBUG 4: timeoutMs=60000
+🔍 VERTEX DEBUG 5: Getting service account token
+🔍 TOKEN DEBUG 1: getServiceAccountToken called
+🔍 TOKEN DEBUG 2: sa type: object
+🔍 TOKEN DEBUG 3: sa is null/undefined: false
+🔍 TOKEN DEBUG 4: sa keys: [
+  'type',
+  'project_id',
+  'private_key_id',
+  'private_key',
+  'client_email',
+  'client_id',
+  'auth_uri',
+  'token_uri',
+  'auth_provider_x509_cert_url',
+  'client_x509_cert_url',
+  'universe_domain'
+]
+🔍 TOKEN DEBUG 5: sa.private_key exists: true
+🔍 TOKEN DEBUG 6: sa.private_key type: string
+🔍 TOKEN DEBUG 7: sa.private_key length: 1704
+🔍 TOKEN DEBUG 8: sa.client_email: reo-160@agile-device-472202-i8.iam.gserviceaccount.com
+🔍 TOKEN DEBUG 9: About to call sign.sign(sa.private_key)
+🔍 TOKEN DEBUG 10: Final sa.private_key check: true
+🔍 TOKEN DEBUG 11: Private key formatted, checking format...
+🔍 VERTEX DEBUG 6: Token obtained, length=1024
+🔍 VERTEX DEBUG 7: Endpoint=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+🔍 VERTEX DEBUG 8: Payload created, contents length=1
+🔍 VERTEX DEBUG 9: Payload generationConfig: {"temperature":0,"seed":12345,"maxOutputTokens":8192}
+🔍 VERTEX DEBUG 10: About to call httpsPostJson

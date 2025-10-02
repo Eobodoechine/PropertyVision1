@@ -2,14 +2,17 @@
 // 4-level progressive search with Vertex AI valuation at each checkpoint
 // Replaces high-tier clustering with AI-driven PPSF analysis
 
+// Import logger FIRST to override console.log for Cloud Logging
+import './utils/logger';
+
 import { VertexComparableSearchService } from './step3-find-comparables';
 import { ARVCalculationService } from './step4-arv-calculation';
 import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details';
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
 import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
-import { VertexAIValuationService } from './vertexAIValuation.js';
-import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder.js';
+import { VertexAIValuationService } from './vertexAIValuation';
+import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -160,7 +163,48 @@ export class ComprehensiveComparableSearchV5 {
       console.log(`   📊 Total raw comparables found: ${allComps.length}`);
 
       if (allComps.length === 0) {
-        throw new Error('No comparables found in progressive search');
+        console.log(`\n❌ EARLY TERMINATION: No comparable properties found`);
+        console.log(`   🏠 Subject property exists but no recent sales in area`);
+        console.log(`   💡 Reason: Rural/sparse market with insufficient transaction data`);
+        console.log(`   📊 FINAL RESULT: Analysis terminated - no ARV calculation possible`);
+
+        // Return graceful "no data" response instead of throwing error
+        const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
+        const endTime = Date.now();
+
+        return {
+          subject: subjectSummary,
+          all_comps: [],
+          qualified_comps: [],
+          consistency_scores: new Map(),
+          renovation_analysis: {
+            likely_renovated: [],
+            likely_unrenovated: [],
+            market_average: []
+          },
+          arv: {
+            method: 'no-data',
+            estimate: 0,
+            confidence: 'low' as const,
+            dataPoints: 0
+          },
+          bathroomAnalysis: {
+            subjectBaths: subjectDetails?.baths || 1,
+            recommendAction: 'sell_as_is' as const,
+            baselineCompsUsed: 0
+          },
+          searchMetadata: {
+            version: 'V5',
+            strategy: 'progressive_expansion',
+            searchLevels: 0,
+            totalSearchTime: endTime - startTime,
+            qualityScore: 'poor' as const,
+            cacheHits: 0,
+            normalizationSummary: {},
+            deduplicationSummary: {},
+            distanceValidationSummary: {}
+          }
+        };
       }
 
       // Step 3: Data normalization
@@ -177,19 +221,16 @@ export class ComprehensiveComparableSearchV5 {
       const deduplicationSummary = { duplicatesRemoved: deduplicationResult.duplicatesRemoved, mergedGroups: deduplicationResult.mergedGroups };
       console.log(`   ✅ Deduplicated: ${deduplicatedComps.length} unique (removed ${deduplicationResult.duplicatesRemoved} duplicates)`);
 
-      // Step 5: Distance calculation with coordinate-based analysis (no filtering)
-      console.log(`\n📏 Step 5: Distance Calculation`);
+      // Step 5: All filtering now happens in step3-find-comparables.ts (bedroom, size, time, distance)
+      // Deduplication already completed in step 4
+      console.log(`\n✅ Step 5: Filtering Complete (handled in step3-find-comparables.ts)`);
+      console.log(`   📊 Comps after all filters: ${deduplicatedComps.length}`);
 
-      // Get subject coordinates from the compService
-      const subjectCoords = await this.getSubjectCoordinates(address);
-      if (!subjectCoords) {
-        throw new Error('Failed to get subject property coordinates');
-      }
-      console.log(`   📍 Subject coordinates: ${subjectCoords.lat}, ${subjectCoords.lon}`);
-
-      // Extract coordinates for filtered comparables and calculate distances
-      const compsWithDistances = await this.calculateDistances(deduplicatedComps, subjectCoords);
-      console.log(`   ✅ Distance calculated for ${compsWithDistances.length}/${deduplicatedComps.length} properties`);
+      // Distance validation summary (filtering already done in step3)
+      const distanceValidationSummary = {
+        validated: deduplicatedComps.length,
+        rejected: 0 // Already filtered in step3-find-comparables.ts
+      };
 
       // Prepare subject summary for potential early return
       const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
@@ -199,12 +240,12 @@ export class ComprehensiveComparableSearchV5 {
       console.log(`\n🤖 Step 6: Vertex AI Valuation Analysis`);
 
       // Try Vertex AI ARV calculation if we have sufficient comps
-      if (compsWithDistances.length >= 3) {
-        console.log(`   📊 Attempting Vertex AI ARV with ${compsWithDistances.length} comps...`);
+      if (deduplicatedComps.length >= 3) {
+        console.log(`   📊 Attempting Vertex AI ARV with ${deduplicatedComps.length} comps...`);
 
         const vertexResult = await this.vertexAIService.calculateARVWithAI(
           subjectDetails,
-          compsWithDistances,
+          deduplicatedComps,
           currentLevel
         );
 
@@ -218,7 +259,7 @@ export class ComprehensiveComparableSearchV5 {
 
           return {
             subject: subjectSummary,
-            all_comps: compsWithDistances,
+            all_comps: deduplicatedComps,
             qualified_comps: vertexResult.result.kept_comps,
             consistency_scores: new Map(),
             renovation_analysis: {
@@ -248,8 +289,8 @@ export class ComprehensiveComparableSearchV5 {
                 method: 'vertex_ai_valuation',
                 notes: vertexResult.result.notes
               },
-              deduplicationSummary: { duplicatesRemoved: 0, uniqueProperties: compsWithDistances.length },
-              distanceValidationSummary: { validated: compsWithDistances.length, rejected: 0 }
+              deduplicationSummary: { duplicatesRemoved: 0, uniqueProperties: deduplicatedComps.length },
+              distanceValidationSummary
             }
           };
         } else {
@@ -257,12 +298,12 @@ export class ComprehensiveComparableSearchV5 {
           console.log(`   🔄 Continuing to traditional ARV calculation...`);
         }
       } else {
-        console.log(`   ⚠️ Insufficient comps for Vertex AI (${compsWithDistances.length} < 3)`);
+        console.log(`   ⚠️ Insufficient comps for Vertex AI (${deduplicatedComps.length} < 3)`);
         console.log(`   🔄 Continuing to find more comps...`);
       }
 
       // If we reach here, Vertex AI failed or insufficient comps
-      const qualifiedComps = compsWithDistances;
+      const qualifiedComps = deduplicatedComps;
 
       // Step 7: Renovation analysis
       console.log(`\n🔨 Step 7: Renovation Analysis`);
