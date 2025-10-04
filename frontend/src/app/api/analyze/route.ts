@@ -1,50 +1,89 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ComprehensiveCompSearchV3 } from '../../../server/comprehensive-comp-search-v3';
+import logger, { logSearchRequest, logSearchError } from '../../../server/utils/logger';
+import { getJobQueue } from '../../../server/utils/jobQueue';
+import { getRedisCache } from '../../../server/utils/redisCache';
 
-let analysisService: ComprehensiveCompSearchV3;
+// Always use async mode now
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
-// Initialize the service (singleton pattern)
-function getAnalysisService() {
-  if (!analysisService) {
-    analysisService = new ComprehensiveCompSearchV3();
-  }
-  return analysisService;
-}
+const redis = getRedisCache();
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
+
   try {
     const body = await request.json();
     const address = String(body?.address || '').trim();
+    const userId = body?.userId || request.headers.get('x-user-id');
+    const sessionId = body?.sessionId || request.headers.get('x-session-id');
 
     if (!address) {
+      logSearchError({
+        address: '',
+        userId: userId || undefined,
+        sessionId: sessionId || undefined,
+        error: new Error('Address is required'),
+        stage: 'validation',
+      });
       return NextResponse.json(
         { error: 'Address is required' },
         { status: 400 }
       );
     }
 
-    const service = getAnalysisService();
-    const result = await service.findComparables(address);
+    // Log incoming search request
+    logSearchRequest({
+      address,
+      userId: userId || undefined,
+      sessionId: sessionId || undefined,
+      ip: ip || 'unknown',
+    });
 
-    const responsePayload = {
-      subject: result.subject,
-      arv: result.arv ?? null,
-      twoBathArv: result.twoBathARV ?? null,
-      bathroomAnalysis: result.bathroomAnalysis,
-      renovationAnalysis: result.renovation_analysis,
-      compsUsed: result.qualified_comps,
-      allComps: result.all_comps,
-      confidenceScores: Object.fromEntries(result.consistency_scores.entries()),
-      searchMetadata: result.searchMetadata,
-    };
+    // Ensure Redis is connected before operations
+    await redis.ensureConnected();
 
-    return NextResponse.json(responsePayload);
+    // Create async job
+    const jobQueue = getJobQueue();
+    const jobId = await jobQueue.enqueueJob(address, userId);
+
+    console.log(`✅ Job ${jobId} created for address: ${address}`);
+
+    return NextResponse.json({
+      jobId,
+      status: 'queued',
+      message: 'Analysis started. Poll /api/analyze/status/{jobId} for results.'
+    });
+
   } catch (error: any) {
-    const message = error?.message || 'Analysis failed';
-    console.error('❌ Analysis failed:', message);
+    const executionTimeMs = Date.now() - startTime;
+    const message = error?.message || 'Failed to create job';
+
+    let address = '';
+    try {
+      const body = await request.clone().json();
+      address = String(body?.address || '');
+    } catch {}
+
+    logSearchError({
+      address,
+      userId: undefined,
+      sessionId: undefined,
+      error: error instanceof Error ? error : new Error(message),
+      stage: 'job_creation',
+    });
+
+    logger.error('Job creation failed', {
+      eventType: 'JOB_ERROR',
+      address,
+      executionTimeMs,
+      errorMessage: message,
+      errorStack: error?.stack,
+    });
 
     return NextResponse.json(
-      { error: 'Analysis failed', details: message },
+      { error: 'Failed to create analysis job', details: message },
       { status: 500 }
     );
   }
@@ -52,7 +91,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   return NextResponse.json(
-    { message: 'Use POST method to analyze properties' },
+    { message: 'Use POST method to analyze properties. This endpoint now uses async jobs - poll /api/analyze/status/{jobId} for results.' },
     { status: 405 }
   );
 }

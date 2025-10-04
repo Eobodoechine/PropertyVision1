@@ -23,20 +23,72 @@ type FormState = {
   address: string;
 };
 
-async function analyzeProperty(address: string): Promise<PropertyAnalysisResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/analyze`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ address })
-  });
+// Note: This function needs access to setProgress, so it will be defined inside HomePage component
+function createAnalyzeProperty(setProgress: (progress: number) => void, setCurrentJobId: (jobId: string | null) => void) {
+  return async function analyzeProperty(address: string): Promise<PropertyAnalysisResponse> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 min timeout
 
-  if (!response.ok) {
-    const details = (await response.json().catch(() => ({}))) as { error?: string };
-    const message = details.error ?? 'Analysis failed';
-    throw new Error(message);
-  }
+    try {
+      // Start async job
+      const response = await fetch(`${API_BASE_URL}/api/analyze`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address }),
+        signal: controller.signal
+      });
 
-  return response.json();
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error('Failed to start analysis');
+      }
+
+      const { jobId } = await response.json();
+      setCurrentJobId(jobId);
+
+      // Poll for results with backoff
+      let pollInterval = 3000; // Start at 3 seconds
+      return await new Promise<PropertyAnalysisResponse>((resolve, reject) => {
+        const poll = async () => {
+          try {
+            const statusRes = await fetch(`${API_BASE_URL}/api/analyze/status/${jobId}`);
+
+            if (!statusRes.ok) {
+              reject(new Error('Failed to get job status'));
+              return;
+            }
+
+            const status = await statusRes.json();
+
+            if (status.status === 'completed') {
+              setCurrentJobId(null);
+              resolve(status.result);
+            } else if (status.status === 'failed') {
+              setCurrentJobId(null);
+              reject(new Error(status.error || 'Analysis failed'));
+            } else {
+              // Update progress
+              setProgress(status.progress || 0);
+
+              // Backoff: 3s → 5s → 8s → 13s (cap at 15s)
+              pollInterval = Math.min(pollInterval + 2000, 15000);
+              setTimeout(poll, pollInterval);
+            }
+          } catch (error) {
+            setCurrentJobId(null);
+            reject(error);
+          }
+        };
+
+        poll();
+      });
+    } catch (error) {
+      clearTimeout(timeoutId);
+      setCurrentJobId(null);
+      throw error;
+    }
+  };
 }
 
 const confidenceStyles: Record<string, { label: string; className: string }> = {
@@ -79,25 +131,22 @@ export default function HomePage() {
   const [formState, setFormState] = React.useState<FormState>({ address: DEFAULT_ADDRESS });
   const [progress, setProgress] = React.useState(0);
   const [selectedResult, setSelectedResult] = React.useState<PropertyAnalysisResponse | null>(null);
+  const [currentJobId, setCurrentJobId] = React.useState<string | null>(null);
+
+  const analyzeProperty = React.useMemo(
+    () => createAnalyzeProperty(setProgress, setCurrentJobId),
+    [setProgress, setCurrentJobId]
+  );
 
   const mutation = useMutation<PropertyAnalysisResponse, Error, string>({
     mutationFn: analyzeProperty,
-    onSettled: () => setProgress(0)
+    onSettled: () => {
+      setProgress(0);
+      setCurrentJobId(null);
+    }
   });
 
-  React.useEffect(() => {
-    if (!mutation.isPending) return;
-
-    setProgress(20);
-    const interval = window.setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 90) return 35;
-        return prev + 8;
-      });
-    }, 450);
-
-    return () => window.clearInterval(interval);
-  }, [mutation.isPending]);
+  // Progress is now updated by the polling mechanism in analyzeProperty
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

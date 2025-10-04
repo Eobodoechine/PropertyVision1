@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { ComprehensiveCompSearchV3 } from './comprehensive-comp-search-v3.js';
+import { ComprehensiveComparableSearchV5 } from './comprehensive-comp-search-v5.js';
+import logger, { logSearchRequest, logSearchResult, logSearchError } from './utils/logger.js';
 
 const app = express();
 const port = Number(process.env.PORT) || 3001;
@@ -14,70 +15,41 @@ const corsOrigins = process.env.CORS_ORIGIN
 app.use(corsOrigins?.length ? cors({ origin: corsOrigins, credentials: true }) : cors());
 app.use(express.json({ limit: '1mb' }));
 
-const analysisService = new ComprehensiveCompSearchV3();
-
-app.get('/', (_req, res) => {
-  res.send(`
-    <html>
-      <head><title>PropertyVision1 API</title></head>
-      <body>
-        <h1>PropertyVision1 API Server</h1>
-        <p>Version 3.0</p>
-
-        <h2>Test Property Analysis</h2>
-        <form id="analyzeForm">
-          <label for="address">Property Address:</label><br>
-          <input type="text" id="address" name="address" style="width: 300px; padding: 5px;"
-                 placeholder="e.g., 123 Main St, City, State"><br><br>
-          <button type="submit">Analyze Property</button>
-        </form>
-
-        <div id="result" style="margin-top: 20px;"></div>
-
-        <script>
-          document.getElementById('analyzeForm').onsubmit = async function(e) {
-            e.preventDefault();
-            const address = document.getElementById('address').value;
-            const resultDiv = document.getElementById('result');
-
-            if (!address) {
-              resultDiv.innerHTML = '<p style="color: red;">Please enter an address</p>';
-              return;
-            }
-
-            resultDiv.innerHTML = '<p>Analyzing...</p>';
-
-            try {
-              const response = await fetch('/api/analyze', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({address: address})
-              });
-
-              const data = await response.json();
-              resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
-            } catch (error) {
-              resultDiv.innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
-            }
-          };
-        </script>
-      </body>
-    </html>
-  `);
-});
+const analysisService = new ComprehensiveComparableSearchV5();
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
 });
 
 app.post('/api/analyze', async (req, res) => {
+  const startTime = Date.now();
+  const address = String(req.body?.address || '').trim();
+  const userId = req.body?.userId || req.headers['x-user-id'];
+  const sessionId = req.body?.sessionId || req.headers['x-session-id'];
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
   try {
-    const address = String(req.body?.address || '').trim();
     if (!address) {
+      logSearchError({
+        address: '',
+        userId,
+        sessionId,
+        error: new Error('Address is required'),
+        stage: 'validation',
+      });
       return res.status(400).json({ error: 'Address is required' });
     }
 
+    // Log incoming search request
+    logSearchRequest({
+      address,
+      userId,
+      sessionId,
+      ip: String(ip),
+    });
+
     const result = await analysisService.findComparables(address);
+    const executionTimeMs = Date.now() - startTime;
 
     const responsePayload = {
       subject: result.subject,
@@ -91,14 +63,52 @@ app.post('/api/analyze', async (req, res) => {
       searchMetadata: result.searchMetadata,
     };
 
+    // Log successful search result
+    logSearchResult({
+      address,
+      userId,
+      sessionId,
+      arv: typeof result.arv === 'number' ? result.arv : (result.arv as any)?.estimate ?? null,
+      twoBathArv: typeof result.twoBathARV === 'number' ? result.twoBathARV : (result.twoBathARV as any)?.estimate ?? null,
+      compsCount: result.all_comps?.length || 0,
+      qualifiedCompsCount: result.qualified_comps?.length || 0,
+      executionTimeMs,
+      success: true,
+    });
+
     res.json(responsePayload);
   } catch (error: any) {
+    const executionTimeMs = Date.now() - startTime;
     const message = error?.message || 'Analysis failed';
-    console.error('❌ Analysis failed:', message);
+
+    // Log error with full context
+    logSearchError({
+      address,
+      userId,
+      sessionId,
+      error: error instanceof Error ? error : new Error(message),
+      stage: 'analysis',
+    });
+
+    logger.error('Analysis failed', {
+      eventType: 'SEARCH_ERROR',
+      address,
+      userId,
+      sessionId,
+      executionTimeMs,
+      errorMessage: message,
+      errorStack: error?.stack,
+    });
+
     res.status(500).json({ error: 'Analysis failed', details: message });
   }
 });
 
 app.listen(port, host, () => {
-  console.log(`✅ Comprehensive analysis API ready on http://${host}:${port}`);
+  logger.info(`Comprehensive analysis API ready on http://${host}:${port}`, {
+    eventType: 'SERVER_START',
+    port,
+    host,
+    environment: process.env.NODE_ENV,
+  });
 });

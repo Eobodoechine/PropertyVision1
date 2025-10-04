@@ -2,9 +2,42 @@ import 'dotenv/config';
 import fs from 'fs';
 import crypto from 'crypto';
 import https from 'https';
+import dns from 'dns';
+import { GoogleAuth } from 'google-auth-library';
 // import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
+
+// Force IPv4-first DNS resolution to avoid IPv6 timeout delays in VPC
+dns.setDefaultResultOrder('ipv4first');
+
+// Keep-alive agent for proxy connections (reuse TLS connections)
+const keepAliveAgent = new https.Agent({ keepAlive: true, maxSockets: 10 });
+
+// Diagnostic logging helper (structured JSON for Cloud Logging)
+function diag(event: string, payload: Record<string, any>) {
+  console.log(JSON.stringify({
+    event,
+    ts: new Date().toISOString(),
+    service: process.env.K_SERVICE || 'worker',
+    revision: process.env.K_REVISION || 'unknown',
+    ...payload
+  }));
+}
+
+// Cache bypass flag for testing (no default change)
+const GEOCODE_BYPASS_CACHE = process.env.GEOCODE_BYPASS_CACHE === 'true';
+
+// Geo-proxy feature flags (env-only toggle)
+const USE_GEO_PROXY = process.env.USE_GEO_PROXY === 'true';
+const GEO_PROXY_URL = process.env.GEO_PROXY_URL || '';
+const PROXY_SHARED_KEY = process.env.PROXY_SHARED_KEY || '';
+
+// Proxy pre-warm (fire-and-forget, non-blocking)
+async function prewarmProxy() {
+  if (!USE_GEO_PROXY || !GEO_PROXY_URL || !PROXY_SHARED_KEY) return;
+  // Skipping prewarm for now - direct calls are fast enough
+}
 
 interface ComparableProperty {
   address: string;
@@ -21,7 +54,8 @@ interface ComparableProperty {
 }
 
 interface FindComparablesResult {
-  comparables: ComparableProperty[];
+  comparables: ComparableProperty[];  // Qualified/filtered comps
+  all_comps: ComparableProperty[];    // Raw/unfiltered comps (before validation/filtering)
   success: boolean;
   error?: string;
 }
@@ -51,6 +85,9 @@ class VertexComparableSearchService {
     extra?: { subdivision?: string }
   ): Promise<FindComparablesResult> {
     try {
+      // Pre-warm proxy connection (fire-and-forget, non-blocking)
+      if (USE_GEO_PROXY) prewarmProxy().catch(() => {});
+
       console.log(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
       console.log(`   • Radius: ${searchRadius} miles`);
       console.log(`   • Max results: ${maxResults}`);
@@ -234,6 +271,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       // Use aggregated results
       let comps = Array.from(aggregatedComps.values());
+      const rawCompsBeforeFiltering = [...comps]; // Save raw comps before any filtering
       console.log(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
 
       // LOG EACH PROPERTY BEFORE FILTERING
@@ -288,24 +326,84 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       });
       console.log(`🔍 EXACT DEBUG: forEach loop completed, processed ${comps.length} properties`);
 
+      // Apply bedroom, size, and time filters BEFORE deduplication to reduce API calls
+      console.log(`\n🔍 Step 3a: Bedroom, Size, and Time Filtering (before deduplication)`);
+      const beforeFiltering = comps.length;
+      comps = comps.filter(comp => {
+        // Bedroom filter: ±1 bedroom tolerance
+        if (subjectDetails?.beds) {
+          const bedroomDiff = Math.abs((comp.beds || 0) - subjectDetails.beds);
+          if (bedroomDiff > 1) {
+            console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff})`);
+            return false;
+          }
+        }
+
+        // Size filter: ±20% variance
+        if (subjectDetails?.sqft) {
+          const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
+          if (sizeVariance > 20) {
+            console.log(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> 20% limit)`);
+            return false;
+          }
+        }
+
+        // Time filter: Check against timeWindowMonths parameter
+        if (timeWindowMonths && comp.soldDate) {
+          try {
+            const soldDate = new Date(comp.soldDate);
+            const today = new Date();
+            const ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
+            if (Number.isFinite(ageInMonths) && ageInMonths > timeWindowMonths) {
+              console.log(`   ❌ TIME REJECTED ${comp.address}: ${ageInMonths} months old (> ${timeWindowMonths} months limit)`);
+              return false;
+            }
+          } catch (error) {
+            console.log(`   ❌ TIME REJECTED ${comp.address}: Error parsing date`);
+            return false;
+          }
+        }
+
+        return true;
+      });
+      console.log(`   📊 Filter results: ${comps.length}/${beforeFiltering} passed bedroom, size, and time filters (rejected ${beforeFiltering - comps.length})`);
+
       // Deduplicate by address (remove duplicate addresses)
+      console.log(`\n🔍 Step 3b: Deduplication`);
       console.log(`🔍 EXACT DEBUG: About to call deduplicateComparables with ${comps.length} comps`);
       comps = this.deduplicateComparables(comps);
       console.log(`🔍 EXACT DEBUG: deduplicateComparables completed, now have ${comps.length} comps`);
 
       // PPSF outlier filtering now handled by enhanced ARV calculation with 7.5% threshold
 
+      // Step 3c: Distance Filtering (after deduplication)
+      // Note: Distance already calculated in convertGeminiToComparable via Google Maps API
+      console.log(`\n📏 Step 3c: Distance Filtering`);
+      const beforeDistanceFilter = comps.length;
+      comps = comps.filter((comp) => {
+        if (comp.distance === null || comp.distance === undefined) {
+          console.log(`   ❌ DISTANCE REJECTED ${comp.address}: No distance calculated`);
+          return false;
+        }
+        if (comp.distance <= searchRadius) {
+          console.log(`   ✅ DISTANCE OK ${comp.address}: ${comp.distance.toFixed(2)} miles (≤ ${searchRadius} miles)`);
+          return true;
+        } else {
+          console.log(`   ❌ DISTANCE REJECTED ${comp.address}: ${comp.distance.toFixed(2)} miles (> ${searchRadius} miles)`);
+          return false;
+        }
+      });
+      console.log(`   📏 Distance filter: ${comps.length}/${beforeDistanceFilter} within ${searchRadius} mile radius (rejected ${beforeDistanceFilter - comps.length})`);
+
       // Enrich missing data and re-validate (drops any newly disqualified comps)
       // No top-N limit: enrich all surviving comps
+      console.log(`\n🔍 Step 3d: Enrich and Re-validate`);
       console.log(`🔍 EXACT DEBUG: About to call prioritizeForEnrichment with ${comps.length} comps`);
       const prioritized = this.prioritizeForEnrichment(comps);
       console.log(`🔍 EXACT DEBUG: prioritizeForEnrichment completed, got ${prioritized.length} prioritized`);
       console.log(`🔍 EXACT DEBUG: About to call enrichAndRevalidate`);
       comps = await this.enrichAndRevalidate(prioritized, subjectDetails);
       console.log(`🔍 EXACT DEBUG: enrichAndRevalidate completed, now have ${comps.length} comps`);
-
-      // Distance validation will be handled by comprehensive search coordinate-based filtering
-      console.log(`🔍 EXACT DEBUG: Skipping old distance filtering - will be handled by comprehensive search`);
 
       // CRITICAL DEBUG LOGGING FOR DUPLEX VERIFICATION
       console.log(`   🚨 DUPLEX VERIFICATION CHECK POINT:`);
@@ -366,6 +464,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         if (finalComps.length === 0) {
           return {
             comparables: [],
+            all_comps: rawCompsBeforeFiltering,
             success: false,
             error: `No qualified comparables found after strict filtering. Consider expanding search criteria.`
           };
@@ -409,6 +508,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       return {
         comparables: finalComps,
+        all_comps: rawCompsBeforeFiltering,
         success: true
       };
 
@@ -423,6 +523,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       }
       return {
         comparables: [],
+        all_comps: [],
         success: false,
         error: error.message
       };
@@ -1333,65 +1434,149 @@ Return exactly this JSON structure:
     });
   }
 
-
-  private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
-    // Normalize address format for better geocoding success
-    const normalizedAddress = this.normalizeAddress(address);
-
-    if (this.geocodeCache.has(normalizedAddress)) {
-      return this.geocodeCache.get(normalizedAddress)!;
-    }
-
+  // Geo-proxy client (header-based auth, no OIDC)
+  private async geocodeViaProxy(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
+    const t0 = Date.now();
     return new Promise((resolve) => {
-      let completed = false;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
 
-      // Set timeout
-      const timer = setTimeout(() => {
-        if (!completed) {
-          completed = true;
-          console.log(`⏰ Geocoding timeout for ${address}`);
-          resolve(null);
+      const body = JSON.stringify({ address });
+      const url = new URL(`${GEO_PROXY_URL}/geocode`);
+
+      const req = https.request({
+        method: 'POST',
+        hostname: url.hostname,
+        path: url.pathname,
+        headers: {
+          'content-type': 'application/json',
+          'x-proxy-key': PROXY_SHARED_KEY,
+          'content-length': Buffer.byteLength(body).toString()
         }
-      }, timeoutMs);
-
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(normalizedAddress)}&key=${this.googleMapsApiKey}&components=country:US&region=us`;
-      const req = https.get(url, (res) => {
+      }, (res) => {
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
-          if (completed) return;
-          completed = true;
           clearTimeout(timer);
+          const total = Date.now() - t0;
+          diag('geocode.proxy.result', { http: { status: res.statusCode }, timingMs: { total } });
 
           try {
-            const parsed = JSON.parse(data);
-            if (parsed.results?.length > 0) {
-              // Use the best match (first result) even if it's partial
-              const result = parsed.results[0];
-              const coords = { lat: result.geometry.location.lat, lon: result.geometry.location.lng };
-
-              // Log if it's a partial match for debugging
-              if (result.partial_match) {
-                console.log(`🔍 Partial geocoding match for "${normalizedAddress}" → "${result.formatted_address}"`);
-              }
-
-              this.geocodeCache.set(normalizedAddress, coords);
-              resolve(coords);
-            } else {
-              console.log(`❌ No geocoding results for "${normalizedAddress}"`);
-              resolve(null);
-            }
-          } catch (error) {
-            console.log(`❌ Geocoding parse error for "${normalizedAddress}":`, error);
+            const j = JSON.parse(data);
+            const first = j?.results?.[0];
+            if (!first) return resolve(null);
+            resolve({ lat: first.geometry.location.lat, lon: first.geometry.location.lng });
+          } catch {
             resolve(null);
           }
         });
       });
 
-      req.on('error', () => {
+      req.on('error', (e: any) => {
+        clearTimeout(timer);
+        diag('geocode.proxy.error', { msg: e.message, timingMs: { total: Date.now() - t0 } });
+        resolve(null);
+      });
+
+      req.write(body);
+      req.end();
+    });
+  }
+
+  private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
+    const normalizedAddress = this.normalizeAddress(address);
+    const addressHash = crypto.createHash('md5').update(normalizedAddress).digest('hex').slice(0, 8);
+
+    // Cache bypass for testing (respects GEOCODE_BYPASS_CACHE env var)
+    if (!GEOCODE_BYPASS_CACHE && this.geocodeCache.has(normalizedAddress)) {
+      diag('geocode.cache_hit', { addressHash, timeoutMs });
+      return this.geocodeCache.get(normalizedAddress)!;
+    }
+    diag('geocode.cache_miss', { addressHash, timeoutMs, bypass: GEOCODE_BYPASS_CACHE });
+
+    // Use geo-proxy if enabled (feature-flagged)
+    if (USE_GEO_PROXY) {
+      diag('geocode.proxy.call', { addressHash, timeoutMs, url: GEO_PROXY_URL });
+      return await this.geocodeViaProxy(normalizedAddress, timeoutMs);
+    }
+
+    // DNS/VIP fingerprinting (async, non-blocking)
+    dns.lookup('maps.googleapis.com', { all: true }, (err, addrs) => {
+      const a = (addrs || []).map(x => ({ address: x.address, family: x.family }));
+      const restrictedVip = a.some(x => /^199\.36\.153\.[0-7]$/.test(x.address));
+      const privateVip = a.some(x => /^199\.36\.153\.(8|9|1\d|2\d|3[0-1])$/.test(x.address));
+      diag('geocode.dns', { addressHash, err: err?.message || null, addrs: a, restrictedVip, privateVip });
+    });
+
+    return new Promise((resolve) => {
+      let completed = false;
+      const timer = setTimeout(() => {
+        if (!completed) {
+          completed = true;
+          diag('geocode.timeout', { addressHash, timeoutMs });
+          resolve(null);
+        }
+      }, timeoutMs);
+
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(normalizedAddress)}&key=${this.googleMapsApiKey}&components=country:US&region=us`;
+      const started = Date.now();
+      let firstByteAt = 0;
+
+      const req = https.get(url, (res) => {
+        const chunks: Buffer[] = [];
+        res.once('data', () => { if (!firstByteAt) firstByteAt = Date.now(); });
+        res.on('data', (c) => chunks.push(c));
+        res.on('end', () => {
+          if (completed) return;
+          completed = true;
+          clearTimeout(timer);
+
+          const total = Date.now() - started;
+          const ttfb = firstByteAt ? (firstByteAt - started) : total;
+          const body = Buffer.concat(chunks);
+
+          diag('geocode.result', {
+            addressHash,
+            http: { status: res.statusCode, bytes: body.length },
+            timingMs: { total, ttfb }
+          });
+
+          try {
+            const parsed = JSON.parse(body.toString());
+            if (parsed.results?.length > 0) {
+              const result = parsed.results[0];
+              const coords = { lat: result.geometry.location.lat, lon: result.geometry.location.lng };
+              this.geocodeCache.set(normalizedAddress, coords);
+              diag('geocode.success', { addressHash, timingMs: { total } });
+              resolve(coords);
+            } else {
+              diag('geocode.no_results', { addressHash, status: parsed.status, errorMsg: parsed.error_message || null });
+              resolve(null);
+            }
+          } catch (error) {
+            diag('geocode.parse_error', { addressHash, error: String(error) });
+            resolve(null);
+          }
+        });
+      });
+
+      // Per-stage timing (DNS/TCP/TLS)
+      req.on('socket', (s: any) => {
+        const t0 = Date.now();
+        s.on('lookup', () => diag('geocode.timing', { addressHash, stage: 'dns', ms: Date.now() - t0 }));
+        s.on('connect', () => diag('geocode.timing', { addressHash, stage: 'tcp', ms: Date.now() - t0 }));
+        s.on('secureConnect', () => diag('geocode.timing', { addressHash, stage: 'tls', ms: Date.now() - t0 }));
+      });
+
+      req.on('timeout', () => {
+        diag('geocode.timeout', { addressHash, timeoutMs });
+      });
+
+      req.on('error', (e: any) => {
         if (completed) return;
         completed = true;
         clearTimeout(timer);
+        diag('geocode.error', { addressHash, code: e.code || null, msg: e.message || String(e) });
         resolve(null);
       });
 
@@ -1400,7 +1585,7 @@ Return exactly this JSON structure:
         completed = true;
         clearTimeout(timer);
         req.destroy();
-        console.log(`⏰ Geocoding timeout for ${address}`);
+        diag('geocode.timeout', { addressHash, timeoutMs });
         resolve(null);
       });
     });

@@ -8,7 +8,7 @@ import { vertexGenerate } from './vertex-freeform.js';
 export class VertexAIValuationService {
   constructor() {
     // Load service account credentials
-    const saPath = process.env.GCP_SA_JSON || '/Users/eobodoechine/PropertyVision1/agile-device-472202-i8-319f002d9438.json';
+    const saPath = process.env.GCP_SA_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS || '/app/agile-device-472202-i8-319f002d9438.json';
     this.sa = JSON.parse(readFileSync(saPath, 'utf8'));
     this.projectId = this.sa.project_id;
   }
@@ -58,11 +58,39 @@ The confirmed members of this block are the HighCluster. If at least 3 are confi
 
 3) If no HighCluster → build a central–upper chain (baseline "conservative" set)
 
-Using the full (cleaned) list after step 1, locate the middle comp by PPSF (if even count, take the upper of the two middles as the starting point).
+STRICT ALGORITHM FOR CENTRALUPPERCHAIN:
 
-From that middle, walk upward and include neighbors until you encounter the first "large jump" in PPSF (the first adjacent gap that ties with or exceeds the largest gap among the lower half of all adjacent gaps). Stop before that jump.
+Step A: Sort all comps by PPSF (low to high). Let n = comps.length.
 
-From this upward chain, take the top 3 PPSFs when available (if only 2, keep 2). Mark each "central_upper_chain".
+Step B: Find upper middle starting point:
+- If n is odd: mid = floor(n/2) (0-based index)
+- If n is even: mid = n/2 (upper middle, 0-based index)
+
+Step C: Calculate lower-side max gap:
+- Compute all adjacent PPSF gaps: gaps[i] = comps[i+1].ppsf - comps[i].ppsf
+- lowerMaxGap = maximum gap among gaps[0] through gaps[mid-1] (all gaps strictly below mid)
+- If mid = 0, set lowerMaxGap = -Infinity
+
+Step D: Build contiguous upward chain from mid:
+- Start with chain = [mid]
+- For i = mid; i < n-1; i++:
+  - If gaps[i] >= lowerMaxGap: STOP (large jump encountered)
+  - Add i+1 to chain (next contiguous comp only)
+  - If chain.length = 3: STOP (cap at 3 comps)
+
+Step E: Mark kept comps as "central_upper_chain", all others as "outside_chain"
+- Never leave reason_codes empty - always specify "outside_chain" for dropped comps
+- If chain.length < 3: set flags.thin_market = true
+
+CRITICAL: Chain must be contiguous indices only. No skipping comps. No backfilling from lower side.
+
+MANDATORY OUTPUT REQUIREMENTS:
+1. Show your PPSF sorting explicitly
+2. Show your mid calculation with the formula
+3. Show all gap calculations with values
+4. Show your chain building step by step with comparisons
+5. Use the median PPSF of the final chain for conservative ARV
+6. Mark all non-chain comps as "outside_chain" in dropped_comps
 
 4) Isolated high-price guard (when using step 3)
 
@@ -122,7 +150,9 @@ When choosing "top 3" in a chain, prefer more members if they remain a smooth ru
 
 Always explain your choices plainly (which gaps broke runs, which prices were nearest, why endpoints were trimmed).
 
-Apply this to the following input data:`;
+Apply this to the following input data:
+
+IMPORTANT: Calculate fresh results - timestamp: ${Date.now()}`;
   }
 
   /**

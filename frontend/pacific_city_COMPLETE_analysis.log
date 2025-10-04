@@ -1,0 +1,277 @@
+🚨🚨🚨 VERTEX-FREEFORM.JS LOADED - TOKEN DEBUG VERSION 🚨🚨🚨
+
+🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI
+============================================================
+📍 Analyzing: 35405 Airport Way, Pacific City, OR 97135
+
+📋 Step 1: Subject Property Research
+   📄 Primary search response: ### Property Details for 35405 Airport Way, Pacific City, OR 97135
+
+Complete property details for 35405 Airport Way, Pacific City, OR 97135, could not be fully obtained through online real estate and ...
+   🔄 Calling parseFreeformWithLLM for detailed extraction...
+   🤖 Starting LLM extraction for property details...
+   🔍 Step 1: Validation extraction from raw data...
+   🔍 Validation response: "SQFT: UNKNOWN
+BEDS: UNKNOWN
+BATHS: UNKNOWN
+YEAR: UNKNOWN
+TYPE: Ranch"
+   🔧 Normalizing property type response: "ranch"
+   ⚠️  Could not normalize property type: "ranch"
+   🔧 Parsed propertyType: null
+   🔍 Validation extracted: sqft=undefined, beds=undefined, baths=undefined, year=undefined
+   🔍 Continuing with original extraction for comparison and verification...
+   🔍 Step 2: Original extraction logic for comparison...
+   🔍 Original sqft response: "The provided text explicitly states that the square footage is "MISSING"."
+   🔍 Original sqft parsed: NaN
+   🔍 Original beds response: "MISSING"
+   🔍 Original beds parsed: NaN
+   🔍 Original baths response: "The number of bathrooms is listed as MISSING in the provided text."
+   🔍 Original baths parsed: NaN
+   🔍 Original year response: "MISSING"
+   🔍 Original year parsed: NaN
+   🏠 Extracting property type from text...
+   🏠 Raw property type response: "single-family detached"
+   🏠 Normalized property type: "single-family detached"
+   🤖 Original LLM Extraction: SQFT=NaN, Beds=NaN, Baths=NaN, Built=NaN, Type=single-family detached
+   🔄 Step 3: Enriching validation data with original extraction...
+   ✅ ENRICHED: Added propertyType from original extraction: single-family detached
+   ⚠️  Still missing critical fields after validation+original: sqft, beds, baths, yearBuilt
+   🔄 Step 4: Enhanced fallback detection for missing fields...
+   🔍 Requesting complete fallback data for all fields to ensure accuracy...
+   🔍 Enhanced Fallback Detection for fields: sqft, beds, baths, yearBuilt, propertyType
+🔍 VERTEX DEBUG 1: vertexGenerate called with opts keys: [
+  'sa',
+  'projectId',
+  'location',
+  'model',
+  'prompt',
+  'grounded',
+  'timeoutMs'
+]
+🔍 VERTEX DEBUG 2: projectId="agile-device-472202-i8", location="us-central1", model="gemini-2.5-pro"
+🔍 VERTEX DEBUG 3: prompt length=832, grounded=true, json=undefined
+🔍 VERTEX DEBUG 4: timeoutMs=60000
+🔍 VERTEX DEBUG 5: Getting service account token
+🔍 TOKEN DEBUG 1: getServiceAccountToken called
+🔍 TOKEN DEBUG 2: sa type: object
+🔍 TOKEN DEBUG 3: sa is null/undefined: false
+🔍 TOKEN DEBUG 4: sa keys: [
+  'type',
+  'project_id',
+  'private_key_id',
+  'private_key',
+  'client_email',
+  'client_id',
+  'auth_uri',
+  'token_uri',
+  'auth_provider_x509_cert_url',
+  'client_x509_cert_url',
+  'universe_domain'
+]
+🔍 TOKEN DEBUG 5: sa.private_key exists: true
+🔍 TOKEN DEBUG 6: sa.private_key type: string
+🔍 TOKEN DEBUG 7: sa.private_key length: 1704
+🔍 TOKEN DEBUG 8: sa.client_email: reo-160@agile-device-472202-i8.iam.gserviceaccount.com
+🔍 TOKEN DEBUG 9: About to call sign.sign(sa.private_key)
+🔍 TOKEN DEBUG 10: Final sa.private_key check: true
+🔍 TOKEN DEBUG 11: Private key formatted, checking format...
+🔍 VERTEX DEBUG 6: Token obtained, length=1024
+🔍 VERTEX DEBUG 7: Endpoint=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+🔍 VERTEX DEBUG 8: Payload created, contents length=1
+🔍 VERTEX DEBUG 9: Payload generationConfig: {"temperature":0,"seed":12345,"maxOutputTokens":8192}
+🔍 VERTEX DEBUG 10: About to call httpsPostJson
+🔍 VERTEX DEBUG 11: httpsPostJson returned, response type: object
+🔍 VERTEX DEBUG 12: Response keys: [
+  'candidates',
+  'usageMetadata',
+  'modelVersion',
+  'createTime',
+  'responseId'
+]
+🔍 VERTEX DEBUG 13: Full response: {
+  "candidates": [
+    {
+      "content": {
+        "role": "model",
+        "parts": [
+          {
+            "text": "I was unable to find the detailed property information for \"35405 Airport Way, Pacific City, OR 97135\".\n\nWhile multiple searches were conducted across various real estate and county record databases, the specific details regarding exact square footage, and the number of bedrooms and bathrooms were not consistently available. Real estate websites like Redfin and Zillow list the property but do not provide these specific details, with some information being explicitly marked as unavailable.\n\nSearches of Tillamook County's public records portals, including the Assessment & Taxation \"Property Search Online\" and the County Clerk's \"Recording Inquiry,\" did not yield the specific property characteristics requested, as direct access to query the database by address was not possible through the search process.\n\nTherefore, the requested information remains unconfirmed through publicly available online sources."
+          }
+        ]
+      },
+      "finishReason": "STOP",
+      "groundingMetadata": {
+        "webSearchQueries": [
+          "35405 Airport Way Pacific City OR 97135 property details",
+          "35405 Airport Way Pacific City OR 97135 Realtor.com",
+          "35405 Airport Way Pacific City OR 97135 Zillow",
+          "Tillamook County property records 35405 Airport Way",
+          "35405 Airport Way Pacific City OR 97135 Redfin",
+          "MLS listing \"35405 Airport Way Pacific City OR 97135\"",
+          "Tillamook County Assessor property search \"35405 Airport Way Pacific City\"",
+          "property history \"35405 Airport Way, Pacific City, OR 97135\"",
+          "Tillamook County property search by address",
+          "Tillamook County GIS mapping \"35405 Airport Way\"",
+          "historic property data \"35405 Airport Way Pacific City OR\"",
+          "Tillamook County Assessment and Taxation property search",
+          "Tillamook County property records online search",
+          "Tillamook County \"Property Search Online\"",
+          "Tillamook County Clerk \"Recording Inquiry\""
+        ],
+        "searchEntryPoint": { [TRUNCATED HTML AND CSS] },
+        "groundingChunks": [ [TRUNCATED GROUNDING DATA] ],
+        "groundingSupports": [ [TRUNCATED GROUNDING SUPPORTS] ],
+        "retrievalMetadata": {}
+      }
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 196,
+    "candidatesTokenCount": 169,
+    "totalTokenCount": 4622,
+    "trafficType": "ON_DEMAND",
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 196
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 169
+      }
+    ],
+    "toolUsePromptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 2789
+      }
+    ],
+    "toolUsePromptTokenCount": 2789,
+    "thoughtsTokenCount": 1468
+  },
+  "modelVersion": "gemini-2.5-pro",
+  "createTime": "2025-10-01T17:14:25.849716Z",
+  "responseId": "cWHdaLTuM4SMmecPhL-3qQI"
+}
+🔍 VERTEX DEBUG 16: Candidates found, length=1
+🔍 VERTEX DEBUG 18: First candidate: {
+  "content": {
+    "role": "model",
+    "parts": [
+      {
+        "text": "I was unable to find the detailed property information for \"35405 Airport Way, Pacific City, OR 97135\".\n\nWhile multiple searches were conducted across various real estate and county record databases, the specific details regarding exact square footage, and the number of bedrooms and bathrooms were not consistently available. Real estate websites like Redfin and Zillow list the property but do not provide these specific details, with some information being explicitly marked as unavailable.\n\nSearches of Tillamook County's public records portals, including the Assessment & Taxation \"Property Search Online\" and the County Clerk's \"Recording Inquiry,\" did not yield the specific property characteristics requested, as direct access to query the database by address was not possible through the search process.\n\nTherefore, the requested information remains unconfirmed through publicly available online sources."
+      }
+    ]
+  },
+  "finishReason": "STOP",
+  "groundingMetadata": { [TRUNCATED] }
+}
+🔍 VERTEX DEBUG 20: Content found: {
+  "role": "model",
+  "parts": [
+    {
+      "text": "I was unable to find the detailed property information for \"35405 Airport Way, Pacific City, OR 97135\".\n\nWhile multiple searches were conducted across various real estate and county record databases, the specific details regarding exact square footage, and the number of bedrooms and bathrooms were not consistently available. Real estate websites like Redfin and Zillow list the property but do not provide these specific details, with some information being explicitly marked as unavailable.\n\nSearches of Tillamook County's public records portals, including the Assessment & Taxation \"Property Search Online\" and the County Clerk's \"Recording Inquiry,\" did not yield the specific property characteristics requested, as direct access to query the database by address was not possible through the search process.\n\nTherefore, the requested information remains unconfirmed through publicly available online sources."
+    }
+  ]
+}
+🔍 VERTEX DEBUG 22: Parts found, length=1
+🔍 VERTEX DEBUG 23.0: Part 0: {
+  "text": "I was unable to find the detailed property information for \"35405 Airport Way, Pacific City, OR 97135\".\n\nWhile multiple searches were conducted across various real estate and county record databases, the specific details regarding exact square footage, and the number of bedrooms and bathrooms were not consistently available. Real estate websites like Redfin and Zillow list the property but do not provide these specific details, with some information being explicitly marked as unavailable.\n\nSearches of Tillamook County's public records portals, including the Assessment & Taxation \"Property Search Online\" and the County Clerk's \"Recording Inquiry,\" did not yield the specific property characteristics requested, as direct access to query the database by address was not possible through the search process.\n\nTherefore, the requested information remains unconfirmed through publicly available online sources."
+}
+🔍 VERTEX DEBUG 24: Final extracted text: "I was unable to find the detailed property information for "35405 Airport Way, Pacific City, OR 97135".
+
+While multiple searches were conducted across various real estate and county record databases, the specific details regarding exact square footage, and the number of bedrooms and bathrooms were not consistently available. Real estate websites like Redfin and Zillow list the property but do not provide these specific details, with some information being explicitly marked as unavailable.
+
+Searches of Tillamook County's public records portals, including the Assessment & Taxation "Property Search Online" and the County Clerk's "Recording Inquiry," did not yield the specific property characteristics requested, as direct access to query the database by address was not possible through the search process.
+
+Therefore, the requested information remains unconfirmed through publicly available online sources."
+🔍 VERTEX DEBUG 25: Final text length: 913
+   📋 Fallback Strategy 1 response: "I was unable to find the detailed property information for "35405 Airport Way, Pacific City, OR 97135".
+
+While multiple searches were conducted across various real estate and county record databases, the specific details regarding exact square footage, and the number of bedrooms and bathrooms were not consistently available. Real estate websites like Redfin and Zillow list the property but do not provide these specific details, with some information being explicitly marked as unavailable.
+
+Searches of Tillamook County's public records portals, including the Assessment & Taxation "Property Search Online" and the County Clerk's "Recording Inquiry," did not yield the specific property characteristics requested, as direct access to query the database by address was not possible through the search process.
+
+Therefore, the requested information remains unconfirmed through publicly available online sources."
+   🔍 Fallback Strategy 2: County records focus...
+[SECOND VERTEX AI CALL WITH EXTENSIVE DEBUG AND JSON RESPONSE DATA SHOWING EXTRACTION OF 720 SQFT, 2BR/1BA, 1972]
+   📋 Fallback Strategy 2 response: [VERTEX AI FOUND 720 sqft, 2 bedrooms, 1 bathroom, built 1972, single-family detached]
+   🔧 Parsed sqft: 720
+   🔧 Parsed beds: 2
+   🔧 Parsed baths: 1
+   🔧 Parsed yearBuilt: 1972
+   🔧 Normalizing property type response: "single-family detached"
+   🔧 Parsed propertyType: single-family detached
+   ✅ Fallback Strategy 2 success: Found all missing fields
+   ✅ Enhanced fallback: Found sqft = 720
+   ✅ Enhanced fallback: Found beds = 2
+   ✅ Enhanced fallback: Found baths = 1
+   ✅ Enhanced fallback: Found yearBuilt = 1972
+   🎉 Enhanced fallback SUCCESS: All critical fields now found!
+   🔍 Conflict resolution: Using Step 2 fallback to validate Step 1 data...
+   🔍 CONFLICT DETECTED between validation and original extraction:
+   📊 Validation: yearBuilt=undefined, propertyType=null
+   📊 Original: yearBuilt=NaN, propertyType=null
+   📊 Final combined result: SQFT=720, Beds=2, Baths=1, Built=1972
+   📊 Parsed data: sqft=720, beds=2, baths=1, yearBuilt=1972, propertyType=null
+   ✅ All critical data found - Proceeding with analysis
+   🔄 Missing critical fields: propertyType - running enhanced fallback detection...
+   🔍 Enhanced Fallback Detection for fields: propertyType
+[THIRD VERTEX AI CALL FOR PROPERTY TYPE]
+   ✅ Enhanced fallback: Found propertyType = single-family detached
+   🎉 Enhanced fallback SUCCESS: All critical fields now found!
+
+💚 SUBJECT PROPERTY SUCCESSFULLY EXTRACTED:
+   📍 35405 Airport Way, Pacific City, OR 97135
+   🏠 720 sqft, 2 bedrooms, 1 bathroom
+   📅 Built: 1972
+   🏘️  Type: single-family detached
+   📊 PPSF: Not calculated (no price data)
+
+📋 Step 2: Progressive Search for Comparables
+🔍 PROGRESSIVE SEARCH LEVEL 1: Starting search within 1 mile, 12 months
+   📍 Subject coordinates: lat=45.1960, lng=-123.9678
+   🔄 Calling searchComparables(35405 Airport Way, Pacific City, OR 97135, 1, single_family, 20)...
+   🔍 Vertex AI Search Request: radius=1mi, propertyType=single_family, limit=20
+[EXTENSIVE VERTEX AI SEARCH DEBUG OUTPUT]
+   📊 Level 1 Search Results: Found 0 comparable properties
+   ⚠️  Level 1 failed: No properties found within 1 mile / 12 months
+
+🔍 PROGRESSIVE SEARCH LEVEL 2: Starting search within 2 miles, 18 months
+   📍 Subject coordinates: lat=45.1960, lng=-123.9678
+   🔄 Calling searchComparables(35405 Airport Way, Pacific City, OR 97135, 2, single_family, 20)...
+   🔍 Vertex AI Search Request: radius=2mi, propertyType=single_family, limit=20
+[EXTENSIVE VERTEX AI SEARCH DEBUG OUTPUT]
+   📊 Level 2 Search Results: Found 0 comparable properties
+   ⚠️  Level 2 failed: No properties found within 2 miles / 18 months
+
+🔍 PROGRESSIVE SEARCH LEVEL 3: Starting search within 5 miles, 24 months
+   📍 Subject coordinates: lat=45.1960, lng=-123.9678
+   🔄 Calling searchComparables(35405 Airport Way, Pacific City, OR 97135, 5, single_family, 20)...
+   🔍 Vertex AI Search Request: radius=5mi, propertyType=single_family, limit=20
+[EXTENSIVE VERTEX AI SEARCH DEBUG OUTPUT]
+   📊 Level 3 Search Results: Found 0 comparable properties
+   ⚠️  Level 3 failed: No properties found within 5 miles / 24 months
+
+🔍 PROGRESSIVE SEARCH LEVEL 4: Starting search within 10 miles, 36 months
+   📍 Subject coordinates: lat=45.1960, lng=-123.9678
+   🔄 Calling searchComparables(35405 Airport Way, Pacific City, OR 97135, 10, single_family, 20)...
+   🔍 Vertex AI Search Request: radius=10mi, propertyType=single_family, limit=20
+[EXTENSIVE VERTEX AI SEARCH DEBUG OUTPUT]
+   📊 Level 4 Search Results: Found 0 comparable properties
+   ⚠️  Level 4 failed: No properties found within 10 miles / 36 months
+
+❌ PROGRESSIVE SEARCH FAILED: No comparable properties found at any search level
+❌ Comprehensive search failed: No comparables found in progressive search
+❌ Test failed: No comparables found in progressive search
+
+📊 FINAL ANALYSIS RESULT:
+✅ Subject Property: Successfully extracted (720 sqft, 2BR/1BA, built 1972)
+❌ Comparables: None found in Pacific City, OR area
+❌ ARV Calculation: Cannot be performed without comparable properties
+🏠 Conclusion: Property exists but insufficient comparable sales data in rural Pacific City market
+
+EXIT CODE: 1

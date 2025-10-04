@@ -29,8 +29,114 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Docker Deployment to Google Cloud Platform
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Prerequisites
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Docker Desktop** - Installed and running
+2. **Google Cloud CLI (gcloud)** - Installed via Homebrew
+3. **Service Account JSON** - Located in project root as `agile-device-472202-i8-319f002d9438.json`
+
+### Quick Setup Commands
+
+#### 1. Install Google Cloud CLI (if not installed)
+```bash
+brew install --cask google-cloud-sdk
+```
+
+#### 2. Locate Required Binaries
+```bash
+# Docker CLI location
+/Applications/Docker.app/Contents/Resources/bin/docker
+
+# Google Cloud CLI location
+/opt/homebrew/share/google-cloud-sdk/bin/gcloud
+```
+
+#### 3. Set PATH Environment (Required for credential helpers)
+```bash
+export PATH="/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/share/google-cloud-sdk/bin:$PATH"
+```
+
+#### 4. Authenticate with Google Cloud
+```bash
+gcloud auth activate-service-account --key-file=agile-device-472202-i8-319f002d9438.json
+gcloud config set project agile-device-472202-i8
+gcloud auth configure-docker gcr.io
+```
+
+#### 5. Build and Deploy Docker Image
+```bash
+# Build the Docker image
+docker build -t propertyvision .
+
+# Tag for Google Container Registry
+docker tag propertyvision gcr.io/agile-device-472202-i8/propertyvision:latest
+
+# Push to Google Container Registry
+docker push gcr.io/agile-device-472202-i8/propertyvision:latest
+```
+
+### Complete Deployment Script
+
+Create a `deploy.sh` file in the project root:
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🚀 Starting PropertyVision Docker Deployment"
+
+# Set PATH to include both Docker and gcloud binaries
+export PATH="/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/share/google-cloud-sdk/bin:$PATH"
+
+# Verify tools are available
+echo "✅ Checking Docker..."
+docker --version
+
+echo "✅ Checking gcloud..."
+gcloud version
+
+echo "✅ Authenticating with Google Cloud..."
+gcloud auth activate-service-account --key-file=agile-device-472202-i8-319f002d9438.json
+gcloud config set project agile-device-472202-i8
+gcloud auth configure-docker gcr.io
+
+echo "🔨 Building Docker image..."
+docker build -t propertyvision .
+
+echo "🏷️  Tagging image for GCR..."
+docker tag propertyvision gcr.io/agile-device-472202-i8/propertyvision:latest
+
+echo "📤 Pushing to Google Container Registry..."
+docker push gcr.io/agile-device-472202-i8/propertyvision:latest
+
+echo "✅ Deployment complete!"
+echo "📍 Image available at: gcr.io/agile-device-472202-i8/propertyvision:latest"
+```
+
+Make it executable: `chmod +x deploy.sh`
+
+### Troubleshooting
+
+#### Credential Helper Issues
+
+If you see errors like `docker-credential-desktop: executable file not found`:
+
+1. **Issue**: Docker credential helpers not in PATH
+2. **Solution**: Always set the PATH environment variable before running Docker commands:
+   ```bash
+   export PATH="/Applications/Docker.app/Contents/Resources/bin:/opt/homebrew/share/google-cloud-sdk/bin:$PATH"
+   ```
+
+#### Docker Build Issues
+
+- Ensure Docker Desktop is running
+- Check that `Dockerfile` exists in project root
+- Verify service account JSON file is present
+
+### Environment Variables
+
+The following environment variables are configured in the system:
+- `RAPIDAPI_KEY`: RapidAPI key for property data
+- `GOOGLE_MAPS_API_KEY`: Google Maps API key

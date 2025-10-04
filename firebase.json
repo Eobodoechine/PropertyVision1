@@ -4,7 +4,6 @@
     "indexes": "firestore.indexes.json"
   },
   "hosting": {
-    "public": "frontend/dist",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -13,7 +12,10 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "run": {
+          "serviceId": "propertyvision-frontend",
+          "region": "us-central1"
+        }
       }
     ]
   },

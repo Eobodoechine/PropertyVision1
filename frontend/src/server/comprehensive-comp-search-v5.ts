@@ -2,13 +2,16 @@
 // 4-level progressive search with Vertex AI valuation at each checkpoint
 // Replaces high-tier clustering with AI-driven PPSF analysis
 
-import { VertexComparableSearchService } from './step3-find-comparables.js';
-import { ARVCalculationService } from './step4-arv-calculation.js';
-import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details.js';
-import { PropertyDataNormalizer } from './utils/propertyDataNormalizer.js';
-import { VertexDeduplicator } from './utils/vertexDeduplicator.js';
-import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy.js';
-import { VertexAIValuationService } from './vertexAIValuation.js';
+// Import logger FIRST to override console.log for Cloud Logging
+import './utils/logger';
+
+import { VertexComparableSearchService } from './step3-find-comparables';
+import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details';
+import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
+import { VertexDeduplicator } from './utils/vertexDeduplicator';
+import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
+import { ARVCalculator } from './arvCalculator';
+import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -36,7 +39,7 @@ interface ComprehensiveSearchResultV3 {
     valueAddPercent: number;
     roiEstimate?: number;
   };
-  bathroomAnalysis: {
+  bathroomAnalysis?: {
     subjectBaths: number;
     recommendAction: 'hold' | 'renovate' | 'sell_as_is';
     baselineCompsUsed: number;
@@ -61,18 +64,16 @@ type SubjectSummary = Pick<BasicDetails,
 
 export class ComprehensiveComparableSearchV5 {
   private compService: VertexComparableSearchService;
-  private arvService: ARVCalculationService;
+  private arvCalculator: ARVCalculator;
   private normalizer: PropertyDataNormalizer;
   private deduplicator: VertexDeduplicator;
   private progressiveSearch: ProgressiveSearchStrategy;
-  private vertexAIService: VertexAIValuationService;
   constructor() {
     this.compService = new VertexComparableSearchService();
-    this.arvService = new ARVCalculationService();
+    this.arvCalculator = new ARVCalculator();
     this.normalizer = new PropertyDataNormalizer();
     this.deduplicator = new VertexDeduplicator();
     this.progressiveSearch = new ProgressiveSearchStrategy();
-    this.vertexAIService = new VertexAIValuationService();
   }
 
   async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
@@ -159,7 +160,48 @@ export class ComprehensiveComparableSearchV5 {
       console.log(`   📊 Total raw comparables found: ${allComps.length}`);
 
       if (allComps.length === 0) {
-        throw new Error('No comparables found in progressive search');
+        console.log(`\n❌ EARLY TERMINATION: No comparable properties found`);
+        console.log(`   🏠 Subject property exists but no recent sales in area`);
+        console.log(`   💡 Reason: Rural/sparse market with insufficient transaction data`);
+        console.log(`   📊 FINAL RESULT: Analysis terminated - no ARV calculation possible`);
+
+        // Return graceful "no data" response instead of throwing error
+        const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
+        const endTime = Date.now();
+
+        return {
+          subject: subjectSummary,
+          all_comps: [],
+          qualified_comps: [],
+          consistency_scores: new Map(),
+          renovation_analysis: {
+            likely_renovated: [],
+            likely_unrenovated: [],
+            market_average: []
+          },
+          arv: {
+            method: 'no-data',
+            estimate: 0,
+            confidence: 'low' as const,
+            dataPoints: 0
+          },
+          bathroomAnalysis: {
+            subjectBaths: subjectDetails?.baths || 1,
+            recommendAction: 'sell_as_is' as const,
+            baselineCompsUsed: 0
+          },
+          searchMetadata: {
+            version: 'V5',
+            strategy: 'progressive_expansion',
+            searchLevels: 0,
+            totalSearchTime: endTime - startTime,
+            qualityScore: 'poor' as const,
+            cacheHits: 0,
+            normalizationSummary: {},
+            deduplicationSummary: {},
+            distanceValidationSummary: {}
+          }
+        };
       }
 
       // Step 3: Data normalization
@@ -176,199 +218,91 @@ export class ComprehensiveComparableSearchV5 {
       const deduplicationSummary = { duplicatesRemoved: deduplicationResult.duplicatesRemoved, mergedGroups: deduplicationResult.mergedGroups };
       console.log(`   ✅ Deduplicated: ${deduplicatedComps.length} unique (removed ${deduplicationResult.duplicatesRemoved} duplicates)`);
 
-      // Step 5: Distance validation with coordinate-based filtering
-      console.log(`\n📏 Step 5: Distance Validation`);
+      // Step 5: All filtering now happens in step3-find-comparables.ts (bedroom, size, time, distance)
+      // Deduplication already completed in step 4
+      console.log(`\n✅ Step 5: Filtering Complete (handled in step3-find-comparables.ts)`);
+      console.log(`   📊 Comps after all filters: ${deduplicatedComps.length}`);
 
-      // Get subject coordinates from the compService
-      const subjectCoords = await this.getSubjectCoordinates(address);
-      if (!subjectCoords) {
-        throw new Error('Failed to get subject property coordinates');
-      }
-      console.log(`   📍 Subject coordinates: ${subjectCoords.lat}, ${subjectCoords.lon}`);
-
-      // Extract coordinates for filtered comparables and calculate distances
-      const distanceValidationResult = await this.validateDistances(deduplicatedComps, subjectCoords, 2.0);
-      const distanceValidatedComps = distanceValidationResult.validated;
+      // Distance validation summary (filtering already done in step3)
       const distanceValidationSummary = {
-        validated: distanceValidatedComps.length,
-        rejected: distanceValidationResult.rejected.length
+        validated: deduplicatedComps.length,
+        rejected: 0 // Already filtered in step3-find-comparables.ts
       };
-      console.log(`   ✅ Distance validated: ${distanceValidatedComps.length}/${deduplicatedComps.length} within 2 miles (rejected ${distanceValidationResult.rejected.length})`);
 
       // Prepare subject summary for potential early return
       const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
       const currentLevel = 1; // TODO: Make this dynamic based on progressive search
 
-      // Step 6: Vertex AI Valuation (replaces high-tier clustering)
-      console.log(`\n🤖 Step 6: Vertex AI Valuation Analysis`);
+      // Step 6: ARV Calculation using Central-Upper Chain Algorithm
+      console.log(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
 
-      // Try Vertex AI ARV calculation if we have sufficient comps
-      if (distanceValidatedComps.length >= 3) {
-        console.log(`   📊 Attempting Vertex AI ARV with ${distanceValidatedComps.length} comps...`);
+      let arvResult = undefined;
+      let qualifiedComps = deduplicatedComps;
 
-        const vertexResult = await this.vertexAIService.calculateARVWithAI(
-          subjectDetails,
-          distanceValidatedComps,
-          currentLevel
+      if (deduplicatedComps.length >= 2 && subjectDetails.sqft) {
+        console.log(`   📊 Calculating ARV with ${deduplicatedComps.length} comps using PPSF clustering algorithm...`);
+
+        const arvCalcResult = this.arvCalculator.calculateARV(
+          { sqft: subjectDetails.sqft },
+          deduplicatedComps
         );
 
-        if (vertexResult.success) {
-          console.log(`   ✅ Vertex AI Success: ${vertexResult.arv?.method}`);
-          console.log(`   💰 ARV: $${vertexResult.arv?.estimate.toLocaleString()}`);
+        if (arvCalcResult.conservative && arvCalcResult.conservative.arv_price > 0) {
+          console.log(`   ✅ ARV Success: ${arvCalcResult.method_used}`);
+          console.log(`   💰 Conservative ARV: $${arvCalcResult.conservative.arv_price.toLocaleString()}`);
+          console.log(`   📊 Comps used: ${arvCalcResult.kept_comps?.length || 0}`);
 
-          // Return early with Vertex AI result
-          const endTime = Date.now();
-          const searchTime = Math.round((endTime - startTime) / 1000);
-
-          return {
-            subject: subjectSummary,
-            all_comps: distanceValidatedComps,
-            qualified_comps: vertexResult.result.kept_comps,
-            consistency_scores: new Map(),
-            renovation_analysis: {
-              likely_renovated: [],
-              likely_unrenovated: [],
-              market_average: vertexResult.result.kept_comps
-            },
-            arv: {
-              method: vertexResult.arv?.method || 'vertex_ai',
-              estimate: vertexResult.arv?.estimate || 0,
-              confidence: (vertexResult.arv?.confidence === 'LOW' ? 'low' : vertexResult.arv?.confidence === 'HIGH' ? 'high' : 'medium') as 'high' | 'medium' | 'low',
-              dataPoints: vertexResult.arv?.dataPoints || 0
-            },
-            bathroomAnalysis: {
-              subjectBaths: subjectDetails.baths || 3,
-              recommendAction: 'hold',
-              baselineCompsUsed: vertexResult.result.kept_comps.length
-            },
-            searchMetadata: {
-              version: 'v5_vertex_ai',
-              strategy: 'progressive_expansion',
-              searchLevels: 1,
-              totalSearchTime: searchTime * 1000,
-              qualityScore: vertexResult.arv?.confidence === 'LOW' ? 'fair' : 'good',
-              cacheHits: 0,
-              normalizationSummary: {
-                method: 'vertex_ai_valuation',
-                notes: vertexResult.result.notes
-              },
-              deduplicationSummary: { duplicatesRemoved: 0, uniqueProperties: distanceValidatedComps.length },
-              distanceValidationSummary: { validated: distanceValidatedComps.length, rejected: 0 }
+          // Enrich kept comps with full data from original comps
+          const keptComps = arvCalcResult.kept_comps || deduplicatedComps;
+          qualifiedComps = keptComps.map(keptComp => {
+            // Find the original comp with all fields
+            const originalComp = deduplicatedComps.find(c => c.id === keptComp.id || c.address === keptComp.address);
+            if (originalComp) {
+              // Merge kept comp data (id, reason) with original comp data (beds, baths, distance, soldDate, etc)
+              const enriched = {
+                ...originalComp,
+                ...keptComp  // Preserve id and reason from kept_comps
+              };
+              console.log(`   🔍 Enriched comp ${enriched.id}: address="${enriched.address}", beds=${enriched.beds}, baths=${enriched.baths}, distance=${enriched.distance}, soldDate=${enriched.soldDate || enriched.sold_date}`);
+              return enriched;
             }
+            console.log(`   ⚠️  Could not find original comp for ${keptComp.id}: ${keptComp.address}`);
+            return keptComp;
+          });
+
+          const keptCompsCount = arvCalcResult.kept_comps?.length || 0;
+          const confidence: 'high' | 'medium' | 'low' =
+            keptCompsCount >= 4 ? 'high' :
+            keptCompsCount >= 3 ? 'medium' : 'low';
+
+          arvResult = {
+            method: arvCalcResult.method_used || 'arv_calculator',
+            estimate: arvCalcResult.conservative.arv_price,
+            confidence,
+            dataPoints: keptCompsCount
           };
         } else {
-          console.log(`   ❌ Vertex AI failed: ${vertexResult.reason}`);
-          console.log(`   🔄 Continuing to traditional ARV calculation...`);
+          console.log(`   ⚠️  ARV calculation returned insufficient data`);
         }
       } else {
-        console.log(`   ⚠️ Insufficient comps for Vertex AI (${distanceValidatedComps.length} < 3)`);
-        console.log(`   🔄 Continuing to find more comps...`);
+        console.log(`   ⚠️ Insufficient comps for ARV (${deduplicatedComps.length} < 2)`);
       }
-
-      // If we reach here, Vertex AI failed or insufficient comps
-      const qualifiedComps = distanceValidatedComps;
 
       // Step 7: Renovation analysis
       console.log(`\n🔨 Step 7: Renovation Analysis`);
       const renovationAnalysis = this.analyzeRenovationLevels(qualifiedComps);
 
-      // Step 8: Bathroom Analysis and Dual ARV Calculation
-      console.log(`\n🚿 Step 8: Bathroom Analysis & Dual ARV Calculation`);
-      const subjectBaths = this.computeSubjectBathrooms(subjectDetails);
-      console.log(`   🏠 Subject Bathrooms: ${subjectBaths}`);
-
-      // BASELINE ARV (same as V2)
-      let arvResult = undefined;
-      let twoBathARV = undefined;
-      let bathroomAnalysis: {
-        subjectBaths: number;
-        recommendAction: 'hold' | 'renovate' | 'sell_as_is';
-        baselineCompsUsed: number;
-        upgradeCompsUsed?: number;
-      } = {
-        subjectBaths,
-        recommendAction: 'sell_as_is',
-        baselineCompsUsed: 0
-      };
-
-      if (qualifiedComps.length >= 3 && subjectDetails.sqft) {
-        // Baseline ARV calculation
-        const baselineComps = this.filterComparablesForBaseline(qualifiedComps, subjectBaths, subjectDetails);
-        console.log(`   📊 Baseline comps (≤${subjectBaths} baths): ${baselineComps.length}`);
-
-        if (baselineComps.length >= 3) {
-          // Apply market-based bathroom adjustments to comparables
-          const adjustedComps = this.applyMarketBathroomAdjustments(baselineComps, subjectBaths);
-          const baselineARV = this.arvService.calculateARV(adjustedComps, subjectDetails.sqft);
-          arvResult = {
-            method: 'comprehensive_v3_baseline',
-            estimate: baselineARV.arv,
-            confidence: baselineARV.confidence,
-            dataPoints: baselineComps.length
-          };
-          bathroomAnalysis.baselineCompsUsed = baselineComps.length;
-          console.log(`   ✅ Baseline ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.confidence} confidence, ${arvResult.dataPoints} comps)`);
-        }
-
-        // TWO-BATHROOM ARV (only if subject has < 2 baths AND we have sufficient baseline comps)
-        if (subjectBaths < 2 && arvResult) {
-          console.log(`   🛁 Calculating 2-bathroom upgrade scenario...`);
-          const twoBathComps = this.filterComparablesForTwoBath(qualifiedComps, subjectDetails);
-          console.log(`   📊 Upgrade comps (2+ baths): ${twoBathComps.length}`);
-
-          if (twoBathComps.length >= 3 && baselineComps.length >= 3) {
-            const upgradeARV = this.arvService.calculateARV(twoBathComps, subjectDetails.sqft);
-            const baselineEstimate = arvResult ? arvResult.estimate : upgradeARV.arv * 0.85; // Fallback if no baseline
-            const valueAdd = upgradeARV.arv - baselineEstimate;
-            const valueAddPercent = (valueAdd / baselineEstimate) * 100;
-
-            // ROI Calculation
-            const estimatedRenovationCost = 12000;
-            const netGain = valueAdd - estimatedRenovationCost;
-            const roi = (netGain / estimatedRenovationCost) * 100;
-
-            twoBathARV = {
-              method: 'comprehensive_v3_upgrade',
-              estimate: upgradeARV.arv,
-              confidence: upgradeARV.confidence,
-              dataPoints: twoBathComps.length,
-              valueAdd,
-              valueAddPercent,
-              roiEstimate: roi
-            };
-
-            bathroomAnalysis.upgradeCompsUsed = twoBathComps.length;
-            bathroomAnalysis.recommendAction = this.generateRecommendation(
-              arvResult.estimate,
-              upgradeARV.arv,
-              arvResult.confidence
-            );
-
-            console.log(`   ✅ 2-Bath ARV: $${twoBathARV.estimate.toLocaleString()} (${twoBathARV.confidence} confidence, ${twoBathARV.dataPoints} comps)`);
-            console.log(`   💰 Value Add: $${valueAdd.toLocaleString()} (${valueAddPercent.toFixed(1)}%)`);
-            console.log(`   📈 ROI Estimate: ${roi.toFixed(1)}%`);
-          } else {
-            console.log(`   ⚠️  Insufficient comps for dual ARV analysis:`);
-            console.log(`       • Baseline comps (≤${subjectBaths} baths): ${baselineComps.length}/3 needed`);
-            console.log(`       • Upgrade comps (2+ baths): ${twoBathComps.length}/3 needed`);
-          }
-        } else {
-          console.log(`   ℹ️  Subject has ${subjectBaths} bathrooms - no upgrade scenario needed`);
-        }
-      } else {
-        console.log(`   ⚠️  Insufficient data for reliable ARV calculation (need ≥3 comps, have ${qualifiedComps.length})`);
-      }
-
-      console.log(`   🎯 Recommendation: ${bathroomAnalysis.recommendAction.toUpperCase().replace('_', ' ')}`);
-
       // Calculate quality score based on count and distance only
       const qualityScore = this.assessOverallQuality(qualifiedComps.length);
       const totalSearchTime = Date.now() - startTime;
 
-      console.log(`\n📊 COMPREHENSIVE SEARCH V3 COMPLETE`);
+      console.log(`\n📊 COMPREHENSIVE SEARCH V5 COMPLETE`);
       console.log(`   Quality Score: ${qualityScore}`);
       console.log(`   Total Time: ${totalSearchTime}ms`);
       console.log(`   Final Comps: ${qualifiedComps.length}`);
+      if (arvResult) {
+        console.log(`   ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.method})`);
+      }
       console.log(`============================================================\n`);
 
       return {
@@ -378,10 +312,8 @@ export class ComprehensiveComparableSearchV5 {
         consistency_scores: new Map(), // Empty map since we removed quality filtering
         renovation_analysis: renovationAnalysis,
         arv: arvResult,
-        twoBathARV,
-        bathroomAnalysis,
         searchMetadata: {
-          version: 'v3.0',
+          version: 'v5.0',
           strategy: 'progressive_expansion',
           searchLevels: searchLevel + 1,
           totalSearchTime,
@@ -1004,23 +936,21 @@ export class ComprehensiveComparableSearchV5 {
     }
   }
 
-  // Validate distances using coordinate-based calculation
-  private async validateDistances(
+  // Calculate distances using coordinate-based calculation (no filtering)
+  private async calculateDistances(
     properties: any[],
-    subjectCoords: { lat: number; lon: number },
-    maxDistanceMiles: number
-  ): Promise<{ validated: any[]; rejected: any[] }> {
+    subjectCoords: { lat: number; lon: number }
+  ): Promise<any[]> {
     console.log(`   🔍 Extracting coordinates for ${properties.length} comparables...`);
 
-    const validated: any[] = [];
-    const rejected: any[] = [];
+    const propertiesWithDistances: any[] = [];
 
     // Extract coordinates using Vertex AI batch processing
     const coordinatesMap = await this.extractCoordinatesBatch(properties);
 
     console.log(`   📊 Successfully extracted coordinates for ${coordinatesMap.size}/${properties.length} properties`);
 
-    // Calculate distances and filter
+    // Calculate distances for ALL properties (no filtering by radius)
     for (let i = 0; i < properties.length; i++) {
       const property = properties[i];
       const propCoords = coordinatesMap.get(i);
@@ -1033,144 +963,59 @@ export class ComprehensiveComparableSearchV5 {
           propCoords.lon
         );
 
-        if (distance <= maxDistanceMiles) {
-          // Add distance to property for future reference
-          property.distanceFromSubject = distance;
-          validated.push(property);
-          console.log(`   ✅ ${property.address}: ${distance.toFixed(2)} miles (within ${maxDistanceMiles} miles)`);
-        } else {
-          rejected.push(property);
-          console.log(`   ❌ ${property.address}: ${distance.toFixed(2)} miles (exceeds ${maxDistanceMiles} miles)`);
-        }
+        // Always add distance to property - let progressive search handle radius filtering
+        property.distanceFromSubject = distance;
+        propertiesWithDistances.push(property);
+        console.log(`   📐 ${property.address}: ${distance.toFixed(2)} miles`);
       } else {
-        // If we can't get coordinates, reject the property
-        rejected.push(property);
-        console.log(`   ❌ ${property.address}: Could not extract coordinates`);
+        // If we can't get coordinates, still include property but mark distance as null
+        property.distanceFromSubject = null;
+        propertiesWithDistances.push(property);
+        console.log(`   ❓ ${property.address}: No coordinates found (distance: null)`);
       }
     }
 
-    return { validated, rejected };
+    return propertiesWithDistances;
   }
 
   // Extract coordinates for a batch of properties using Vertex AI
   private async extractCoordinatesBatch(properties: any[]): Promise<Map<number, { lat: number; lon: number }>> {
     const coordinatesMap = new Map<number, { lat: number; lon: number }>();
 
+    if (properties.length === 0) {
+      return coordinatesMap;
+    }
+
+    console.log(`🗺️  🎯 DIRECT GOOGLE MAPS GEOCODING for ${properties.length} properties...`);
+
     try {
-      // Import vertex generation function
-      const { vertexGenerate } = await import('./vertex-freeform.js');
+      // Initialize Google Maps Geocoder
+      const geocoder = new GoogleMapsGeocoder();
 
-      // Get service account configuration
-      let sa;
-      if (process.env.GCP_SA_JSON_B64) {
-        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-        sa = JSON.parse(saJson);
-      } else {
-        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-        if (!saPath) throw new Error('No service account configured');
-        const fs = await import('fs');
-        sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-      }
+      // Extract unique addresses
+      const addresses = properties.map(prop => prop.address);
 
-      const projectId = sa.project_id;
-      const location = process.env.VERTEX_LOCATION || 'us-central1';
-      const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+      // Geocode all addresses using direct Google Maps API
+      const geocodeResults = await geocoder.geocodeAddresses(addresses);
 
-      // Create batch prompt for coordinate extraction
-      const addressList = properties.map((prop, index) => `${index + 1}. "${prop.address}"`).join('\n');
+      // Process results
+      for (let i = 0; i < properties.length; i++) {
+        const address = properties[i].address;
+        const result = geocodeResults.get(address);
 
-      const prompt = `You are a geocoding assistant. Given U.S. street addresses, return precise WGS84 coordinates.
-
-Rules:
-- Search authoritative sources only (Google Maps, county GIS, USPS/US Census TIGER, state/city GIS, assessor/parcel maps)
-- Prefer rooftop or parcel centroid points over street interpolation
-- If multiple candidates exist, pick the one that matches city + ZIP; otherwise return the best within the same city and note a lower precision
-- If you cannot verify a single match from authoritative sources, return "status":"NO_MATCH" and do not guess
-
-Addresses to geocode:
-${addressList}
-
-For each address, return a JSON object with exactly these fields:
-{
-"status": "OK" | "NO_MATCH" | "AMBIGUOUS",
-"formatted_address": "string",
-"latitude": number,
-"longitude": number,
-"precision": "rooftop" | "parcel_centroid" | "interpolated" | "city_centroid",
-"source": "google_maps" | "county_gis" | "state_gis" | "usps" | "other_gis",
-"notes": "string"
-}
-
-Quality checks:
-- Coordinates must be decimal degrees (WGS84)
-- Do not round more than 6 decimal places
-- If the result is not at least parcel-level, set precision accordingly and explain in notes
-
-Output format:
-ADDRESS 1:
-[JSON object]
-
-ADDRESS 2:
-[JSON object]
-
-(Continue for all ${properties.length} addresses)`;
-
-      console.log(`   🤖 Requesting coordinates for ${properties.length} properties from Vertex AI...`);
-
-      const response = await vertexGenerate({
-        sa,
-        projectId,
-        location,
-        model,
-        prompt,
-        grounded: true,
-        json: false,
-        timeoutMs: 60000
-      });
-
-      if (response && response.trim().length > 0) {
-        // Parse the batch response with new JSON format
-        const sections = response.split(/ADDRESS \d+:/);
-
-        for (let i = 0; i < properties.length; i++) {
-          const section = sections[i + 1]; // Skip first empty element
-
-          if (section) {
-            try {
-              // Extract JSON from the section
-              const jsonMatch = section.match(/\{[\s\S]*?\}/);
-              if (jsonMatch) {
-                const geocodeResult = JSON.parse(jsonMatch[0]);
-
-                if (geocodeResult.status === 'OK' && geocodeResult.latitude && geocodeResult.longitude) {
-                  const lat = parseFloat(geocodeResult.latitude);
-                  const lon = parseFloat(geocodeResult.longitude);
-
-                  if (!isNaN(lat) && !isNaN(lon)) {
-                    coordinatesMap.set(i, { lat, lon });
-                    console.log(`   📍 Property ${i + 1}: ${lat}, ${lon} (${geocodeResult.precision}, ${geocodeResult.source})`);
-                  } else {
-                    console.log(`   ❌ Property ${i + 1}: Invalid coordinates in response`);
-                  }
-                } else {
-                  console.log(`   ❌ Property ${i + 1}: ${geocodeResult.status} - ${geocodeResult.notes || 'No coordinates found'}`);
-                }
-              } else {
-                console.log(`   ❌ Property ${i + 1}: No JSON found in response section`);
-              }
-            } catch (error: any) {
-              console.log(`   ❌ Property ${i + 1}: JSON parse error - ${error.message}`);
-            }
-          } else {
-            console.log(`   ❌ Property ${i + 1}: No response section found`);
-          }
+        if (result) {
+          coordinatesMap.set(i, { lat: result.lat, lon: result.lng });
+          console.log(`   ✅ Property ${i + 1}: ${result.lat}, ${result.lng} (${result.locationType})`);
+        } else {
+          console.log(`   ❌ Property ${i + 1}: Failed to geocode "${address}"`);
         }
-      } else {
-        console.log(`   ❌ Empty or invalid response from Vertex AI`);
       }
+
+      console.log(`🗺️  ✅ Google Maps geocoding complete: ${coordinatesMap.size}/${properties.length} successful`);
 
     } catch (error: any) {
-      console.log(`   ❌ Batch coordinate extraction failed: ${error.message}`);
+      console.log(`   ❌ Google Maps geocoding failed: ${error.message}`);
+      console.log(`   ⚠️  Proceeding without coordinates - distances will be unavailable`);
     }
 
     return coordinatesMap;
@@ -1216,11 +1061,9 @@ async function testComprehensiveSearchV3() {
     console.log(`   Qualified: ${result.qualified_comps.length}`);
     console.log(`   Renovated: ${result.renovation_analysis.likely_renovated.length}`);
     console.log(`   Quality: ${result.searchMetadata.qualityScore}`);
-    console.log(`   Subject Baths: ${result.bathroomAnalysis.subjectBaths}`);
-    console.log(`   Recommendation: ${result.bathroomAnalysis.recommendAction}`);
 
     if (result.arv) {
-      console.log(`   Baseline ARV: $${result.arv.estimate.toLocaleString()}`);
+      console.log(`   ARV: $${result.arv.estimate.toLocaleString()}`);
     }
 
     if (result.twoBathARV) {

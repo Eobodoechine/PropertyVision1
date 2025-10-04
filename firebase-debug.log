@@ -1,0 +1,100 @@
+[debug] [2025-10-01T21:42:29.801Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T21:42:29.810Z] Command:       /opt/homebrew/Cellar/node@22/22.19.0/bin/node /opt/homebrew/bin/firebase hosting:channel:list
+[debug] [2025-10-01T21:42:29.810Z] CLI Version:   14.17.0
+[debug] [2025-10-01T21:42:29.810Z] Platform:      darwin
+[debug] [2025-10-01T21:42:29.810Z] Node Version:  v22.19.0
+[debug] [2025-10-01T21:42:29.811Z] Time:          Wed Oct 01 2025 17:42:29 GMT-0400 (Eastern Daylight Time)
+[debug] [2025-10-01T21:42:29.811Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-01T21:42:29.812Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-10-01T21:42:29.945Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-01T21:42:30.044Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-10-01T21:42:30.045Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2025-10-01T21:42:30.057Z] Running auto auth
+[debug] [2025-10-01T21:42:30.057Z] [iam] checking project agile-device-472202-i8 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-10-01T21:42:30.057Z] No OAuth tokens found
+[debug] [2025-10-01T21:42:30.058Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions [none]
+[debug] [2025-10-01T21:42:30.058Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions x-goog-quota-user=projects/agile-device-472202-i8
+[debug] [2025-10-01T21:42:30.058Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-01T21:42:30.178Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions 200
+[debug] [2025-10-01T21:42:30.178Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-01T21:42:30.178Z] No OAuth tokens found
+[debug] [2025-10-01T21:42:30.178Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/agile-device-472202-i8 [none]
+[debug] [2025-10-01T21:42:30.415Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/agile-device-472202-i8 200
+[debug] [2025-10-01T21:42:30.415Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/agile-device-472202-i8 {"projectId":"agile-device-472202-i8","projectNumber":"839845580521","displayName":"My First Project","name":"projects/agile-device-472202-i8","resources":{"hostingSite":"agile-device-472202-i8"},"state":"ACTIVE","etag":"1_9a3f7e01-4ecc-45bd-ab2f-e6e7916c096d"}
+[debug] [2025-10-01T21:42:30.416Z] No OAuth tokens found
+[debug] [2025-10-01T21:42:30.416Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/agile-device-472202-i8/sites/agile-device-472202-i8/channels pageToken=&pageSize=10
+[debug] [2025-10-01T21:42:30.647Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/agile-device-472202-i8/sites/agile-device-472202-i8/channels 200
+[debug] [2025-10-01T22:08:13.982Z] ----------------------------------------------------------------------
+[debug] [2025-10-01T22:08:13.985Z] Command:       /opt/homebrew/Cellar/node@22/22.19.0/bin/node /opt/homebrew/bin/firebase deploy --only hosting --project agile-device-472202-i8
+[debug] [2025-10-01T22:08:13.985Z] CLI Version:   14.17.0
+[debug] [2025-10-01T22:08:13.985Z] Platform:      darwin
+[debug] [2025-10-01T22:08:13.986Z] Node Version:  v22.19.0
+[debug] [2025-10-01T22:08:13.986Z] Time:          Wed Oct 01 2025 18:08:13 GMT-0400 (Eastern Daylight Time)
+[debug] [2025-10-01T22:08:13.986Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-10-01T22:08:14.163Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-10-01T22:08:14.305Z] Running auto auth
+[debug] [2025-10-01T22:08:14.305Z] [iam] checking project agile-device-472202-i8 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-10-01T22:08:14.305Z] No OAuth tokens found
+[debug] [2025-10-01T22:08:14.306Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions [none]
+[debug] [2025-10-01T22:08:14.306Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions x-goog-quota-user=projects/agile-device-472202-i8
+[debug] [2025-10-01T22:08:14.306Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-01T22:08:14.459Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions 200
+[debug] [2025-10-01T22:08:14.460Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/agile-device-472202-i8:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-10-01T22:08:14.460Z] No OAuth tokens found
+[debug] [2025-10-01T22:08:14.461Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/agile-device-472202-i8 [none]
+[debug] [2025-10-01T22:08:14.740Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/agile-device-472202-i8 200
+[debug] [2025-10-01T22:08:14.741Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/agile-device-472202-i8 {"projectId":"agile-device-472202-i8","projectNumber":"839845580521","displayName":"My First Project","name":"projects/agile-device-472202-i8","resources":{"hostingSite":"agile-device-472202-i8"},"state":"ACTIVE","etag":"1_9a3f7e01-4ecc-45bd-ab2f-e6e7916c096d"}
+[info] 
+[info] === Deploying to 'agile-device-472202-i8'...
+[info] 
+[info] i  deploying hosting 
+[debug] [2025-10-01T22:08:14.745Z] No OAuth tokens found
+[debug] [2025-10-01T22:08:14.745Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions [none]
+[debug] [2025-10-01T22:08:14.745Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions {"status":"CREATED","labels":{"deployment-tool":"cli-firebase"}}
+[debug] [2025-10-01T22:08:15.294Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions 200
+[debug] [2025-10-01T22:08:15.294Z] <<< [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions {"name":"projects/839845580521/sites/agile-device-472202-i8/versions/ee56c6c82d61d186","status":"CREATED","config":{},"labels":{"deployment-tool":"cli-firebase"}}
+[info] i  hosting[agile-device-472202-i8]: no "public" directory to upload, continuing with release 
+[debug] [2025-10-01T22:08:15.297Z] [
+  {
+    "config": {
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "run": {
+            "serviceId": "propertyvision-frontend",
+            "region": "us-central1"
+          }
+        }
+      ],
+      "site": "agile-device-472202-i8"
+    },
+    "version": "projects/839845580521/sites/agile-device-472202-i8/versions/ee56c6c82d61d186"
+  }
+]
+[info] i  hosting[agile-device-472202-i8]: finalizing version... 
+[debug] [2025-10-01T22:08:15.298Z] No OAuth tokens found
+[debug] [2025-10-01T22:08:15.298Z] >>> [apiv2][query] GET https://cloudfunctions.googleapis.com/v1/projects/agile-device-472202-i8/locations/-/functions [none]
+[debug] [2025-10-01T22:08:15.538Z] <<< [apiv2][status] GET https://cloudfunctions.googleapis.com/v1/projects/agile-device-472202-i8/locations/-/functions 403
+[debug] [2025-10-01T22:08:15.538Z] <<< [apiv2][body] GET https://cloudfunctions.googleapis.com/v1/projects/agile-device-472202-i8/locations/-/functions {"error":{"code":403,"message":"Cloud Functions API has not been used in project agile-device-472202-i8 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"agile-device-472202-i8","service":"cloudfunctions.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8","serviceTitle":"Cloud Functions API","consumer":"projects/agile-device-472202-i8"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project agile-device-472202-i8 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8"}]}]}}
+[debug] [2025-10-01T22:08:15.540Z] [functions] failed to list functions for agile-device-472202-i8
+[debug] [2025-10-01T22:08:15.540Z] [functions] Request to https://cloudfunctions.googleapis.com/v1/projects/agile-device-472202-i8/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project agile-device-472202-i8 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.
+[debug] [2025-10-01T22:08:15.540Z] Deploying hosting site agile-device-472202-i8, did not have permissions to check for backends:  Failed to list functions for agile-device-472202-i8 {"name":"FirebaseError","children":[],"exit":1,"message":"Failed to list functions for agile-device-472202-i8","original":{"name":"FirebaseError","children":[],"context":{"body":{"error":{"code":403,"message":"Cloud Functions API has not been used in project agile-device-472202-i8 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":"PERMISSION_DENIED","details":[{"@type":"type.googleapis.com/google.rpc.ErrorInfo","reason":"SERVICE_DISABLED","domain":"googleapis.com","metadata":{"containerInfo":"agile-device-472202-i8","service":"cloudfunctions.googleapis.com","activationUrl":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8","serviceTitle":"Cloud Functions API","consumer":"projects/agile-device-472202-i8"}},{"@type":"type.googleapis.com/google.rpc.LocalizedMessage","locale":"en-US","message":"Cloud Functions API has not been used in project agile-device-472202-i8 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry."},{"@type":"type.googleapis.com/google.rpc.Help","links":[{"description":"Google developers console API activation","url":"https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8"}]}]}},"response":{"statusCode":403}},"exit":1,"message":"Request to https://cloudfunctions.googleapis.com/v1/projects/agile-device-472202-i8/locations/-/functions had HTTP Error: 403, Cloud Functions API has not been used in project agile-device-472202-i8 before or it is disabled. Enable it by visiting https://console.developers.google.com/apis/api/cloudfunctions.googleapis.com/overview?project=agile-device-472202-i8 then retry. If you enabled this API recently, wait a few minutes for the action to propagate to our systems and retry.","status":403},"status":403}
+[debug] [2025-10-01T22:08:15.542Z] No OAuth tokens found
+[debug] [2025-10-01T22:08:15.542Z] >>> [apiv2][query] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions/ee56c6c82d61d186 updateMask=status%2Cconfig
+[debug] [2025-10-01T22:08:15.542Z] >>> [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions/ee56c6c82d61d186 {"status":"FINALIZED","config":{"rewrites":[{"glob":"**","run":{"serviceId":"propertyvision-frontend","region":"us-central1"}}]}}
+[debug] [2025-10-01T22:08:15.724Z] <<< [apiv2][status] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions/ee56c6c82d61d186 200
+[debug] [2025-10-01T22:08:15.724Z] <<< [apiv2][body] PATCH https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/versions/ee56c6c82d61d186 {"name":"projects/839845580521/sites/agile-device-472202-i8/versions/ee56c6c82d61d186","status":"FINALIZED","config":{"rewrites":[{"glob":"**","run":{"serviceId":"propertyvision-frontend","region":"us-central1"}}]},"labels":{"deployment-tool":"cli-firebase"},"createTime":"2025-10-01T22:08:14.985237Z","createUser":{"email":"lopez.b.mikaela@gmail.com"},"finalizeTime":"2025-10-01T22:08:15.689559Z","finalizeUser":{"email":"lopez.b.mikaela@gmail.com"}}
+[debug] [2025-10-01T22:08:15.724Z] [hosting] finalized version for agile-device-472202-i8:[object Object]
+[info] ✔  hosting[agile-device-472202-i8]: version finalized 
+[info] i  hosting[agile-device-472202-i8]: releasing new version... 
+[debug] [2025-10-01T22:08:15.726Z] No OAuth tokens found
+[debug] [2025-10-01T22:08:15.726Z] >>> [apiv2][query] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/channels/live/releases versionName=projects%2F839845580521%2Fsites%2Fagile-device-472202-i8%2Fversions%2Fee56c6c82d61d186
+[debug] [2025-10-01T22:08:15.726Z] >>> [apiv2][body] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/channels/live/releases {}
+[debug] [2025-10-01T22:08:15.864Z] <<< [apiv2][status] POST https://firebasehosting.googleapis.com/v1beta1/projects/-/sites/agile-device-472202-i8/channels/live/releases 200

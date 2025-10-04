@@ -88,3 +88,6 @@ web_modules/
 # Project-specific
 server/public/
 vite.config.ts.*
+
+# Logs
+logs/*.log

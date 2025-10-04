@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { ComprehensiveCompSearchV3 } from './comprehensive-comp-search-v3.js';
+import logger, { logSearchRequest, logSearchResult, logSearchError } from './utils/logger.js';
 
 const app = express();
 const port = Number(process.env.PORT) || 3001;
@@ -21,13 +22,34 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.post('/api/analyze', async (req, res) => {
+  const startTime = Date.now();
+  const address = String(req.body?.address || '').trim();
+  const userId = req.body?.userId || req.headers['x-user-id'];
+  const sessionId = req.body?.sessionId || req.headers['x-session-id'];
+  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
   try {
-    const address = String(req.body?.address || '').trim();
     if (!address) {
+      logSearchError({
+        address: '',
+        userId,
+        sessionId,
+        error: new Error('Address is required'),
+        stage: 'validation',
+      });
       return res.status(400).json({ error: 'Address is required' });
     }
 
+    // Log incoming search request
+    logSearchRequest({
+      address,
+      userId,
+      sessionId,
+      ip: String(ip),
+    });
+
     const result = await analysisService.findComparables(address);
+    const executionTimeMs = Date.now() - startTime;
 
     const responsePayload = {
       subject: result.subject,
@@ -41,14 +63,52 @@ app.post('/api/analyze', async (req, res) => {
       searchMetadata: result.searchMetadata,
     };
 
+    // Log successful search result
+    logSearchResult({
+      address,
+      userId,
+      sessionId,
+      arv: typeof result.arv === 'number' ? result.arv : (result.arv as any)?.estimate ?? null,
+      twoBathArv: typeof result.twoBathARV === 'number' ? result.twoBathARV : (result.twoBathARV as any)?.estimate ?? null,
+      compsCount: result.all_comps?.length || 0,
+      qualifiedCompsCount: result.qualified_comps?.length || 0,
+      executionTimeMs,
+      success: true,
+    });
+
     res.json(responsePayload);
   } catch (error: any) {
+    const executionTimeMs = Date.now() - startTime;
     const message = error?.message || 'Analysis failed';
-    console.error('❌ Analysis failed:', message);
+
+    // Log error with full context
+    logSearchError({
+      address,
+      userId,
+      sessionId,
+      error: error instanceof Error ? error : new Error(message),
+      stage: 'analysis',
+    });
+
+    logger.error('Analysis failed', {
+      eventType: 'SEARCH_ERROR',
+      address,
+      userId,
+      sessionId,
+      executionTimeMs,
+      errorMessage: message,
+      errorStack: error?.stack,
+    });
+
     res.status(500).json({ error: 'Analysis failed', details: message });
   }
 });
 
 app.listen(port, host, () => {
-  console.log(`✅ Comprehensive analysis API ready on http://${host}:${port}`);
+  logger.info(`Comprehensive analysis API ready on http://${host}:${port}`, {
+    eventType: 'SERVER_START',
+    port,
+    host,
+    environment: process.env.NODE_ENV,
+  });
 });

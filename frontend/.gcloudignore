@@ -1,0 +1,11 @@
+.gcloudignore
+.git
+.gitignore
+node_modules/
+.next/
+.env*
+!.env.example
+*.log
+.DS_Store
+*.md
+!README.md

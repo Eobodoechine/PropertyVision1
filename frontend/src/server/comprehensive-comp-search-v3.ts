@@ -1,12 +1,12 @@
 // Comprehensive Comparable Search V3 - V2 with Dual ARV Analysis
 // Same as V2 but with dual ARV calculation: baseline + 2-bathroom upgrade scenarios
 
-import { VertexComparableSearchService } from './step3-find-comparables.js';
-import { ARVCalculationService } from './step4-arv-calculation.js';
-import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details.js';
-import { PropertyDataNormalizer } from './utils/propertyDataNormalizer.js';
-import { VertexDeduplicator } from './utils/vertexDeduplicator.js';
-import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy.js';
+import { VertexComparableSearchService } from './step3-find-comparables';
+import { ARVCalculationService } from './step4-arv-calculation';
+import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details';
+import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
+import { VertexDeduplicator } from './utils/vertexDeduplicator';
+import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -998,7 +998,7 @@ export class ComprehensiveComparableSearchV3 {
 
     try {
       // Import vertex generation function
-      const { vertexGenerate } = await import('./vertex-freeform.js');
+      const { vertexGenerate } = await import('./vertex-freeform');
 
       // Get service account configuration
       let sa;
