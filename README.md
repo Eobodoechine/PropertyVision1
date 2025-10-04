@@ -95,6 +95,13 @@ Analyze a property and calculate ARV
 }
 ```
 
+## Documentation
+
+- **[GEO_PROXY_GUIDE.md](./GEO_PROXY_GUIDE.md)** - Geocoding proxy implementation for solving VPC network latency issues
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Cloud Run deployment procedures
+- **[LOGGING_GUIDE.md](./LOGGING_GUIDE.md)** - Log monitoring and debugging
+- **[VERTEX_ANALYSIS_PROCESS.md](./VERTEX_ANALYSIS_PROCESS.md)** - Vertex AI analysis workflow
+
 ## Logging & Monitoring
 
 This application uses **dual logging** to track all user searches, results, and errors:
