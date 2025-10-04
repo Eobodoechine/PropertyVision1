@@ -74,23 +74,28 @@ This script will:
      --timeout 60
    ```
 
-5. **Deploy worker service**:
+5. **Deploy worker service** (VERIFIED WORKING - Last deployed: 2025-10-04):
    ```bash
    gcloud run deploy propertyvision-worker \
      --source . \
      --region us-central1 \
-     --no-allow-unauthenticated \
+     --project agile-device-472202-i8 \
+     --allow-unauthenticated \
      --vpc-connector redis-connector \
-     --vpc-egress private-ranges-only \
-     --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,RUN_WORKER=true" \
-     --cpu-always-allocated \
+     --vpc-egress all-traffic \
+     --set-env-vars "RUN_WORKER=true,NODE_ENV=production,USE_GEO_PROXY=true,GEO_PROXY_URL=https://geo-proxy-839845580521.us-central1.run.app,USE_VERTEX_PROXY=true,FORCE_VERTEX_PROXY=true,VERTEX_PROXY_URL=https://vertex-proxy-839845580521.us-central1.run.app,REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json" \
+     --set-secrets "PROXY_SHARED_KEY=proxy-shared-key:latest" \
      --min-instances 1 \
      --max-instances 3 \
-     --concurrency 1 \
-     --timeout 3600 \
-     --command npm \
-     --args run,worker
+     --timeout 3600
    ```
+
+   **Critical Environment Variables Explained:**
+   - `VERTEX_PROXY_URL` & `GEO_PROXY_URL` - Required for proxy routing to avoid VPC timeouts
+   - `USE_VERTEX_PROXY=true` & `FORCE_VERTEX_PROXY=true` - Routes all Vertex calls through proxy
+   - `GOOGLE_MAPS_API_KEY` - Required by geocoding service
+   - `PROXY_SHARED_KEY` - Secret for authenticating with proxy services
+   - `--vpc-egress all-traffic` - Required for proxy services to work (not private-ranges-only)
 
 ## 🧪 Testing
 

@@ -4,6 +4,15 @@ import https from 'https';
 import crypto from 'crypto';
 import fetch from 'node-fetch';
 
+// Global HTTPS agent with keep-alive for connection reuse
+const httpsAgent = new https.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 30000,
+  maxSockets: 50,
+  maxFreeSockets: 10,
+  timeout: 120000
+});
+
 export type BasicDetails = {
   address: string;
   sqft: number | null;
@@ -86,40 +95,60 @@ async function vertexGenerate(opts: {
 
   if (opts.grounded && (FORCE_VERTEX_PROXY || USE_VERTEX_PROXY) && VERTEX_PROXY_URL && PROXY_SHARED_KEY) {
     console.log(`🔍 VERTEX-DETAILS: Routing grounded search through vertex-proxy (timeout=${opts.timeoutMs}ms, model=${opts.model})`);
-    const t0 = Date.now();
-    try {
-      const proxyResponse = await fetch(`${VERTEX_PROXY_URL}/vertex/generate`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-proxy-key': PROXY_SHARED_KEY
-        },
-        body: JSON.stringify({
-          prompt: opts.prompt,
-          model: opts.model || 'gemini-2.5-pro',
-          timeoutMs: opts.timeoutMs,
-          temperature: 0.1,
-          maxOutputTokens: 8192,
-          grounded: true
-        })
-      });
 
-      const elapsed = Date.now() - t0;
+    // Retry logic for transient network errors
+    const maxRetries = 1;
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const t0 = Date.now();
+      try {
+        if (attempt > 0) {
+          console.log(`🔄 VERTEX-DETAILS: Retry attempt ${attempt}/${maxRetries} after 500ms backoff`);
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
 
-      if (!proxyResponse.ok) {
-        const errorBody = await proxyResponse.text().catch(() => 'no body');
-        console.error(`❌ VERTEX-DETAILS: Proxy returned ${proxyResponse.status} after ${elapsed}ms: ${errorBody.substring(0, 200)}`);
-        throw new Error(`Vertex proxy failed: ${proxyResponse.status} - ${errorBody.substring(0, 100)}`);
+        const proxyResponse = await fetch(`${VERTEX_PROXY_URL}/vertex/generate`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-proxy-key': PROXY_SHARED_KEY
+          },
+          body: JSON.stringify({
+            prompt: opts.prompt,
+            model: opts.model || 'gemini-2.5-pro',
+            timeoutMs: opts.timeoutMs,
+            temperature: 0.1,
+            maxOutputTokens: 8192,
+            grounded: true
+          }),
+          agent: httpsAgent
+        });
+
+        const elapsed = Date.now() - t0;
+
+        if (!proxyResponse.ok) {
+          const errorBody = await proxyResponse.text().catch(() => 'no body');
+          console.error(`❌ VERTEX-DETAILS: Proxy returned ${proxyResponse.status} after ${elapsed}ms: ${errorBody.substring(0, 200)}`);
+          throw new Error(`Vertex proxy failed: ${proxyResponse.status} - ${errorBody.substring(0, 100)}`);
+        }
+
+        const proxyResult = await proxyResponse.json();
+        const textLength = (proxyResult.text || '').length;
+        console.log(`✅ VERTEX-DETAILS: Proxy success in ${elapsed}ms, returned ${textLength} chars`);
+        return proxyResult.text || '';
+      } catch (proxyError: any) {
+        const elapsed = Date.now() - t0;
+        const isNetworkError = ['ECONNRESET', 'ETIMEDOUT', 'ENOTFOUND', 'socket hang up', 'TLS'].some(
+          err => proxyError.message?.includes(err)
+        );
+
+        if (isNetworkError && attempt < maxRetries) {
+          console.warn(`⚠️  VERTEX-DETAILS: Network error after ${elapsed}ms: ${proxyError.message}, retrying...`);
+          continue; // Retry
+        }
+
+        console.error(`❌ VERTEX-DETAILS: Proxy call failed after ${elapsed}ms: ${proxyError.message}, falling back to direct call`);
+        break; // Fall through to direct call
       }
-
-      const proxyResult = await proxyResponse.json();
-      const textLength = (proxyResult.text || '').length;
-      console.log(`✅ VERTEX-DETAILS: Proxy success in ${elapsed}ms, returned ${textLength} chars`);
-      return proxyResult.text || '';
-    } catch (proxyError: any) {
-      const elapsed = Date.now() - t0;
-      console.error(`❌ VERTEX-DETAILS: Proxy call failed after ${elapsed}ms: ${proxyError.message}, falling back to direct call`);
-      // Fall through to direct call
     }
   } else {
     console.log(`🔍 VERTEX-DETAILS: Using direct Vertex call (grounded=${opts.grounded}, FORCE_PROXY=${FORCE_VERTEX_PROXY}, proxy_url=${VERTEX_PROXY_URL ? 'SET' : 'UNSET'})`);
@@ -174,7 +203,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: validationPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 90000
+      timeoutMs: 120000
     });
 
     console.log(`   🔍 Validation response: "${validationResponse}"`);
@@ -203,7 +232,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: sqftPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 90000
+      timeoutMs: 120000
     });
 
     console.log(`   🔍 Original sqft response: "${sqftResponse}"`);
@@ -220,7 +249,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: bedsPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 90000
+      timeoutMs: 120000
     });
 
     console.log(`   🔍 Original beds response: "${bedsResponse}"`);
@@ -237,7 +266,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: bathsPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 90000
+      timeoutMs: 120000
     });
 
     console.log(`   🔍 Original baths response: "${bathsResponse}"`);
@@ -254,7 +283,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: yearPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 90000
+      timeoutMs: 120000
     });
 
     console.log(`   🔍 Original year response: "${yearResponse}"`);

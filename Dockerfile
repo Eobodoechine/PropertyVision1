@@ -20,7 +20,7 @@ COPY agile-device-472202-i8-319f002d9438.json /app/agile-device-472202-i8-319f00
 COPY start-server.sh /app/start-server.sh
 RUN chmod +x /app/start-server.sh
 
-# Build the application
+# Build the application - updated with fixes
 RUN npm run build
 
 # Expose port
