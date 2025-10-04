@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { ComprehensiveComparableSearchV5 } from '../../../server/comprehensive-comp-search-v5';
-import logger, { logSearchRequest, logSearchResult, logSearchError } from '../../../server/utils/logger';
+import logger, { logSearchRequest, logSearchError } from '../../../server/utils/logger';
+import { getJobQueue } from '../../../server/utils/jobQueue';
+import { getRedisCache } from '../../../server/utils/redisCache';
 
-let analysisService: ComprehensiveComparableSearchV5;
+// Always use async mode now
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
-// Initialize the service (singleton pattern)
-function getAnalysisService() {
-  if (!analysisService) {
-    analysisService = new ComprehensiveComparableSearchV5();
-  }
-  return analysisService;
-}
+const redis = getRedisCache();
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -44,58 +41,41 @@ export async function POST(request: NextRequest) {
       ip: ip || 'unknown',
     });
 
-    const service = getAnalysisService();
-    const result = await service.findComparables(address);
-    const executionTimeMs = Date.now() - startTime;
+    // Ensure Redis is connected before operations
+    await redis.ensureConnected();
 
-    const responsePayload = {
-      subject: result.subject,
-      arv: result.arv ?? null,
-      twoBathArv: result.twoBathARV ?? null,
-      bathroomAnalysis: result.bathroomAnalysis,
-      renovationAnalysis: result.renovation_analysis,
-      compsUsed: result.qualified_comps,
-      allComps: result.all_comps,
-      confidenceScores: Object.fromEntries(result.consistency_scores.entries()),
-      searchMetadata: result.searchMetadata,
-    };
+    // Create async job
+    const jobQueue = getJobQueue();
+    const jobId = await jobQueue.enqueueJob(address, userId);
 
-    // Log successful search result
-    logSearchResult({
-      address,
-      userId: userId || undefined,
-      sessionId: sessionId || undefined,
-      arv: typeof result.arv === 'number' ? result.arv : (result.arv as any)?.estimate ?? null,
-      twoBathArv: typeof result.twoBathARV === 'number' ? result.twoBathARV : (result.twoBathARV as any)?.estimate ?? null,
-      compsCount: result.all_comps?.length || 0,
-      qualifiedCompsCount: result.qualified_comps?.length || 0,
-      executionTimeMs,
-      success: true,
+    console.log(`✅ Job ${jobId} created for address: ${address}`);
+
+    return NextResponse.json({
+      jobId,
+      status: 'queued',
+      message: 'Analysis started. Poll /api/analyze/status/{jobId} for results.'
     });
 
-    return NextResponse.json(responsePayload);
   } catch (error: any) {
     const executionTimeMs = Date.now() - startTime;
-    const message = error?.message || 'Analysis failed';
+    const message = error?.message || 'Failed to create job';
 
-    // Try to get address if available
     let address = '';
     try {
       const body = await request.clone().json();
       address = String(body?.address || '');
     } catch {}
 
-    // Log error with full context
     logSearchError({
       address,
       userId: undefined,
       sessionId: undefined,
       error: error instanceof Error ? error : new Error(message),
-      stage: 'analysis',
+      stage: 'job_creation',
     });
 
-    logger.error('Analysis failed', {
-      eventType: 'SEARCH_ERROR',
+    logger.error('Job creation failed', {
+      eventType: 'JOB_ERROR',
       address,
       executionTimeMs,
       errorMessage: message,
@@ -103,7 +83,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { error: 'Analysis failed', details: message },
+      { error: 'Failed to create analysis job', details: message },
       { status: 500 }
     );
   }
@@ -111,7 +91,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   return NextResponse.json(
-    { message: 'Use POST method to analyze properties' },
+    { message: 'Use POST method to analyze properties. This endpoint now uses async jobs - poll /api/analyze/status/{jobId} for results.' },
     { status: 405 }
   );
 }

@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import https from 'https';
 import crypto from 'crypto';
+import fetch from 'node-fetch';
 
 export type BasicDetails = {
   address: string;
@@ -77,6 +78,54 @@ async function vertexGenerate(opts: {
   timeoutMs: number;
   responseSchema?: any;
 }): Promise<string> {
+  // Route grounded searches through vertex-proxy to avoid VPC timeout issues
+  const FORCE_VERTEX_PROXY = ['true', '1', 'yes'].includes((process.env.FORCE_VERTEX_PROXY || '').toLowerCase());
+  const USE_VERTEX_PROXY = ['true', '1', 'yes'].includes((process.env.USE_VERTEX_PROXY || '').toLowerCase());
+  const VERTEX_PROXY_URL = process.env.VERTEX_PROXY_URL;
+  const PROXY_SHARED_KEY = process.env.PROXY_SHARED_KEY;
+
+  if (opts.grounded && (FORCE_VERTEX_PROXY || USE_VERTEX_PROXY) && VERTEX_PROXY_URL && PROXY_SHARED_KEY) {
+    console.log(`🔍 VERTEX-DETAILS: Routing grounded search through vertex-proxy (timeout=${opts.timeoutMs}ms, model=${opts.model})`);
+    const t0 = Date.now();
+    try {
+      const proxyResponse = await fetch(`${VERTEX_PROXY_URL}/vertex/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-proxy-key': PROXY_SHARED_KEY
+        },
+        body: JSON.stringify({
+          prompt: opts.prompt,
+          model: opts.model || 'gemini-2.5-pro',
+          timeoutMs: opts.timeoutMs,
+          temperature: 0.1,
+          maxOutputTokens: 8192,
+          grounded: true
+        })
+      });
+
+      const elapsed = Date.now() - t0;
+
+      if (!proxyResponse.ok) {
+        const errorBody = await proxyResponse.text().catch(() => 'no body');
+        console.error(`❌ VERTEX-DETAILS: Proxy returned ${proxyResponse.status} after ${elapsed}ms: ${errorBody.substring(0, 200)}`);
+        throw new Error(`Vertex proxy failed: ${proxyResponse.status} - ${errorBody.substring(0, 100)}`);
+      }
+
+      const proxyResult = await proxyResponse.json();
+      const textLength = (proxyResult.text || '').length;
+      console.log(`✅ VERTEX-DETAILS: Proxy success in ${elapsed}ms, returned ${textLength} chars`);
+      return proxyResult.text || '';
+    } catch (proxyError: any) {
+      const elapsed = Date.now() - t0;
+      console.error(`❌ VERTEX-DETAILS: Proxy call failed after ${elapsed}ms: ${proxyError.message}, falling back to direct call`);
+      // Fall through to direct call
+    }
+  } else {
+    console.log(`🔍 VERTEX-DETAILS: Using direct Vertex call (grounded=${opts.grounded}, FORCE_PROXY=${FORCE_VERTEX_PROXY}, proxy_url=${VERTEX_PROXY_URL ? 'SET' : 'UNSET'})`);
+  }
+
+  // Direct Vertex API call (non-grounded or proxy unavailable)
   const token = await getServiceAccountToken(opts.sa, 'https://www.googleapis.com/auth/cloud-platform');
   const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
   const payload: any = {
@@ -125,7 +174,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: validationPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 10000
+      timeoutMs: 90000
     });
 
     console.log(`   🔍 Validation response: "${validationResponse}"`);
@@ -154,7 +203,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: sqftPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 10000
+      timeoutMs: 90000
     });
 
     console.log(`   🔍 Original sqft response: "${sqftResponse}"`);
@@ -171,7 +220,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: bedsPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 10000
+      timeoutMs: 90000
     });
 
     console.log(`   🔍 Original beds response: "${bedsResponse}"`);
@@ -188,7 +237,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: bathsPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 10000
+      timeoutMs: 90000
     });
 
     console.log(`   🔍 Original baths response: "${bathsResponse}"`);
@@ -205,7 +254,7 @@ TYPE: [property type or UNKNOWN]`;
       prompt: yearPrompt,
       grounded: true,
       json: false,
-      timeoutMs: 10000
+      timeoutMs: 90000
     });
 
     console.log(`   🔍 Original year response: "${yearResponse}"`);

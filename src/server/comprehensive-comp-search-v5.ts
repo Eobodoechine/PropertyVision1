@@ -6,12 +6,11 @@
 import './utils/logger';
 
 import { VertexComparableSearchService } from './step3-find-comparables';
-import { ARVCalculationService } from './step4-arv-calculation';
 import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-details';
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
 import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
-import { VertexAIValuationService } from './vertexAIValuation';
+import { ARVCalculator } from './arvCalculator';
 import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder';
 
 interface ComprehensiveSearchResultV3 {
@@ -40,7 +39,7 @@ interface ComprehensiveSearchResultV3 {
     valueAddPercent: number;
     roiEstimate?: number;
   };
-  bathroomAnalysis: {
+  bathroomAnalysis?: {
     subjectBaths: number;
     recommendAction: 'hold' | 'renovate' | 'sell_as_is';
     baselineCompsUsed: number;
@@ -65,18 +64,16 @@ type SubjectSummary = Pick<BasicDetails,
 
 export class ComprehensiveComparableSearchV5 {
   private compService: VertexComparableSearchService;
-  private arvService: ARVCalculationService;
+  private arvCalculator: ARVCalculator;
   private normalizer: PropertyDataNormalizer;
   private deduplicator: VertexDeduplicator;
   private progressiveSearch: ProgressiveSearchStrategy;
-  private vertexAIService: VertexAIValuationService;
   constructor() {
     this.compService = new VertexComparableSearchService();
-    this.arvService = new ARVCalculationService();
+    this.arvCalculator = new ARVCalculator();
     this.normalizer = new PropertyDataNormalizer();
     this.deduplicator = new VertexDeduplicator();
     this.progressiveSearch = new ProgressiveSearchStrategy();
-    this.vertexAIService = new VertexAIValuationService();
   }
 
   async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
@@ -236,176 +233,76 @@ export class ComprehensiveComparableSearchV5 {
       const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
       const currentLevel = 1; // TODO: Make this dynamic based on progressive search
 
-      // Step 6: Vertex AI Valuation (replaces high-tier clustering)
-      console.log(`\n🤖 Step 6: Vertex AI Valuation Analysis`);
+      // Step 6: ARV Calculation using Central-Upper Chain Algorithm
+      console.log(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
 
-      // Try Vertex AI ARV calculation if we have sufficient comps
-      if (deduplicatedComps.length >= 3) {
-        console.log(`   📊 Attempting Vertex AI ARV with ${deduplicatedComps.length} comps...`);
+      let arvResult = undefined;
+      let qualifiedComps = deduplicatedComps;
 
-        const vertexResult = await this.vertexAIService.calculateARVWithAI(
-          subjectDetails,
-          deduplicatedComps,
-          currentLevel
+      if (deduplicatedComps.length >= 2 && subjectDetails.sqft) {
+        console.log(`   📊 Calculating ARV with ${deduplicatedComps.length} comps using PPSF clustering algorithm...`);
+
+        const arvCalcResult = this.arvCalculator.calculateARV(
+          { sqft: subjectDetails.sqft },
+          deduplicatedComps
         );
 
-        if (vertexResult.success) {
-          console.log(`   ✅ Vertex AI Success: ${vertexResult.arv?.method}`);
-          console.log(`   💰 ARV: $${vertexResult.arv?.estimate.toLocaleString()}`);
+        if (arvCalcResult.conservative && arvCalcResult.conservative.arv_price > 0) {
+          console.log(`   ✅ ARV Success: ${arvCalcResult.method_used}`);
+          console.log(`   💰 Conservative ARV: $${arvCalcResult.conservative.arv_price.toLocaleString()}`);
+          console.log(`   📊 Comps used: ${arvCalcResult.kept_comps?.length || 0}`);
 
-          // Return early with Vertex AI result
-          const endTime = Date.now();
-          const searchTime = Math.round((endTime - startTime) / 1000);
-
-          return {
-            subject: subjectSummary,
-            all_comps: deduplicatedComps,
-            qualified_comps: vertexResult.result.kept_comps,
-            consistency_scores: new Map(),
-            renovation_analysis: {
-              likely_renovated: [],
-              likely_unrenovated: [],
-              market_average: vertexResult.result.kept_comps
-            },
-            arv: {
-              method: vertexResult.arv?.method || 'vertex_ai',
-              estimate: vertexResult.arv?.estimate || 0,
-              confidence: (vertexResult.arv?.confidence === 'LOW' ? 'low' : vertexResult.arv?.confidence === 'HIGH' ? 'high' : 'medium') as 'high' | 'medium' | 'low',
-              dataPoints: vertexResult.arv?.dataPoints || 0
-            },
-            bathroomAnalysis: {
-              subjectBaths: subjectDetails.baths || 3,
-              recommendAction: 'hold',
-              baselineCompsUsed: vertexResult.result.kept_comps.length
-            },
-            searchMetadata: {
-              version: 'v5_vertex_ai',
-              strategy: 'progressive_expansion',
-              searchLevels: 1,
-              totalSearchTime: searchTime * 1000,
-              qualityScore: vertexResult.arv?.confidence === 'LOW' ? 'fair' : 'good',
-              cacheHits: 0,
-              normalizationSummary: {
-                method: 'vertex_ai_valuation',
-                notes: vertexResult.result.notes
-              },
-              deduplicationSummary: { duplicatesRemoved: 0, uniqueProperties: deduplicatedComps.length },
-              distanceValidationSummary
+          // Enrich kept comps with full data from original comps
+          const keptComps = arvCalcResult.kept_comps || deduplicatedComps;
+          qualifiedComps = keptComps.map(keptComp => {
+            // Find the original comp with all fields
+            const originalComp = deduplicatedComps.find(c => c.id === keptComp.id || c.address === keptComp.address);
+            if (originalComp) {
+              // Merge kept comp data (id, reason) with original comp data (beds, baths, distance, soldDate, etc)
+              const enriched = {
+                ...originalComp,
+                ...keptComp  // Preserve id and reason from kept_comps
+              };
+              console.log(`   🔍 Enriched comp ${enriched.id}: address="${enriched.address}", beds=${enriched.beds}, baths=${enriched.baths}, distance=${enriched.distance}, soldDate=${enriched.soldDate || enriched.sold_date}`);
+              return enriched;
             }
+            console.log(`   ⚠️  Could not find original comp for ${keptComp.id}: ${keptComp.address}`);
+            return keptComp;
+          });
+
+          const keptCompsCount = arvCalcResult.kept_comps?.length || 0;
+          const confidence: 'high' | 'medium' | 'low' =
+            keptCompsCount >= 4 ? 'high' :
+            keptCompsCount >= 3 ? 'medium' : 'low';
+
+          arvResult = {
+            method: arvCalcResult.method_used || 'arv_calculator',
+            estimate: arvCalcResult.conservative.arv_price,
+            confidence,
+            dataPoints: keptCompsCount
           };
         } else {
-          console.log(`   ❌ Vertex AI failed: ${vertexResult.reason}`);
-          console.log(`   🔄 Continuing to traditional ARV calculation...`);
+          console.log(`   ⚠️  ARV calculation returned insufficient data`);
         }
       } else {
-        console.log(`   ⚠️ Insufficient comps for Vertex AI (${deduplicatedComps.length} < 3)`);
-        console.log(`   🔄 Continuing to find more comps...`);
+        console.log(`   ⚠️ Insufficient comps for ARV (${deduplicatedComps.length} < 2)`);
       }
-
-      // If we reach here, Vertex AI failed or insufficient comps
-      const qualifiedComps = deduplicatedComps;
 
       // Step 7: Renovation analysis
       console.log(`\n🔨 Step 7: Renovation Analysis`);
       const renovationAnalysis = this.analyzeRenovationLevels(qualifiedComps);
 
-      // Step 8: Bathroom Analysis and Dual ARV Calculation
-      console.log(`\n🚿 Step 8: Bathroom Analysis & Dual ARV Calculation`);
-      const subjectBaths = this.computeSubjectBathrooms(subjectDetails);
-      console.log(`   🏠 Subject Bathrooms: ${subjectBaths}`);
-
-      // BASELINE ARV (same as V2)
-      let arvResult = undefined;
-      let twoBathARV = undefined;
-      let bathroomAnalysis: {
-        subjectBaths: number;
-        recommendAction: 'hold' | 'renovate' | 'sell_as_is';
-        baselineCompsUsed: number;
-        upgradeCompsUsed?: number;
-      } = {
-        subjectBaths,
-        recommendAction: 'sell_as_is',
-        baselineCompsUsed: 0
-      };
-
-      if (qualifiedComps.length >= 3 && subjectDetails.sqft) {
-        // Baseline ARV calculation
-        const baselineComps = this.filterComparablesForBaseline(qualifiedComps, subjectBaths, subjectDetails);
-        console.log(`   📊 Baseline comps (≤${subjectBaths} baths): ${baselineComps.length}`);
-
-        if (baselineComps.length >= 3) {
-          // Apply market-based bathroom adjustments to comparables
-          const adjustedComps = this.applyMarketBathroomAdjustments(baselineComps, subjectBaths);
-          const baselineARV = this.arvService.calculateARV(adjustedComps, subjectDetails.sqft);
-          arvResult = {
-            method: 'comprehensive_v3_baseline',
-            estimate: baselineARV.arv,
-            confidence: baselineARV.confidence,
-            dataPoints: baselineComps.length
-          };
-          bathroomAnalysis.baselineCompsUsed = baselineComps.length;
-          console.log(`   ✅ Baseline ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.confidence} confidence, ${arvResult.dataPoints} comps)`);
-        }
-
-        // TWO-BATHROOM ARV (only if subject has < 2 baths AND we have sufficient baseline comps)
-        if (subjectBaths < 2 && arvResult) {
-          console.log(`   🛁 Calculating 2-bathroom upgrade scenario...`);
-          const twoBathComps = this.filterComparablesForTwoBath(qualifiedComps, subjectDetails);
-          console.log(`   📊 Upgrade comps (2+ baths): ${twoBathComps.length}`);
-
-          if (twoBathComps.length >= 3 && baselineComps.length >= 3) {
-            const upgradeARV = this.arvService.calculateARV(twoBathComps, subjectDetails.sqft);
-            const baselineEstimate = arvResult ? arvResult.estimate : upgradeARV.arv * 0.85; // Fallback if no baseline
-            const valueAdd = upgradeARV.arv - baselineEstimate;
-            const valueAddPercent = (valueAdd / baselineEstimate) * 100;
-
-            // ROI Calculation
-            const estimatedRenovationCost = 12000;
-            const netGain = valueAdd - estimatedRenovationCost;
-            const roi = (netGain / estimatedRenovationCost) * 100;
-
-            twoBathARV = {
-              method: 'comprehensive_v3_upgrade',
-              estimate: upgradeARV.arv,
-              confidence: upgradeARV.confidence,
-              dataPoints: twoBathComps.length,
-              valueAdd,
-              valueAddPercent,
-              roiEstimate: roi
-            };
-
-            bathroomAnalysis.upgradeCompsUsed = twoBathComps.length;
-            bathroomAnalysis.recommendAction = this.generateRecommendation(
-              arvResult.estimate,
-              upgradeARV.arv,
-              arvResult.confidence
-            );
-
-            console.log(`   ✅ 2-Bath ARV: $${twoBathARV.estimate.toLocaleString()} (${twoBathARV.confidence} confidence, ${twoBathARV.dataPoints} comps)`);
-            console.log(`   💰 Value Add: $${valueAdd.toLocaleString()} (${valueAddPercent.toFixed(1)}%)`);
-            console.log(`   📈 ROI Estimate: ${roi.toFixed(1)}%`);
-          } else {
-            console.log(`   ⚠️  Insufficient comps for dual ARV analysis:`);
-            console.log(`       • Baseline comps (≤${subjectBaths} baths): ${baselineComps.length}/3 needed`);
-            console.log(`       • Upgrade comps (2+ baths): ${twoBathComps.length}/3 needed`);
-          }
-        } else {
-          console.log(`   ℹ️  Subject has ${subjectBaths} bathrooms - no upgrade scenario needed`);
-        }
-      } else {
-        console.log(`   ⚠️  Insufficient data for reliable ARV calculation (need ≥3 comps, have ${qualifiedComps.length})`);
-      }
-
-      console.log(`   🎯 Recommendation: ${bathroomAnalysis.recommendAction.toUpperCase().replace('_', ' ')}`);
-
       // Calculate quality score based on count and distance only
       const qualityScore = this.assessOverallQuality(qualifiedComps.length);
       const totalSearchTime = Date.now() - startTime;
 
-      console.log(`\n📊 COMPREHENSIVE SEARCH V3 COMPLETE`);
+      console.log(`\n📊 COMPREHENSIVE SEARCH V5 COMPLETE`);
       console.log(`   Quality Score: ${qualityScore}`);
       console.log(`   Total Time: ${totalSearchTime}ms`);
       console.log(`   Final Comps: ${qualifiedComps.length}`);
+      if (arvResult) {
+        console.log(`   ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.method})`);
+      }
       console.log(`============================================================\n`);
 
       return {
@@ -415,10 +312,8 @@ export class ComprehensiveComparableSearchV5 {
         consistency_scores: new Map(), // Empty map since we removed quality filtering
         renovation_analysis: renovationAnalysis,
         arv: arvResult,
-        twoBathARV,
-        bathroomAnalysis,
         searchMetadata: {
-          version: 'v3.0',
+          version: 'v5.0',
           strategy: 'progressive_expansion',
           searchLevels: searchLevel + 1,
           totalSearchTime,
@@ -1166,11 +1061,9 @@ async function testComprehensiveSearchV3() {
     console.log(`   Qualified: ${result.qualified_comps.length}`);
     console.log(`   Renovated: ${result.renovation_analysis.likely_renovated.length}`);
     console.log(`   Quality: ${result.searchMetadata.qualityScore}`);
-    console.log(`   Subject Baths: ${result.bathroomAnalysis.subjectBaths}`);
-    console.log(`   Recommendation: ${result.bathroomAnalysis.recommendAction}`);
 
     if (result.arv) {
-      console.log(`   Baseline ARV: $${result.arv.estimate.toLocaleString()}`);
+      console.log(`   ARV: $${result.arv.estimate.toLocaleString()}`);
     }
 
     if (result.twoBathARV) {

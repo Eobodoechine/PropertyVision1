@@ -19,6 +19,32 @@ export class ARVCalculator {
         return this.insufficientDataResult(cleaned, "Less than 2 valid comparables");
       }
 
+      // Special case: Flat PPSF (all comps have same PPSF)
+      const ppsfValues = cleaned.map(c => c.ppsf);
+      const minPPSF = Math.min(...ppsfValues);
+      const maxPPSF = Math.max(...ppsfValues);
+      const nonZeroGaps = ppsfValues
+        .slice(0, -1)
+        .map((ppsf, i) => ppsfValues[i + 1] - ppsf)
+        .filter(g => g > 0);
+
+      const epsilon = nonZeroGaps.length > 0 ? Math.min(...nonZeroGaps) : 1;
+
+      if (maxPPSF - minPPSF < epsilon) {
+        console.log('\n📊 SPECIAL: FLAT-PPSF MODE (all comps have same PPSF)');
+        console.log(`   Epsilon: ${epsilon.toFixed(2)}`);
+
+        // Keep top 2 prices that are PPSF neighbors
+        const sortedByPrice = [...cleaned].sort((a, b) => b.price - a.price);
+        const kept = sortedByPrice.slice(0, 2);
+        const dropped = cleaned
+          .filter(c => !kept.some(k => k.id === c.id))
+          .map(c => ({ id: c.id, reason_codes: ['flat_ppsf_excluded'] }));
+
+        console.log(`   Kept top 2 prices: ${kept.map(c => `${c.id}($${c.price.toLocaleString()})`).join(', ')}`);
+        return this.buildResult('FlatPPSF', kept, dropped, subject.sqft, true);
+      }
+
       // Special case: 3 comps
       if (cleaned.length === 3) {
         return this.handleThreeComps(cleaned, subject.sqft);
@@ -60,6 +86,98 @@ export class ARVCalculator {
   }
 
   /**
+   * Helper: Canonicalize street name for deduplication
+   */
+  canonicalizeStreet(address) {
+    if (!address) return '';
+
+    let normalized = address.toLowerCase().trim();
+
+    // Canonicalize street types
+    const streetTypes = {
+      'st': 'street', 'str': 'street',
+      'dr': 'drive', 'drv': 'drive',
+      'rd': 'road',
+      'ave': 'avenue', 'av': 'avenue',
+      'ln': 'lane',
+      'ct': 'court',
+      'cir': 'circle',
+      'blvd': 'boulevard',
+      'pkwy': 'parkway',
+      'pl': 'place',
+      'ter': 'terrace',
+      'way': 'way',
+      'trl': 'trail'
+    };
+
+    // Canonicalize directionals
+    const directionals = {
+      'n': 'north', 'no': 'north',
+      's': 'south', 'so': 'south',
+      'e': 'east',
+      'w': 'west',
+      'ne': 'northeast',
+      'nw': 'northwest',
+      'se': 'southeast',
+      'sw': 'southwest'
+    };
+
+    // Replace street types (word boundaries)
+    for (const [abbr, full] of Object.entries(streetTypes)) {
+      const regex = new RegExp(`\\b${abbr}\\b`, 'g');
+      normalized = normalized.replace(regex, full);
+    }
+
+    // Replace directionals (word boundaries)
+    for (const [abbr, full] of Object.entries(directionals)) {
+      const regex = new RegExp(`\\b${abbr}\\b`, 'g');
+      normalized = normalized.replace(regex, full);
+    }
+
+    // Remove extra spaces
+    normalized = normalized.replace(/\s+/g, ' ').trim();
+
+    return normalized;
+  }
+
+  /**
+   * Helper: Generate dedup key from address components
+   */
+  generateDedupKey(comp) {
+    // Prefer coordinates if available
+    if (comp.lat && comp.lng) {
+      return `coord:${Math.round(comp.lat * 1000000)},${Math.round(comp.lng * 1000000)}`;
+    }
+
+    // Parse address for line1|zip|unit format
+    const address = comp.address || '';
+    const parts = address.split(',').map(p => p.trim());
+
+    // Extract components
+    let line1 = parts[0] || '';
+    let zip = '';
+    let unit = '';
+
+    // Try to find ZIP code (5 digits)
+    const zipMatch = address.match(/\b(\d{5})\b/);
+    if (zipMatch) {
+      zip = zipMatch[1];
+    }
+
+    // Try to find unit/apt (simplified - look for # or Apt/Unit)
+    const unitMatch = address.match(/#\s*(\S+)|(?:apt|unit)\s*(\S+)/i);
+    if (unitMatch) {
+      unit = (unitMatch[1] || unitMatch[2] || '').toLowerCase();
+    }
+
+    // Canonicalize the street address
+    const normalized = this.canonicalizeStreet(line1);
+
+    // Return key: normalized_line1|zip|unit
+    return `addr:${normalized}|${zip}|${unit}`;
+  }
+
+  /**
    * Step 0: Clean and prepare data
    */
   cleanAndPrepare(comparables) {
@@ -90,44 +208,43 @@ export class ARVCalculator {
     // Remove duplicates by address (keep most recent)
     const deduped = [];
     const addressMap = new Map();
+    const dropped = [];
 
     for (const comp of cleaned) {
-      // Use coordinates for deduplication if available, otherwise fall back to address
-      let key;
-      if (comp.lat && comp.lng) {
-        // Round to 6 decimal places (~1 meter precision) for coordinate matching
-        key = `${Math.round(comp.lat * 1000000)},${Math.round(comp.lng * 1000000)}`;
-        console.log(`   Comp ${comp.id}: coordinates key = ${key}`);
-      } else {
-        key = comp.address.toLowerCase().trim();
-        console.log(`   Comp ${comp.id}: address key = ${key}`);
-      }
+      // Generate canonical dedup key
+      const key = this.generateDedupKey(comp);
+      console.log(`   Comp ${comp.id}: key = ${key}`);
 
       if (!addressMap.has(key)) {
         addressMap.set(key, comp);
         deduped.push(comp);
-        console.log(`   Added ${comp.id} with key ${key}`);
+        console.log(`   Added ${comp.id}`);
       } else {
         // Keep more recent sale
         const existing = addressMap.get(key);
-        console.log(`   Found duplicate: ${comp.id} matches existing ${existing.id} (key: ${key})`);
-        if (new Date(comp.saleDate) > new Date(existing.saleDate)) {
-          const index = deduped.findIndex(c => {
-            let cKey;
-            if (c.lat && c.lng) {
-              cKey = `${Math.round(c.lat * 1000000)},${Math.round(c.lng * 1000000)}`;
-            } else {
-              cKey = c.address.toLowerCase().trim();
-            }
-            return cKey === key;
-          });
+        console.log(`   Found duplicate: ${comp.id} matches existing ${existing.id}`);
+
+        const compDate = new Date(comp.saleDate);
+        const existingDate = new Date(existing.saleDate);
+
+        if (compDate > existingDate) {
+          const index = deduped.findIndex(c => this.generateDedupKey(c) === key);
           if (index !== -1) {
+            dropped.push({
+              id: existing.id,
+              reason_codes: ['dup_address_unit']
+            });
             deduped[index] = comp;
             addressMap.set(key, comp);
             console.log(`   Replaced ${existing.id} with ${comp.id} (newer date)`);
           }
+        } else {
+          dropped.push({
+            id: comp.id,
+            reason_codes: ['dup_address_unit']
+          });
+          console.log(`   Dropped ${comp.id} (older or same date)`);
         }
-        console.log(`   Duplicate removed: ${comp.address} (same coordinates: ${key})`);
       }
     }
 
@@ -297,8 +414,17 @@ export class ARVCalculator {
 
     console.log(`   Confirmed: ${confirmed.length} of ${block.length} comps`);
 
-    if (confirmed.length >= 3) {
-      console.log(`   ✅ HighCluster formed: ${confirmed.length} confirmed comps`);
+    // (D) Contiguity check: indices must be sequential with no gaps
+    confirmed.sort((a, b) => a - b);
+    const isContiguous = confirmed.length > 0 && confirmed.every((idx, i) => {
+      if (i === 0) return true;
+      return idx === confirmed[i - 1] + 1;
+    });
+
+    console.log(`   Confirmed indices: [${confirmed.join(', ')}], contiguous: ${isContiguous}`);
+
+    if (confirmed.length >= 3 && isContiguous) {
+      console.log(`   ✅ HighCluster formed: ${confirmed.length} confirmed contiguous comps`);
 
       const kept = confirmed.map(i => ({ ...sortedAsc[i], reason: 'high_cluster_supported' }));
       const dropped = comps.filter(comp => !kept.some(k => k.id === comp.id))
@@ -312,7 +438,11 @@ export class ARVCalculator {
       };
     }
 
-    console.log(`   ❌ HighCluster failed: only ${confirmed.length} confirmed`);
+    if (!isContiguous) {
+      console.log(`   ❌ HighCluster failed: confirmed comps not contiguous`);
+    } else {
+      console.log(`   ❌ HighCluster failed: only ${confirmed.length} confirmed (need >=3)`);
+    }
     return { success: false };
   }
 
@@ -364,14 +494,42 @@ export class ARVCalculator {
       keptIdx.push(i + 1);
       console.log(`     Since ${g.toFixed(2)} < ${lowerMaxGap.toFixed(2)}, ADD index ${i + 1}`);
       console.log(`   - chain = [${keptIdx.join(',')}] (${keptIdx.map(idx => sorted[idx].id).join(', ')})`);
+    }
 
-      if (keptIdx.length === 3) {
-        console.log(`     chain.length = 3, STOP (cap at 3)`);
-        break;
+    // Step E: Two-comp rescue if chain length = 1
+    if (keptIdx.length === 1) {
+      console.log(`   Step E: Chain length = 1, activating two-comp rescue`);
+
+      // Find tightest adjacent pair
+      let bestPair = null;
+      let bestGap = Infinity;
+
+      for (let i = 0; i < n - 1; i++) {
+        const gap = gaps[i];
+        if (gap < bestGap || (gap === bestGap && i > (bestPair?.start || -1))) {
+          bestPair = { start: i, gap };
+          bestGap = gap;
+        }
+      }
+
+      if (bestPair) {
+        const pairIndices = [bestPair.start, bestPair.start + 1];
+        console.log(`   Tightest pair: indices [${pairIndices.join(', ')}], gap ${bestGap.toFixed(2)}`);
+
+        const kept = pairIndices.map(i => ({ ...sorted[i], reason: 'two_comp_rescue' }));
+        const keptIds = new Set(pairIndices);
+        const dropped = sorted
+          .map((c, i) => keptIds.has(i) ? null : { id: c.id, reason_codes: ['outside_rescue_pair'] })
+          .filter(Boolean);
+
+        console.log(`   Rescue pair: ${kept.map(c => `${c.id}($${c.ppsf.toFixed(2)})`).join(', ')}`);
+        console.log(`   Thin market: true`);
+
+        return { kept, dropped, thin: true };
       }
     }
 
-    // Step E: Format results
+    // Step F: Format results (normal path)
     const kept = keptIdx.map(i => ({ ...sorted[i], reason: 'central_upper_chain' }));
     const keptIds = new Set(keptIdx);
     const dropped = sorted
@@ -395,36 +553,34 @@ export class ARVCalculator {
 
     const { kept, dropped } = chainResult;
 
-    if (kept.length <= 2) {
+    if (!kept || kept.length <= 2) {
       console.log('   Skipping isolation guard (≤2 comps, thin market protection)');
       return chainResult;
     }
 
+    const keptSet = new Set(kept.map(c => c.id));
     const finalKept = [];
     const additionalDropped = [];
 
     for (const comp of kept) {
-      // Find two closest prices among ALL comps
-      const otherPrices = allComps.filter(c => c.id !== comp.id).map(c => c.price);
-      const closestPrices = otherPrices
-        .map(price => ({ price, diff: Math.abs(price - comp.price) }))
+      // Find TWO closest prices among ALL comps (not just kept)
+      const closestTwo = allComps
+        .filter(c => c.id !== comp.id)
+        .map(c => ({ id: c.id, diff: Math.abs(c.price - comp.price) }))
         .sort((a, b) => a.diff - b.diff)
-        .slice(0, 2)
-        .map(p => p.price);
+        .slice(0, 2);
 
-      // Check if both closest prices are in the kept set
-      const bothInKept = closestPrices.every(price =>
-        kept.some(keptComp => keptComp.price === price)
-      );
+      const bothInKept = closestTwo.length === 2 && closestTwo.every(x => keptSet.has(x.id));
 
       if (bothInKept) {
         finalKept.push(comp);
-        console.log(`   ${comp.id} kept (closest prices in chain)`);
+        console.log(`   ${comp.id} kept (both closest neighbors in kept set)`);
       } else {
-        // Only drop if we'd still have ≥2 comps
-        if (kept.length - additionalDropped.length > 2) {
+        const remainingIfDropped = finalKept.length + (kept.length - (finalKept.length + additionalDropped.length) - 1);
+        const wouldStillHave2OrMore = remainingIfDropped >= 2;
+        if (wouldStillHave2OrMore) {
           additionalDropped.push({ id: comp.id, reason_codes: ['high_price_isolated'] });
-          console.log(`   ${comp.id} dropped (price isolated)`);
+          console.log(`   ${comp.id} dropped (price isolated - closest neighbors not both in kept)`);
         } else {
           finalKept.push(comp);
           console.log(`   ${comp.id} kept despite isolation (thin market protection)`);
@@ -433,9 +589,9 @@ export class ARVCalculator {
     }
 
     return {
+      ...chainResult,
       kept: finalKept,
-      dropped: [...dropped, ...additionalDropped],
-      thin: finalKept.length < 3
+      dropped: [...(dropped || []), ...additionalDropped],
     };
   }
 
@@ -451,6 +607,9 @@ export class ARVCalculator {
     }
 
     const { kept, dropped, thin } = chainResult;
+
+    // FIX #8: Validate all drops have reason_codes
+    this.validateDropReasons(dropped);
 
     // Calculate median PPSF
     const ppsfValues = kept.map(comp => comp.ppsf).sort((a, b) => a - b);
@@ -470,7 +629,7 @@ export class ARVCalculator {
     const arvPrice = Math.round(medianPpsf * subjectSqft);
     console.log(`   ARV = $${medianPpsf.toFixed(2)}/sqft × ${subjectSqft} sqft = $${arvPrice.toLocaleString()}`);
 
-    const conservativeResult = {
+    const result = {
       arv_ppsf: medianPpsf,
       arv_price: arvPrice,
       comp_ids: kept.map(comp => comp.id)
@@ -487,17 +646,32 @@ export class ARVCalculator {
         reason: comp.reason
       })),
       dropped_comps: dropped,
-      conservative: conservativeResult,
-      aggressive: method === 'HighCluster' ? conservativeResult : {
-        ...conservativeResult,
+      // FIX #7: Aggressive = HighCluster, Conservative = CentralUpperChain
+      aggressive: method === 'HighCluster' ? result : {
+        ...result,
         no_high_cluster: true
       },
+      conservative: method === 'HighCluster' ? {
+        ...result,
+        no_high_cluster: true
+      } : result,
       flags: {
         thin_market: thin,
         mixed_types: false
       },
       notes: `Applied ${method} methodology. ${kept.length} comps used for ARV calculation.`
     };
+  }
+
+  /**
+   * Validate drop reason codes (Fix #8)
+   */
+  validateDropReasons(dropped) {
+    const missingReasons = dropped.filter(d => !d.reason_codes || d.reason_codes.length === 0);
+    if (missingReasons.length > 0) {
+      console.error('⚠️ ASSERTION FAILED: Dropped comps missing reason_codes:', missingReasons);
+      throw new Error(`${missingReasons.length} dropped comps missing reason_codes`);
+    }
   }
 
   /**

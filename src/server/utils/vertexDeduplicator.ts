@@ -233,7 +233,13 @@ ${JSON.stringify(propertyList, null, 2)}`;
 
       console.log('🔍 DEDUP LINE 9: vertexGenerate completed successfully');
 
-      const result = JSON.parse(response);
+      // Strip markdown code fences before parsing
+      let cleanedResponse = response.trim();
+      if (cleanedResponse.startsWith('```')) {
+        cleanedResponse = cleanedResponse.replace(/^```json?\s*/i, '').replace(/```$/,'').trim();
+      }
+
+      const result = JSON.parse(cleanedResponse);
       console.log(`🤖 Vertex identified ${result.duplicate_groups.length} duplicate groups`);
 
       // Build final result
