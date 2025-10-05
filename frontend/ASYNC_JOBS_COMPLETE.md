@@ -62,17 +62,44 @@ This script will:
    }
    ```
 
-4. **Deploy frontend**:
+4. **Deploy frontend** (VERIFIED WORKING - Last deployed: 2025-10-05):
    ```bash
+   # Build frontend image first
+   cd /Users/eobodoechine/PropertyVision1/frontend
+   gcloud builds submit --tag gcr.io/agile-device-472202-i8/propertyvision-frontend:vN --project=agile-device-472202-i8
+
+   # Deploy frontend
    gcloud run deploy propertyvision-frontend \
-     --source . \
+     --image gcr.io/agile-device-472202-i8/propertyvision-frontend:vN \
      --region us-central1 \
+     --project agile-device-472202-i8 \
      --allow-unauthenticated \
      --vpc-connector redis-connector \
      --vpc-egress private-ranges-only \
-     --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,RUN_WORKER=false" \
-     --timeout 60
+     --service-account 839845580521-compute@developer.gserviceaccount.com \
+     --set-env-vars "RUN_WORKER=false,NODE_ENV=production,USE_GEO_PROXY=true,GEO_PROXY_URL=https://geo-proxy-839845580521.us-central1.run.app,USE_VERTEX_PROXY=true,FORCE_VERTEX_PROXY=true,VERTEX_PROXY_URL=https://vertex-proxy-839845580521.us-central1.run.app,REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,NODE_OPTIONS=--dns-result-order=ipv4first,GOOGLE_API_USE_REST=1" \
+     --set-secrets "PROXY_SHARED_KEY=proxy-shared-key:latest" \
+     --timeout 60 \
+     --memory 2Gi \
+     --cpu 2
    ```
+
+   **IMPORTANT:** Build image first with `gcloud builds submit --tag gcr.io/agile-device-472202-i8/propertyvision-frontend:vN` from `frontend/` directory. Do NOT use `--source .` as buildpack caching prevents code changes from being picked up.
+
+   **Critical Environment Variables Explained (14 total - MUST MATCH WORKER):**
+   - `RUN_WORKER=false` - Frontend mode (not worker)
+   - `NODE_ENV=production` - Production environment
+   - `USE_VERTEX_PROXY=true` & `FORCE_VERTEX_PROXY=true` - Routes all Vertex calls through proxy
+   - `VERTEX_PROXY_URL` - Required for Vertex AI proxy routing
+   - `USE_GEO_PROXY=true` & `GEO_PROXY_URL` - Geo-proxy config (not used with private-ranges-only but kept for compatibility)
+   - `REDIS_URL` - Redis connection (private IP)
+   - `GOOGLE_CLOUD_PROJECT_ID` - GCP project ID
+   - `GOOGLE_APPLICATION_CREDENTIALS` - **CRITICAL** Service account path for authentication
+   - `GCP_SA_JSON` - **CRITICAL** Service account path (also required)
+   - `GOOGLE_MAPS_API_KEY` - Maps API key
+   - `NODE_OPTIONS=--dns-result-order=ipv4first` - Prefer IPv4 for DNS
+   - `GOOGLE_API_USE_REST=1` - Force REST instead of gRPC for Google APIs
+   - `PROXY_SHARED_KEY` - Secret for authenticating with proxy services
 
 5. **Deploy worker service** (VERIFIED WORKING - Last deployed: 2025-10-04):
    ```bash
