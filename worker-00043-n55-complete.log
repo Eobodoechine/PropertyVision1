@@ -1,0 +1,72 @@
+2025-10-04T12:54:50.628771Z | [32minfo[39m: 🔄 Worker started: localhost:23 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.629Z"}
+2025-10-04T12:54:50.628465Z | 🔄 Worker started: localhost:23
+2025-10-04T12:54:50.628217Z | [32minfo[39m: ✅ Job queue initialized: stream=jobs, group=workers, consumer=localhost:23 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.628Z"}
+2025-10-04T12:54:50.627858Z | ✅ Job queue initialized: stream=jobs, group=workers, consumer=localhost:23
+2025-10-04T12:54:50.619927Z | [32minfo[39m: 🔗 Redis connection established {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.619Z"}
+2025-10-04T12:54:50.618596Z | 🔗 Redis connection established
+2025-10-04T12:54:50.618004Z | [32minfo[39m: ✅ Redis ready {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.618Z"}
+2025-10-04T12:54:50.617709Z | ✅ Redis ready
+2025-10-04T12:54:50.529403Z | [32minfo[39m: ✅ Redis connected {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.530Z"}
+2025-10-04T12:54:50.529122Z | ✅ Redis connected
+2025-10-04T12:54:50.516425Z | [32minfo[39m: ✅ Worker health check server listening on 0.0.0.0:8080 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.517Z"}
+2025-10-04T12:54:50.516190Z | ✅ Worker health check server listening on 0.0.0.0:8080
+2025-10-04T12:54:50.513101Z | Default STARTUP TCP probe succeeded after 1 attempt for container "propertyvision-worker-1" on port 8080.
+2025-10-04T12:54:50.478166Z | [32minfo[39m: 🚀 Starting job worker... {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.478Z"}
+2025-10-04T12:54:50.477914Z | 🚀 Starting job worker...
+2025-10-04T12:54:50.396152Z | [32minfo[39m: 📊 VERTEX CONFIG AT LOAD: USE_VERTEX_PROXY=true, FORCE=true, URL=SET {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.396Z"}
+2025-10-04T12:54:50.395633Z | 📊 VERTEX CONFIG AT LOAD: USE_VERTEX_PROXY=true, FORCE=true, URL=SET
+2025-10-04T12:54:50.394999980Z | 🚨🚨🚨 VERTEX-FREEFORM.JS v7.1 - PROXY ROUTING ENABLED 🚨🚨🚨
+2025-10-04T12:54:50.393603Z | [32minfo[39m: 🚨🚨🚨 VERTEX-FREEFORM.JS v7.1 - PROXY ROUTING ENABLED 🚨🚨🚨 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:54:50.392Z"}
+2025-10-04T12:54:50.390552Z | 🚨🚨🚨 VERTEX-FREEFORM.JS v7.1 - PROXY ROUTING ENABLED 🚨🚨🚨
+2025-10-04T12:54:46.351855Z | > tsx src/server/worker.ts
+2025-10-04T12:54:46.351836Z | > frontend@0.1.0 worker
+2025-10-04T12:54:45.659152Z | Starting new instance. Reason: MANUAL_OR_CUSTOMER_MIN_INSTANCE - Instance started because of customer-configured min-instances or manual scaling.
+2025-10-04T12:54:41.853817739Z | Container called exit(1).
+2025-10-04T12:54:28.663916Z | Node.js v20.19.5
+2025-10-04T12:54:28.663912Z | }
+2025-10-04T12:54:28.663909Z |   code: 4
+2025-10-04T12:54:28.663905Z |     at /app/node_modules/@google-cloud/promisify/build/src/index.js:114:21 {
+2025-10-04T12:54:28.663901Z |     at newCallback (/app/node_modules/@google-cloud/logging-winston/build/src/common.js:229:21)
+2025-10-04T12:54:28.663898Z |     at WritableState.onwrite (/app/node_modules/readable-stream/lib/_stream_writable.js:160:5)
+2025-10-04T12:54:28.663895Z |     at onwrite (/app/node_modules/readable-stream/lib/_stream_writable.js:427:11)
+2025-10-04T12:54:28.663891Z |     at onwriteError (/app/node_modules/readable-stream/lib/_stream_writable.js:409:5)
+2025-10-04T12:54:28.663881Z |     at errorOrDestroy (/app/node_modules/readable-stream/lib/internal/streams/destroy.js:90:101)
+2025-10-04T12:54:28.663877Z |     at LoggingWinston.emit (node:events:536:35)
+2025-10-04T12:54:28.663874Z |     at DerivedLogger.transportEvent (/app/node_modules/winston/lib/winston/logger.js:662:12)
+2025-10-04T12:54:28.663870Z | Emitted 'error' event on DerivedLogger instance at:
+2025-10-04T12:54:28.663867Z | GoogleError: Total timeout of API google.logging.v2.LoggingServiceV2 exceeded 60000 milliseconds retrying error Error: 14 UNAVAILABLE: No connection established. Last error: Failed to connect (2025-10-04T12:53:01.565Z). Resolution note:   before any response was received.
+    at repeat (/app/node_modules/google-gax/src/normalCalls/retries.ts:84:23)
+    at Timeout._onTimeout (/app/node_modules/google-gax/src/normalCalls/retries.ts:138:13)
+    at listOnTimeout (node:internal/timers:581:17)
+    at process.processTimers (node:internal/timers:519:7)
+2025-10-04T12:54:28.663821Z |                               ^
+2025-10-04T12:54:28.663816Z |                 const error = new googleError_1.GoogleError(`Total timeout of API ${apiName} exceeded ${retry.backoffSettings.totalTimeoutMillis} milliseconds ${err ? `retrying error ${err} ` : ''} before any response was received.`);
+2025-10-04T12:54:28.663789Z | /app/node_modules/google-gax/build/src/normalCalls/retries.js:66
+2025-10-04T12:54:26.763163Z | [31merror[39m: ❌ VERTEX-DETAILS: Proxy call failed after 91799ms: request to https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate failed, reason: socket hang up, falling back to direct call {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T12:54:21.364Z"}
+2025-10-04T12:54:26.363848Z | [32minfo[39m: 🔍 VERTEX-DETAILS: Routing grounded search through vertex-proxy (timeout=600000ms, model=gemini-2.5-pro) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:49.264Z"}
+2025-10-04T12:54:26.363681Z | [32minfo[39m:    🛑 MISSING CRITICAL DATA - Attempting targeted fallback searches... {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:49.163Z"}
+2025-10-04T12:54:26.363069Z | [32minfo[39m:    ⚠️  Primary grounded search failed: AggregateError {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:48.563Z"}
+2025-10-04T12:54:26.263507Z | [31merror[39m: ❌ VERTEX-DETAILS: Proxy call failed after 22401ms: request to https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate failed, reason: Client network socket disconnected before secure TLS connection was established, falling back to direct call {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T12:52:36.864Z"}
+2025-10-04T12:54:26.163889Z | [32minfo[39m: 🔍 VERTEX-DETAILS: Routing grounded search through vertex-proxy (timeout=600000ms, model=gemini-2.5-pro) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:14.165Z"}
+2025-10-04T12:54:21.363242Z | ❌ VERTEX-DETAILS: Proxy call failed after 91799ms: request to https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate failed, reason: socket hang up, falling back to direct call
+2025-10-04T12:52:49.263539Z | 🔍 VERTEX-DETAILS: Routing grounded search through vertex-proxy (timeout=600000ms, model=gemini-2.5-pro)
+2025-10-04T12:52:48.963227Z |    🛑 MISSING CRITICAL DATA - Attempting targeted fallback searches...
+2025-10-04T12:52:48.363253Z |    ⚠️  Primary grounded search failed: AggregateError
+2025-10-04T12:52:36.763846Z | ❌ VERTEX-DETAILS: Proxy call failed after 22401ms: request to https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate failed, reason: Client network socket disconnected before secure TLS connection was established, falling back to direct call
+2025-10-04T12:52:14.164985Z | 🔍 VERTEX-DETAILS: Routing grounded search through vertex-proxy (timeout=600000ms, model=gemini-2.5-pro)
+2025-10-04T12:52:13.363177Z | 📋 Step 1: Subject Property Research {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:12.965Z"}
+2025-10-04T12:52:13.363168Z | [32minfo[39m: 
+2025-10-04T12:52:12.965188Z | 📋 Step 1: Subject Property Research
+2025-10-04T12:52:12.964815Z | [32minfo[39m: 📍 Analyzing: 2173 Wellington Cir, Lithonia, GA 30058 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:12.964Z"}
+2025-10-04T12:52:12.864273Z | 📍 Analyzing: 2173 Wellington Cir, Lithonia, GA 30058
+2025-10-04T12:52:12.864116Z | [32minfo[39m: ============================================================ {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:12.663Z"}
+2025-10-04T12:52:12.564286Z | ============================================================
+2025-10-04T12:52:12.463283Z | 🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:12.264Z"}
+2025-10-04T12:52:12.463269Z | [32minfo[39m: 
+2025-10-04T12:52:12.164364Z | 🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI
+2025-10-04T12:52:11.263757Z | [32minfo[39m: ⚙️  Processing job 9305fbb9-d1e1-49e4-a656-676dcef2ab87: 2173 Wellington Cir, Lithonia, GA 30058 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:11.264Z"}
+2025-10-04T12:52:11.263446Z | ⚙️  Processing job 9305fbb9-d1e1-49e4-a656-676dcef2ab87: 2173 Wellington Cir, Lithonia, GA 30058
+2025-10-04T12:52:10.663851Z | [32minfo[39m: 📬 Received 1 stream(s) with messages {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:10.664Z"}
+2025-10-04T12:52:10.663283Z | 📬 Received 1 stream(s) with messages
+2025-10-04T12:52:07.265135Z | [32minfo[39m: ⏱️  No messages received (timeout or empty queue) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T12:52:07.265Z"}
+2025-10-04T12:52:07.264623Z | ⏱️  No messages received (timeout or empty queue)

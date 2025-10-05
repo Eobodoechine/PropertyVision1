@@ -1,0 +1,789 @@
+[
+  {
+    "httpRequest": {
+      "latency": "0.008774440s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.166",
+      "requestMethod": "GET",
+      "requestSize": "761",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e1000500019bcb5b93423a",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:07:49.370649726Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "62b67af4cf02bad2",
+    "timestamp": "2025-10-04T11:07:49.094768Z",
+    "trace": "projects/agile-device-472202-i8/traces/e48ee5619de833975cc8c4e1291f787f",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.007528310s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.252.47",
+      "requestMethod": "GET",
+      "requestSize": "761",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0fff20000cbc2d1c2b028",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:07:30.055989515Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0df3e76459f900bb",
+    "timestamp": "2025-10-04T11:07:30.043062Z",
+    "trace": "projects/agile-device-472202-i8/traces/878d12d466100d5973f995140874fa83",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.008752710s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.252.47",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ffdf000ac18bbea2cea1",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:07:11.709664102Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "4518bdb9d4bbfe03",
+    "timestamp": "2025-10-04T11:07:11.694602Z",
+    "trace": "projects/agile-device-472202-i8/traces/e0936a6ee66ea4b7f9b9b64a561fbdf9",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.008054299s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.167",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ffcc00010678d4e08ac9",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:06:52.071380928Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "4523db308f78b80a",
+    "timestamp": "2025-10-04T11:06:52.057717Z",
+    "trace": "projects/agile-device-472202-i8/traces/33bf67d2af3bb23280ceb67b368b4915",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.009954009s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.252.47",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ffba000ea79abdfc4081",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:06:34.965612969Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d081c01a20a31ba0",
+    "timestamp": "2025-10-04T11:06:34.948628Z",
+    "trace": "projects/agile-device-472202-i8/traces/7af7f150e9eb90d5002c6baf7a8fc3ff",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.008330109s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.167",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ffa900092d545cac6283",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:06:17.605227568Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "73ba9be152b623a8",
+    "timestamp": "2025-10-04T11:06:17.591494Z",
+    "trace": "projects/agile-device-472202-i8/traces/59b4befdcf52800afccd19902be1cf57",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.009019799s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.252.47",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff96000e6252efab9817",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:05:58.947534865Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "f70fdf0b354aac39",
+    "timestamp": "2025-10-04T11:05:58.932087Z",
+    "trace": "projects/agile-device-472202-i8/traces/46e65b2b86b9b725a307be83c8427e55",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.009110139s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.166",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff84000eff04847197c0",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:05:40.988050896Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "ccaa0d89919a9128",
+    "timestamp": "2025-10-04T11:05:40.972109Z",
+    "trace": "projects/agile-device-472202-i8/traces/d320d5907f1a83f5d7ccf6e2e31cfa64",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.008492679s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.252.47",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff74000101f7cf275ced",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:05:24.070202045Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "cb2cb73787f0375c",
+    "timestamp": "2025-10-04T11:05:24.055889Z",
+    "trace": "projects/agile-device-472202-i8/traces/fb36f76e972ca6a7cf192d05f7b876f6",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.009807139s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.167",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff61000b5e7c4ea646c1",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:05:05.748402089Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "402451fe8437198a",
+    "timestamp": "2025-10-04T11:05:05.733951Z",
+    "trace": "projects/agile-device-472202-i8/traces/9acffca9d2bd76925862a76d16e9f632",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.009456428s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.252.47",
+      "requestMethod": "GET",
+      "requestSize": "761",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff4f000bba991290b5b3",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:04:47.774964001Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c0639b80536364e0",
+    "timestamp": "2025-10-04T11:04:47.757693Z",
+    "trace": "projects/agile-device-472202-i8/traces/e91307d618d9d4743aabcb960bc23bd6",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.007033479s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.167",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff3f0008024438bdff94",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:04:31.530215194Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0fc1bb7981bd15e9",
+    "timestamp": "2025-10-04T11:04:31.516477Z",
+    "trace": "projects/agile-device-472202-i8/traces/e47b056e4ef26520e799020c0627c2f0",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.009481740s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.166",
+      "requestMethod": "GET",
+      "requestSize": "761",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff320004700a3ff7129c",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:04:18.358061993Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "f4b73344aa3842ce",
+    "timestamp": "2025-10-04T11:04:18.279693Z",
+    "trace": "projects/agile-device-472202-i8/traces/729609cad7fa4296eb585a63955ef524",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.010637879s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.167",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff2700044f78c6d89478",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:04:07.369919552Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e2d1f99b51f5b0f9",
+    "timestamp": "2025-10-04T11:04:07.270372Z",
+    "trace": "projects/agile-device-472202-i8/traces/2c130a6878d1e5d8170e1d622b5af0f3",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.008942780s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.166",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff1d000b6989a8f162ad",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:03:58.044183979Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d7acf0c8c27fb3db",
+    "timestamp": "2025-10-04T11:03:57.737421Z",
+    "trace": "projects/agile-device-472202-i8/traces/f99b3cf93918d148fd7e3f8a1ceaf5d8"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.015074129s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.166",
+      "requestMethod": "GET",
+      "requestSize": "762",
+      "requestUrl": "https://enohomebuyers.com/api/analyze/status/6cdbebdb-7a94-46cf-a067-a3ac56049806",
+      "responseSize": "335",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff170001625460d84a65",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:03:51.383479124Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9641a78c5714fa02",
+    "timestamp": "2025-10-04T11:03:51.074091Z",
+    "trace": "projects/agile-device-472202-i8/traces/479a6ccd2ada9b03f4657e712dac574d"
+  },
+  {
+    "insertId": ".........0LCKzgnhxd9dtrwYBmBFax4",
+    "jsonPayload": {
+      "message": "✅ Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 created for address: 2101 Newgate Dr, Decatur, GA 30035",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-04T11:03:51.105267637Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-04T11:03:50.877000093Z"
+  },
+  {
+    "insertId": ".........0DCKzgnhxd9dtrwYBmBFax4",
+    "jsonPayload": {
+      "message": "📋 Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 enqueued for address: 2101 Newgate Dr, Decatur, GA 30035",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-04T11:03:51.105267637Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-04T11:03:50.877000093Z"
+  },
+  {
+    "insertId": "68e0ff1600024a5236fea36f",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T11:03:50.484026529Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 created for address: 2101 Newgate Dr, Decatur, GA 30035 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-04T11:03:50.150Z\"}",
+    "timestamp": "2025-10-04T11:03:50.150098Z"
+  },
+  {
+    "insertId": "68e0ff1600024951a68a1a3f",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T11:03:50.484026529Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 created for address: 2101 Newgate Dr, Decatur, GA 30035",
+    "timestamp": "2025-10-04T11:03:50.149841Z"
+  },
+  {
+    "insertId": "68e0ff160002487d961545fa",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T11:03:50.484026529Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📋 Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 enqueued for address: 2101 Newgate Dr, Decatur, GA 30035 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-04T11:03:50.149Z\"}",
+    "timestamp": "2025-10-04T11:03:50.149629Z"
+  },
+  {
+    "insertId": "68e0ff1600024771e5640073",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T11:03:50.484026529Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📋 Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 enqueued for address: 2101 Newgate Dr, Decatur, GA 30035",
+    "timestamp": "2025-10-04T11:03:50.149361Z"
+  },
+  {
+    "insertId": "68e0ff1600023b2d68b53950",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T11:03:50.150992206Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: Search request received {\"address\":\"2101 Newgate Dr, Decatur, GA 30035\",\"environment\":\"production\",\"eventType\":\"SEARCH_REQUEST\",\"ip\":\"51.158.254.166\",\"service\":\"propertyvision-backend\",\"timestamp\":\"2025-10-04T11:03:50.145Z\"}",
+    "timestamp": "2025-10-04T11:03:50.146221Z"
+  },
+  {
+    "insertId": ".........05CKzgnhxd9dtrwYBmBFax4",
+    "jsonPayload": {
+      "message": "Search request received",
+      "metadata": {
+        "address": "2101 Newgate Dr, Decatur, GA 30035",
+        "environment": "production",
+        "eventType": "SEARCH_REQUEST",
+        "ip": "51.158.254.166",
+        "service": "propertyvision-backend"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-04T11:03:50.234496072Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-04T11:03:50.145999908Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.012771829s",
+      "protocol": "HTTP/1.1",
+      "referer": "https://enohomebuyers.com/",
+      "remoteIp": "51.158.254.166",
+      "requestMethod": "POST",
+      "requestSize": "854",
+      "requestUrl": "https://enohomebuyers.com/api/analyze",
+      "responseSize": "359",
+      "serverIp": "216.239.34.21",
+      "status": 200,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    },
+    "insertId": "68e0ff16000250d133ef4710",
+    "labels": {
+      "instanceId": "0069c7a988cbeb5357bcff413e302bff6bb247c9e3836978b34eb50eb3c6133d389049a28d9a7c2c2f804666484be72f448a6d3fc63993e9744cc46681aab1854942b7d9653fbfc29dcd1f5e4f440dbd25a0ba"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T11:03:50.385268438Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c71adc2d81060cfd",
+    "timestamp": "2025-10-04T11:03:50.137540Z",
+    "trace": "projects/agile-device-472202-i8/traces/2166190aeccc5a85f4657e712dac5ee1",
+    "traceSampled": true
+  }
+]

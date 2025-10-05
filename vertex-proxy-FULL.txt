@@ -1,0 +1,214 @@
+2025-10-04T04:09:57.746204Z	elapsedMs=44461;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:09:57.746Z
+2025-10-04T04:09:13.284156Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T04:09:13.285Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:09:13.283926Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T04:09:13.284Z
+2025-10-04T04:09:13.271982Z	
+2025-10-04T04:08:04.832155Z	elapsedMs=5349;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:08:04.832Z
+2025-10-04T04:07:59.481403Z	event=vertex.proxy.request;payloadSize=1514;timestamp=2025-10-04T04:07:59.482Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:07:59.481286Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1330;timeoutMs=30000;timestamp=2025-10-04T04:07:59.481Z
+2025-10-04T04:07:59.477690Z	
+2025-10-04T04:07:55.663076Z	elapsedMs=6277;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:55.663Z
+2025-10-04T04:07:52.246414Z	elapsedMs=4869;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:52.246Z
+2025-10-04T04:07:50.815619Z	elapsedMs=34520;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:50.816Z
+2025-10-04T04:07:49.384116Z	event=vertex.proxy.request;payloadSize=1628;timestamp=2025-10-04T04:07:49.385Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:07:49.383991Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1443;timeoutMs=30000;timestamp=2025-10-04T04:07:49.384Z
+2025-10-04T04:07:49.380389Z	
+2025-10-04T04:07:47.504771Z	elapsedMs=5126;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:47.505Z
+2025-10-04T04:07:47.375326Z	event=vertex.proxy.request;payloadSize=1353;timestamp=2025-10-04T04:07:47.375Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:07:47.375249Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1170;timeoutMs=30000;timestamp=2025-10-04T04:07:47.375Z
+2025-10-04T04:07:47.371265Z	
+2025-10-04T04:07:46.146228Z	elapsedMs=30861;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:46.146Z
+2025-10-04T04:07:43.637586Z	elapsedMs=6161;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:43.638Z
+2025-10-04T04:07:42.531732Z	elapsedMs=25156;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:42.532Z
+2025-10-04T04:07:42.377144Z	event=vertex.proxy.request;payloadSize=1355;timestamp=2025-10-04T04:07:42.378Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:07:42.377054Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1172;timeoutMs=30000;timestamp=2025-10-04T04:07:42.377Z
+2025-10-04T04:07:42.373433Z	
+2025-10-04T04:07:38.451307Z	elapsedMs=28567;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:38.451Z
+2025-10-04T04:07:38.374561Z	elapsedMs=3290;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:38.375Z
+2025-10-04T04:07:37.475463Z	event=vertex.proxy.request;payloadSize=1508;timestamp=2025-10-04T04:07:37.476Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:07:37.475348Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1324;timeoutMs=30000;timestamp=2025-10-04T04:07:37.475Z
+2025-10-04T04:07:37.471733Z	
+2025-10-04T04:07:35.087214Z	elapsedMs=21312;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:35.088Z
+2025-10-04T04:07:35.083342Z	event=vertex.proxy.request;payloadSize=1254;timestamp=2025-10-04T04:07:35.084Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:07:35.083245Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1072;timeoutMs=30000;timestamp=2025-10-04T04:07:35.084Z
+2025-10-04T04:07:35.079568Z	
+2025-10-04T04:07:33.180714Z	elapsedMs=21495;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:07:33.181Z
+2025-10-04T04:07:17.374785Z	event=vertex.proxy.request;payloadSize=1285;timestamp=2025-10-04T04:07:17.375Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:07:17.374661Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1121;timeoutMs=60000;timestamp=2025-10-04T04:07:17.375Z
+2025-10-04T04:07:17.371343Z	
+2025-10-04T04:07:16.294168Z	event=vertex.proxy.request;payloadSize=1285;timestamp=2025-10-04T04:07:16.295Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:07:16.293709Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1121;timeoutMs=60000;timestamp=2025-10-04T04:07:16.294Z
+2025-10-04T04:07:16.287245Z	
+2025-10-04T04:07:15.283505Z	event=vertex.proxy.request;payloadSize=1285;timestamp=2025-10-04T04:07:15.284Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:07:15.283372Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1121;timeoutMs=60000;timestamp=2025-10-04T04:07:15.284Z
+2025-10-04T04:07:15.279768Z	
+2025-10-04T04:07:13.773834Z	event=vertex.proxy.request;payloadSize=1312;timestamp=2025-10-04T04:07:13.774Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:07:13.773733Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1147;timeoutMs=60000;timestamp=2025-10-04T04:07:13.774Z
+2025-10-04T04:07:13.769901Z	
+2025-10-04T04:07:11.683906Z	event=vertex.proxy.request;payloadSize=1312;timestamp=2025-10-04T04:07:11.684Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:07:11.683792Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1147;timeoutMs=60000;timestamp=2025-10-04T04:07:11.684Z
+2025-10-04T04:07:11.680039Z	
+2025-10-04T04:07:09.883090Z	event=vertex.proxy.request;payloadSize=1312;timestamp=2025-10-04T04:07:09.883Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:07:09.883024Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1147;timeoutMs=60000;timestamp=2025-10-04T04:07:09.883Z
+2025-10-04T04:07:09.872464Z	
+2025-10-04T04:05:38.010996Z	elapsedMs=40000;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:05:38.011Z
+2025-10-04T04:04:58.027947Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T04:04:58.028Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:04:58.009445Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T04:04:58.010Z
+2025-10-04T04:04:57.998908Z	
+2025-10-04T04:04:47.359418Z	elapsedMs=39060;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:04:47.360Z
+2025-10-04T04:04:08.301327Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T04:04:08.301Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:04:08.299460Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T04:04:08.298Z
+2025-10-04T04:04:08.288936Z	
+2025-10-04T04:03:30.827442Z	elapsedMs=4623;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:03:30.827Z
+2025-10-04T04:03:26.207622Z	event=vertex.proxy.request;payloadSize=1351;timestamp=2025-10-04T04:03:26.207Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:03:26.203321Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1168;timeoutMs=30000;timestamp=2025-10-04T04:03:26.203Z
+2025-10-04T04:03:26.193246Z	
+2025-10-04T04:03:20.423295Z	elapsedMs=24508;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:03:20.424Z
+2025-10-04T04:02:55.912974Z	event=vertex.proxy.request;payloadSize=1464;timestamp=2025-10-04T04:02:55.913Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:02:55.912851Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1300;timeoutMs=60000;timestamp=2025-10-04T04:02:55.913Z
+2025-10-04T04:02:55.889651Z	
+2025-10-04T04:01:38.401408Z	elapsedMs=5425;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:38.401Z
+2025-10-04T04:01:32.974571Z	event=vertex.proxy.request;payloadSize=1465;timestamp=2025-10-04T04:01:32.975Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:01:32.974476Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1281;timeoutMs=30000;timestamp=2025-10-04T04:01:32.975Z
+2025-10-04T04:01:32.970688Z	
+2025-10-04T04:01:12.503563Z	elapsedMs=4612;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:12.504Z
+2025-10-04T04:01:07.890437Z	event=vertex.proxy.request;payloadSize=1337;timestamp=2025-10-04T04:01:07.891Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:01:07.890323Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1154;timeoutMs=30000;timestamp=2025-10-04T04:01:07.891Z
+2025-10-04T04:01:07.886514Z	
+2025-10-04T04:01:06.808745Z	elapsedMs=6427;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:06.809Z
+2025-10-04T04:01:05.876051Z	elapsedMs=5500;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:05.876Z
+2025-10-04T04:01:05.175531Z	elapsedMs=29598;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:05.176Z
+2025-10-04T04:01:04.023223Z	elapsedMs=3645;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:04.023Z
+2025-10-04T04:01:02.576081Z	elapsedMs=28900;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:01:02.576Z
+2025-10-04T04:01:00.380052Z	event=vertex.proxy.request;payloadSize=1665;timestamp=2025-10-04T04:01:00.380Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:01:00.379940Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1480;timeoutMs=30000;timestamp=2025-10-04T04:01:00.380Z
+2025-10-04T04:01:00.376746Z	event=vertex.proxy.request;payloadSize=1246;timestamp=2025-10-04T04:01:00.377Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:01:00.376647Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1064;timeoutMs=30000;timestamp=2025-10-04T04:01:00.377Z
+2025-10-04T04:01:00.373642Z	event=vertex.proxy.request;payloadSize=1522;timestamp=2025-10-04T04:01:00.374Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T04:01:00.373378Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1338;timeoutMs=30000;timestamp=2025-10-04T04:01:00.374Z
+2025-10-04T04:01:00.370741Z	
+2025-10-04T04:01:00.369837Z	
+2025-10-04T04:01:00.369512Z	
+2025-10-04T04:00:53.490258Z	elapsedMs=30097;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:00:53.491Z
+2025-10-04T04:00:50.847903Z	elapsedMs=26570;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:00:50.848Z
+2025-10-04T04:00:48.454852Z	elapsedMs=27470;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:00:48.455Z
+2025-10-04T04:00:46.816891Z	elapsedMs=24840;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T04:00:46.817Z
+2025-10-04T04:00:35.575223Z	event=vertex.proxy.request;payloadSize=1285;timestamp=2025-10-04T04:00:35.576Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:00:35.575101Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1121;timeoutMs=60000;timestamp=2025-10-04T04:00:35.576Z
+2025-10-04T04:00:35.571600Z	
+2025-10-04T04:00:33.674971Z	event=vertex.proxy.request;payloadSize=1285;timestamp=2025-10-04T04:00:33.675Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:00:33.674811Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1121;timeoutMs=60000;timestamp=2025-10-04T04:00:33.675Z
+2025-10-04T04:00:33.671088Z	
+2025-10-04T04:00:24.276251Z	event=vertex.proxy.request;payloadSize=1285;timestamp=2025-10-04T04:00:24.276Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:00:24.276129Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1121;timeoutMs=60000;timestamp=2025-10-04T04:00:24.276Z
+2025-10-04T04:00:24.272615Z	
+2025-10-04T04:00:23.391804Z	event=vertex.proxy.request;payloadSize=1312;timestamp=2025-10-04T04:00:23.392Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:00:23.391693Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1147;timeoutMs=60000;timestamp=2025-10-04T04:00:23.392Z
+2025-10-04T04:00:23.387595Z	
+2025-10-04T04:00:21.973647Z	event=vertex.proxy.request;payloadSize=1312;timestamp=2025-10-04T04:00:21.974Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:00:21.973535Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1147;timeoutMs=60000;timestamp=2025-10-04T04:00:21.974Z
+2025-10-04T04:00:21.970081Z	
+2025-10-04T04:00:20.983074Z	event=vertex.proxy.request;payloadSize=1312;timestamp=2025-10-04T04:00:20.983Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T04:00:20.982843Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=1147;timeoutMs=60000;timestamp=2025-10-04T04:00:20.983Z
+2025-10-04T04:00:20.971299Z	
+2025-10-04T03:52:12.512929Z	elapsedMs=31872;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:52:12.513Z
+2025-10-04T03:51:40.639596Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T03:51:40.640Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T03:51:40.639399Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T03:51:40.640Z
+2025-10-04T03:51:40.626751Z	
+2025-10-04T03:51:21.907712Z	elapsedMs=52375;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:51:21.908Z
+2025-10-04T03:50:46.221237Z	elapsedMs=1175;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:50:46.221Z
+2025-10-04T03:50:45.044996Z	event=vertex.proxy.request;payloadSize=733;timestamp=2025-10-04T03:50:45.045Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T03:50:45.044862Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=554;timeoutMs=30000;timestamp=2025-10-04T03:50:45.045Z
+2025-10-04T03:50:45.041047Z	
+2025-10-04T03:50:38.223424Z	elapsedMs=293;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:50:38.223Z
+2025-10-04T03:50:37.929810Z	event=vertex.proxy.request;payloadSize=1402;timestamp=2025-10-04T03:50:37.930Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T03:50:37.929707Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=1219;timeoutMs=30000;timestamp=2025-10-04T03:50:37.929Z
+2025-10-04T03:50:37.925831Z	
+2025-10-04T03:50:29.977230Z	elapsedMs=2014;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:50:29.977Z
+2025-10-04T03:50:29.531152Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T03:50:29.531Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T03:50:29.531003Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T03:50:29.531Z
+2025-10-04T03:50:29.527347Z	
+2025-10-04T03:50:27.961814Z	event=vertex.proxy.request;payloadSize=912;timestamp=2025-10-04T03:50:27.962Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T03:50:27.961796Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=732;timeoutMs=30000;timestamp=2025-10-04T03:50:27.961Z
+2025-10-04T03:50:27.945073Z	
+2025-10-04T03:47:40.547543Z	elapsedMs=46607;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:47:40.548Z
+2025-10-04T03:47:39.280838Z	elapsedMs=43447;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:47:39.281Z
+2025-10-04T03:46:55.831989Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T03:46:55.832Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T03:46:55.831634Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T03:46:55.831Z
+2025-10-04T03:46:55.826300Z	
+2025-10-04T03:46:53.939489Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T03:46:53.939Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T03:46:53.939160Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T03:46:53.939Z
+2025-10-04T03:46:53.926091Z	
+2025-10-04T03:46:10.178559Z	elapsedMs=37335;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:46:10.179Z
+2025-10-04T03:45:32.842472Z	event=vertex.proxy.request;payloadSize=7300;timestamp=2025-10-04T03:45:32.842Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T03:45:32.841842Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6660;timeoutMs=120000;timestamp=2025-10-04T03:45:32.841Z
+2025-10-04T03:45:32.827871Z	
+2025-10-04T03:38:19.860078Z	elapsedMs=2876;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:38:19.860Z
+2025-10-04T03:38:17.029333Z	event=vertex.proxy.request;payloadSize=1118;timestamp=2025-10-04T03:38:17.030Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T03:38:16.980240Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=937;timeoutMs=30000;timestamp=2025-10-04T03:38:16.980Z
+2025-10-04T03:38:16.890172Z	event=vertex.proxy.started;port=8080;project=agile-device-472202-i8;timestamp=2025-10-04T03:38:16.889Z
+2025-10-04T03:38:16.888524Z	
+2025-10-04T03:38:13.998288Z	
+2025-10-04T03:38:13.943951Z	
+2025-10-04T03:12:51.020011Z	elapsedMs=262;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:12:51.021Z
+2025-10-04T03:12:50.756271Z	event=vertex.proxy.request;payloadSize=142;timestamp=2025-10-04T03:12:50.757Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T03:12:50.756114Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=6;timeoutMs=5000;timestamp=2025-10-04T03:12:50.757Z
+2025-10-04T03:12:50.752321Z	
+2025-10-04T03:12:47.866792Z	elapsedMs=2252;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:12:47.867Z
+2025-10-04T03:12:45.612398Z	event=vertex.proxy.request;payloadSize=142;timestamp=2025-10-04T03:12:45.613Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent
+2025-10-04T03:12:45.612224Z	event=vertex.proxy.call;model=gemini-2.5-pro;promptLength=6;timeoutMs=5000;timestamp=2025-10-04T03:12:45.613Z
+2025-10-04T03:12:45.602315Z	
+2025-10-04T03:11:04.649659Z	elapsedMs=211;event=vertex.proxy.success;hasContent=True;timestamp=2025-10-04T03:11:04.650Z
+2025-10-04T03:11:04.436670Z	event=vertex.proxy.request;payloadSize=168;timestamp=2025-10-04T03:11:04.437Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent
+2025-10-04T03:11:04.436465Z	event=vertex.proxy.call;model=gemini-2.0-flash-001;promptLength=32;timeoutMs=10000;timestamp=2025-10-04T03:11:04.437Z
+2025-10-04T03:11:04.432589Z	
+2025-10-04T03:10:51.969920Z	elapsedMs=52;error={
+  "error": {
+    "code": 404,
+    "message": "Publisher Model `projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash` was not found or your project does not have access to it. Please ensure you are using a valid model version. For more information, see: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions",
+    "status": "NOT_FOUND"
+  }
+}
+;event=vertex.proxy.error;status=404;timestamp=2025-10-04T03:10:51.971Z
+2025-10-04T03:10:51.916850Z	event=vertex.proxy.request;payloadSize=168;timestamp=2025-10-04T03:10:51.918Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent
+2025-10-04T03:10:51.916662Z	event=vertex.proxy.call;model=gemini-1.5-flash;promptLength=32;timeoutMs=10000;timestamp=2025-10-04T03:10:51.917Z
+2025-10-04T03:10:51.912Z	
+2025-10-04T03:10:43.364995Z	elapsedMs=53;error={
+  "error": {
+    "code": 404,
+    "message": "Publisher Model `projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash` was not found or your project does not have access to it. Please ensure you are using a valid model version. For more information, see: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions",
+    "status": "NOT_FOUND"
+  }
+}
+;event=vertex.proxy.error;status=404;timestamp=2025-10-04T03:10:43.365Z
+2025-10-04T03:10:43.310689Z	event=vertex.proxy.request;payloadSize=168;timestamp=2025-10-04T03:10:43.311Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash:generateContent
+2025-10-04T03:10:43.309577Z	event=vertex.proxy.call;model=gemini-1.5-flash;promptLength=32;timeoutMs=10000;timestamp=2025-10-04T03:10:43.310Z
+2025-10-04T03:10:43.293528Z	
+2025-10-04T03:10:19.017403Z	elapsedMs=49;error={
+  "error": {
+    "code": 404,
+    "message": "Publisher Model `projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash-002` was not found or your project does not have access to it. Please ensure you are using a valid model version. For more information, see: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions",
+    "status": "NOT_FOUND"
+  }
+}
+;event=vertex.proxy.error;status=404;timestamp=2025-10-04T03:10:19.018Z
+2025-10-04T03:10:18.966507Z	event=vertex.proxy.request;payloadSize=168;timestamp=2025-10-04T03:10:18.967Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash-002:generateContent
+2025-10-04T03:10:18.966256Z	event=vertex.proxy.call;model=gemini-1.5-flash-002;promptLength=32;timeoutMs=10000;timestamp=2025-10-04T03:10:18.967Z
+2025-10-04T03:10:18.960823Z	
+2025-10-04T03:10:12.282170Z	elapsedMs=229;error={
+  "error": {
+    "code": 404,
+    "message": "Publisher Model `projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash-002` was not found or your project does not have access to it. Please ensure you are using a valid model version. For more information, see: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions",
+    "status": "NOT_FOUND"
+  }
+}
+;event=vertex.proxy.error;status=404;timestamp=2025-10-04T03:10:12.283Z
+2025-10-04T03:10:12.094765Z	event=vertex.proxy.request;payloadSize=168;timestamp=2025-10-04T03:10:12.096Z;url=https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-1.5-flash-002:generateContent
+2025-10-04T03:10:12.046592Z	event=vertex.proxy.call;model=gemini-1.5-flash-002;promptLength=32;timeoutMs=10000;timestamp=2025-10-04T03:10:12.047Z
+2025-10-04T03:10:12.026143Z	
+2025-10-04T03:10:01.928338Z	
+2025-10-04T03:08:33.297119Z	
+2025-10-04T03:08:31.992839Z	
+2025-10-04T03:08:31.917998Z	event=vertex.proxy.started;port=8080;project=agile-device-472202-i8;timestamp=2025-10-04T03:08:31.917Z
+2025-10-04T03:08:31.916822Z	
+2025-10-04T03:08:29.543927Z	
+2025-10-04T03:07:06.003381Z	

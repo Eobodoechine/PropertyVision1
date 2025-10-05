@@ -93,7 +93,7 @@ class VertexComparableSearchService {
       console.log(`   • Max results: ${maxResults}`);
 
       // Get subject property coordinates
-      const subjectCoords = await this.geocodeWithTimeout(subjectAddress, 5000);
+      const subjectCoords = await this.geocodeWithTimeout(subjectAddress, 30000);
       if (!subjectCoords) {
         throw new Error('Failed to geocode subject property');
       }
@@ -544,7 +544,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
     for (const prop of geminiProperties) {
       try {
         // Get coordinates for this property
-        const coords = await this.geocodeWithTimeout(prop.address, 5000);
+        const coords = await this.geocodeWithTimeout(prop.address, 30000);
         if (!coords) {
           console.warn(`⚠️  Skipping property with no coordinates: ${prop.address}`);
           continue;

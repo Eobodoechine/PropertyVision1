@@ -1,0 +1,132 @@
+[
+  {
+    "insertId": "..........wsAnBg0IdBSfsy9poZz65m",
+    "jsonPayload": {
+      "message": "✅ Job 26c9b2a7-b6da-49d1-818b-25053eeafaac created for address: 1177 Arlington Ave SW, Atlanta, GA 30310",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-04T04:39:47.030715363Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-04T04:39:46.960000038Z"
+  },
+  {
+    "insertId": "..........osAnBg0IdBSfsy9poZz65m",
+    "jsonPayload": {
+      "message": "📋 Job 26c9b2a7-b6da-49d1-818b-25053eeafaac enqueued for address: 1177 Arlington Ave SW, Atlanta, GA 30310",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-04T04:39:47.030715363Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-04T04:39:46.960000038Z"
+  },
+  {
+    "insertId": "68e0a512000c82bceac59e25",
+    "labels": {
+      "instanceId": "0069c7a988b0800136e641bfd5d47c422064a4b2a08be35bd609e192bd4e124aee9e84d8180050076c0458f74937b579a6eda9018c6156f4c4157db40173792d7bfe35cc9d668543cfcd029540c9dae4e411dc"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:39:47.151736022Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job 26c9b2a7-b6da-49d1-818b-25053eeafaac created for address: 1177 Arlington Ave SW, Atlanta, GA 30310 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-04T04:39:46.820Z\"}",
+    "timestamp": "2025-10-04T04:39:46.819900Z"
+  },
+  {
+    "insertId": "68e0a512000c81353e7992be",
+    "labels": {
+      "instanceId": "0069c7a988b0800136e641bfd5d47c422064a4b2a08be35bd609e192bd4e124aee9e84d8180050076c0458f74937b579a6eda9018c6156f4c4157db40173792d7bfe35cc9d668543cfcd029540c9dae4e411dc"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:39:47.151736022Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job 26c9b2a7-b6da-49d1-818b-25053eeafaac created for address: 1177 Arlington Ave SW, Atlanta, GA 30310",
+    "timestamp": "2025-10-04T04:39:46.819509Z"
+  },
+  {
+    "insertId": "68e0a512000c80a5899b1b95",
+    "labels": {
+      "instanceId": "0069c7a988b0800136e641bfd5d47c422064a4b2a08be35bd609e192bd4e124aee9e84d8180050076c0458f74937b579a6eda9018c6156f4c4157db40173792d7bfe35cc9d668543cfcd029540c9dae4e411dc"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:39:47.151736022Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📋 Job 26c9b2a7-b6da-49d1-818b-25053eeafaac enqueued for address: 1177 Arlington Ave SW, Atlanta, GA 30310 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-04T04:39:46.819Z\"}",
+    "timestamp": "2025-10-04T04:39:46.819365Z"
+  },
+  {
+    "insertId": "68e0a512000c7fa773bde63e",
+    "labels": {
+      "instanceId": "0069c7a988b0800136e641bfd5d47c422064a4b2a08be35bd609e192bd4e124aee9e84d8180050076c0458f74937b579a6eda9018c6156f4c4157db40173792d7bfe35cc9d668543cfcd029540c9dae4e411dc"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:39:47.151736022Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00037-zl9",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📋 Job 26c9b2a7-b6da-49d1-818b-25053eeafaac enqueued for address: 1177 Arlington Ave SW, Atlanta, GA 30310",
+    "timestamp": "2025-10-04T04:39:46.819111Z"
+  }
+]

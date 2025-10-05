@@ -1,0 +1,398 @@
+2025-10-04T04:56:30.268413Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:56:28.768Z"}
+2025-10-04T04:56:30.268408Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=75, radius=5, timeWindow=24 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:56:28.768Z"}
+2025-10-04T04:56:00.767094Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:58.967Z"}
+2025-10-04T04:56:00.767085Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=75, radius=5, timeWindow=24 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:58.967Z"}
+2025-10-04T04:55:39.267629Z	[31merror[39m: ❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:37.668Z"}
+2025-10-04T04:55:39.267480Z	[31merror[39m: ❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:37.567Z"}
+2025-10-04T04:55:35.468526Z	[31merror[39m: ❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:34.768Z"}
+2025-10-04T04:55:27.167860Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:25.268Z"}
+2025-10-04T04:55:27.167765Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:25.267Z"}
+2025-10-04T04:55:27.167621Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:25.169Z"}
+2025-10-04T04:55:25.367100Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:23.968Z"}
+2025-10-04T04:55:25.267550Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:23.968Z"}
+2025-10-04T04:55:25.267504Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:55:23.968Z"}
+2025-10-04T04:55:23.968192Z	[31merror[39m: ❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:22.769Z"}
+2025-10-04T04:55:22.769365Z	[31merror[39m: ❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:15.268Z"}
+2025-10-04T04:55:22.769156Z	[31merror[39m: ❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:15.268Z"}
+2025-10-04T04:55:22.769095Z	[31merror[39m: ❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:55:15.267Z"}
+2025-10-04T04:55:15.267855Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:59.168Z"}
+2025-10-04T04:55:15.267795Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:59.168Z"}
+2025-10-04T04:54:55.967644Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:54:54.668Z"}
+2025-10-04T04:54:46.969713Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:54:45.169Z"}
+2025-10-04T04:54:41.569271Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:37.068Z"}
+2025-10-04T04:54:41.569255Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:37.068Z"}
+2025-10-04T04:54:41.167528Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:37.068Z"}
+2025-10-04T04:54:41.167475Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:37.068Z"}
+2025-10-04T04:54:40.467623Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:36.568Z"}
+2025-10-04T04:54:37.068159Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:31.369Z"}
+2025-10-04T04:54:31.368881Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:29.967Z"}
+2025-10-04T04:54:31.368865Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:29.967Z"}
+2025-10-04T04:54:30.167145Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:28.670Z"}
+2025-10-04T04:54:30.167074Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:28.670Z"}
+2025-10-04T04:54:29.967592Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:28.670Z"}
+2025-10-04T04:54:29.967529Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:28.670Z"}
+2025-10-04T04:54:23.571712Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:22.068Z"}
+2025-10-04T04:54:23.571635Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:22.068Z"}
+2025-10-04T04:54:23.571530Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:22.067Z"}
+2025-10-04T04:54:23.571431Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:22.067Z"}
+2025-10-04T04:54:22.067652Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:20.068Z"}
+2025-10-04T04:54:22.067595Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:20.068Z"}
+2025-10-04T04:54:20.067701Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:18.168Z"}
+2025-10-04T04:54:20.067695Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:18.168Z"}
+2025-10-04T04:54:18.368273Z	[32minfo[39m:    💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:16.668Z"}
+2025-10-04T04:54:18.167332Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:16.469Z"}
+2025-10-04T04:54:18.167321Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=75, radius=5, timeWindow=24 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:54:16.469Z"}
+2025-10-04T04:54:08.067046Z	[31merror[39m: ❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:54:06.368Z"}
+2025-10-04T04:54:01.167107Z	[31merror[39m: ❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:59.468Z"}
+2025-10-04T04:53:59.467844Z	[31merror[39m: ❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:55.067Z"}
+2025-10-04T04:53:59.467713Z	[31merror[39m: ❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:54.967Z"}
+2025-10-04T04:53:59.467628Z	[31merror[39m: ❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:54.967Z"}
+2025-10-04T04:53:59.467424Z	[31merror[39m: ❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:54.668Z"}
+2025-10-04T04:53:54.967432Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:52.968Z"}
+2025-10-04T04:53:54.967379Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:52.968Z"}
+2025-10-04T04:53:51.167299Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:49.869Z"}
+2025-10-04T04:53:49.869210Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:48.169Z"}
+2025-10-04T04:53:49.869202Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:48.169Z"}
+2025-10-04T04:53:47.967913Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:53:44.769Z"}
+2025-10-04T04:53:45.067658Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:41.767Z"}
+2025-10-04T04:53:45.067566Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=50, radius=3, timeWindow=18 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:41.767Z"}
+2025-10-04T04:53:08.367281Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:04.667Z"}
+2025-10-04T04:53:08.367198Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:04.667Z"}
+2025-10-04T04:53:08.167180Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:04.467Z"}
+2025-10-04T04:53:04.668050Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:02.971Z"}
+2025-10-04T04:53:04.668029Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:02.971Z"}
+2025-10-04T04:53:04.668015Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:53:02.971Z"}
+2025-10-04T04:53:00.970258Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:59.367Z"}
+2025-10-04T04:53:00.970242Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:59.367Z"}
+2025-10-04T04:53:00.969243Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:59.068Z"}
+2025-10-04T04:53:00.967717Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:59.068Z"}
+2025-10-04T04:53:00.868548Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:59.067Z"}
+2025-10-04T04:52:59.367482Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:58.269Z"}
+2025-10-04T04:52:58.268937Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:55.667Z"}
+2025-10-04T04:52:58.268932Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:55.569Z"}
+2025-10-04T04:52:57.767423Z	[32minfo[39m:    💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:55.467Z"}
+2025-10-04T04:52:53.068173Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:52:51.668Z"}
+2025-10-04T04:52:53.067535Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:51.268Z"}
+2025-10-04T04:52:51.668339Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=50, radius=3, timeWindow=18 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:48.767Z"}
+2025-10-04T04:52:48.667727Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:52:43.267Z"}
+2025-10-04T04:52:43.667942Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:36.668Z"}
+2025-10-04T04:52:37.167184Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:26.769Z"}
+2025-10-04T04:52:37.067660Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:26.769Z"}
+2025-10-04T04:52:26.769053Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:24.868Z"}
+2025-10-04T04:52:26.769047Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=40, radius=2, timeWindow=15 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:24.868Z"}
+2025-10-04T04:52:26.768722Z	[32minfo[39m:    💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:24.868Z"}
+2025-10-04T04:52:26.768531Z	[32minfo[39m:    💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:24.868Z"}
+2025-10-04T04:52:26.768467Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:24.868Z"}
+2025-10-04T04:52:24.868529Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:21.369Z"}
+2025-10-04T04:52:24.868507Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:21.369Z"}
+2025-10-04T04:52:24.868326Z	[32minfo[39m: 📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:52:21.068Z"}
+2025-10-04T04:52:14.568089Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:52:11.268Z"}
+2025-10-04T04:52:08.870377Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:52:05.067Z"}
+2025-10-04T04:51:57.967198Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:51:51.668Z"}
+2025-10-04T04:51:51.667888Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:46.969Z"}
+2025-10-04T04:51:46.968828Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:38.769Z"}
+2025-10-04T04:51:46.968790Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:38.769Z"}
+2025-10-04T04:51:46.968608Z	[32minfo[39m: 📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:38.769Z"}
+2025-10-04T04:51:36.568216Z	**Atlanta, GA** – Public records and real estate listings provide the following property details for 1177 Arlington Ave SW, Atlanta, GA 30310. The property is identified as a multi-family duplex.
+2025-10-04T04:51:36.568210Z	[32minfo[39m:    📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:51:36.368666Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:31.968Z"}
+2025-10-04T04:51:36.368629Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=75, radius=5, timeWindow=24 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:31.968Z"}
+2025-10-04T04:51:23.267419Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:51:11.468Z"}
+2025-10-04T04:51:23.267050Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:11.070Z"}
+2025-10-04T04:51:11.569383Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:03.269Z"}
+2025-10-04T04:51:11.569360Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:03.269Z"}
+2025-10-04T04:51:11.467762Z	[32minfo[39m: 📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:51:03.169Z"}
+2025-10-04T04:51:08.867950Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:53.069083Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:50:46.569Z"}
+2025-10-04T04:50:53.069070Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=30, radius=1, timeWindow=12 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:50:46.569Z"}
+2025-10-04T04:50:53.068524Z	[32minfo[39m: 📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:50:46.468Z"}
+2025-10-04T04:50:46.466901Z	**Atlanta, GA** – Key property data for the residential address 1177 Arlington Ave SW, Atlanta, GA 30310, has been compiled from various real estate and public records sources. The property is identified as a multi-family duplex.
+2025-10-04T04:50:46.466884Z	[32minfo[39m:    📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:50:34.467446Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:50:22.969Z"}
+2025-10-04T04:50:34.167154Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:50:22.969Z"}
+2025-10-04T04:50:27.867401Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:24.768823Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:24.767920Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:24.667883Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:12.167630Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:03.270037Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:49:45.968Z"}
+2025-10-04T04:50:02.167541Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:02.167520Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:02.167176Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:02.167167Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:01.970442Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:50:01.970434Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:56.367547Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:49:56.367525Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=75, radius=5, timeWindow=24
+2025-10-04T04:49:53.773822Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:53.773816Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:53.773588Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:53.773579Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:53.773190Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:53.773146Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:52.368208Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:49:52.368204Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=75, radius=5, timeWindow=24
+2025-10-04T04:49:45.967770Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:49:33.968Z"}
+2025-10-04T04:49:37.369204Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:37.369196Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:37.367100Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:37.367080Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:37.269335Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:37.269272Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:49:27.067949Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:49:27.067905Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=75, radius=5, timeWindow=24
+2025-10-04T04:49:24.171846Z	Below are the complete property details for the duplex located at 1177 Arlington Ave SW in Atlanta, Georgia.
+2025-10-04T04:49:24.171841Z	[32minfo[39m:    📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:49:24.171752Z	[31merror[39m: ❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:49:16.469Z"}
+2025-10-04T04:49:18.570129Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:49:18.570126Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=75, radius=5, timeWindow=24
+2025-10-04T04:49:16.469014Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:49:08.472Z"}
+2025-10-04T04:49:16.468818Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:49:08.472Z"}
+2025-10-04T04:49:16.468796Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:49:08.472Z"}
+2025-10-04T04:49:08.471852Z	[32minfo[39m:    💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:49:00.568Z"}
+2025-10-04T04:49:08.471779Z	Below are the complete property details for the duplex located at 1177 Arlington Ave SW in Atlanta, Georgia.
+2025-10-04T04:49:08.471757Z	[32minfo[39m:    📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:49:00.567647Z	[31merror[39m: ❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:48:32.967Z"}
+2025-10-04T04:48:55.869585Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:55.667501Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:33.867334Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:33.166868Z	[31merror[39m: ❌ VERTEX DEBUG: Search 5 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:48:25.768Z"}
+2025-10-04T04:48:33.069615Z	[31merror[39m: ❌ VERTEX DEBUG: Search 4 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:48:25.768Z"}
+2025-10-04T04:48:33.069216Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:48:25.767Z"}
+2025-10-04T04:48:32.967371Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:48:25.668Z"}
+2025-10-04T04:48:25.767392Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:48:19.667Z"}
+2025-10-04T04:48:25.767331Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:48:19.667Z"}
+2025-10-04T04:48:25.767122Z	[32minfo[39m: 📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:48:18.968Z"}
+2025-10-04T04:48:17.168864Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:17.168859Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:17.168170Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:17.168131Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:17.168043Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:17.168036Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:07.569789Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:48:06.868164Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:53.067114Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:46.568109Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:27.068Z"}
+2025-10-04T04:47:46.568034Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 6 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:27.068Z"}
+2025-10-04T04:47:45.868093Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:43.468362Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:47:43.468358Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18
+2025-10-04T04:47:43.467909Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:42.169425Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:27.068510Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:12.568Z"}
+2025-10-04T04:47:27.068449Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 5 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:12.568Z"}
+2025-10-04T04:47:27.068310Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:12.568Z"}
+2025-10-04T04:47:27.068236Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 4 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:12.568Z"}
+2025-10-04T04:47:26.068266Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:26.068239Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:26.068108Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:26.068098Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:26.067718Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:26.067709Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:23.967231Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:23.967188Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:23.768071Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:23.768057Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:23.568842Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:23.568789Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:14.967478Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:14.967444Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:14.967244Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:14.967203Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:14.768468Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:14.167860Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:12.567640Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:03.767Z"}
+2025-10-04T04:47:12.567580Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:03.767Z"}
+2025-10-04T04:47:12.567486Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:03.670Z"}
+2025-10-04T04:47:12.567369Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:03.670Z"}
+2025-10-04T04:47:12.567078Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:47:03.669Z"}
+2025-10-04T04:47:08.769086Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:47:08.769045Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15
+2025-10-04T04:47:08.267012Z	   💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:47:07.168273Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:47:07.168257Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=75, radius=5, timeWindow=24
+2025-10-04T04:47:06.467312Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:05.269006Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:05.268973Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:05.268933Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:05.268863Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:04.867127Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:47:03.767393Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:46:44.368Z"}
+2025-10-04T04:46:53.368380Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:46:53.368354Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18
+2025-10-04T04:46:52.969399Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:52.667263Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:46:52.667237Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18
+2025-10-04T04:46:52.467365Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:47.567818Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:46:47.567811Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=50, radius=3, timeWindow=18
+2025-10-04T04:46:43.367223Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:46:06.169Z"}
+2025-10-04T04:46:43.367100Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:46:06.169Z"}
+2025-10-04T04:46:29.568776Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:29.568769Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:29.568629Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:29.568623Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:29.568344Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:29.568323Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:25.670508Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:25.670501Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:25.670288Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:25.670281Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:25.467683Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:25.467674Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:21.767364Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:46:21.767361Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15
+2025-10-04T04:46:21.468836Z	   💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:46:19.767717Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:11.869808Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:46:11.869806Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=50, radius=3, timeWindow=18
+2025-10-04T04:46:11.868749Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:46:06.270433Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:45:42.372Z"}
+2025-10-04T04:46:06.270418Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=40, radius=2, timeWindow=15 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:45:42.372Z"}
+2025-10-04T04:46:06.169146Z	[32minfo[39m:    💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:45:42.371Z"}
+2025-10-04T04:45:53.968423Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:50.567884Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:50.567747Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15
+2025-10-04T04:45:49.873620Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:49.873616Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=40, radius=2, timeWindow=15
+2025-10-04T04:45:49.668260Z	   💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:49.668252Z	   💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:49.667972Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:48.768178Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:48.768173Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12
+2025-10-04T04:45:48.767981Z	📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:45.968078Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:45:44.267415Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:45:43.267148Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:45:19.168507Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:15.567609Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:15.567604Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12
+2025-10-04T04:45:15.567411Z	📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:13.467288Z	**Atlanta, GA** – Public records and real estate listings provide the following property details for 1177 Arlington Ave SW, Atlanta, GA 30310. The property is identified as a multi-family duplex.
+2025-10-04T04:45:13.467281Z	   📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:12.167600Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:45:12.167596Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=75, radius=5, timeWindow=24
+2025-10-04T04:45:11.968311Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:45:01.373851Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:58.769012Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:58.768068Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12
+2025-10-04T04:44:58.767927Z	📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:53.068456Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:53.068448Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=30, radius=1, timeWindow=12
+2025-10-04T04:44:53.068313Z	📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:51.768562Z	**Atlanta, GA** – Key property data for the residential address 1177 Arlington Ave SW, Atlanta, GA 30310, has been compiled from various real estate and public records sources. The property is identified as a multi-family duplex.
+2025-10-04T04:44:51.768555Z	   📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:42.866862Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:42.668904Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=50, radius=3, timeWindow=18
+2025-10-04T04:44:42.467602Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:44:39.373802Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:37.368259Z	[31merror[39m: ❌ VERTEX DEBUG: Search 6 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:44:21.469Z"}
+2025-10-04T04:44:29.268654Z	Below are the complete property details for the duplex located at 1177 Arlington Ave SW in Atlanta, Georgia.
+2025-10-04T04:44:29.268648Z	   📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:28.567542Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:44:22.968423Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:21.567164Z	**Atlanta, GA** – The property located at 1177 Arlington Ave SW in Atlanta, GA 30310 is a multi-family duplex built in 2004. Detailed information from various real estate and public records sources has been compiled to provide a comp... {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:44:00.268Z"}
+2025-10-04T04:44:21.567153Z	[32minfo[39m:    📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:12.367538Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:12.367463Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=40, radius=2, timeWindow=15
+2025-10-04T04:44:11.768814Z	   💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:08.867227Z	Below are the complete property details for the duplex located at 1177 Arlington Ave SW in Atlanta, Georgia.
+2025-10-04T04:44:08.867213Z	   📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:07.567634Z	❌ MAIN CATCH: subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:44:07.267739Z	❌ VERTEX DEBUG: Search 5 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:44:06.667183Z	❌ VERTEX DEBUG: Search 4 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:44:03.667399Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:44:01.967482Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:43:43.967Z"}
+2025-10-04T04:44:00.267322Z	[31merror[39m: ❌ VERTEX DEBUG: Search 5 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:43:43.868Z"}
+2025-10-04T04:43:47.168342Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:43:43.967564Z	[31merror[39m: ❌ VERTEX DEBUG: Search 4 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:43:19.969Z"}
+2025-10-04T04:43:43.967422Z	[31merror[39m: ❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:43:19.969Z"}
+2025-10-04T04:43:43.967239Z	[31merror[39m: ❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:43:19.969Z"}
+2025-10-04T04:43:43.966941Z	[31merror[39m: ❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.error","timestamp":"2025-10-04T04:43:19.968Z"}
+2025-10-04T04:43:37.367316Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:43:37.367311Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="single-family detached", maxResults=30, radius=1, timeWindow=12
+2025-10-04T04:43:37.367189Z	📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:43:23.067051Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.767624Z	🔍 VERTEX DEBUG: Search 6 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.767454Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.767426Z	🔍 VERTEX DEBUG: Search 5 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.767301Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.767294Z	🔍 VERTEX DEBUG: Search 4 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.766959Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.766788Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.667018Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.666928Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.467778Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:22.467604Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:43:19.968581Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:43:07.668Z"}
+2025-10-04T04:43:19.968314Z	**Atlanta, GA** – The property located at 1177 Arlington Ave SW in Atlanta, GA 30310 is a multi-family duplex built in 2004. Detailed... {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:43:07.668Z"}
+2025-10-04T04:43:19.968304Z	[32minfo[39m:    📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:43:09.367353Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:43:02.769104Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:42:58.368078Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:42:58.368068Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=40, radius=2, timeWindow=15
+2025-10-04T04:42:58.167093Z	   💾 No cache found for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:42:55.267571Z	❌ VERTEX DEBUG: Search 6 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:42:49.867597Z	**Atlanta, GA** – The property located at 1177 Arlington Ave SW in Atlanta, GA 30310 is a multi-family duplex built in 2004. Detailed information from various real estate and public records sources has been compiled to provide a comp...
+2025-10-04T04:42:49.867590Z	   📄 Text that caused LLM parsing failure: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:42:38.967042Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:42:34.667Z"}
+2025-10-04T04:42:35.867771Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:42:34.667749Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:42:24.467Z"}
+2025-10-04T04:42:34.667711Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 6 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:42:24.467Z"}
+2025-10-04T04:42:34.667554Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:42:24.267Z"}
+2025-10-04T04:42:34.667420Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 5 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:42:24.267Z"}
+2025-10-04T04:42:29.067283Z	❌ VERTEX DEBUG: Search 5 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:42:27.669651Z	❌ VERTEX DEBUG: Search 4 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:42:27.668625Z	❌ VERTEX DEBUG: Search 3 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:42:27.467451Z	❌ VERTEX DEBUG: Search 2 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:42:27.268117Z	❌ VERTEX DEBUG: Search 1 - subjectAddress at error: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:42:26.667562Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:42:24.467485Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:54.768Z"}
+2025-10-04T04:42:24.467413Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 4 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:54.768Z"}
+2025-10-04T04:42:24.467288Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:54.468Z"}
+2025-10-04T04:42:24.466955Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:54.468Z"}
+2025-10-04T04:42:01.767709Z	**Atlanta, GA** – The property located at 1177 Arlington Ave SW in Atlanta, GA 30310 is a multi-family duplex built in 2004. Detailed...
+2025-10-04T04:42:01.767684Z	   📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:41:54.767617Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:41.968Z"}
+2025-10-04T04:41:54.767559Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:41.368Z"}
+2025-10-04T04:41:54.567479Z	[32minfo[39m: 🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:41.168Z"}
+2025-10-04T04:41:54.567463Z	[32minfo[39m: 🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310" {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:41.168Z"}
+2025-10-04T04:41:45.568875Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:41:42.567541Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.567534Z	🔍 VERTEX DEBUG: Search 6 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.167672Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.167632Z	🔍 VERTEX DEBUG: Search 5 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.167453Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.167412Z	🔍 VERTEX DEBUG: Search 4 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.067697Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:42.067623Z	🔍 VERTEX DEBUG: Search 3 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:41.367550Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:41.367505Z	🔍 VERTEX DEBUG: Search 2 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:41.167944Z	🔍 SCOPE DEBUG: Checking subjectAddress availability: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:41.167877Z	🔍 VERTEX DEBUG: Search 1 - subjectAddress scope check: "string" = "1177 Arlington Ave SW, Atlanta, GA 30310"
+2025-10-04T04:41:40.267735Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:40.268Z"}
+2025-10-04T04:41:40.267726Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:41:23.667890Z	[32minfo[39m: 🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:20.072Z"}
+2025-10-04T04:41:23.667883Z	[32minfo[39m: 🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=30, radius=1, timeWindow=12 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:20.072Z"}
+2025-10-04T04:41:23.667696Z	[32minfo[39m: 📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:20.071Z"}
+2025-10-04T04:41:20.071392Z	🔍 SEARCHING COMPARABLES: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:41:20.071350Z	🔍 DEBUG LEVEL: Parameters - address="1177 Arlington Ave SW, Atlanta, GA 30310", propertyType="duplex", maxResults=30, radius=1, timeWindow=12
+2025-10-04T04:41:20.070366Z	📍 Subject: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:41:09.869652Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:09.870Z"}
+2025-10-04T04:41:09.869617Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:41:08.370906Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:41:08.371Z"}
+2025-10-04T04:41:08.370902Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:40:44.269026Z	Below are the comprehensive property details for 1177 Arlington Ave SW, Atlanta, GA 30310, compiled from authoritative real estate so... {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:40:44.167Z"}
+2025-10-04T04:40:44.269012Z	[32minfo[39m:    📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:40:44.167230Z	Below are the comprehensive property details for 1177 Arlington Ave SW, Atlanta, GA 30310, compiled from authoritative real estate so...
+2025-10-04T04:40:44.167215Z	   📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:40:25.268163Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:40:25.269Z"}
+2025-10-04T04:40:25.268099Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:40:24.169135Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:40:24.169Z"}
+2025-10-04T04:40:24.168798Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:40:06.368104Z	[32minfo[39m:    📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:40:06.368010Z	   📄 Primary search response: ### Property Details for 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:39:47.569152Z	[32minfo[39m: 📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:39:47.567Z"}
+2025-10-04T04:39:47.567323Z	📍 Analyzing: 1177 Arlington Ave SW, Atlanta, GA 30310
+2025-10-04T04:39:46.867732Z	[32minfo[39m: ⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T04:39:46.868Z"}
+2025-10-04T04:39:46.867724Z	⚙️  Processing job 26c9b2a7-b6da-49d1-818b-25053eeafaac: 1177 Arlington Ave SW, Atlanta, GA 30310

@@ -1,0 +1,4270 @@
+[
+  {
+    "httpRequest": {
+      "latency": "36.653903150s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "2015",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2329",
+      "serverIp": "34.143.74.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a5dd0007611324a8cad9",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:43:09.488861406Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c97a11029478c94c",
+    "timestamp": "2025-10-04T04:42:32.671557Z",
+    "trace": "projects/agile-device-472202-i8/traces/efc3b27f33d00c78bcbc7e3e526e7ff0",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a5b8000aa7ef0126e314",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b",
+      "scaling_reason": "AUTOSCALING"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-10-04T04:42:32.703452862Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Starting new instance. Reason: AUTOSCALING - Instance started due to configured scaling factors (e.g. CPU utilization, request throughput, etc.) or no existing capacity for current traffic.",
+    "timestamp": "2025-10-04T04:42:32.698351Z"
+  },
+  {
+    "insertId": "68e0a5bb00008ec954ce701b",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2025-10-04T04:42:35.366310365Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Default STARTUP TCP probe succeeded after 1 attempt for container \"vertex-proxy-1\" on port 8080.",
+    "timestamp": "2025-10-04T04:42:35.036553Z"
+  },
+  {
+    "insertId": "68e0a5bb000093e500130713",
+    "jsonPayload": {
+      "event": "vertex.proxy.started",
+      "port": "8080",
+      "project": "agile-device-472202-i8",
+      "timestamp": "2025-10-04T04:42:35.037Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:42:35.042477672Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:42:35.037861Z"
+  },
+  {
+    "insertId": "68e0a5bb000117155deff05c",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1416,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:42:35.072Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:42:35.375938029Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:42:35.071445Z"
+  },
+  {
+    "insertId": "68e0a5bb0001ba201021fe4f",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1592,
+      "timestamp": "2025-10-04T04:42:35.113Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:42:35.375938029Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:42:35.113184Z"
+  },
+  {
+    "insertId": "68e0a5dd00073a4adfd90404",
+    "jsonPayload": {
+      "elapsedMs": 34395,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:43:09.474Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:09.478813583Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:09.473674Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "10.729602369s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "1284",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "919",
+      "serverIp": "34.143.72.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a5eb000dd691418d2b37",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:43:24.141054179Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "62884e7f1a824682",
+    "timestamp": "2025-10-04T04:43:13.171503Z",
+    "trace": "projects/agile-device-472202-i8/traces/9ba193ee8acb15a3a892908cdbae03cb",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a5e10002c06a1dee9fb3",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 719,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:43:13.181Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:13.475244465Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:13.180330Z"
+  },
+  {
+    "insertId": "68e0a5e10002c1a71fef03fb",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 870,
+      "timestamp": "2025-10-04T04:43:13.181Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:13.475244465Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:13.180647Z"
+  },
+  {
+    "insertId": "68e0a5eb000dd109bf9189fb",
+    "jsonPayload": {
+      "elapsedMs": 10724,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:43:23.905Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:24.131799145Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:23.905481Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "42.505460156s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "2055",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2462",
+      "serverIp": "34.143.77.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a6310008d46432959313",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:33.710339874Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "7480362562bcd6c8",
+    "timestamp": "2025-10-04T04:43:51.071353Z",
+    "trace": "projects/agile-device-472202-i8/traces/6aa1d8595c18f72f05877060d0d60276",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a607000125458f6a38bc",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1455,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:43:51.075Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:51.079701444Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:51.075077Z"
+  },
+  {
+    "insertId": "68e0a607000126724bfc89db",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1632,
+      "timestamp": "2025-10-04T04:43:51.075Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:51.415270301Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:51.075378Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "29.866894805s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2039",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2632",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a6270002269712c842c6",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:23.389876026Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "b7629863e0314a53",
+    "timestamp": "2025-10-04T04:43:53.272006Z",
+    "trace": "projects/agile-device-472202-i8/traces/8f2c40559f6af350adad06224011fea4"
+  },
+  {
+    "insertId": "68e0a6090004384ba8a57081",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1416,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:43:53.276Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:53.410708069Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:53.276555Z"
+  },
+  {
+    "insertId": "68e0a6090004391a70389d5b",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1592,
+      "timestamp": "2025-10-04T04:43:53.277Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:53.410708069Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:53.276762Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "24.437905043s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2055",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2486",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a622000b0538e5a923ed",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:18.727356438Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "00d6507d5cf22495",
+    "timestamp": "2025-10-04T04:43:54.282691Z",
+    "trace": "projects/agile-device-472202-i8/traces/3911599cadfd2ff53fdc40f7f59d36cc"
+  },
+  {
+    "insertId": "68e0a60a00045f9d64d6ef82",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1455,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:43:54.287Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:54.408456342Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:54.286621Z"
+  },
+  {
+    "insertId": "68e0a60a00045fed0858355e",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1632,
+      "timestamp": "2025-10-04T04:43:54.287Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:54.408456342Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:54.286701Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "28.910740787s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2054",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2831",
+      "serverIp": "2600:1900:4245:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a628000bf0707203b581",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:25.055571106Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e61d2b661a7260a8",
+    "timestamp": "2025-10-04T04:43:55.869887Z",
+    "trace": "projects/agile-device-472202-i8/traces/2031417d2963c8421f0b3cf720bad48f"
+  },
+  {
+    "insertId": "68e0a60b000d556771089794",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1455,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:43:55.874Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:56.075612631Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:55.873831Z"
+  },
+  {
+    "insertId": "68e0a60b000d5618393ba5a7",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1632,
+      "timestamp": "2025-10-04T04:43:55.874Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:43:56.075612631Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:43:55.874008Z"
+  },
+  {
+    "insertId": "68e0a622000b00dca87f152e",
+    "jsonPayload": {
+      "elapsedMs": 24432,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:18.721Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:18.724106099Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:18.721116Z"
+  },
+  {
+    "insertId": "68e0a62700021d69035b20ee",
+    "jsonPayload": {
+      "elapsedMs": 29861,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:23.139Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:23.387310833Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:23.138601Z"
+  },
+  {
+    "insertId": "68e0a628000beb852c374299",
+    "jsonPayload": {
+      "elapsedMs": 28906,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:24.782Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:25.050599239Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:24.781189Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "4.339765440s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1848",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "4387",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a6330001bca6a11bdf81",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:35.379042644Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "50ad1a7ff7743401",
+    "timestamp": "2025-10-04T04:44:30.771226Z",
+    "trace": "projects/agile-device-472202-i8/traces/30054d95e8d2150e3fdc40f7f59d3c85",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a62e000bd98c1db78943",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1242,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:44:30.777Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:31.047428989Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:30.776588Z"
+  },
+  {
+    "insertId": "68e0a62e000bda1bcab84531",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1425,
+      "timestamp": "2025-10-04T04:44:30.777Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:31.047428989Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:30.776731Z"
+  },
+  {
+    "insertId": "68e0a6310008cf550966393c",
+    "jsonPayload": {
+      "elapsedMs": 42501,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:33.578Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:33.711665059Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:33.577365Z"
+  },
+  {
+    "insertId": "68e0a6330001b65c7dc7bcab",
+    "jsonPayload": {
+      "elapsedMs": 4334,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:35.113Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:35.377615907Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:35.112220Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "12.341887986s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1285",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "919",
+      "serverIp": "2600:1900:4245:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a6460007d987c22c3330",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:54.807372843Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "6c246dede554bf33",
+    "timestamp": "2025-10-04T04:44:42.170786Z",
+    "trace": "projects/agile-device-472202-i8/traces/71c270502ed96dc90b512db1a975e0e8",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "5.379381882s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1945",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "5065",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a63f00086c8273e99d7c",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:44:47.700166676Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "70103b15ceceb456",
+    "timestamp": "2025-10-04T04:44:42.170890Z",
+    "trace": "projects/agile-device-472202-i8/traces/35728e3927d9e76322d3a1ef2c4df45a"
+  },
+  {
+    "insertId": "68e0a63a0002aa554894d56b",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 719,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:44:42.175Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:42.370524584Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:42.174677Z"
+  },
+  {
+    "insertId": "68e0a63a0002aaec4df3d6bd",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 870,
+      "timestamp": "2025-10-04T04:44:42.175Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:42.370524584Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:42.174828Z"
+  },
+  {
+    "insertId": "68e0a63a0002b7b0a991e399",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1314,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:44:42.178Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:42.370524584Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:42.178096Z"
+  },
+  {
+    "insertId": "68e0a63a0002b833a085bad3",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1498,
+      "timestamp": "2025-10-04T04:44:42.179Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:42.370524584Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:42.178227Z"
+  },
+  {
+    "insertId": "68e0a63f000867b709c5cb49",
+    "jsonPayload": {
+      "elapsedMs": 5370,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:47.551Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:47.697058715Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:47.550839Z"
+  },
+  {
+    "insertId": "68e0a6460007d4a82cf2b908",
+    "jsonPayload": {
+      "elapsedMs": 12337,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:44:54.513Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:54.692214598Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:54.513192Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "11.524564232s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1311",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "916",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a65500091afccc72eeb4",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:45:09.794815711Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "95735e2eba58d95a",
+    "timestamp": "2025-10-04T04:44:58.070334Z",
+    "trace": "projects/agile-device-472202-i8/traces/af31d32e9f8d4f2622d3a1ef2c4df69c",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a64a000121bcefaaa8ee",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 719,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:44:58.074Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:58.356069488Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:58.074172Z"
+  },
+  {
+    "insertId": "68e0a64a00012259aceed27a",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 870,
+      "timestamp": "2025-10-04T04:44:58.074Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:44:58.356069488Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:44:58.074329Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "5.427990709s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2020",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "5093",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a657000abce7268e6d4c",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:45:11.791728644Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d37c91e4058af08b",
+    "timestamp": "2025-10-04T04:45:06.273184Z",
+    "trace": "projects/agile-device-472202-i8/traces/ce311b23f52cf10d0ca1af763042266f"
+  },
+  {
+    "insertId": "68e0a65200043e99d0797fa5",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1414,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:45:06.278Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:06.347791973Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:06.278169Z"
+  },
+  {
+    "insertId": "68e0a65200043f8225c950f7",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1598,
+      "timestamp": "2025-10-04T04:45:06.279Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:06.347791973Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:06.278402Z"
+  },
+  {
+    "insertId": "68e0a655000916a3869f1acd",
+    "jsonPayload": {
+      "elapsedMs": 11520,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:45:09.596Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:09.680396285Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:09.595619Z"
+  },
+  {
+    "insertId": "68e0a657000ab7718ff11eee",
+    "jsonPayload": {
+      "elapsedMs": 5423,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:45:11.702Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:12.010433168Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:11.702321Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "13.389533320s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1310",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "919",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a6700000f35c0fc3143d",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:45:36.067799124Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "852643d9e8b77c3b",
+    "timestamp": "2025-10-04T04:45:22.670519Z",
+    "trace": "projects/agile-device-472202-i8/traces/46dc4ff8bd0100039c5dc98afa601716",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a662000a4e6903b7a69d",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 719,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:45:22.676Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:22.999072085Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:22.675433Z"
+  },
+  {
+    "insertId": "68e0a662000a4f1a668817d5",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 870,
+      "timestamp": "2025-10-04T04:45:22.676Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:22.999072085Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:22.675610Z"
+  },
+  {
+    "insertId": "68e0a6700000eddf43c2fa38",
+    "jsonPayload": {
+      "elapsedMs": 13383,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:45:36.061Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:45:36.320107428Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:45:36.060895Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "24.451575588s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "2015",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2330",
+      "serverIp": "34.143.73.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a70e00050cecfc723a24",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:14.335812274Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "92740199004764d8",
+    "timestamp": "2025-10-04T04:47:49.871035Z",
+    "trace": "projects/agile-device-472202-i8/traces/b969b980510cbc179f60c7bbff12e6c2",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a6f5000d75ff0757484f",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1416,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:47:49.883Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:49.888202390Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:49.882175Z"
+  },
+  {
+    "insertId": "68e0a6f5000d76b539a8529b",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1592,
+      "timestamp": "2025-10-04T04:47:49.883Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:50.220241849Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:49.882357Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "22.293960889s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1737",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2432",
+      "serverIp": "2600:1900:4241:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a713000ec227f9d9d3d9",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:19.997389235Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "2637d430f8298aee",
+    "timestamp": "2025-10-04T04:47:57.671623Z",
+    "trace": "projects/agile-device-472202-i8/traces/b9a8ac0eb1cb692c628e7ed83b006d56"
+  },
+  {
+    "insertId": "68e0a6fd000a4df44aa79d77",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1126,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:47:57.676Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:57.879354341Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:57.675316Z"
+  },
+  {
+    "insertId": "68e0a6fd000a4eadf5b50a14",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1290,
+      "timestamp": "2025-10-04T04:47:57.676Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:57.879354341Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:57.675501Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "38.842180568s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "1713",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2949",
+      "serverIp": "34.143.72.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7250009adf8a55eae3d",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:37.647075109Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "22d9e063da68ea34",
+    "timestamp": "2025-10-04T04:47:58.790558Z",
+    "trace": "projects/agile-device-472202-i8/traces/3b34333bec933cd213519c939e2ec7d3"
+  },
+  {
+    "insertId": "68e0a6fe000c1d6859285f0e",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1126,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:47:58.795Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:58.879004152Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:58.793960Z"
+  },
+  {
+    "insertId": "68e0a6fe000c1f7ef6eba3b4",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1290,
+      "timestamp": "2025-10-04T04:47:58.795Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:58.879004152Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:58.794494Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "25.631466689s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "1738",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "3014",
+      "serverIp": "34.143.76.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7190004abacc0fb3497",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:25.324610180Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "74d48915d7fd5eda",
+    "timestamp": "2025-10-04T04:47:59.672784Z",
+    "trace": "projects/agile-device-472202-i8/traces/03911fbf9ba7da32f3ec2fe3f0783e38"
+  },
+  {
+    "insertId": "68e0a6ff000a52c6275e1c21",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1126,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:47:59.677Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:59.879895903Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:59.676550Z"
+  },
+  {
+    "insertId": "68e0a6ff000a5382d67cbb52",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1290,
+      "timestamp": "2025-10-04T04:47:59.677Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:47:59.879895903Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:47:59.676738Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "28.183470266s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "1711",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2889",
+      "serverIp": "34.143.75.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a71d0005705f7e0e298b",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:29.655028766Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "6c760b442bb405d4",
+    "timestamp": "2025-10-04T04:48:01.170963Z",
+    "trace": "projects/agile-device-472202-i8/traces/48ef4f446e650af0ce4d8e4c606ebbc2",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7010002aba822ff15c3",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1125,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:48:01.175Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:01.211561320Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:01.175016Z"
+  },
+  {
+    "insertId": "68e0a7010002ac66c0c93eca",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1289,
+      "timestamp": "2025-10-04T04:48:01.176Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:01.211561320Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:01.175206Z"
+  },
+  {
+    "insertId": "68e0a70e0005074db8e59958",
+    "jsonPayload": {
+      "elapsedMs": 24444,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:14.330Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:14.529040187Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:14.329549Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "4.261861250s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "1770",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "4347",
+      "serverIp": "34.143.73.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a716000e40bfd8b9a49e",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:22.994027563Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "95f4af0b2659730a",
+    "timestamp": "2025-10-04T04:48:18.670578Z",
+    "trace": "projects/agile-device-472202-i8/traces/6437a95cb624ec089f60c7bbff12ea54",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a712000a49eba61faf1e",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1164,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:48:18.675Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:18.859733650Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:18.674283Z"
+  },
+  {
+    "insertId": "68e0a712000a4a8e5b32b7d6",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1347,
+      "timestamp": "2025-10-04T04:48:18.675Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:18.859733650Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:18.674446Z"
+  },
+  {
+    "insertId": "68e0a713000ebdea9bc39727",
+    "jsonPayload": {
+      "elapsedMs": 22290,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:19.967Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:20.190699500Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:19.966122Z"
+  },
+  {
+    "insertId": "68e0a716000e3c047cb369fe",
+    "jsonPayload": {
+      "elapsedMs": 4257,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:22.933Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:23.186811125Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:22.932868Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "4.678602569s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1845",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "4864",
+      "serverIp": "2600:1900:4241:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a71c000b76bbf4c7a31e",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:28.989747733Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "5cb9c43c783beb88",
+    "timestamp": "2025-10-04T04:48:24.070970Z",
+    "trace": "projects/agile-device-472202-i8/traces/66fa3ccdd56ad6b7c3ab5baa70a97af1"
+  },
+  {
+    "insertId": "68e0a718000122a29a27364a",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1214,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:48:24.075Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:24.188147808Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:24.074402Z"
+  },
+  {
+    "insertId": "68e0a718000123345d58b202",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1398,
+      "timestamp": "2025-10-04T04:48:24.075Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:24.188147808Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:24.074548Z"
+  },
+  {
+    "insertId": "68e0a7190004a6cb586cf18f",
+    "jsonPayload": {
+      "elapsedMs": 25626,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:25.305Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:25.519965845Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:25.304843Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "5.899146900s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "2135",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "5812",
+      "serverIp": "34.143.76.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a721000ed74816d65ced",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:33.982597921Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "bd08335781e5dbc6",
+    "timestamp": "2025-10-04T04:48:28.071528Z",
+    "trace": "projects/agile-device-472202-i8/traces/c154c9d8bdb05a3e6e7c5ea46159bd56"
+  },
+  {
+    "insertId": "68e0a71c0001262aab12b6fc",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1504,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:48:28.076Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:28.185509318Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:28.075306Z"
+  },
+  {
+    "insertId": "68e0a71c000126cc6c3338ab",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1689,
+      "timestamp": "2025-10-04T04:48:28.076Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:28.185509318Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:28.075468Z"
+  },
+  {
+    "insertId": "68e0a71c000b711bb5aec670",
+    "jsonPayload": {
+      "elapsedMs": 4674,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:28.751Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:28.851099593Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:28.749851Z"
+  },
+  {
+    "insertId": "68e0a71d00056c068a5cfa30",
+    "jsonPayload": {
+      "elapsedMs": 28180,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:29.356Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:29.515701898Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:29.355334Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "22.789390159s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1711",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2258",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7350008939690c78fdc",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:53.566613125Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "948dcd0215072f9b",
+    "timestamp": "2025-10-04T04:48:30.771168Z",
+    "trace": "projects/agile-device-472202-i8/traces/d799985d02a8c1decbdc518725a00666",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a71e000bd0e5497a5d35",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1125,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:48:30.775Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:30.850189473Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:30.774373Z"
+  },
+  {
+    "insertId": "68e0a71e000bd17e8b91743b",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1289,
+      "timestamp": "2025-10-04T04:48:30.775Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:30.850189473Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:30.774526Z"
+  },
+  {
+    "insertId": "68e0a721000ed1e62f7a195d",
+    "jsonPayload": {
+      "elapsedMs": 5894,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:33.972Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:34.177022894Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:33.971238Z"
+  },
+  {
+    "insertId": "68e0a7250009a8bb68434d65",
+    "jsonPayload": {
+      "elapsedMs": 38836,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:37.633Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:37.841542533Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:37.633019Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "6.594585455s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "2049",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "5711",
+      "serverIp": "34.143.75.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7370008a6dba89330a5",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:55.896485071Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "943c9db60d943c10",
+    "timestamp": "2025-10-04T04:48:48.970494Z",
+    "trace": "projects/agile-device-472202-i8/traces/200d854ff17b228394a08b3bcc72dca5",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a730000edda3df40c42e",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1441,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:48:48.975Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:48.978143375Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:48.974243Z"
+  },
+  {
+    "insertId": "68e0a730000ede3166b6c514",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1626,
+      "timestamp": "2025-10-04T04:48:48.975Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:49.309992501Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:48.974385Z"
+  },
+  {
+    "insertId": "68e0a73500088f4d6c736af4",
+    "jsonPayload": {
+      "elapsedMs": 22785,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:53.561Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:53.639548857Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:53.560973Z"
+  },
+  {
+    "insertId": "68e0a7370008a2425e114081",
+    "jsonPayload": {
+      "elapsedMs": 6590,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:48:55.566Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:55.638903132Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:55.565826Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "5.210439558s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1733",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "5079",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a73f000bf8de206ce16e",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:03.890302328Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "44791e3f259444bf",
+    "timestamp": "2025-10-04T04:48:58.570544Z",
+    "trace": "projects/agile-device-472202-i8/traces/903d154ec0a01e76cbdc518725a00cda"
+  },
+  {
+    "insertId": "68e0a73a0008c95a5d4dd5cf",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1126,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:48:58.576Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:58.635191192Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:58.575834Z"
+  },
+  {
+    "insertId": "68e0a73a0008c9d35a545ebf",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1311,
+      "timestamp": "2025-10-04T04:48:58.577Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:48:58.635191192Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:48:58.575955Z"
+  },
+  {
+    "insertId": "68e0a73f000bf49ef81bf3c9",
+    "jsonPayload": {
+      "elapsedMs": 5206,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:49:03.784Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:49:03.963777575Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:49:03.783518Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "29.242500404s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "2015",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "1986",
+      "serverIp": "34.143.72.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a79e000681d91a375c59",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:38.429550183Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "173ddb406acea53b",
+    "timestamp": "2025-10-04T04:50:09.176501Z",
+    "trace": "projects/agile-device-472202-i8/traces/f458472ab41dcaee5f2a9d47585436dd",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7810002d5dd91173435",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1416,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:50:09.186Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:09.191328192Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:09.185821Z"
+  },
+  {
+    "insertId": "68e0a7810002d695ea701b53",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1592,
+      "timestamp": "2025-10-04T04:50:09.187Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:09.524102971Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:09.186005Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "26.058141272s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2015",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2184",
+      "serverIp": "2600:1900:4245:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7a1000387481ca6f2f8",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:41.432350353Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "803cff1e06ab51d3",
+    "timestamp": "2025-10-04T04:50:15.171651Z",
+    "trace": "projects/agile-device-472202-i8/traces/cf16af201dc30bfb6dc691bb13dea5d5"
+  },
+  {
+    "insertId": "68e0a7870002aac4d167b3ba",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1416,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:50:15.175Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:15.184517155Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:15.174788Z"
+  },
+  {
+    "insertId": "68e0a7870002ab867cdcc272",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1592,
+      "timestamp": "2025-10-04T04:50:15.176Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:15.184517155Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:15.174982Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "42.795287747s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1711",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "3349",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7c000079887eff30e5a",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:12.732541558Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "6ce5d299ec90d3e0",
+    "timestamp": "2025-10-04T04:50:29.700888Z",
+    "trace": "projects/agile-device-472202-i8/traces/9b8b7347b83c22837db6f4c91795e83c",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a795000abe9c96b75ba8",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1125,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:50:29.704Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:29.706036548Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:29.704156Z"
+  },
+  {
+    "insertId": "68e0a795000abf4377ab7865",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1289,
+      "timestamp": "2025-10-04T04:50:29.705Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:30.041641273Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:29.704323Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "32.704973400s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1712",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "3196",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7b80001321540934aa1",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:04.406016877Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "edaa0d867b043ae1",
+    "timestamp": "2025-10-04T04:50:31.371566Z",
+    "trace": "projects/agile-device-472202-i8/traces/02fe8c42071affecb1ab8d468adde88a"
+  },
+  {
+    "insertId": "68e0a7970005ba6dcce1fc88",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1125,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:50:31.376Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:31.705303331Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:31.375405Z"
+  },
+  {
+    "insertId": "68e0a7970005bb312cbbc56a",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1289,
+      "timestamp": "2025-10-04T04:50:31.377Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:31.705303331Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:31.375601Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "19.994062468s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1712",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "2921",
+      "serverIp": "2600:1900:4241:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7ad000742d499ffb2e3",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:53.751185696Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c60d9084e59c5147",
+    "timestamp": "2025-10-04T04:50:33.479746Z",
+    "trace": "projects/agile-device-472202-i8/traces/9c2a4d8a3b7b90145158e5c9e9ac3491"
+  },
+  {
+    "insertId": "68e0a7990007601815837f82",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 1125,
+      "timeoutMs": 60000,
+      "timestamp": "2025-10-04T04:50:33.484Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:33.707037701Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:33.483352Z"
+  },
+  {
+    "insertId": "68e0a799000760a28fce1c2c",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1289,
+      "timestamp": "2025-10-04T04:50:33.484Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:33.707037701Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:33.483490Z"
+  },
+  {
+    "insertId": "68e0a79e00067d0b09ca5f6e",
+    "jsonPayload": {
+      "elapsedMs": 29239,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:50:38.426Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:38.699395562Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:38.425227Z"
+  },
+  {
+    "insertId": "68e0a7a10003832e7068c60c",
+    "jsonPayload": {
+      "elapsedMs": 26052,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:50:41.231Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:41.364272539Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:41.230190Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "3.668939698s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "1697",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "3716",
+      "serverIp": "34.143.72.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7a7000e5d667fe12142",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:48.089136636Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c59a5c4dc96f6e09",
+    "timestamp": "2025-10-04T04:50:44.270840Z",
+    "trace": "projects/agile-device-472202-i8/traces/9ba6ff267db6a5c3dfef23588d78da59",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "3.278426596s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1598",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "3634",
+      "serverIp": "2600:1900:4245:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7a700086a6604e406ef",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:47.756230661Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d0cee5500621e430",
+    "timestamp": "2025-10-04T04:50:44.271403Z",
+    "trace": "projects/agile-device-472202-i8/traces/cdcec6176e572de96dc691bb13deade0"
+  },
+  {
+    "insertId": "68e0a7a400042f3057296867",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1092,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:50:44.275Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:44.362743438Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:44.274224Z"
+  },
+  {
+    "insertId": "68e0a7a400042fb426e81787",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1274,
+      "timestamp": "2025-10-04T04:50:44.275Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:44.362743438Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:44.274356Z"
+  },
+  {
+    "insertId": "68e0a7a4000439d0ca6560e5",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 993,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:50:44.278Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:44.362743438Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:44.276944Z"
+  },
+  {
+    "insertId": "68e0a7a400043ae7985acad3",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1175,
+      "timestamp": "2025-10-04T04:50:44.278Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:44.362743438Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:44.277223Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "38.400546244s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "7182",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "7002",
+      "serverIp": "2600:1900:4240:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7cc00073f780432f950",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:24.722149281Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "40fad667c039485d",
+    "timestamp": "2025-10-04T04:50:46.072997Z",
+    "trace": "projects/agile-device-472202-i8/traces/17c3bf415f4a3b055d03b2c2bcd54486"
+  },
+  {
+    "insertId": "68e0a7a600012a7dd72a53ee",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 6126,
+      "timeoutMs": 120000,
+      "timestamp": "2025-10-04T04:50:46.077Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:46.359784483Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:46.076413Z"
+  },
+  {
+    "insertId": "68e0a7a600012b59e9d711f6",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 6709,
+      "timestamp": "2025-10-04T04:50:46.078Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:46.359784483Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:46.076633Z"
+  },
+  {
+    "insertId": "68e0a7a7000865b55d11c48f",
+    "jsonPayload": {
+      "elapsedMs": 3272,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:50:47.551Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:47.691751934Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:47.550325Z"
+  },
+  {
+    "insertId": "68e0a7a7000e590caf67e5c2",
+    "jsonPayload": {
+      "elapsedMs": 3663,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:50:47.941Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:48.023027363Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:47.940300Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "17.506846946s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "5684",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "3457",
+      "serverIp": "34.143.75.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7be0002c49d9c6544b1",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:10.400494054Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "000da1247ae693e5",
+    "timestamp": "2025-10-04T04:50:52.672729Z",
+    "trace": "projects/agile-device-472202-i8/traces/0a090750a2b3091b96dc6227b585889b"
+  },
+  {
+    "insertId": "68e0a7ac000a522be5d2b061",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 4799,
+      "timeoutMs": 120000,
+      "timestamp": "2025-10-04T04:50:52.677Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:52.685491114Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:52.676395Z"
+  },
+  {
+    "insertId": "68e0a7ac000a531155e7f543",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 5211,
+      "timestamp": "2025-10-04T04:50:52.678Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:52.685491114Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:52.676625Z"
+  },
+  {
+    "insertId": "68e0a7ad00073da1d2ef1752",
+    "jsonPayload": {
+      "elapsedMs": 19989,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:50:53.475Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:53.685778094Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:53.474529Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "5.913775004s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2064",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "5747",
+      "serverIp": "2600:1900:4241:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7b6000d87f9b1cf5767",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:03.074955050Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "fbd0ba4342c19097",
+    "timestamp": "2025-10-04T04:50:56.971390Z",
+    "trace": "projects/agile-device-472202-i8/traces/414500ed51fda8a35158e5c9e9ac3177",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7b0000edf63bb7655fe",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1457,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:50:56.975Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:57.019690842Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:56.974691Z"
+  },
+  {
+    "insertId": "68e0a7b0000ee00395c3d436",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1642,
+      "timestamp": "2025-10-04T04:50:56.976Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:50:57.019690842Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:50:56.974851Z"
+  },
+  {
+    "insertId": "68e0a7b6000d83b03b73046b",
+    "jsonPayload": {
+      "elapsedMs": 5909,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:02.886Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:03.009163809Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:02.885680Z"
+  },
+  {
+    "insertId": "68e0a7b800012d2589496135",
+    "jsonPayload": {
+      "elapsedMs": 32699,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:04.078Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:04.343107688Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:04.077093Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "8.023095133s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1224",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "774",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7c40004c2b663bf7a54",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:16.394820433Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "98d9788396c829ab",
+    "timestamp": "2025-10-04T04:51:08.287154Z",
+    "trace": "projects/agile-device-472202-i8/traces/4ece02af4590c179df3f03a77e2745aa",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7bc00046f7dc41f7986",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 650,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:51:08.291Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:08.338616169Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:08.290685Z"
+  },
+  {
+    "insertId": "68e0a7bc000470114f4926ba",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 809,
+      "timestamp": "2025-10-04T04:51:08.292Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:08.338616169Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:08.290833Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "6.750213612s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "2202",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "6399",
+      "serverIp": "2600:1900:4241:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7c40001df5b1db7b723",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:16.394820433Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9d3cb59a0f78d5fe",
+    "timestamp": "2025-10-04T04:51:09.370578Z",
+    "trace": "projects/agile-device-472202-i8/traces/916b9b9e6ba806e05158e5c9e9ac3fbf"
+  },
+  {
+    "insertId": "68e0a7bd0005b5dcc825ae28",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.0-flash-001",
+      "promptLength": 1594,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:51:09.375Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:09.669958012Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:09.374236Z"
+  },
+  {
+    "insertId": "68e0a7bd0005b6a644a8cb24",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 1780,
+      "timestamp": "2025-10-04T04:51:09.375Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:09.669958012Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:09.374438Z"
+  },
+  {
+    "insertId": "68e0a7be0002c032954a2e12",
+    "jsonPayload": {
+      "elapsedMs": 17503,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:10.181Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:10.335705479Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:10.180274Z"
+  },
+  {
+    "insertId": "68e0a7c0000793fc6c52ff7d",
+    "jsonPayload": {
+      "elapsedMs": 42792,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:12.497Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:12.668371118Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:12.496636Z"
+  },
+  {
+    "insertId": "68e0a7c40001da6dc413cca6",
+    "jsonPayload": {
+      "elapsedMs": 6745,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:16.122Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:16.332449412Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:16.121453Z"
+  },
+  {
+    "insertId": "68e0a7c40004bd52456919ff",
+    "jsonPayload": {
+      "elapsedMs": 8018,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:16.311Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:16.332449412Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:16.310610Z"
+  },
+  {
+    "insertId": "68e0a7cc00073539d7e45e40",
+    "jsonPayload": {
+      "elapsedMs": 38395,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:24.473Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:24.656206304Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:24.472377Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "10.505375608s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "1223",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "777",
+      "serverIp": "2600:1900:4244:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a7da0005c287e1011d20",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:38.381300446Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "cbc7f85c6a391da9",
+    "timestamp": "2025-10-04T04:51:27.870373Z",
+    "trace": "projects/agile-device-472202-i8/traces/faa505835acf8abfdf3f03a77e2742e2",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7cf000d553cc7a6c312",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 648,
+      "timeoutMs": 30000,
+      "timestamp": "2025-10-04T04:51:27.874Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:27.985199279Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:27.873788Z"
+  },
+  {
+    "insertId": "68e0a7cf000d55ae6ad4c956",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 807,
+      "timestamp": "2025-10-04T04:51:27.875Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:27.985199279Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:27.873902Z"
+  },
+  {
+    "insertId": "68e0a7da0005be17e1104c9c",
+    "jsonPayload": {
+      "elapsedMs": 10501,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:51:38.377Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:38.382103320Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:38.376343Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "28.623056197s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "7217",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "7072",
+      "serverIp": "2600:1900:4245:200::",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a803000a9b700db298c8",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:52:19.699054849Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "45b6bbed67c33d31",
+    "timestamp": "2025-10-04T04:51:51.070222Z",
+    "trace": "projects/agile-device-472202-i8/traces/3f9ccac31b40816eaf3959fd84cb9906",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7e70001208742bdf209",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 6161,
+      "timeoutMs": 120000,
+      "timestamp": "2025-10-04T04:51:51.074Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:51.368274859Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:51.073863Z"
+  },
+  {
+    "insertId": "68e0a7e7000121563758d337",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 6744,
+      "timestamp": "2025-10-04T04:51:51.075Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:51:51.368274859Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:51:51.074070Z"
+  },
+  {
+    "httpRequest": {
+      "latency": "35.274491802s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "7086",
+      "requestUrl": "https://vertex-proxy-839845580521.us-central1.run.app/vertex/generate",
+      "responseSize": "6808",
+      "serverIp": "34.143.74.2",
+      "status": 200,
+      "userAgent": "node-fetch/1.0 (+https://github.com/bitinn/node-fetch)"
+    },
+    "insertId": "68e0a81b000a06d88925f6ed",
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:52:43.661195689Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "66139a08a3323c1f",
+    "timestamp": "2025-10-04T04:52:08.380872Z",
+    "trace": "projects/agile-device-472202-i8/traces/d547cdf43d6c82a9c483149290acb8dc",
+    "traceSampled": true
+  },
+  {
+    "insertId": "68e0a7f80005deb4f7f35391",
+    "jsonPayload": {
+      "event": "vertex.proxy.call",
+      "model": "gemini-2.5-pro",
+      "promptLength": 6031,
+      "timeoutMs": 120000,
+      "timestamp": "2025-10-04T04:52:08.385Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:52:08.389543299Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:52:08.384692Z"
+  },
+  {
+    "insertId": "68e0a7f80005e029ae7b7866",
+    "jsonPayload": {
+      "event": "vertex.proxy.request",
+      "payloadSize": 6612,
+      "timestamp": "2025-10-04T04:52:08.386Z",
+      "url": "https://us-central1-aiplatform.googleapis.com/v1/projects/agile-device-472202-i8/locations/us-central1/publishers/google/models/gemini-2.5-pro:generateContent"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:52:08.724231017Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:52:08.385065Z"
+  },
+  {
+    "insertId": "68e0a803000a962a05f1bdd8",
+    "jsonPayload": {
+      "elapsedMs": 28619,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:52:19.695Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:52:19.712078277Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:52:19.693802Z"
+  },
+  {
+    "insertId": "68e0a81b000a01351f6cc70d",
+    "jsonPayload": {
+      "elapsedMs": 35270,
+      "event": "vertex.proxy.success",
+      "hasContent": true,
+      "timestamp": "2025-10-04T04:52:43.656Z"
+    },
+    "labels": {
+      "instanceId": "0069c7a9889cd4d62ff1d5b1b9b80d292edc08813a1ebe168f2190d6efafe082ff160d8874c0d76c78c28fc3ece5a476646d0206be170a4b4fbefb013990ad9516d48fe29a088417f73956e0a6c2107b"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-04T04:52:43.660533238Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "vertex-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "vertex-proxy-00001-7zn",
+        "service_name": "vertex-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "timestamp": "2025-10-04T04:52:43.655669Z"
+  }
+]

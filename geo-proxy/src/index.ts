@@ -10,9 +10,25 @@ app.use(express.json());
 // Shared key authentication middleware
 function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
   const provided = req.header('x-proxy-key');
-  if (!provided || provided !== process.env.PROXY_SHARED_KEY) {
+  const expected = process.env.PROXY_SHARED_KEY;
+
+  if (!provided) {
+    console.log(JSON.stringify({ event: 'auth.failed', reason: 'missing_key', provided: null }));
     return res.status(401).json({ error: 'unauthorized' });
   }
+
+  if (provided !== expected) {
+    console.log(JSON.stringify({
+      event: 'auth.failed',
+      reason: 'key_mismatch',
+      provided_length: provided.length,
+      expected_length: expected?.length,
+      provided_prefix: provided.substring(0, 8),
+      expected_prefix: expected?.substring(0, 8)
+    }));
+    return res.status(401).json({ error: 'unauthorized' });
+  }
+
   next();
 }
 

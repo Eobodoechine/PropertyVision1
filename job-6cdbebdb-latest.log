@@ -1,0 +1,4 @@
+2025-10-04T11:03:50.320130Z | ⚙️  Processing job 6cdbebdb-7a94-46cf-a067-a3ac56049806: 2101 Newgate Dr, Decatur, GA 30035
+2025-10-04T11:03:50.320174Z | [32minfo[39m: ⚙️  Processing job 6cdbebdb-7a94-46cf-a067-a3ac56049806: 2101 Newgate Dr, Decatur, GA 30035 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T11:03:50.321Z"}
+2025-10-04T11:06:13.720794Z | ✅ Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 completed
+2025-10-04T11:06:35.520081Z | [32minfo[39m: ✅ Job 6cdbebdb-7a94-46cf-a067-a3ac56049806 completed {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-04T11:06:33.521Z"}

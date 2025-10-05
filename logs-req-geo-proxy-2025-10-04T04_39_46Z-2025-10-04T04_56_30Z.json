@@ -1,0 +1,2464 @@
+[
+  {
+    "httpRequest": {
+      "latency": "3.722974435s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "2600:1900:4245:200::",
+      "status": 200
+    },
+    "insertId": "68e0a57d00063f59f3abe288",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:41:33.413190301Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "4c805098b4aaa20c",
+    "timestamp": "2025-10-04T04:41:29.471123Z",
+    "trace": "projects/agile-device-472202-i8/traces/58628eb66724615ecafbf0aa1dd17195",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.137598748s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.74.2",
+      "status": 200
+    },
+    "insertId": "68e0a5e50001bc854d71f837",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:43:17.117088176Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "38e128cadc0711fc",
+    "timestamp": "2025-10-04T04:43:16.971058Z",
+    "trace": "projects/agile-device-472202-i8/traces/bd7ea45107ce2de3094b76796f653019",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.143157290s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1449",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a684000c9196bdcf3977",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:45:56.827360268Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "97157a30c9656540",
+    "timestamp": "2025-10-04T04:45:56.670646Z",
+    "trace": "projects/agile-device-472202-i8/traces/b4242aafbc147fa085e400b2fd1e5b04",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.141944309s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1401",
+      "serverIp": "34.143.78.2",
+      "status": 200
+    },
+    "insertId": "68e0a6870009a1368c5f4cbf",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:45:59.825276964Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "7a82cf899fc12534",
+    "timestamp": "2025-10-04T04:45:59.487573Z",
+    "trace": "projects/agile-device-472202-i8/traces/a2c753bf9e7468062a0f54b4d2bd2e6c"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.045632370s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a6880007ebc9841b7ebd",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:00.825527901Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "5125980eb960b83f",
+    "timestamp": "2025-10-04T04:46:00.471989Z",
+    "trace": "projects/agile-device-472202-i8/traces/148bea2c490af8812d60a9d06a01b8f3"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.147223717s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1566",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a690000068460cdbb8df",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:08.150290169Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "b40cad45861a86a7",
+    "timestamp": "2025-10-04T04:46:07.874067Z",
+    "trace": "projects/agile-device-472202-i8/traces/07fcbb3c9b3dba7485e400b2fd1e5260",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.122380100s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "410",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1461",
+      "serverIp": "34.143.78.2",
+      "status": 200
+    },
+    "insertId": "68e0a6910006299d09868d22",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:09.484426880Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "71dfb46184cd99b9",
+    "timestamp": "2025-10-04T04:46:09.279728Z",
+    "trace": "projects/agile-device-472202-i8/traces/5b5f4770a70cde372a0f54b4d2bd25e7"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.028278690s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a694000aef8662a85a3d",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:12.812266021Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "1d6dec352d66adf5",
+    "timestamp": "2025-10-04T04:46:12.686544Z",
+    "trace": "projects/agile-device-472202-i8/traces/51228612173252082d60a9d06a01b291"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.169172500s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1403",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a6a1000534b7ebe2b6d5",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:25.469424599Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e7238c3e44fcb3cc",
+    "timestamp": "2025-10-04T04:46:25.170356Z",
+    "trace": "projects/agile-device-472202-i8/traces/f44134ce4c0ed05285e400b2fd1e50c2",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.158791606s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1486",
+      "serverIp": "34.143.78.2",
+      "status": 200
+    },
+    "insertId": "68e0a6a30009c5ec41cb821a",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:27.800703016Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "ae5b04c99ca3181e",
+    "timestamp": "2025-10-04T04:46:27.480007Z",
+    "trace": "projects/agile-device-472202-i8/traces/5017326eb88324b52a0f54b4d2bd258a"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.124440226s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1563",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a6a6000612fd862b88e1",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:30.462883635Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "949f0762c33fe9fd",
+    "timestamp": "2025-10-04T04:46:30.272049Z",
+    "trace": "projects/agile-device-472202-i8/traces/1357cca70db0f4ea94164531c5befe43"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.144315422s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1494",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a6b00003508eb5401d0b",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:40.455186951Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0b79abfb1b3e7ea7",
+    "timestamp": "2025-10-04T04:46:40.071187Z",
+    "trace": "projects/agile-device-472202-i8/traces/0aab17e3f405205794164531c5befce5",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.025817921s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a6b7000db543e78003c6",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:48.113465624Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0d4f6fa30db00c1a",
+    "timestamp": "2025-10-04T04:46:47.870818Z",
+    "trace": "projects/agile-device-472202-i8/traces/1ef17a23e0afbcbe94164531c5bef10f"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.036927039s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.79.2",
+      "status": 200
+    },
+    "insertId": "68e0a6bc000c5bdb83c861d6",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:46:53.107233512Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "cfb2931c17e846a6",
+    "timestamp": "2025-10-04T04:46:52.771399Z",
+    "trace": "projects/agile-device-472202-i8/traces/284634203327071f94164531c5bef7fd",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.054321159s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "2600:1900:4241:200::",
+      "status": 200
+    },
+    "insertId": "68e0a6d400050899472f7eeb",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:47:16.334017596Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "7603fe83866e7e2d",
+    "timestamp": "2025-10-04T04:47:16.273879Z",
+    "trace": "projects/agile-device-472202-i8/traces/07268a22875d4ddb167ad2204d3959b8",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.026709579s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7090004c2146495a89d",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:09.316636644Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "65cd8b3817ea84cf",
+    "timestamp": "2025-10-04T04:48:09.278680Z",
+    "trace": "projects/agile-device-472202-i8/traces/f10998a5347e7d6864e8c0793b287a9a",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.137801708s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1470",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a73b000af3afabb6aa0a",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:48:59.722831751Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e21ddd94b4d962fb",
+    "timestamp": "2025-10-04T04:48:59.571557Z",
+    "trace": "projects/agile-device-472202-i8/traces/e4f4d9980f378fad4ab44378a5b9f69b",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.121884197s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1570",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a73e000c3fc6e30e6ccd",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:03.052236201Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c842a4cd618b3a41",
+    "timestamp": "2025-10-04T04:49:02.679459Z",
+    "trace": "projects/agile-device-472202-i8/traces/37d98fd4bcb3c4654ab44378a5b9f97a"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.121122657s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1565",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a73f000c170421f6e9e7",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:04.051282164Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "1fc369c1f8b3895f",
+    "timestamp": "2025-10-04T04:49:03.669825Z",
+    "trace": "projects/agile-device-472202-i8/traces/40b51a3a657068e5eccae2e8d344ca7b"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.145464616s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1496",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a74000080762262aa519",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:04.717695205Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "a88e393a77c752a5",
+    "timestamp": "2025-10-04T04:49:04.379130Z",
+    "trace": "projects/agile-device-472202-i8/traces/77c99a5669d595204ab44378a5b9f966"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.123725038s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1572",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a741000937f1937f6d27",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:05.715793294Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "33bab570c57bf371",
+    "timestamp": "2025-10-04T04:49:05.478964Z",
+    "trace": "projects/agile-device-472202-i8/traces/74c5bd5c17f1c82c4ab44378a5b9fffb"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.130693368s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1397",
+      "serverIp": "2600:1900:4240:200::",
+      "status": 200
+    },
+    "insertId": "68e0a74200064f66fccfb4fc",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:06.716696658Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "b204658f662b9c4b",
+    "timestamp": "2025-10-04T04:49:06.281370Z",
+    "trace": "projects/agile-device-472202-i8/traces/604dbc2f3f8ad05c327ccbe5d580ef1e"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.118757499s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1564",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a742000d97274b35540f",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:07.049613420Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "030964e5c75612a4",
+    "timestamp": "2025-10-04T04:49:06.770256Z",
+    "trace": "projects/agile-device-472202-i8/traces/a3f90c841f3bd972eccae2e8d344c307"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.118981817s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "411",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1401",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a745000a93474df0eb03",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:09.711902234Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "6b35e05466e1edc3",
+    "timestamp": "2025-10-04T04:49:09.572636Z",
+    "trace": "projects/agile-device-472202-i8/traces/4bd63ef622d35d984ab44378a5b9f6ec",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.104885448s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "412",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1575",
+      "serverIp": "2600:1900:4240:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7460005e15d4a51f2e8",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:10.712264383Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "2eba5ba83e04e4aa",
+    "timestamp": "2025-10-04T04:49:10.279265Z",
+    "trace": "projects/agile-device-472202-i8/traces/4cc6d1ad24b95eeb327ccbe5d580e4ed"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.122747568s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1577",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a746000a9d970d92a5bd",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:10.712264383Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "b3f489b56ca9f671",
+    "timestamp": "2025-10-04T04:49:10.571623Z",
+    "trace": "projects/agile-device-472202-i8/traces/fe5b72008dd71f9beccae2e8d344c7c5"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.150181759s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1482",
+      "serverIp": "34.143.75.2",
+      "status": 200
+    },
+    "insertId": "68e0a74700069e2134435bc2",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:11.710480051Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "b7b96a1093f05ae6",
+    "timestamp": "2025-10-04T04:49:11.281867Z",
+    "trace": "projects/agile-device-472202-i8/traces/0e820bbe97b2c27b4ab44378a5b9fcfd"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.128952959s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1546",
+      "serverIp": "2600:1900:4240:200::",
+      "status": 200
+    },
+    "insertId": "68e0a748000c58b0155e15d4",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:13.047230843Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "bc4298282fdfd319",
+    "timestamp": "2025-10-04T04:49:12.678841Z",
+    "trace": "projects/agile-device-472202-i8/traces/37b9593b4bc7ecd8fc9d607075881c78"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.139424590s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1406",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a74900064683cfded02b",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:13.709472713Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9a4f7f65ef8419c0",
+    "timestamp": "2025-10-04T04:49:13.270496Z",
+    "trace": "projects/agile-device-472202-i8/traces/4077cefd7d0c3bb1eccae2e8d344ca60"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.019019140s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "410",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1401",
+      "serverIp": "2600:1900:4240:200::",
+      "status": 200
+    },
+    "insertId": "68e0a74a000f4133a8da937f",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:15.039894399Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "cc3d8e2b32a2bd0a",
+    "timestamp": "2025-10-04T04:49:14.979052Z",
+    "trace": "projects/agile-device-472202-i8/traces/95405cea67a68897fc9d60707588138b"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.125636439s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1489",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a74c000303a0e70e0851",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:16.373668894Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e5a2b7ae262eee9f",
+    "timestamp": "2025-10-04T04:49:16.070296Z",
+    "trace": "projects/agile-device-472202-i8/traces/adffd70993a22d06eccae2e8d344c4e7"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.123666218s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "411",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1392",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a74f0002ff2d3b84e394",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:19.369279208Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0ee22dfa11f8823f",
+    "timestamp": "2025-10-04T04:49:19.071302Z",
+    "trace": "projects/agile-device-472202-i8/traces/1bc41758326cf072eccae2e8d344c8ac"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.029682569s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "2600:1900:4240:200::",
+      "status": 200
+    },
+    "insertId": "68e0a74f0001b34ad0aceece",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:19.369279208Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "3eacca44bfad7cf5",
+    "timestamp": "2025-10-04T04:49:19.080095Z",
+    "trace": "projects/agile-device-472202-i8/traces/37b4cb41b161e635fc9d6070758813ba"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.125465646s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1574",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a75200017e0caeb982c1",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:22.366184344Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "15277e6d35a9704c",
+    "timestamp": "2025-10-04T04:49:21.970714Z",
+    "trace": "projects/agile-device-472202-i8/traces/11136a085882115deccae2e8d344c28a",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.133410065s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "417",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1501",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a75200096c31e0fd9482",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:22.697414582Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "804aa6c5d8db7219",
+    "timestamp": "2025-10-04T04:49:22.481890Z",
+    "trace": "projects/agile-device-472202-i8/traces/5d7b5a7cce82802b498fbc145282edcf"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.018294460s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1565",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a75300061e48cc0a22be",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:23.699781385Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "1700c45e040f3ae8",
+    "timestamp": "2025-10-04T04:49:23.380730Z",
+    "trace": "projects/agile-device-472202-i8/traces/769ea84bef29e35856167f81cad46f4c"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.011829440s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "2600:1901:81d5:200::",
+      "status": 200
+    },
+    "insertId": "68e0a757000452a1cebeafca",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:27.361510572Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "a79dcc064871cca7",
+    "timestamp": "2025-10-04T04:49:27.269967Z",
+    "trace": "projects/agile-device-472202-i8/traces/2a6685f0602becf3eccae2e8d344c748"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.124095945s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1558",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a75800062c5e8ebc32c4",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:28.695488846Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d9c1d825a04a981f",
+    "timestamp": "2025-10-04T04:49:28.279125Z",
+    "trace": "projects/agile-device-472202-i8/traces/aa1600235b21e245498fbc145282ebd3"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.122252945s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1563",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a759000317a65b93132d",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:29.359421400Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0064c1761197a85f",
+    "timestamp": "2025-10-04T04:49:29.078805Z",
+    "trace": "projects/agile-device-472202-i8/traces/9c85d1ac90a8386956167f81cad46407"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.117894797s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1562",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a75b000aafd7efb6b141",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:32.022971240Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "bd01e6a9732410f5",
+    "timestamp": "2025-10-04T04:49:31.580529Z",
+    "trace": "projects/agile-device-472202-i8/traces/f1784a3fd9ff8db9498fbc145282e0ab"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.127846988s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "409",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1372",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a75c000ad549570b9f95",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:33.025294107Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "dd975ea12d9647cf",
+    "timestamp": "2025-10-04T04:49:32.580652Z",
+    "trace": "projects/agile-device-472202-i8/traces/1cbd3f21b84f4afd498fbc145282e42e",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.111681378s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "408",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1177",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a75c000da0c62bc881cd",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:33.025294107Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "4e3c8319b223da1a",
+    "timestamp": "2025-10-04T04:49:32.779778Z",
+    "trace": "projects/agile-device-472202-i8/traces/202d7a315c29855656167f81cad46b53"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.126778766s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1571",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a75f0004b495e73e699a",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:35.357446664Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "20acc77dbe323f8c",
+    "timestamp": "2025-10-04T04:49:35.179854Z",
+    "trace": "projects/agile-device-472202-i8/traces/ea6057b91c4b1cb7498fbc145282ed08"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.021171469s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "411",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1401",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a75f000abdd76c499f0b",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:36.020134651Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "75d58aef4bbfea26",
+    "timestamp": "2025-10-04T04:49:35.681506Z",
+    "trace": "projects/agile-device-472202-i8/traces/891b1ce1ae4c2cb456167f81cad468ca"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.115404760s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1463",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a76100017aee60c6f34a",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:37.351864296Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9f31004de306d910",
+    "timestamp": "2025-10-04T04:49:36.980181Z",
+    "trace": "projects/agile-device-472202-i8/traces/a57bf525c8ec0a65498fbc145282e7eb"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.121952780s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1406",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a76100031dc2fbe8d11f",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:37.351864296Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d68b63a2ffef634f",
+    "timestamp": "2025-10-04T04:49:37.080715Z",
+    "trace": "projects/agile-device-472202-i8/traces/c4be916f3b419d8156167f81cad46297"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.096616112s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "411",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1461",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a763000a574b54781e72",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:39.686102338Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "3de53fbde39db44d",
+    "timestamp": "2025-10-04T04:49:39.579694Z",
+    "trace": "projects/agile-device-472202-i8/traces/ed6ab7eb47429ea8498fbc145282e4c7"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.117526540s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "417",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1564",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a765000180b5af963458",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:41.349750921Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "80356f968f47d7eb",
+    "timestamp": "2025-10-04T04:49:40.979152Z",
+    "trace": "projects/agile-device-472202-i8/traces/78faf57739c53eec56167f81cad463d8"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.046200880s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.73.2",
+      "status": 200
+    },
+    "insertId": "68e0a77000097278a27a14be",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:52.622834971Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "ccd2893e86a0aff1",
+    "timestamp": "2025-10-04T04:49:52.571341Z",
+    "trace": "projects/agile-device-472202-i8/traces/398eeedb2a496809498fbc145282e111",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.116961454s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "409",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1401",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a771000307a442836558",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:53.291171178Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "09bdf96fb94c273a",
+    "timestamp": "2025-10-04T04:49:53.080037Z",
+    "trace": "projects/agile-device-472202-i8/traces/f281dda0869a629356167f81cad46b95"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.019302989s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1594",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a77500018796f518f2e0",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:49:57.287337341Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "d9575b1e36dc4bc8",
+    "timestamp": "2025-10-04T04:49:57.079150Z",
+    "trace": "projects/agile-device-472202-i8/traces/8c5afc79b1cd69c156167f81cad46b0d"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.179325685s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1485",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a7b20003ec35a5bc29a0",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:58.260219569Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9e7fb58ff5de5cfe",
+    "timestamp": "2025-10-04T04:50:58.071678Z",
+    "trace": "projects/agile-device-472202-i8/traces/c10a6c597c8909c2e1af54873fc9e81f",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.039507949s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1566",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7b30001b45700b32517",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:50:59.259172741Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "c26265ec3beaf319",
+    "timestamp": "2025-10-04T04:50:59.070702Z",
+    "trace": "projects/agile-device-472202-i8/traces/7d84743f7a44ec16a7aa1b9e08d317ff"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.113585566s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1522",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7b4000a79a149890e5d",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:00.924598801Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9afd5c0acf143276",
+    "timestamp": "2025-10-04T04:51:00.570904Z",
+    "trace": "projects/agile-device-472202-i8/traces/b073eeab95590aa8a7aa1b9e08d31164"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.145698995s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1469",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a7b60001cdefee998699",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:02.258059027Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0a2ade17d55dbce7",
+    "timestamp": "2025-10-04T04:51:01.970836Z",
+    "trace": "projects/agile-device-472202-i8/traces/bef289216f33e04fe1af54873fc9e80d"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.152093099s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "417",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1564",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7b6000676e5521b6813",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:02.587403731Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "95deb6e12e3bd1d1",
+    "timestamp": "2025-10-04T04:51:02.270182Z",
+    "trace": "projects/agile-device-472202-i8/traces/e4913e4a4828e541a7aa1b9e08d31ab2"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.133837428s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1470",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7b6000dd6d9ad24a6f4",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:02.924638879Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "58b1e0444a023872",
+    "timestamp": "2025-10-04T04:51:02.771854Z",
+    "trace": "projects/agile-device-472202-i8/traces/72aa2d76ac8022bba7aa1b9e08d31d44"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.141608009s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1559",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a7b70004cd0f15e98257",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:03.589023178Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "ffc8b54d16e42e3a",
+    "timestamp": "2025-10-04T04:51:03.171759Z",
+    "trace": "projects/agile-device-472202-i8/traces/342050f1abb98b1fe1af54873fc9e969"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.129264370s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1486",
+      "serverIp": "34.143.72.2",
+      "status": 200
+    },
+    "insertId": "68e0a7b80004e701a1131c35",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:04.587796458Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "ce815df1261c2d96",
+    "timestamp": "2025-10-04T04:51:04.190468Z",
+    "trace": "projects/agile-device-472202-i8/traces/f6e4e1cd2d900a67e1af54873fc9e078"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.121914109s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1562",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7b8000da6e8eb2a1a1b",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:04.922125143Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "7e12358147b5b657",
+    "timestamp": "2025-10-04T04:51:04.771201Z",
+    "trace": "projects/agile-device-472202-i8/traces/19488b1469664b83a7aa1b9e08d316a9"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.149119358s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "411",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1496",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7be000c8a41597ae100",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:10.916747449Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "2e3bdbe75e4ed64f",
+    "timestamp": "2025-10-04T04:51:10.671003Z",
+    "trace": "projects/agile-device-472202-i8/traces/db530f979300613ea7aa1b9e08d31c54",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.122174956s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1408",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7c4000daa6396859228",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:16.911185990Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "b970096bf36becd9",
+    "timestamp": "2025-10-04T04:51:16.771775Z",
+    "trace": "projects/agile-device-472202-i8/traces/8b082aacdb13438ba7aa1b9e08d31b64"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.023365879s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "410",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1392",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7c8000f33381f0400f9",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:21.237720078Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e2795186f5c66b78",
+    "timestamp": "2025-10-04T04:51:20.971436Z",
+    "trace": "projects/agile-device-472202-i8/traces/bdd4039bea2328efa7aa1b9e08d31d4b",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.157155744s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "409",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1483",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7cf00099d148aa7e323",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:27.899263498Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "0d76ff6537401a9f",
+    "timestamp": "2025-10-04T04:51:27.471227Z",
+    "trace": "projects/agile-device-472202-i8/traces/3095bb5522bac9e3a7aa1b9e08d31cd8"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.128894975s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "417",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1585",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7d300049716a9dd40c9",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:31.564081814Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "572011125e1481ff",
+    "timestamp": "2025-10-04T04:51:31.170290Z",
+    "trace": "projects/agile-device-472202-i8/traces/ec97b113f05d36f1a7aa1b9e08d31168",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.114083149s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "2600:1900:0:2d05::2301",
+      "requestMethod": "POST",
+      "requestSize": "415",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1583",
+      "serverIp": "2600:1900:4243:200::",
+      "status": 200
+    },
+    "insertId": "68e0a7d4000c03b79f12f75a",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:32.894637292Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "57d2a5761daf11b1",
+    "timestamp": "2025-10-04T04:51:32.670690Z",
+    "trace": "projects/agile-device-472202-i8/traces/b9703d935c597d64a7aa1b9e08d314c6"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.107629843s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1381",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7d7000d6c1f605073df",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:35.892203009Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "6e008b1182a2552b",
+    "timestamp": "2025-10-04T04:51:35.770715Z",
+    "trace": "projects/agile-device-472202-i8/traces/af78b098e1973c7dc841b37c4a6a0472"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.026911570s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "413",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1558",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7da000622dbf747be30",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:38.556123620Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "e3eb078950be2038",
+    "timestamp": "2025-10-04T04:51:38.373659Z",
+    "trace": "projects/agile-device-472202-i8/traces/df474acf3c0239336d1ced18ea6947c5"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.126695118s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "414",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1562",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7de0001859c2e2cd63e",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:42.220270014Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "4328f554fcae3f1d",
+    "timestamp": "2025-10-04T04:51:41.971424Z",
+    "trace": "projects/agile-device-472202-i8/traces/d7d8b90026fa23d26d1ced18ea69472c",
+    "traceSampled": true
+  },
+  {
+    "httpRequest": {
+      "latency": "0.139539947s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "416",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1564",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7df000954f65dfa2cfc",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:43.883255807Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "cd826bcc705820da",
+    "timestamp": "2025-10-04T04:51:43.470332Z",
+    "trace": "projects/agile-device-472202-i8/traces/e150450d9c6831d86d1ced18ea6946c5"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.020565281s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "412",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1463",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7e000078564eac7d6aa",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:44.549678120Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "9c2bd2ff23bde0bc",
+    "timestamp": "2025-10-04T04:51:44.470580Z",
+    "trace": "projects/agile-device-472202-i8/traces/5cf66c02c81f448f6d1ced18ea6949bb"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.108507807s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "410",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1574",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7e4000a70e4c2c40163",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:48.879970379Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "60c21b5f92329f84",
+    "timestamp": "2025-10-04T04:51:48.574059Z",
+    "trace": "projects/agile-device-472202-i8/traces/b706f723da9a78746d1ced18ea694ccd"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.130177976s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "412",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1482",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7e50007b07e6631349d",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:49.544574298Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "dc675c14f08d3a1a",
+    "timestamp": "2025-10-04T04:51:49.372013Z",
+    "trace": "projects/agile-device-472202-i8/traces/d5f19ca5b0955ad96d1ced18ea6947b5"
+  },
+  {
+    "httpRequest": {
+      "latency": "0.146294764s",
+      "protocol": "HTTP/1.1",
+      "remoteIp": "34.96.44.199",
+      "requestMethod": "POST",
+      "requestSize": "410",
+      "requestUrl": "https://geo-proxy-839845580521.us-central1.run.app/geocode",
+      "responseSize": "1458",
+      "serverIp": "34.143.77.2",
+      "status": 200
+    },
+    "insertId": "68e0a7e900050755100fac19",
+    "labels": {
+      "instanceId": "0069c7a988a854fcae3355a037c384d0f1159e51d68c5ba2950d04eba5d06fe9a9599351b3c858990333b4a9484d1a932cc2f371eb9709d1dbf204759321e1222dd837452dfe3dcd0f256dd95cc85a"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Frequests",
+    "receiveTimestamp": "2025-10-04T04:51:53.541645678Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "geo-proxy",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "geo-proxy-00003-fxb",
+        "service_name": "geo-proxy"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "spanId": "373b259b1a30d175",
+    "timestamp": "2025-10-04T04:51:53.181516Z",
+    "trace": "projects/agile-device-472202-i8/traces/f39561ab92777b586d1ced18ea694680",
+    "traceSampled": true
+  }
+]

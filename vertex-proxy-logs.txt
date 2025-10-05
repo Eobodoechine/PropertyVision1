@@ -1,0 +1,186 @@
+2025-10-04T04:09:57.746204Z		vertex.proxy.success
+2025-10-04T04:09:13.284156Z		vertex.proxy.request
+2025-10-04T04:09:13.283926Z		vertex.proxy.call
+2025-10-04T04:09:13.271982Z		
+2025-10-04T04:08:04.832155Z		vertex.proxy.success
+2025-10-04T04:07:59.481403Z		vertex.proxy.request
+2025-10-04T04:07:59.481286Z		vertex.proxy.call
+2025-10-04T04:07:59.477690Z		
+2025-10-04T04:07:55.663076Z		vertex.proxy.success
+2025-10-04T04:07:52.246414Z		vertex.proxy.success
+2025-10-04T04:07:50.815619Z		vertex.proxy.success
+2025-10-04T04:07:49.384116Z		vertex.proxy.request
+2025-10-04T04:07:49.383991Z		vertex.proxy.call
+2025-10-04T04:07:49.380389Z		
+2025-10-04T04:07:47.504771Z		vertex.proxy.success
+2025-10-04T04:07:47.375326Z		vertex.proxy.request
+2025-10-04T04:07:47.375249Z		vertex.proxy.call
+2025-10-04T04:07:47.371265Z		
+2025-10-04T04:07:46.146228Z		vertex.proxy.success
+2025-10-04T04:07:43.637586Z		vertex.proxy.success
+2025-10-04T04:07:42.531732Z		vertex.proxy.success
+2025-10-04T04:07:42.377144Z		vertex.proxy.request
+2025-10-04T04:07:42.377054Z		vertex.proxy.call
+2025-10-04T04:07:42.373433Z		
+2025-10-04T04:07:38.451307Z		vertex.proxy.success
+2025-10-04T04:07:38.374561Z		vertex.proxy.success
+2025-10-04T04:07:37.475463Z		vertex.proxy.request
+2025-10-04T04:07:37.475348Z		vertex.proxy.call
+2025-10-04T04:07:37.471733Z		
+2025-10-04T04:07:35.087214Z		vertex.proxy.success
+2025-10-04T04:07:35.083342Z		vertex.proxy.request
+2025-10-04T04:07:35.083245Z		vertex.proxy.call
+2025-10-04T04:07:35.079568Z		
+2025-10-04T04:07:33.180714Z		vertex.proxy.success
+2025-10-04T04:07:17.374785Z		vertex.proxy.request
+2025-10-04T04:07:17.374661Z		vertex.proxy.call
+2025-10-04T04:07:17.371343Z		
+2025-10-04T04:07:16.294168Z		vertex.proxy.request
+2025-10-04T04:07:16.293709Z		vertex.proxy.call
+2025-10-04T04:07:16.287245Z		
+2025-10-04T04:07:15.283505Z		vertex.proxy.request
+2025-10-04T04:07:15.283372Z		vertex.proxy.call
+2025-10-04T04:07:15.279768Z		
+2025-10-04T04:07:13.773834Z		vertex.proxy.request
+2025-10-04T04:07:13.773733Z		vertex.proxy.call
+2025-10-04T04:07:13.769901Z		
+2025-10-04T04:07:11.683906Z		vertex.proxy.request
+2025-10-04T04:07:11.683792Z		vertex.proxy.call
+2025-10-04T04:07:11.680039Z		
+2025-10-04T04:07:09.883090Z		vertex.proxy.request
+2025-10-04T04:07:09.883024Z		vertex.proxy.call
+2025-10-04T04:07:09.872464Z		
+2025-10-04T04:05:38.010996Z		vertex.proxy.success
+2025-10-04T04:04:58.027947Z		vertex.proxy.request
+2025-10-04T04:04:58.009445Z		vertex.proxy.call
+2025-10-04T04:04:57.998908Z		
+2025-10-04T04:04:47.359418Z		vertex.proxy.success
+2025-10-04T04:04:08.301327Z		vertex.proxy.request
+2025-10-04T04:04:08.299460Z		vertex.proxy.call
+2025-10-04T04:04:08.288936Z		
+2025-10-04T04:03:30.827442Z		vertex.proxy.success
+2025-10-04T04:03:26.207622Z		vertex.proxy.request
+2025-10-04T04:03:26.203321Z		vertex.proxy.call
+2025-10-04T04:03:26.193246Z		
+2025-10-04T04:03:20.423295Z		vertex.proxy.success
+2025-10-04T04:02:55.912974Z		vertex.proxy.request
+2025-10-04T04:02:55.912851Z		vertex.proxy.call
+2025-10-04T04:02:55.889651Z		
+2025-10-04T04:01:38.401408Z		vertex.proxy.success
+2025-10-04T04:01:32.974571Z		vertex.proxy.request
+2025-10-04T04:01:32.974476Z		vertex.proxy.call
+2025-10-04T04:01:32.970688Z		
+2025-10-04T04:01:12.503563Z		vertex.proxy.success
+2025-10-04T04:01:07.890437Z		vertex.proxy.request
+2025-10-04T04:01:07.890323Z		vertex.proxy.call
+2025-10-04T04:01:07.886514Z		
+2025-10-04T04:01:06.808745Z		vertex.proxy.success
+2025-10-04T04:01:05.876051Z		vertex.proxy.success
+2025-10-04T04:01:05.175531Z		vertex.proxy.success
+2025-10-04T04:01:04.023223Z		vertex.proxy.success
+2025-10-04T04:01:02.576081Z		vertex.proxy.success
+2025-10-04T04:01:00.380052Z		vertex.proxy.request
+2025-10-04T04:01:00.379940Z		vertex.proxy.call
+2025-10-04T04:01:00.376746Z		vertex.proxy.request
+2025-10-04T04:01:00.376647Z		vertex.proxy.call
+2025-10-04T04:01:00.373642Z		vertex.proxy.request
+2025-10-04T04:01:00.373378Z		vertex.proxy.call
+2025-10-04T04:01:00.370741Z		
+2025-10-04T04:01:00.369837Z		
+2025-10-04T04:01:00.369512Z		
+2025-10-04T04:00:53.490258Z		vertex.proxy.success
+2025-10-04T04:00:50.847903Z		vertex.proxy.success
+2025-10-04T04:00:48.454852Z		vertex.proxy.success
+2025-10-04T04:00:46.816891Z		vertex.proxy.success
+2025-10-04T04:00:35.575223Z		vertex.proxy.request
+2025-10-04T04:00:35.575101Z		vertex.proxy.call
+2025-10-04T04:00:35.571600Z		
+2025-10-04T04:00:33.674971Z		vertex.proxy.request
+2025-10-04T04:00:33.674811Z		vertex.proxy.call
+2025-10-04T04:00:33.671088Z		
+2025-10-04T04:00:24.276251Z		vertex.proxy.request
+2025-10-04T04:00:24.276129Z		vertex.proxy.call
+2025-10-04T04:00:24.272615Z		
+2025-10-04T04:00:23.391804Z		vertex.proxy.request
+2025-10-04T04:00:23.391693Z		vertex.proxy.call
+2025-10-04T04:00:23.387595Z		
+2025-10-04T04:00:21.973647Z		vertex.proxy.request
+2025-10-04T04:00:21.973535Z		vertex.proxy.call
+2025-10-04T04:00:21.970081Z		
+2025-10-04T04:00:20.983074Z		vertex.proxy.request
+2025-10-04T04:00:20.982843Z		vertex.proxy.call
+2025-10-04T04:00:20.971299Z		
+2025-10-04T03:52:12.512929Z		vertex.proxy.success
+2025-10-04T03:51:40.639596Z		vertex.proxy.request
+2025-10-04T03:51:40.639399Z		vertex.proxy.call
+2025-10-04T03:51:40.626751Z		
+2025-10-04T03:51:21.907712Z		vertex.proxy.success
+2025-10-04T03:50:46.221237Z		vertex.proxy.success
+2025-10-04T03:50:45.044996Z		vertex.proxy.request
+2025-10-04T03:50:45.044862Z		vertex.proxy.call
+2025-10-04T03:50:45.041047Z		
+2025-10-04T03:50:38.223424Z		vertex.proxy.success
+2025-10-04T03:50:37.929810Z		vertex.proxy.request
+2025-10-04T03:50:37.929707Z		vertex.proxy.call
+2025-10-04T03:50:37.925831Z		
+2025-10-04T03:50:29.977230Z		vertex.proxy.success
+2025-10-04T03:50:29.531152Z		vertex.proxy.request
+2025-10-04T03:50:29.531003Z		vertex.proxy.call
+2025-10-04T03:50:29.527347Z		
+2025-10-04T03:50:27.961814Z		vertex.proxy.request
+2025-10-04T03:50:27.961796Z		vertex.proxy.call
+2025-10-04T03:50:27.945073Z		
+2025-10-04T03:47:40.547543Z		vertex.proxy.success
+2025-10-04T03:47:39.280838Z		vertex.proxy.success
+2025-10-04T03:46:55.831989Z		vertex.proxy.request
+2025-10-04T03:46:55.831634Z		vertex.proxy.call
+2025-10-04T03:46:55.826300Z		
+2025-10-04T03:46:53.939489Z		vertex.proxy.request
+2025-10-04T03:46:53.939160Z		vertex.proxy.call
+2025-10-04T03:46:53.926091Z		
+2025-10-04T03:46:10.178559Z		vertex.proxy.success
+2025-10-04T03:45:32.842472Z		vertex.proxy.request
+2025-10-04T03:45:32.841842Z		vertex.proxy.call
+2025-10-04T03:45:32.827871Z		
+2025-10-04T03:38:19.860078Z		vertex.proxy.success
+2025-10-04T03:38:17.029333Z		vertex.proxy.request
+2025-10-04T03:38:16.980240Z		vertex.proxy.call
+2025-10-04T03:38:16.890172Z		vertex.proxy.started
+2025-10-04T03:38:16.888524Z	Default STARTUP TCP probe succeeded after 1 attempt for container "vertex-proxy-1" on port 8080.	
+2025-10-04T03:38:13.998288Z	Starting new instance. Reason: AUTOSCALING - Instance started due to configured scaling factors (e.g. CPU utilization, request throughput, etc.) or no existing capacity for current traffic.	
+2025-10-04T03:38:13.943951Z		
+2025-10-04T03:12:51.020011Z		vertex.proxy.success
+2025-10-04T03:12:50.756271Z		vertex.proxy.request
+2025-10-04T03:12:50.756114Z		vertex.proxy.call
+2025-10-04T03:12:50.752321Z		
+2025-10-04T03:12:47.866792Z		vertex.proxy.success
+2025-10-04T03:12:45.612398Z		vertex.proxy.request
+2025-10-04T03:12:45.612224Z		vertex.proxy.call
+2025-10-04T03:12:45.602315Z		
+2025-10-04T03:11:04.649659Z		vertex.proxy.success
+2025-10-04T03:11:04.436670Z		vertex.proxy.request
+2025-10-04T03:11:04.436465Z		vertex.proxy.call
+2025-10-04T03:11:04.432589Z		
+2025-10-04T03:10:51.969920Z		vertex.proxy.error
+2025-10-04T03:10:51.916850Z		vertex.proxy.request
+2025-10-04T03:10:51.916662Z		vertex.proxy.call
+2025-10-04T03:10:51.912Z		
+2025-10-04T03:10:43.364995Z		vertex.proxy.error
+2025-10-04T03:10:43.310689Z		vertex.proxy.request
+2025-10-04T03:10:43.309577Z		vertex.proxy.call
+2025-10-04T03:10:43.293528Z		
+2025-10-04T03:10:19.017403Z		vertex.proxy.error
+2025-10-04T03:10:18.966507Z		vertex.proxy.request
+2025-10-04T03:10:18.966256Z		vertex.proxy.call
+2025-10-04T03:10:18.960823Z		
+2025-10-04T03:10:12.282170Z		vertex.proxy.error
+2025-10-04T03:10:12.094765Z		vertex.proxy.request
+2025-10-04T03:10:12.046592Z		vertex.proxy.call
+2025-10-04T03:10:12.026143Z		
+2025-10-04T03:10:01.928338Z		
+2025-10-04T03:08:33.297119Z		
+2025-10-04T03:08:31.992839Z		
+2025-10-04T03:08:31.917998Z		vertex.proxy.started
+2025-10-04T03:08:31.916822Z	Default STARTUP TCP probe succeeded after 1 attempt for container "vertex-proxy-1" on port 8080.	
+2025-10-04T03:08:29.543927Z	Starting new instance. Reason: DEPLOYMENT_ROLLOUT - Instance started due to traffic shifting between revisions due to deployment, traffic split adjustment, or deployment health check.	
+2025-10-04T03:07:06.003381Z		
