@@ -26,6 +26,8 @@ interface JobData {
   createdAt: number;
   lastHeartbeat: number;
   completedAt?: number;
+  processingBy?: string; // Track which worker is processing this job
+  processingMessageId?: string; // Track which stream message is being processed (prevents same consumer re-processing)
 }
 
 export class JobQueue {
@@ -109,10 +111,29 @@ export class JobQueue {
    * Update job data
    */
   private async updateJob(jobId: string, updates: Partial<JobData>): Promise<void> {
+    // Only log if it's more than just a heartbeat update
+    const isHeartbeatOnly = Object.keys(updates).length === 1 && 'lastHeartbeat' in updates;
+    if (!isHeartbeatOnly) {
+      console.log(`💾 Updating job ${jobId} with:`, JSON.stringify(updates).substring(0, 200));
+    }
+
     const job = await this.getJobStatus(jobId);
     if (job) {
       const updated = { ...job, ...updates, lastHeartbeat: Date.now() };
       await this.redis.setJob(jobId, updated, JOB_TTL);
+      if (!isHeartbeatOnly) {
+        console.log(`✅ Job ${jobId} saved to Redis: status=${updated.status}, progress=${updated.progress}`);
+      }
+    } else {
+      console.error(`❌ CRITICAL: Job ${jobId} not found in Redis during updateJob! Creating new entry.`);
+      const newJob = {
+        jobId,
+        ...updates,
+        lastHeartbeat: Date.now(),
+        createdAt: updates.createdAt || Date.now()
+      };
+      await this.redis.setJob(jobId, newJob, JOB_TTL);
+      console.log(`✅ Job ${jobId} created in Redis: status=${newJob.status}, progress=${newJob.progress}`);
     }
   }
 
@@ -202,13 +223,36 @@ export class JobQueue {
    * Process a single job
    */
   private async processJob(jobId: string, address: string, messageId: string): Promise<void> {
-    console.log(`⚙️  Processing job ${jobId}: ${address}`);
+    console.log(`⚙️  [${messageId}] Processing job ${jobId}: ${address}`);
 
-    // Update status to processing
+    // Check if job is already being processed (use message ID for same-consumer detection)
+    const existingJob = await this.getJobStatus(jobId);
+
+    if (existingJob && existingJob.status === 'processing') {
+      console.log(`🔍 [${messageId}] Job ${jobId} status=${existingJob.status}, messageId=${existingJob.processingMessageId || 'none'}`);
+
+      // ALWAYS check heartbeat when job is processing (even if same message ID - handles XAUTOCLAIM reclaims)
+      const timeSinceHeartbeat = Date.now() - (existingJob.lastHeartbeat || 0);
+      console.log(`🔍 [${messageId}] Heartbeat age: ${Math.round(timeSinceHeartbeat / 1000)}s`);
+
+      if (timeSinceHeartbeat < 60000) { // If heartbeat within last 60 seconds, job is still active
+        console.warn(`⚠️  [${messageId}] Job ${jobId} still active (heartbeat ${Math.round(timeSinceHeartbeat / 1000)}s ago), skipping XAUTOCLAIM reclaim`);
+        await this.redis.xack(STREAM, GROUP, messageId); // Acknowledge to prevent re-processing
+        return;
+      }
+      console.log(`⏰ [${messageId}] Job ${jobId} heartbeat stale (${Math.round(timeSinceHeartbeat / 1000)}s), taking over`);
+    } else {
+      console.log(`🔍 [${messageId}] Job ${jobId} not currently processing (status: ${existingJob?.status || 'none'})`);
+    }
+
+    // Update status to processing and claim ownership with message ID
+    console.log(`📝 [${messageId}] Claiming ownership of job ${jobId}`);
     await this.updateJob(jobId, {
       status: 'processing',
       phase: 'Getting subject details',
-      progress: 10
+      progress: 10,
+      processingBy: CONSUMER,
+      processingMessageId: messageId
     });
 
     // Start heartbeat
@@ -328,6 +372,14 @@ export class JobQueue {
               const jobData = this.parseStreamMessage(fields);
 
               if (jobData && jobData.jobId) {
+                // Check if job has exceeded max attempts
+                const job = await this.getJobStatus(jobData.jobId);
+                if (job && (job.attempts || 0) >= MAX_ATTEMPTS) {
+                  console.warn(`⚠️  Job ${jobData.jobId} exceeded max attempts (${job.attempts}), moving to DLQ`);
+                  await this.handleJobFailure(jobData.jobId, new Error('Max reclaim attempts exceeded'), messageId);
+                  continue;
+                }
+
                 try {
                   await this.processJob(jobData.jobId, jobData.address, messageId);
                 } catch (error: any) {

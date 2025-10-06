@@ -238,15 +238,18 @@ export class RedisCache {
    */
   async setJob(jobId: string, jobData: any, ttlSeconds: number = 3600): Promise<void> {
     if (!this.client || !this.isConnected) {
-      console.warn('⚠️  Redis not connected, job will not be persisted');
+      console.error(`❌ CRITICAL: Redis not connected, job ${jobId} will NOT be persisted!`);
       return;
     }
 
     try {
       const key = `job:${jobId}`;
-      await this.client.set(key, JSON.stringify(jobData), 'EX', ttlSeconds);
+      const dataStr = JSON.stringify(jobData);
+      await this.client.set(key, dataStr, 'EX', ttlSeconds);
+      console.log(`📝 Redis SET job:${jobId} (${dataStr.length} bytes, TTL=${ttlSeconds}s)`);
     } catch (error) {
-      console.error('❌ Redis SET JOB error:', error);
+      console.error(`❌ Redis SET JOB error for ${jobId}:`, error);
+      throw error; // Re-throw so caller knows it failed
     }
   }
 
@@ -351,13 +354,16 @@ export class RedisCache {
    */
   async xack(stream: string, group: string, id: string): Promise<void> {
     if (!this.client || !this.isConnected) {
+      console.error(`❌ CRITICAL: Cannot XACK - Redis not connected! Stream: ${stream}, ID: ${id}`);
       return;
     }
 
     try {
-      await this.client.xack(stream, group, id);
+      const result = await this.client.xack(stream, group, id);
+      console.log(`✅ XACK successful: stream=${stream}, id=${id}, result=${result}`);
     } catch (error) {
-      console.error('❌ Redis XACK error:', error);
+      console.error(`❌ Redis XACK error for ${id}:`, error);
+      throw error; // Re-throw so caller knows it failed
     }
   }
 
