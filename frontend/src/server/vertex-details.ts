@@ -249,6 +249,17 @@ TYPE: [property type or UNKNOWN]`;
     const originalData = { sqft, beds, baths, yearBuilt, lotSize: null, subdivision, propertyType };
     console.log(`   🤖 Original LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
 
+    // **FAST-FAIL: Check if LLM extraction found ZERO critical data**
+    // If all critical fields are missing, the address is likely invalid - fail immediately
+    const allCriticalFieldsMissing = !sqft && !beds && !baths && !yearBuilt;
+
+    if (allCriticalFieldsMissing) {
+      console.error(`   ❌ FAST-FAIL: Initial LLM extraction found ZERO critical property data`);
+      console.error(`      sqft=${sqft}, beds=${beds}, baths=${baths}, yearBuilt=${yearBuilt}`);
+      console.error(`      This indicates an invalid or incomplete address - failing immediately without fallback strategies`);
+      throw new Error(`Invalid address - no property data found. Please verify the address is complete and correct.`);
+    }
+
     // STEP 3: Enrich validation data with original extraction for missing fields only
     console.log(`   🔄 Step 3: Enriching validation data with original extraction...`);
 
@@ -431,6 +442,11 @@ EVIDENCE: [brief summary of which sources support the chosen values]`;
     return finalData;
 
   } catch (error) {
+    // Re-throw fast-fail errors immediately - don't fallback to regex
+    if (error instanceof Error && error.message.includes('Invalid address - no property data found')) {
+      throw error;
+    }
+
     console.log(`   ❌ LLM parsing completely failed, falling back to regex: ${error}`);
     console.log(`   📄 Text that caused LLM parsing failure: ${text.substring(0, 300)}...`);
     return parseFreeformRegex(text);
@@ -679,7 +695,7 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
   const projectId = sa.project_id;
   const location = process.env.VERTEX_LOCATION || 'us-central1';
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-  const timeoutMs = Number(process.env.VERTEX_TIMEOUT_MS || '600000');
+  const timeoutMs = Number(process.env.VERTEX_TIMEOUT_MS || '80000'); // 80s - optimized based on analysis of 948 grounded searches
 
   // PRIMARY: Comprehensive grounded search for CRITICAL data
   let propertyDetails: Partial<BasicDetails> = {};
@@ -718,6 +734,10 @@ Provide specific facts with numbers. If any critical data is missing, clearly st
 
   } catch (err) {
     console.log(`   ⚠️  Primary grounded search failed: ${err}`);
+    // Re-throw if it's our fast-fail error
+    if (err instanceof Error && err.message.includes('Invalid address - no property data found')) {
+      throw err;
+    }
   }
 
   // CRITICAL DATA VALIDATION - Stop if missing essential fields

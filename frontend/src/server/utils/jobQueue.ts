@@ -1,13 +1,15 @@
 // Job Queue with Redis Streams for async processing
 import { getRedisCache } from './redisCache';
 import { ComprehensiveComparableSearchV5 } from '../comprehensive-comp-search-v5';
+import { sendErrorNotification, sendSuccessNotification } from './emailNotification';
 import { randomUUID } from 'crypto';
 import os from 'os';
 
 const STREAM = 'jobs';
 const GROUP = 'workers';
-const MIN_IDLE_MS = 30_000; // 30 seconds
-const MAX_ATTEMPTS = 3;
+const HEARTBEAT_MS = 7_000; // 7 seconds
+const MIN_IDLE_MS = 12_000; // 12 seconds (for crash recovery)
+const MAX_ATTEMPTS = 1; // Fast failure detection - maximizes speed + error handling
 const JOB_TTL = 3600; // 1 hour
 
 // Get unique consumer ID per container
@@ -17,9 +19,12 @@ interface JobData {
   jobId: string;
   address: string;
   userId?: string;
-  status: 'queued' | 'processing' | 'completed' | 'failed';
+  status: 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';
   progress: number;
   phase: string;
+  phaseMessage?: string; // User-friendly message for current phase
+  estimatedTimeRemaining?: number; // Seconds remaining (estimated)
+  phaseStartTime?: number; // Timestamp when current phase started (for real ETA calculation)
   result?: any;
   error?: string;
   attempts: number;
@@ -28,6 +33,37 @@ interface JobData {
   completedAt?: number;
   processingBy?: string; // Track which worker is processing this job
   processingMessageId?: string; // Track which stream message is being processed (prevents same consumer re-processing)
+  cancelRequested?: boolean; // User requested cancellation
+}
+
+// Phase definitions with progress ranges and estimated durations (based on actual observed timings)
+export const PHASES = {
+  QUEUED: { name: 'Queued', progress: 0, message: 'Waiting to start analysis...', estimatedSeconds: 5 },
+  SUBJECT_PROPERTY: { name: 'Subject Property Research', progress: 10, message: 'Fetching property details from public records...', estimatedSeconds: 540 }, // ~9 min actual
+  COMPARABLE_SEARCH_L1: { name: 'Comparable Search - Level 1', progress: 25, message: 'Searching for similar homes nearby (Tight Local)...', estimatedSeconds: 160 }, // ~2.7 min actual
+  COMPARABLE_SEARCH_L2: { name: 'Comparable Search - Level 2', progress: 45, message: 'Expanding search radius (Extended Local)...', estimatedSeconds: 130 }, // ~2.1 min actual
+  COMPARABLE_SEARCH_L3: { name: 'Comparable Search - Level 3', progress: 60, message: 'Broadening search area (Broader Market)...', estimatedSeconds: 240 }, // ~4 min actual (includes enrichment)
+  COMPARABLE_SEARCH_L4: { name: 'Comparable Search - Level 4', progress: 75, message: 'Final wide-area search (Extended Market)...', estimatedSeconds: 240 }, // Estimated based on L3
+  DEDUPLICATION: { name: 'Deduplication', progress: 85, message: 'Removing duplicate listings...', estimatedSeconds: 40 },
+  ARV_CALCULATION: { name: 'ARV Calculation', progress: 92, message: 'Calculating After Repair Value...', estimatedSeconds: 10 }, // ~10s actual
+  FINALIZING: { name: 'Finalizing', progress: 97, message: 'Preparing your analysis report...', estimatedSeconds: 5 },
+  COMPLETED: { name: 'Completed', progress: 100, message: 'Analysis complete! 🎉', estimatedSeconds: 0 }
+} as const;
+
+// Global job context - allows comprehensive-comp-search to update progress
+let currentJobContext: { jobId: string; jobQueue: JobQueue } | null = null;
+
+// Helper function to update progress from anywhere (e.g., comprehensive-comp-search)
+export async function updateJobProgress(phaseKey: keyof typeof PHASES): Promise<void> {
+  if (!currentJobContext) return;
+  await currentJobContext.jobQueue.updateProgress(currentJobContext.jobId, phaseKey);
+}
+
+// Helper function to check if job is cancelled
+export async function isJobCancelled(): Promise<boolean> {
+  if (!currentJobContext) return false;
+  const job = await currentJobContext.jobQueue.getJobStatus(currentJobContext.jobId);
+  return job?.cancelRequested === true;
 }
 
 export class JobQueue {
@@ -105,6 +141,46 @@ export class JobQueue {
    */
   async getJobStatus(jobId: string): Promise<JobData | null> {
     return await this.redis.getJob(jobId);
+  }
+
+  /**
+   * Update job progress with phase information and estimated time
+   */
+  async updateProgress(jobId: string, phaseKey: keyof typeof PHASES): Promise<void> {
+    const phase = PHASES[phaseKey];
+    const job = await this.getJobStatus(jobId);
+    if (!job) return;
+
+    const now = Date.now();
+
+    // Store phase start time for real ETA calculation
+    await this.updateJob(jobId, {
+      progress: phase.progress,
+      phase: phase.name,
+      phaseMessage: phase.message,
+      estimatedTimeRemaining: phase.estimatedSeconds,
+      phaseStartTime: now
+    });
+  }
+
+  /**
+   * Request job cancellation
+   */
+  async cancelJob(jobId: string): Promise<boolean> {
+    const job = await this.getJobStatus(jobId);
+    if (!job) return false;
+
+    if (job.status === 'completed' || job.status === 'failed') {
+      return false; // Can't cancel completed jobs
+    }
+
+    await this.updateJob(jobId, {
+      cancelRequested: true,
+      phaseMessage: 'Cancellation requested...'
+    });
+
+    console.log(`🚫 Cancellation requested for job ${jobId}`);
+    return true;
   }
 
   /**
@@ -228,6 +304,13 @@ export class JobQueue {
     // Check if job is already being processed (use message ID for same-consumer detection)
     const existingJob = await this.getJobStatus(jobId);
 
+    // Skip jobs that are already completed or failed
+    if (existingJob && (existingJob.status === 'completed' || existingJob.status === 'failed')) {
+      console.log(`✅ [${messageId}] Job ${jobId} already ${existingJob.status}, acknowledging and skipping`);
+      await this.redis.xack(STREAM, GROUP, messageId);
+      return;
+    }
+
     if (existingJob && existingJob.status === 'processing') {
       console.log(`🔍 [${messageId}] Job ${jobId} status=${existingJob.status}, messageId=${existingJob.processingMessageId || 'none'}`);
 
@@ -255,12 +338,34 @@ export class JobQueue {
       processingMessageId: messageId
     });
 
+    // Set global job context for progress updates
+    currentJobContext = { jobId, jobQueue: this };
+
     // Start heartbeat
     const heartbeat = setInterval(async () => {
       await this.updateJob(jobId, { lastHeartbeat: Date.now() });
-    }, 10000);
+    }, HEARTBEAT_MS);
 
     try {
+      // **FAST-FAIL: Early geocode validation**
+      // Validate address can be geocoded before running expensive Vertex searches
+      // Invalid addresses like "333" will fail here in ~10s instead of ~4 minutes
+      console.log(`🗺️  [${messageId}] Validating address via geocoding: ${address}`);
+      const geocodeTimeout = 30000; // 30 second timeout for geocode (geo-proxy can take up to 30s through VPC)
+      const geocodeStart = Date.now();
+
+      // Access geocoding method from compService via analysisService
+      const coords = await (this.analysisService as any).compService.geocodeWithTimeout(address, geocodeTimeout);
+
+      const geocodeDuration = Date.now() - geocodeStart;
+
+      if (!coords || !coords.lat || !coords.lon) {
+        console.error(`❌ [${messageId}] Address geocoding failed in ${geocodeDuration}ms - invalid address`);
+        throw new Error(`Invalid address: could not geocode "${address}"`);
+      }
+
+      console.log(`✅ [${messageId}] Address validated via geocoding in ${geocodeDuration}ms: ${coords.lat}, ${coords.lon}`);
+
       // Run analysis
       const result = await this.analysisService.findComparables(address);
 
@@ -287,10 +392,25 @@ export class JobQueue {
       await this.redis.xack(STREAM, GROUP, messageId);
 
       clearInterval(heartbeat);
+      currentJobContext = null; // Clear job context
       console.log(`✅ Job ${jobId} completed`);
+
+      // Send success notification email
+      const completedAt = Date.now();
+      const duration = completedAt - (existingJob.createdAt || Date.now());
+      await sendSuccessNotification({
+        jobId,
+        address,
+        arv: result.arv?.estimate || result.arv?.conservative?.arv_price,
+        compsCount: result.qualified_comps?.length,
+        duration,
+        timestamp: completedAt,
+        userId: existingJob.userId
+      });
 
     } catch (error: any) {
       clearInterval(heartbeat);
+      currentJobContext = null; // Clear job context
       throw error;
     }
   }
@@ -328,16 +448,43 @@ export class JobQueue {
         failedAt: Date.now().toString()
       });
 
+      // Send error notification email
+      await sendErrorNotification({
+        jobId,
+        address: job.address,
+        error: errorMessage,
+        phase: job.phase,
+        attempts,
+        timestamp: Date.now(),
+        userId: job.userId
+      });
+
       // Acknowledge to remove from processing
       await this.redis.xack(STREAM, GROUP, messageId);
       console.log(`💀 Job ${jobId} moved to DLQ after ${attempts} attempts`);
     } else {
-      // Will be retried - update attempts but don't ACK
+      // Instant retry - acknowledge current message and re-add to stream immediately
       await this.updateJob(jobId, {
+        status: 'queued',
         attempts,
-        error: errorMessage
+        error: errorMessage,
+        processingBy: undefined,
+        processingMessageId: undefined
       });
-      console.log(`🔄 Job ${jobId} will be retried (attempt ${attempts}/${MAX_ATTEMPTS})`);
+
+      // ACK the current message
+      await this.redis.xack(STREAM, GROUP, messageId);
+
+      // Immediately re-add to stream for instant retry (don't wait for XAUTOCLAIM)
+      await this.redis.xadd(STREAM, {
+        jobId,
+        address: job.address,
+        userId: job.userId || '',
+        attempts: attempts.toString(),
+        createdAt: Date.now().toString()
+      });
+
+      console.log(`🔄 Job ${jobId} retried immediately (attempt ${attempts}/${MAX_ATTEMPTS})`);
     }
   }
 

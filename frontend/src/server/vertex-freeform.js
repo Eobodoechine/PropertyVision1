@@ -111,8 +111,15 @@ export async function vertexGenerate(opts) {
     console.log(`🔍 VERTEX DEBUG 9: Payload generationConfig:`, JSON.stringify(payload.generationConfig));
     console.log(`🔍 VERTEX DEBUG 10: About to call httpsPostJson`);
 
+    // Enhanced logging for future analysis
+    const callType = opts.grounded ? 'GROUNDED' : 'NON-GROUNDED';
+    const startTime = Date.now();
+    console.log(`📊 VERTEX_CALL_START: type=${callType}, grounded=${opts.grounded}, json=${opts.json}, timeout=${opts.timeoutMs}ms`);
+
     const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
 
+    const duration = Date.now() - startTime;
+    console.log(`📊 VERTEX_CALL_COMPLETE: type=${callType}, duration=${duration}ms, success=${!!res}`);
     console.log(`🔍 VERTEX DEBUG 11: httpsPostJson returned, response type:`, typeof res);
     console.log(`🔍 VERTEX DEBUG 12: Response keys:`, res ? Object.keys(res) : 'null');
     console.log(`🔍 VERTEX DEBUG 13: Full response:`, JSON.stringify(res, null, 2));

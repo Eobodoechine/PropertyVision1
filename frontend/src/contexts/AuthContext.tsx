@@ -47,7 +47,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Bypass auth for local testing
+  const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+
   useEffect(() => {
+    if (disableAuth) {
+      // Mock user for local testing
+      setUser({ uid: 'local-test-user', email: 'test@local.dev' } as User);
+      setUserProfile({
+        uid: 'local-test-user',
+        email: 'test@local.dev',
+        name: 'Local Test User',
+        phone: '',
+        createdAt: new Date()
+      });
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
 
