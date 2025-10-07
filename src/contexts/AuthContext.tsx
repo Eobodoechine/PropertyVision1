@@ -47,22 +47,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Bypass auth for local testing
+  const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+
   useEffect(() => {
+    if (disableAuth) {
+      // Mock user for local testing
+      setUser({ uid: 'local-test-user', email: 'test@local.dev' } as User);
+      setUserProfile({
+        uid: 'local-test-user',
+        email: 'test@local.dev',
+        name: 'Local Test User',
+        phone: '',
+        createdAt: new Date()
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!auth) {
+      // Auth is null, skip Firebase setup
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
 
       if (user) {
         // Fetch user profile from Firestore
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-        if (userDoc.exists()) {
-          const profileData = userDoc.data();
-          setUserProfile({
-            uid: user.uid,
-            email: user.email || '',
-            name: profileData.name || '',
-            phone: profileData.phone || '',
-            createdAt: profileData.createdAt?.toDate() || new Date()
-          });
+        if (db) {
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          if (userDoc.exists()) {
+            const profileData = userDoc.data();
+            setUserProfile({
+              uid: user.uid,
+              email: user.email || '',
+              name: profileData.name || '',
+              phone: profileData.phone || '',
+              createdAt: profileData.createdAt?.toDate() || new Date()
+            });
+          }
         }
       } else {
         setUserProfile(null);
@@ -75,10 +100,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
+    if (!auth) throw new Error('Auth disabled');
     await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signup = async (email: string, password: string, name: string, phone: string) => {
+    if (!auth || !db) throw new Error('Auth disabled');
     const { user } = await createUserWithEmailAndPassword(auth, email, password);
 
     // Update display name
@@ -94,6 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginWithGoogle = async () => {
+    if (!auth || !db) throw new Error('Auth disabled');
     const provider = new GoogleAuthProvider();
     const { user } = await signInWithPopup(auth, provider);
 
@@ -110,6 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    if (!auth) throw new Error('Auth disabled');
     await signOut(auth);
   };
 

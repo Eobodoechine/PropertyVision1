@@ -17,7 +17,9 @@ export class RedisCache {
 
   private initialize() {
     try {
-      const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+      // Support both REDIS_URL and REDIS_HOST/REDIS_PORT env vars
+      const redisUrl = process.env.REDIS_URL ||
+        (process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT || '6379'}` : 'redis://localhost:6379');
 
       this.client = new Redis(redisUrl, {
         maxRetriesPerRequest: 3,
@@ -238,15 +240,18 @@ export class RedisCache {
    */
   async setJob(jobId: string, jobData: any, ttlSeconds: number = 3600): Promise<void> {
     if (!this.client || !this.isConnected) {
-      console.warn('⚠️  Redis not connected, job will not be persisted');
+      console.error(`❌ CRITICAL: Redis not connected, job ${jobId} will NOT be persisted!`);
       return;
     }
 
     try {
       const key = `job:${jobId}`;
-      await this.client.set(key, JSON.stringify(jobData), 'EX', ttlSeconds);
+      const dataStr = JSON.stringify(jobData);
+      await this.client.set(key, dataStr, 'EX', ttlSeconds);
+      console.log(`📝 Redis SET job:${jobId} (${dataStr.length} bytes, TTL=${ttlSeconds}s)`);
     } catch (error) {
-      console.error('❌ Redis SET JOB error:', error);
+      console.error(`❌ Redis SET JOB error for ${jobId}:`, error);
+      throw error; // Re-throw so caller knows it failed
     }
   }
 
@@ -254,13 +259,19 @@ export class RedisCache {
    * Get job status from Redis
    */
   async getJob(jobId: string): Promise<any | null> {
-    if (!this.client || !this.isConnected) {
+    console.log(`🔍 REDIS getJob: jobId=${jobId}, connected=${this.isConnected}, client=${!!this.client}`);
+    if (!this.client) {
+      console.log(`❌ REDIS getJob: NO CLIENT - returning null`);
       return null;
     }
+
+    // Ensure connection is ready before reading
+    await this.ensureConnected();
 
     try {
       const key = `job:${jobId}`;
       const data = await this.client.get(key);
+      console.log(`🔍 REDIS getJob: key=${key}, found=${!!data}`);
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error('❌ Redis GET JOB error:', error);
@@ -351,13 +362,16 @@ export class RedisCache {
    */
   async xack(stream: string, group: string, id: string): Promise<void> {
     if (!this.client || !this.isConnected) {
+      console.error(`❌ CRITICAL: Cannot XACK - Redis not connected! Stream: ${stream}, ID: ${id}`);
       return;
     }
 
     try {
-      await this.client.xack(stream, group, id);
+      const result = await this.client.xack(stream, group, id);
+      console.log(`✅ XACK successful: stream=${stream}, id=${id}, result=${result}`);
     } catch (error) {
-      console.error('❌ Redis XACK error:', error);
+      console.error(`❌ Redis XACK error for ${id}:`, error);
+      throw error; // Re-throw so caller knows it failed
     }
   }
 
@@ -436,10 +450,24 @@ export class RedisCache {
   }
 }
 
+// Declare global type for development mode hot reload persistence
+declare global {
+  var __redisCache: RedisCache | undefined;
+}
+
 // Singleton instance
 let redisCacheInstance: RedisCache | null = null;
 
 export function getRedisCache(): RedisCache {
+  // In development, use globalThis to persist across hot reloads
+  if (process.env.NODE_ENV !== 'production') {
+    if (!global.__redisCache) {
+      global.__redisCache = new RedisCache();
+    }
+    return global.__redisCache;
+  }
+
+  // In production, use regular singleton
   if (!redisCacheInstance) {
     redisCacheInstance = new RedisCache();
   }

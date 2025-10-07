@@ -596,6 +596,18 @@ export class ARVCalculator {
   }
 
   /**
+   * Build result helper - creates chainResult structure for formatResult
+   */
+  buildResult(method, kept, dropped, subjectSqft, thin = false) {
+    const chainResult = {
+      kept: kept,
+      dropped: dropped,
+      thin: thin
+    };
+    return this.formatResult(method, chainResult, subjectSqft);
+  }
+
+  /**
    * Format final result
    */
   formatResult(method, chainResult, subjectSqft) {

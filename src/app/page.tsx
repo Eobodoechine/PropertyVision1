@@ -16,6 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SearchHistory } from '@/components/SearchHistory';
 import { API_BASE_URL, cn } from '@/lib/utils';
 import type { ComparableProperty, PropertyAnalysisResponse, SearchHistoryEntry } from '@/types/property';
+import { useCountdown, useInterpolatedProgress } from '@/hooks/useJobProgress';
 
 const DEFAULT_ADDRESS = '';
 
@@ -23,8 +24,12 @@ type FormState = {
   address: string;
 };
 
-// Note: This function needs access to setProgress, so it will be defined inside HomePage component
-function createAnalyzeProperty(setProgress: (progress: number) => void, setCurrentJobId: (jobId: string | null) => void) {
+// Note: This function needs access to setProgress and setJobStatus, so it will be defined inside HomePage component
+function createAnalyzeProperty(
+  setProgress: (progress: number) => void,
+  setCurrentJobId: (jobId: string | null) => void,
+  setJobStatus: (status: any) => void
+) {
   return async function analyzeProperty(address: string): Promise<PropertyAnalysisResponse> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 600000); // 10 min timeout
@@ -48,7 +53,7 @@ function createAnalyzeProperty(setProgress: (progress: number) => void, setCurre
       setCurrentJobId(jobId);
 
       // Poll for results with backoff
-      let pollInterval = 3000; // Start at 3 seconds
+      let pollInterval = 2000; // Start at 2 seconds for real-time ETA countdown
       return await new Promise<PropertyAnalysisResponse>((resolve, reject) => {
         const poll = async () => {
           try {
@@ -60,6 +65,7 @@ function createAnalyzeProperty(setProgress: (progress: number) => void, setCurre
             }
 
             const status = await statusRes.json();
+            setJobStatus(status); // Store full status object
 
             if (status.status === 'completed') {
               setCurrentJobId(null);
@@ -71,8 +77,7 @@ function createAnalyzeProperty(setProgress: (progress: number) => void, setCurre
               // Update progress
               setProgress(status.progress || 0);
 
-              // Backoff: 3s → 5s → 8s → 13s (cap at 15s)
-              pollInterval = Math.min(pollInterval + 2000, 15000);
+              // Poll every 2 seconds for real-time ETA countdown
               setTimeout(poll, pollInterval);
             }
           } catch (error) {
@@ -132,10 +137,11 @@ export default function HomePage() {
   const [progress, setProgress] = React.useState(0);
   const [selectedResult, setSelectedResult] = React.useState<PropertyAnalysisResponse | null>(null);
   const [currentJobId, setCurrentJobId] = React.useState<string | null>(null);
+  const [jobStatus, setJobStatus] = React.useState<any>(null);
 
   const analyzeProperty = React.useMemo(
-    () => createAnalyzeProperty(setProgress, setCurrentJobId),
-    [setProgress, setCurrentJobId]
+    () => createAnalyzeProperty(setProgress, setCurrentJobId, setJobStatus),
+    [setProgress, setCurrentJobId, setJobStatus]
   );
 
   const mutation = useMutation<PropertyAnalysisResponse, Error, string>({
@@ -224,7 +230,7 @@ export default function HomePage() {
             </CardContent>
           </Card>
 
-          {loading ? <LoadingState progress={progress} /> : null}
+          {loading ? <LoadingState progress={progress} jobStatus={jobStatus} /> : null}
           {error ? <ErrorState message={error.message} onRetry={() => mutation.reset()} /> : null}
 
           {result ? (
@@ -265,7 +271,11 @@ function Header() {
   );
 }
 
-function LoadingState({ progress }: { progress: number }) {
+function LoadingState({ progress: baseProgress, jobStatus }: { progress: number; jobStatus: any }) {
+  // Use custom hooks for real-time countdown and smooth progress
+  const countdown = useCountdown(jobStatus);
+  const smoothProgress = useInterpolatedProgress(jobStatus);
+
   return (
     <Card className="border-0 bg-white/90 shadow shadow-slate-200/40">
       <CardHeader className="space-y-2">
@@ -273,11 +283,30 @@ function LoadingState({ progress }: { progress: number }) {
           <Loader2 className="h-5 w-5 animate-spin" /> Analyzing property…
         </CardTitle>
         <CardDescription className="text-slate-500">
-          We’re pulling property details, recent sales, and calculating ARV.
+          {jobStatus?.phaseMessage || "We're pulling property details, recent sales, and calculating ARV."}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Progress value={progress} />
+        <div className="space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="font-medium">{jobStatus?.phase || 'Processing'}</span>
+            <span className="text-slate-600">{smoothProgress}%</span>
+          </div>
+          <Progress value={smoothProgress} />
+
+          {/* Real-time countdown with accessibility */}
+          <div aria-live="polite" aria-atomic="true">
+            {countdown > 0 ? (
+              <p className="text-sm text-slate-500">
+                ~{countdown} second{countdown !== 1 ? 's' : ''} remaining
+              </p>
+            ) : jobStatus?.status === 'processing' ? (
+              <p className="text-sm text-amber-600">
+                Taking longer than expected, still working...
+              </p>
+            ) : null}
+          </div>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <Skeleton className="h-32 w-full" />
           <Skeleton className="h-32 w-full" />

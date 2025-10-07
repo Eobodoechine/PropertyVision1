@@ -12,6 +12,7 @@ import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
 import { ARVCalculator } from './arvCalculator';
 import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder';
+import { updateJobProgress, isJobCancelled } from './utils/jobQueue';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -85,6 +86,8 @@ export class ComprehensiveComparableSearchV5 {
     try {
       // Step 1: Get subject property details
       console.log(`\n📋 Step 1: Subject Property Research`);
+      await updateJobProgress('SUBJECT_PROPERTY');
+
       const subjectDetails = await fetchPropertyDetailsViaVertex(address);
 
       if (!subjectDetails) {
@@ -213,6 +216,8 @@ export class ComprehensiveComparableSearchV5 {
 
       // Step 4: Vertex AI deduplication
       console.log(`\n🤖 Step 4: Vertex AI Deduplication`);
+      await updateJobProgress('DEDUPLICATION');
+
       const deduplicationResult = await this.deduplicator.deduplicateProperties(normalizedComps);
       const deduplicatedComps = deduplicationResult.uniqueProperties;
       const deduplicationSummary = { duplicatesRemoved: deduplicationResult.duplicatesRemoved, mergedGroups: deduplicationResult.mergedGroups };
@@ -235,6 +240,7 @@ export class ComprehensiveComparableSearchV5 {
 
       // Step 6: ARV Calculation using Central-Upper Chain Algorithm
       console.log(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
+      await updateJobProgress('ARV_CALCULATION');
 
       let arvResult = undefined;
       let qualifiedComps = deduplicatedComps;
@@ -304,6 +310,9 @@ export class ComprehensiveComparableSearchV5 {
         console.log(`   ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.method})`);
       }
       console.log(`============================================================\n`);
+
+      // Update progress to finalizing before returning results
+      await updateJobProgress('FINALIZING');
 
       return {
         subject: subjectSummary,

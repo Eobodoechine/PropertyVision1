@@ -1,7 +1,6 @@
 import 'dotenv/config';
 import https from 'https';
-import fetch from 'node-fetch';
-async function httpsPostJson(url, payload, headers, timeoutMs = 120000) {
+async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const body = JSON.stringify(payload);
@@ -22,8 +21,7 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 120000) {
         req.end();
     });
 }
-console.log('🚨🚨🚨 VERTEX-FREEFORM.JS v7.1 - PROXY ROUTING ENABLED 🚨🚨🚨');
-console.log(`📊 VERTEX CONFIG AT LOAD: USE_VERTEX_PROXY=${process.env.USE_VERTEX_PROXY}, FORCE=${process.env.FORCE_VERTEX_PROXY}, URL=${process.env.VERTEX_PROXY_URL ? 'SET' : 'UNSET'}`);
+console.log('🚨🚨🚨 VERTEX-FREEFORM.JS LOADED - TOKEN DEBUG VERSION 🚨🚨🚨');
 // REMOVED: groundedFreeform function - replaced with deterministic vertexGenerate
 // Service account token generation
 async function getServiceAccountToken(sa, scope) {
@@ -86,121 +84,7 @@ export async function vertexGenerate(opts) {
     console.log(`🔍 VERTEX DEBUG 3: prompt length=${opts.prompt?.length}, grounded=${opts.grounded}, json=${opts.json}`);
     console.log(`🔍 VERTEX DEBUG 4: timeoutMs=${opts.timeoutMs}`);
 
-    // Route through proxy if enabled (FORCE overrides grounded check)
-    const FORCE_VERTEX_PROXY = ['true', '1', 'yes'].includes((process.env.FORCE_VERTEX_PROXY || '').toLowerCase());
-    const USE_VERTEX_PROXY = ['true', '1', 'yes'].includes((process.env.USE_VERTEX_PROXY || '').toLowerCase());
-    const VERTEX_PROXY_URL = process.env.VERTEX_PROXY_URL;
-    const PROXY_SHARED_KEY = process.env.PROXY_SHARED_KEY;
-
-    console.log(`🔍 VERTEX DEBUG 4.1: FORCE=${FORCE_VERTEX_PROXY}, USE=${USE_VERTEX_PROXY}, URL=${VERTEX_PROXY_URL?'SET':'UNSET'}, KEY=${PROXY_SHARED_KEY?'SET':'UNSET'}, grounded=${opts.grounded}`);
-
-    if ((FORCE_VERTEX_PROXY || USE_VERTEX_PROXY) && VERTEX_PROXY_URL && PROXY_SHARED_KEY) {
-        console.log(`🔍 VERTEX DEBUG 4.5: ✅ Routing to vertex-proxy (forced=${FORCE_VERTEX_PROXY})`);
-        const callStartTime = Date.now();
-        try {
-            const controller = new AbortController();
-            const timeoutMs = opts.timeoutMs || 30000;
-            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-            const proxyResponse = await fetch(`${VERTEX_PROXY_URL}/vertex/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-proxy-key': PROXY_SHARED_KEY
-                },
-                body: JSON.stringify({
-                    prompt: opts.prompt,
-                    model: opts.model || 'gemini-2.0-flash-001',
-                    timeoutMs,
-                    temperature: 0.1,
-                    maxOutputTokens: 8192,
-                    grounded: opts.grounded || false,
-                    jobId: opts.jobId,
-                    searchId: opts.searchId
-                }),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-            const clientLatencyMs = Date.now() - callStartTime;
-
-            if (!proxyResponse.ok) {
-                const errorBody = await proxyResponse.text().catch(() => 'no body');
-                console.error(JSON.stringify({
-                    event: 'vertex.proxy.client_error',
-                    jobId: opts.jobId,
-                    searchId: opts.searchId,
-                    model: opts.model,
-                    http: {
-                        status: proxyResponse.status,
-                        statusText: proxyResponse.statusText
-                    },
-                    error: {
-                        snippet: errorBody.substring(0, 300)
-                    },
-                    timingMs: {
-                        client_total: clientLatencyMs
-                    }
-                }));
-                throw new Error(`Vertex proxy failed: ${proxyResponse.status} - ${errorBody.substring(0, 100)}`);
-            }
-
-            const proxyResult = await proxyResponse.json();
-
-            console.log(JSON.stringify({
-                event: 'vertex.proxy.client_success',
-                jobId: opts.jobId,
-                searchId: opts.searchId,
-                model: opts.model,
-                http: {
-                    status: 200
-                },
-                timingMs: {
-                    client_total: clientLatencyMs,
-                    proxy_elapsed: proxyResult.elapsedMs,
-                    proxy_latency: proxyResult.latencyMs
-                },
-                responseChars: proxyResult.text?.length || 0,
-                reqId: proxyResult.reqId
-            }));
-
-            return proxyResult.text || '';
-        } catch (proxyError) {
-            const clientLatencyMs = Date.now() - callStartTime;
-
-            if (proxyError.name === 'AbortError') {
-                console.error(JSON.stringify({
-                    event: 'vertex.proxy.client_timeout',
-                    jobId: opts.jobId,
-                    searchId: opts.searchId,
-                    model: opts.model,
-                    timeoutMs: opts.timeoutMs,
-                    timingMs: {
-                        client_total: clientLatencyMs
-                    }
-                }));
-                throw new Error(`Vertex proxy timeout after ${opts.timeoutMs}ms`);
-            }
-
-            console.error(JSON.stringify({
-                event: 'vertex.proxy.client_error',
-                jobId: opts.jobId,
-                searchId: opts.searchId,
-                model: opts.model,
-                error: {
-                    message: proxyError.message,
-                    name: proxyError.name,
-                    code: proxyError.code
-                },
-                timingMs: {
-                    client_total: clientLatencyMs
-                }
-            }));
-            throw new Error(`Vertex proxy failed: ${proxyError.message}`);
-        }
-    }
-
-    console.log(`🔍 VERTEX DEBUG 5: Getting service account token (direct path)`);
+    console.log(`🔍 VERTEX DEBUG 5: Getting service account token`);
     const token = await getServiceAccountToken(opts.sa, 'https://www.googleapis.com/auth/cloud-platform');
     console.log(`🔍 VERTEX DEBUG 6: Token obtained, length=${token?.length}`);
 
@@ -227,8 +111,15 @@ export async function vertexGenerate(opts) {
     console.log(`🔍 VERTEX DEBUG 9: Payload generationConfig:`, JSON.stringify(payload.generationConfig));
     console.log(`🔍 VERTEX DEBUG 10: About to call httpsPostJson`);
 
+    // Enhanced logging for future analysis
+    const callType = opts.grounded ? 'GROUNDED' : 'NON-GROUNDED';
+    const startTime = Date.now();
+    console.log(`📊 VERTEX_CALL_START: type=${callType}, grounded=${opts.grounded}, json=${opts.json}, timeout=${opts.timeoutMs}ms`);
+
     const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
 
+    const duration = Date.now() - startTime;
+    console.log(`📊 VERTEX_CALL_COMPLETE: type=${callType}, duration=${duration}ms, success=${!!res}`);
     console.log(`🔍 VERTEX DEBUG 11: httpsPostJson returned, response type:`, typeof res);
     console.log(`🔍 VERTEX DEBUG 12: Response keys:`, res ? Object.keys(res) : 'null');
     console.log(`🔍 VERTEX DEBUG 13: Full response:`, JSON.stringify(res, null, 2));

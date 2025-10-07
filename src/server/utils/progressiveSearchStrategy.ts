@@ -2,6 +2,7 @@
 // Replaces redundant identical searches with intelligent expansion
 
 import { getRedisCache } from './redisCache';
+import { updateJobProgress, isJobCancelled } from './jobQueue';
 
 interface SearchLevel {
   level: number;
@@ -419,6 +420,16 @@ export class ProgressiveSearchStrategy {
     const startTime = Date.now();
 
     for (const level of searchLevels) {
+      // Update progress based on level
+      const progressKey = `COMPARABLE_SEARCH_L${level.level}` as keyof typeof import('./jobQueue').PHASES;
+      await updateJobProgress(progressKey);
+
+      // Check if job was cancelled
+      if (await isJobCancelled()) {
+        console.log(`🚫 Job cancelled at Level ${level.level}, stopping search`);
+        break;
+      }
+
       const result = await this.executeSearchLevel(level, address, subjectDetails, searchService, propertyType);
       searchHistory.push(result);
       stoppedAtLevel = level.level;

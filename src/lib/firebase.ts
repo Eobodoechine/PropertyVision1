@@ -13,13 +13,16 @@ const firebaseConfig = {
   measurementId: "G-0JXCSDV1PR"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+// Only initialize Firebase if auth is not disabled
+const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+
+const app = disableAuth ? undefined : initializeApp(firebaseConfig);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
 
 // Initialize analytics only in browser environment
 let analytics: any = null;
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && app) {
   analytics = getAnalytics(app);
 }
 
