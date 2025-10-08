@@ -1,0 +1,350 @@
+[
+  {
+    "insertId": ".........Mj_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "✅ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 saved to Redis: status=failed, progress=10",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:57.606351765Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T16:15:57.450999975Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........ME_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "💾 Updating job 06af570e-c1be-4ff2-bbb3-4348d3165593 with: {\"status\":\"failed\",\"error\":\"Could not fetch subject property details\",\"attempts\":1,\"completedAt\":1759940157051}",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:57.472206530Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T16:15:57.312999963Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........M6_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "❌ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 failed (attempt 1/1): Could not fetch subject property details",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:57.472206530Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:15:57.312999963Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........Kz_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "   ❌ Validation failed - Missing critical fields: beds, baths",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:57.472206530Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:15:57.312999963Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........Iz_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "   ❌ Validation failed on attempt 2/2: missing beds, baths",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:57.326628138Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:15:57.168999910Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........Gr_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "   ❌ Validation failed on attempt 1/2: missing beds, baths",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:39.257611322Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:15:39.098999977Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........Dr_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "   ❌ Validation failed on attempt 2/2: missing beds, baths",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:15:13.211941266Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:15:13.055999994Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........C6_LGQCfCW8r9ck1m1UQuxe",
+    "jsonPayload": {
+      "message": "   ❌ Validation failed on attempt 1/2: missing beds, baths",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "production",
+        "jobId": "06af570e-c1be-4ff2-bbb3-4348d3165593",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:14:56.400348379Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:14:56.243999958Z",
+    "trace": "projects/agile-device-472202-i8/traces/06af570e-c1be-4ff2-bbb3-4348d3165593"
+  },
+  {
+    "insertId": ".........DUSllR2i.hBiOqt738_ABr8",
+    "jsonPayload": {
+      "message": "✅ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd saved to Redis: status=failed, progress=10",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "development",
+        "jobId": "d2118ce5-f70c-4b23-b55a-a979c5f2c0bd",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:05:26.552517342Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T16:05:26.404000043Z",
+    "trace": "projects/agile-device-472202-i8/traces/d2118ce5-f70c-4b23-b55a-a979c5f2c0bd"
+  },
+  {
+    "insertId": ".........CzSllR2i.hBiOqt738_ABr8",
+    "jsonPayload": {
+      "message": "💾 Updating job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd with: {\"status\":\"failed\",\"error\":\"Could not fetch subject property details\",\"attempts\":1,\"completedAt\":1759939525980}",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "development",
+        "jobId": "d2118ce5-f70c-4b23-b55a-a979c5f2c0bd",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:05:26.441342939Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T16:05:26.288000106Z",
+    "trace": "projects/agile-device-472202-i8/traces/d2118ce5-f70c-4b23-b55a-a979c5f2c0bd"
+  },
+  {
+    "insertId": ".........CrSllR2i.hBiOqt738_ABr8",
+    "jsonPayload": {
+      "message": "❌ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd failed (attempt 1/1): Could not fetch subject property details",
+      "metadata": {
+        "address": "1100 Water Shine Way, Snellville, GA 30078",
+        "environment": "development",
+        "jobId": "d2118ce5-f70c-4b23-b55a-a979c5f2c0bd",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T16:05:26.441342939Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T16:05:26.288000106Z",
+    "trace": "projects/agile-device-472202-i8/traces/d2118ce5-f70c-4b23-b55a-a979c5f2c0bd"
+  },
+  {
+    "insertId": ".........FEJKGRUrJ88wdZkLwl32KIh",
+    "jsonPayload": {
+      "message": "✅ Job d0a6e4a0-8e29-4ca2-99de-d927f5e5530e saved to Redis: status=failed, progress=10",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T15:07:36.054495847Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T15:07:35.933000087Z"
+  },
+  {
+    "insertId": ".........EjJKGRUrJ88wdZkLwl32KIh",
+    "jsonPayload": {
+      "message": "💾 Updating job d0a6e4a0-8e29-4ca2-99de-d927f5e5530e with: {\"status\":\"failed\",\"error\":\"Could not fetch subject property details\",\"attempts\":1,\"completedAt\":1759936055692}",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T15:07:36.054495847Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T15:07:35.933000087Z"
+  },
+  {
+    "insertId": ".........EbJKGRUrJ88wdZkLwl32KIh",
+    "jsonPayload": {
+      "message": "❌ Job d0a6e4a0-8e29-4ca2-99de-d927f5e5530e failed (attempt 1/1): Could not fetch subject property details",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T15:07:36.054495847Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T15:07:35.933000087Z"
+  },
+  {
+    "insertId": ".........DUJKGRUrJ88wdZkLwl32KIh",
+    "jsonPayload": {
+      "message": "   ❌ Validation failed - Missing critical fields: beds, baths",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.error"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T15:07:35.946571948Z",
+    "resource": {
+      "labels": {
+        "project_id": "agile-device-472202-i8"
+      },
+      "type": "global"
+    },
+    "severity": "ERROR",
+    "timestamp": "2025-10-08T15:07:35.826999902Z"
+  }
+]

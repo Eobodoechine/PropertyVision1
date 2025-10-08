@@ -10,8 +10,10 @@ export async function GET(
 ) {
   try {
     const { jobId } = await params;
+    console.log(`🔍 STATUS: Looking for job ${jobId}`);
     const jobQueue = getJobQueue();
     const job = await jobQueue.getJobStatus(jobId);
+    console.log(`🔍 STATUS: Job ${jobId} result:`, job ? 'FOUND' : 'NOT FOUND');
 
     if (!job) {
       return NextResponse.json(

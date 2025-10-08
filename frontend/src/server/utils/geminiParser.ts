@@ -33,8 +33,9 @@ export class GeminiParser {
       return rawData;
     } catch (error) {
       console.error('❌ GeminiParser: Failed to parse data:', error);
-      console.log('🔄 GeminiParser: Attempting fallback manual parsing...');
-      return this.fallbackManualParse(rawText);
+      // Fallback manual parser removed - it doesn't work
+      // Return empty array instead of trying broken fallback
+      return [];
     }
   }
 
@@ -66,14 +67,23 @@ Return JSON in exactly this format (no other text):
     console.log('🔄 GeminiParser: Calling Vertex AI Gemini...');
 
     try {
-      // Load service account from environment
-      const saPath = process.env.GCP_SA_JSON;
-      if (!saPath) {
-        throw new Error('GCP_SA_JSON environment variable not set');
-      }
+      // Load service account from environment (supports both local and Cloud Run)
+      let serviceAccount: any;
 
-      const fs = await import('fs');
-      const serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf8'));
+      if (process.env.GCP_SA_JSON_B64) {
+        // Production: base64 encoded JSON
+        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
+        serviceAccount = JSON.parse(saJson);
+      } else if (process.env.GCP_SA_JSON) {
+        // Local: file path
+        const fs = await import('fs');
+        serviceAccount = JSON.parse(fs.readFileSync(process.env.GCP_SA_JSON, 'utf8'));
+      } else if (process.env.SERVICE_ACCOUNT_JSON) {
+        // Alternative: direct JSON string
+        serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_JSON);
+      } else {
+        throw new Error('No service account found. Set GCP_SA_JSON_B64, GCP_SA_JSON, or SERVICE_ACCOUNT_JSON');
+      }
 
       const result = await vertexGenerate({
         projectId: this.projectId,
@@ -199,38 +209,4 @@ Return JSON in exactly this format (no other text):
     return 0;
   }
 
-  /**
-   * Fallback manual parsing if Gemini fails
-   */
-  private fallbackManualParse(rawText: string): PropertyData[] {
-    console.log('🔄 GeminiParser: Using fallback manual parsing...');
-
-    const properties: PropertyData[] = [];
-    const lines = rawText.split('\n');
-
-    for (const line of lines) {
-      if (line.includes('|') && line.includes('$')) {
-        try {
-          const parts = line.split('|').map(p => p.trim());
-          if (parts.length >= 7) {
-            properties.push({
-              address: parts[0],
-              sold_price: this.parseNumber(parts[1]),
-              sold_date: parts[2],
-              beds: this.parseNumber(parts[3]),
-              baths: this.parseNumber(parts[4]),
-              sqft: this.parseNumber(parts[5]),
-              year_built: this.parseNumber(parts[6]),
-              source_url: parts[7] || ''
-            });
-          }
-        } catch (error) {
-          console.warn('⚠️ Failed to parse line:', line);
-        }
-      }
-    }
-
-    console.log(`✅ Fallback parsing extracted ${properties.length} properties`);
-    return properties;
-  }
 }

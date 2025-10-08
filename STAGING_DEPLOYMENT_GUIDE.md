@@ -103,21 +103,58 @@ const geocodeTimeout = 30000; // 30 second timeout for geocode (geo-proxy can ta
 
 ## Deployment Commands
 
-### Deploy Frontend (Staging)
+### ⚠️ CRITICAL: Deployment Best Practices
+
+**ALWAYS check existing configuration before deploying:**
+
+1. **Check what's currently deployed:**
+   ```bash
+   gcloud run services describe propertyvision-worker-staging \
+     --region us-central1 \
+     --project agile-device-472202-i8 \
+     --format=yaml > /tmp/current-staging-config.yaml
+   ```
+
+2. **Use minimal deployment command to preserve existing config:**
+   - When only updating code (no config changes), use the minimal command below
+   - This preserves all existing environment variables and secrets
+   - Avoids permission errors from referencing non-existent secrets
+
+3. **Only override settings that actually changed:**
+   - Don't specify env vars or secrets unless you're actually changing them
+   - If existing config works, don't touch it
+
+### Deploy Frontend (Staging) - Minimal Command
 
 ```bash
 cd /Users/eobodoechine/PropertyVision1/frontend
 
+# Minimal command - preserves all existing config
 gcloud run deploy propertyvision-frontend-staging \
   --source . \
   --region us-central1 \
-  --project agile-device-472202-i8 \
-  --allow-unauthenticated
+  --project agile-device-472202-i8
 ```
 
 **Expected duration**: ~10-15 minutes
 
-### Deploy Worker (Staging)
+### Deploy Worker (Staging) - Minimal Command
+
+```bash
+cd /Users/eobodoechine/PropertyVision1/frontend
+
+# Minimal command - preserves all existing config
+gcloud run deploy propertyvision-worker-staging \
+  --source . \
+  --region us-central1 \
+  --project agile-device-472202-i8
+```
+
+**Expected duration**: ~10-15 minutes
+
+### Deploy Worker (Staging) - Full Configuration
+
+**⚠️ Only use this when setting up from scratch or changing config:**
 
 ```bash
 cd /Users/eobodoechine/PropertyVision1/frontend
@@ -154,8 +191,6 @@ GCP_SA_JSON_B64=gcp-sa-json-b64:latest" \
   --vpc-connector redis-connector \
   --vpc-egress private-ranges-only
 ```
-
-**Expected duration**: ~10-15 minutes
 
 ---
 

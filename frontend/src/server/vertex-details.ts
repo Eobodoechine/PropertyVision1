@@ -13,11 +13,55 @@ export type BasicDetails = {
   subdivision: string | null;
   propertyType: string | null;
   success: boolean;
+  confidence?: Partial<Record<'sqft'|'beds'|'baths'|'yearBuilt'|'propertyType'|'subdivision', number>>;
+  source?: 'primary' | 'county' | 'reconciled';
 };
 
+// JSON Schema for BasicDetails - prevents truncated responses
+const BASIC_DETAILS_SCHEMA = {
+  type: 'object',
+  properties: {
+    sqft: { type: 'number', nullable: true },
+    beds: { type: 'number', nullable: true },
+    baths: { type: 'number', nullable: true },
+    yearBuilt: { type: 'number', nullable: true },
+    propertyType: { type: 'string', nullable: true, enum: ['single-family detached', 'townhome', 'condo', 'duplex', 'multi-family', null] },
+    subdivision: { type: 'string', nullable: true },
+    confidence: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        sqft: { type: 'number', minimum: 0, maximum: 1 },
+        beds: { type: 'number', minimum: 0, maximum: 1 },
+        baths: { type: 'number', minimum: 0, maximum: 1 },
+        yearBuilt: { type: 'number', minimum: 0, maximum: 1 },
+        propertyType: { type: 'number', minimum: 0, maximum: 1 },
+        subdivision: { type: 'number', minimum: 0, maximum: 1 }
+      }
+    }
+  }
+};
+
+// SPD Timeout Configuration (VPC-aware)
+// Grounded searches through VPC can take 60-90 seconds due to private-ranges-only egress overhead
+const SPD_PRIMARY_TIMEOUT_MS = Number(process.env.SPD_PRIMARY_TIMEOUT_MS ?? 90000);  // 90s for VPC + grounded search overhead
+const SPD_COUNTY_TIMEOUT_MS = Number(process.env.SPD_COUNTY_TIMEOUT_MS ?? 90000);    // 90s for VPC + grounded search overhead
+const SPD_PARSE_TIMEOUT_MS = Number(process.env.SPD_PARSE_TIMEOUT_MS ?? 30000);      // 30s for non-grounded parsing (also through VPC)
+const SPD_GRACE_WINDOW_MS = Number(process.env.SPD_GRACE_WINDOW_MS ?? 10000);        // 10s grace for reconciliation
+
 function hasServiceAccount(): boolean {
-  const p = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GCP_SA_JSON_B64;
-  return Boolean(p && p.trim().length > 0);
+  const gcpSaJson = process.env.GCP_SA_JSON;
+  const serviceAccountJson = process.env.SERVICE_ACCOUNT_JSON;
+  const gcpSaJsonB64 = process.env.GCP_SA_JSON_B64;
+
+  console.log(`🔍 ENV CHECK: GCP_SA_JSON=${gcpSaJson ? 'SET' : 'NOT_SET'}`);
+  console.log(`🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=${serviceAccountJson ? 'SET' : 'NOT_SET'}`);
+  console.log(`🔍 ENV CHECK: GCP_SA_JSON_B64=${gcpSaJsonB64 ? 'SET' : 'NOT_SET'}`);
+
+  const p = gcpSaJson || serviceAccountJson || gcpSaJsonB64;
+  const result = Boolean(p && p.trim().length > 0);
+  console.log(`🔍 hasServiceAccount() returning: ${result}`);
+  return result;
 }
 
 async function getServiceAccountToken(sa: any, scope: string): Promise<string> {
@@ -46,6 +90,13 @@ async function httpsPostForm(url: string, body: string, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
+
+    // Set socket timeout to prevent hanging requests
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      reject(new Error(`socket hang up`));
+    });
+
     req.write(body);
     req.end();
   });
@@ -61,6 +112,13 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
+
+    // Set socket timeout to prevent hanging requests (critical for VPC grounded searches)
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      reject(new Error(`socket hang up`));
+    });
+
     req.write(body);
     req.end();
   });
@@ -84,7 +142,7 @@ async function vertexGenerate(opts: {
     generationConfig: {
       temperature: 0,           // Maximum determinism
       seed: 12345,             // Fixed seed for reproducibility
-      maxOutputTokens: 1500,
+      maxOutputTokens: 8192,   // Increased from 1500 to prevent truncation
       ...(opts.json ? { responseMimeType: 'application/json' } : {})
     },
   };
@@ -96,7 +154,210 @@ async function vertexGenerate(opts: {
   return text;
 }
 
-// LLM-based parsing to replace problematic regex
+/**
+ * Parse grounded text into structured JSON using non-grounded LLM
+ * This replaces multiple grounded extraction calls with a single non-grounded parse
+ */
+async function parseTextToJSON(
+  text: string,
+  ctx: { sa: any; projectId: string; location: string; model: string }
+): Promise<Partial<BasicDetails>> {
+  const startTime = Date.now();
+
+  const prompt = `You are a precise, highly-reliable property data extractor. Your sole function is to process the provided text and return a complete and valid JSON object following the required schema.
+
+CRITICAL RULES:
+1. **Extract All Available Fields**: You MUST extract all fields (sqft, beds, baths, yearBuilt) if the information is clearly present in the "TEXT TO PARSE" section below.
+2. **Omission Rule**: ONLY omit a field from the final JSON object if the value is explicitly not found or genuinely unclear in the provided text.
+3. **Data Integrity**: You MUST return numeric fields (sqft, beds, yearBuilt) as **integers**. The 'baths' field must be a **float** (e.g., 3.0, 3.5).
+4. **Format Adherence**: Return **valid JSON only**, with no preamble, explanation, or conversational text.
+5. **Thoroughness**: Scan the entire text carefully for bedroom and bathroom counts - they are CRITICAL fields and almost always present.
+
+Extract these fields:
+- sqft: interior living area square footage (integer)
+- beds: number of bedrooms (integer) - REQUIRED if present in text
+- baths: number of bathrooms including half baths (float, e.g., 2.5) - REQUIRED if present in text
+- yearBuilt: year the property was built (integer)
+- propertyType: one of: "single-family detached", "townhome", "condo", "duplex", "multi-family" (string)
+- subdivision: subdivision or neighborhood name (string)
+- confidence: for each extracted field, estimate confidence 0.0-1.0 based on source clarity (object)
+
+TEXT TO PARSE:
+${text}
+
+Return JSON with this exact structure:
+{
+  "sqft": <integer>,
+  "beds": <integer>,
+  "baths": <float>,
+  "yearBuilt": <integer>,
+  "propertyType": "<type>",
+  "subdivision": "<name>",
+  "confidence": {
+    "sqft": <number>,
+    "beds": <number>,
+    "baths": <number>,
+    "yearBuilt": <number>,
+    "propertyType": <number>,
+    "subdivision": <number>
+  }
+}`;
+
+  // Retry logic with exponential backoff for truncated JSON responses
+  const MAX_RETRIES = 2;
+  let lastError: any = null;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      console.log(`   🔍 Calling non-grounded Vertex AI for JSON parsing (attempt ${attempt}/${MAX_RETRIES}, timeout: ${SPD_PARSE_TIMEOUT_MS}ms)...`);
+      const responseText = await vertexGenerate({
+        ...ctx,
+        prompt,
+        grounded: false,  // CRITICAL: No web search, just parse the provided text
+        json: true,       // Request JSON output
+        responseSchema: BASIC_DETAILS_SCHEMA,  // Use schema to prevent truncation
+        timeoutMs: SPD_PARSE_TIMEOUT_MS,
+      });
+
+      const duration = Date.now() - startTime;
+      console.log(`   ✅ Vertex AI response received in ${duration}ms (${responseText.length} chars)`);
+      console.log(`   📄 FULL VERTEX RESPONSE: ${responseText}`);
+
+      try {
+        const parsed = JSON.parse(responseText);
+        console.log(`   ✅ JSON.parse() successful: parsed ${Object.keys(parsed).length} fields`);
+        console.log(`   📋 PARSED FIELDS: ${JSON.stringify(parsed, null, 2)}`);
+
+        // Validate critical fields - retry if missing
+        const missingFields: string[] = [];
+        if (!parsed.sqft) missingFields.push('sqft');
+        if (!parsed.beds) missingFields.push('beds');
+        if (!parsed.baths) missingFields.push('baths');
+        if (!parsed.yearBuilt) missingFields.push('yearBuilt');
+
+        if (missingFields.length > 0) {
+          console.error(`   ❌ Validation failed on attempt ${attempt}/${MAX_RETRIES}: missing ${missingFields.join(', ')}`);
+          console.error(`   📄 Response text with missing fields (first 1000 chars): "${responseText.substring(0, 1000)}"`);
+          lastError = new Error(`Missing critical fields: ${missingFields.join(', ')}`);
+
+          // If not last attempt, retry
+          if (attempt < MAX_RETRIES) {
+            const backoffMs = 1000 * Math.pow(2, attempt - 1);
+            console.log(`   🔄 Retrying in ${backoffMs}ms due to missing fields...`);
+            await new Promise(resolve => setTimeout(resolve, backoffMs));
+            continue; // Retry the loop
+          }
+
+          // Last attempt failed - return partial data for reconciliation
+          console.error(`   ⚠️  Max retries reached - returning partial data for reconciliation`);
+        }
+
+        console.log(`   ⚡ Non-grounded JSON parse completed in ${duration}ms`);
+
+        // Post-process: Normalize numeric fields to handle precision issues
+        if (parsed.sqft) parsed.sqft = Math.floor(Number(parsed.sqft));
+        if (parsed.beds) parsed.beds = Math.floor(Number(parsed.beds));
+        if (parsed.baths) parsed.baths = Number(Number(parsed.baths).toFixed(1)); // Round to 1 decimal
+        if (parsed.yearBuilt) parsed.yearBuilt = Math.floor(Number(parsed.yearBuilt));
+
+        console.log(`   🔧 Post-processed values: sqft=${parsed.sqft}, beds=${parsed.beds}, baths=${parsed.baths}, yearBuilt=${parsed.yearBuilt}`);
+
+        return parsed;
+      } catch (jsonError) {
+        console.error(`   ❌ JSON.parse() failed on attempt ${attempt}/${MAX_RETRIES} after ${duration}ms:`, jsonError);
+        console.error(`   📄 Response text that failed to parse (first 500 chars): "${responseText.substring(0, 500)}"`);
+        lastError = jsonError;
+
+        // If not last attempt, wait before retrying with exponential backoff
+        if (attempt < MAX_RETRIES) {
+          const backoffMs = 1000 * Math.pow(2, attempt - 1); // 1s, 2s, 4s
+          console.log(`   🔄 Retrying in ${backoffMs}ms...`);
+          await new Promise(resolve => setTimeout(resolve, backoffMs));
+        }
+      }
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`   ❌ Vertex AI call failed on attempt ${attempt}/${MAX_RETRIES} after ${duration}ms:`, error);
+      if (error instanceof Error) {
+        console.error(`   📋 Error message: ${error.message}`);
+        console.error(`   📋 Error stack: ${error.stack?.split('\n')[0]}`);
+      }
+      lastError = error;
+
+      // If not last attempt, wait before retrying
+      if (attempt < MAX_RETRIES) {
+        const backoffMs = 1000 * Math.pow(2, attempt - 1);
+        console.log(`   🔄 Retrying in ${backoffMs}ms...`);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+      }
+    }
+  }
+
+  console.error(`   ❌ All ${MAX_RETRIES} attempts failed. Last error:`, lastError);
+  return {};
+}
+
+/**
+ * Reconcile primary and county results with authority preference
+ * County is authoritative for sqft/yearBuilt, primary for other fields
+ */
+function reconcileResults(
+  primary: Partial<BasicDetails>,
+  county: Partial<BasicDetails>,
+  primaryWon: boolean
+): BasicDetails {
+  console.log(`   🔄 Reconciling: primary (${primaryWon ? 'winner' : 'loser'}) vs county (${primaryWon ? 'loser' : 'winner'})`);
+  console.log(`   📊 Primary data: sqft=${primary.sqft}, beds=${primary.beds}, baths=${primary.baths}, yearBuilt=${primary.yearBuilt}, type=${primary.propertyType}`);
+  console.log(`   📊 County data: sqft=${county.sqft}, beds=${county.beds}, baths=${county.baths}, yearBuilt=${county.yearBuilt}, type=${county.propertyType}`);
+
+  const winner = primaryWon ? primary : county;
+  const loser = primaryWon ? county : primary;
+
+  // Authority preference: county for sqft/yearBuilt, winner for others
+  const reconciled: Partial<BasicDetails> = {
+    // Prefer county for authoritative fields (tax assessor data)
+    sqft: county.sqft || primary.sqft,
+    yearBuilt: county.yearBuilt || primary.yearBuilt,
+
+    // Prefer winner for other fields (faster, less critical)
+    beds: winner.beds || loser.beds,
+    baths: winner.baths || loser.baths,
+    propertyType: winner.propertyType || loser.propertyType,
+    subdivision: winner.subdivision || loser.subdivision,
+
+    // Merge confidence scores
+    confidence: {
+      sqft: Math.max(county.confidence?.sqft ?? 0, primary.confidence?.sqft ?? 0),
+      beds: Math.max(winner.confidence?.beds ?? 0, loser.confidence?.beds ?? 0),
+      baths: Math.max(winner.confidence?.baths ?? 0, loser.confidence?.baths ?? 0),
+      yearBuilt: Math.max(county.confidence?.yearBuilt ?? 0, primary.confidence?.yearBuilt ?? 0),
+      propertyType: Math.max(winner.confidence?.propertyType ?? 0, loser.confidence?.propertyType ?? 0),
+      subdivision: Math.max(winner.confidence?.subdivision ?? 0, loser.confidence?.subdivision ?? 0),
+    },
+
+    source: 'reconciled' as const,
+  };
+
+  console.log(`   ✅ Reconciliation complete:`);
+  console.log(`      - sqft=${reconciled.sqft} (from ${county.sqft ? 'county' : 'primary'})`);
+  console.log(`      - yearBuilt=${reconciled.yearBuilt} (from ${county.yearBuilt ? 'county' : 'primary'})`);
+  console.log(`      - beds=${reconciled.beds} (from ${primaryWon ? 'primary' : 'county'})`);
+  console.log(`      - baths=${reconciled.baths} (from ${primaryWon ? 'primary' : 'county'})`);
+  console.log(`      - type=${reconciled.propertyType} (from ${primaryWon ? 'primary' : 'county'})`);
+
+  return reconciled as BasicDetails;
+}
+
+/**
+ * Sleep promise for grace window timeout
+ */
+function sleep(ms: number): Promise<never> {
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('grace window expired')), ms));
+}
+
+// [DEPRECATED] Old sequential parsing function - replaced by parseTextToJSON
+// Keeping below for reference only, not used in optimized SPD flow
+/*
 async function parseFreeformWithLLM(text: string, sa: any, projectId: string, location: string, model: string, address?: string): Promise<Partial<BasicDetails>> {
   console.log(`   🤖 Starting LLM extraction for property details...`);
   try {
@@ -481,206 +742,22 @@ function parseFreeformRegex(text: string): Partial<BasicDetails> {
 
   return { sqft, beds, baths, yearBuilt, lotSize: null, subdivision: null, propertyType: null };
 }
+*/
 
-/**
- * Comprehensive fallback property detection for all missing critical fields
- */
-async function fallbackPropertyDetection(
-  address: string,
-  sa: any,
-  projectId: string,
-  location: string,
-  model: string,
-  missingFields: string[]
-): Promise<Partial<BasicDetails>> {
-  console.log(`   🔍 Enhanced Fallback Detection for fields: ${missingFields.join(', ')}`);
-
-  try {
-    // Import vertexGenerate here to avoid circular dependency
-    const { vertexGenerate } = await import('./vertex-freeform.js');
-
-    // Strategy 1: Comprehensive property search targeting missing fields
-    const fieldList = missingFields.map(field => {
-      switch (field) {
-        case 'sqft': return 'exact square footage (living area)';
-        case 'beds': return 'number of bedrooms';
-        case 'baths': return 'number of bathrooms (including half baths)';
-        case 'yearBuilt': return 'year built';
-        case 'propertyType': return 'property type (single-family, duplex, multi-family, townhome, condo)';
-        default: return field;
-      }
-    }).join(', ');
-
-    const comprehensiveSearch = `Search for detailed property information about "${address}". I need these specific details: ${fieldList}.
-
-Look in:
-- MLS listings with complete property details
-- County assessor records with official specifications
-- Real estate websites (Zillow, Redfin, Realtor.com) with verified data
-- Public records and tax assessor databases
-
-Respond with ONLY the specific information requested in this exact format:
-SQFT: [exact square footage number]
-BEDS: [number of bedrooms]
-BATHS: [number of bathrooms including half baths as decimals]
-YEAR: [4-digit year built]
-TYPE: [single-family detached, townhome, condo, duplex, or multi-family]`;
-
-    const result1 = await vertexGenerate({
-      sa,
-      projectId,
-      location,
-      model,
-      prompt: comprehensiveSearch,
-      grounded: true,
-      timeoutMs: 60000
-    });
-
-    console.log(`   📋 Fallback Strategy 1 response: "${result1}"`);
-    const parsed1 = parsePropertyResponse(result1);
-    if (hasRequiredFields(parsed1, missingFields)) {
-      console.log(`   ✅ Fallback Strategy 1 success: Found all missing fields`);
-      return parsed1;
-    }
-
-    console.log(`   🔍 Fallback Strategy 2: County records focus...`);
-
-    // Strategy 2: County records and official sources
-    const countySearch = `Search official county assessor records and public property databases for "${address}". Find:
-- Official property specifications from tax assessor
-- Building permits with construction details
-- County property records with exact measurements
-- Official property classification codes
-
-Return the official property data in this format:
-SQFT: [square footage]
-BEDS: [bedrooms]
-BATHS: [bathrooms]
-YEAR: [year built]
-TYPE: [property type]`;
-
-    const result2 = await vertexGenerate({
-      sa,
-      projectId,
-      location,
-      model,
-      prompt: countySearch,
-      grounded: true,
-      timeoutMs: 60000
-    });
-
-    console.log(`   📋 Fallback Strategy 2 response: "${result2}"`);
-    const parsed2 = parsePropertyResponse(result2);
-    if (hasRequiredFields(parsed2, missingFields)) {
-      console.log(`   ✅ Fallback Strategy 2 success: Found all missing fields`);
-      return parsed2;
-    }
-
-    // Return partial results if we found some fields
-    const combinedResults = { ...parsed1, ...parsed2 };
-    if (Object.keys(combinedResults).length > 0) {
-      console.log(`   ⚡ Partial fallback success: Found ${Object.keys(combinedResults).join(', ')}`);
-      return combinedResults;
-    }
-
-    console.log(`   ❌ All fallback strategies failed to find missing fields`);
-    return {};
-
-  } catch (error) {
-    console.log(`   ❌ Fallback property detection failed: ${error}`);
-    return {};
-  }
-}
-
-/**
- * Parse structured property response from fallback detection
- */
-function parsePropertyResponse(response: string): Partial<BasicDetails> {
-  if (!response) return {};
-
-  const result: Partial<BasicDetails> = {};
-  const lines = response.split('\n').map(line => line.trim());
-
-  for (const line of lines) {
-    if (line.toUpperCase().startsWith('SQFT:')) {
-      const value = line.split(':')[1]?.trim();
-      if (value && value !== 'UNKNOWN') {
-        result.sqft = Number(value);
-        console.log(`   🔧 Parsed sqft: ${result.sqft}`);
-      }
-    }
-
-    if (line.toUpperCase().startsWith('BEDS:')) {
-      const value = line.split(':')[1]?.trim();
-      if (value && value !== 'UNKNOWN') {
-        result.beds = Number(value);
-        console.log(`   🔧 Parsed beds: ${result.beds}`);
-      }
-    }
-
-    if (line.toUpperCase().startsWith('BATHS:')) {
-      const value = line.split(':')[1]?.trim();
-      if (value && value !== 'UNKNOWN') {
-        result.baths = Number(value);
-        console.log(`   🔧 Parsed baths: ${result.baths}`);
-      }
-    }
-
-    if (line.toUpperCase().startsWith('YEAR:')) {
-      const value = line.split(':')[1]?.trim();
-      if (value && value !== 'UNKNOWN') {
-        result.yearBuilt = Number(value);
-        console.log(`   🔧 Parsed yearBuilt: ${result.yearBuilt}`);
-      }
-    }
-
-    if (line.toUpperCase().startsWith('TYPE:')) {
-      const value = line.split(':')[1]?.trim();
-      if (value && value !== 'UNKNOWN') {
-        result.propertyType = normalizePropertyType(value);
-        console.log(`   🔧 Parsed propertyType: ${result.propertyType}`);
-      }
-    }
-  }
-
-  return result;
-}
-
-/**
- * Check if required fields were found in fallback data
- */
-function hasRequiredFields(data: Partial<BasicDetails>, missingFields: string[]): boolean {
-  for (const field of missingFields) {
-    if (field === 'sqft' && (!data.sqft || data.sqft <= 0)) return false;
-    if (field === 'beds' && (!data.beds || data.beds <= 0)) return false;
-    if (field === 'baths' && (!data.baths || data.baths <= 0)) return false;
-    if (field === 'yearBuilt' && !data.yearBuilt) return false;
-    if (field === 'propertyType' && !data.propertyType) return false;
-  }
-  return true;
-}
-
-/**
- * Normalize property type response to standard values
- */
-function normalizePropertyType(response: string): string | null {
-  if (!response) return null;
-
-  const cleaned = response.toLowerCase().trim();
-  console.log(`   🔧 Normalizing property type response: "${cleaned}"`);
-
-  if (cleaned.includes('duplex')) return 'duplex';
-  if (cleaned.includes('multi-family') || cleaned.includes('multifamily')) return 'multi-family';
-  if (cleaned.includes('condo')) return 'condo';
-  if (cleaned.includes('townhome') || cleaned.includes('townhouse')) return 'townhome';
-  if (cleaned.includes('single-family') || cleaned.includes('single family')) return 'single-family detached';
-
-  console.log(`   ⚠️  Could not normalize property type: "${cleaned}"`);
-  return null;
-}
+// [DEPRECATED] Removed old sequential parsing helper functions (fallbackPropertyDetection, parsePropertyResponse,
+// hasRequiredFields, normalizePropertyType) - replaced by parallel SPD with parseTextToJSON in optimized flow
 
 export async function fetchPropertyDetailsViaVertex(address: string): Promise<BasicDetails | null> {
-  if (!hasServiceAccount()) return null;
+  const totalStartTime = Date.now();
+
+  console.log(`🔍 SPD ENTRY: fetchPropertyDetailsViaVertex called for ${address}`);
+  const hasSA = hasServiceAccount();
+  console.log(`🔍 SPD SERVICE ACCOUNT CHECK: ${hasSA}`);
+
+  if (!hasSA) {
+    console.log(`❌ SPD ABORTED: No service account found - returning null`);
+    return null;
+  }
 
   let sa;
   if (process.env.GCP_SA_JSON_B64) {
@@ -695,13 +772,13 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
   const projectId = sa.project_id;
   const location = process.env.VERTEX_LOCATION || 'us-central1';
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-  const timeoutMs = Number(process.env.VERTEX_TIMEOUT_MS || '80000'); // 80s - optimized based on analysis of 948 grounded searches
 
-  // PRIMARY: Comprehensive grounded search for CRITICAL data
-  let propertyDetails: Partial<BasicDetails> = {};
+  const ctx = { sa, projectId, location, model };
 
-  try {
-    const prompt = `Use Google Search grounding with authoritative real estate sources (Zillow, Redfin, Realtor.com, county records) to find COMPLETE property details for: ${address}
+  console.log(`\n🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: ${address}`);
+
+  // ===== STEP 1: Parallel Grounded Fetch (Primary + County) =====
+  const primaryPrompt = `Use Google Search grounding with authoritative real estate sources (Zillow, Redfin, Realtor.com, county records) to find COMPLETE property details for: ${address}
 
 CRITICAL REQUIRED DATA (must find all):
 - Exact square footage (living area only, not lot size)
@@ -711,11 +788,8 @@ CRITICAL REQUIRED DATA (must find all):
 - Property type (single-family detached, townhome, condo, duplex)
 
 ADDITIONAL HELPFUL DATA:
-- Lot size in square feet or acres
 - Subdivision/neighborhood name
-- Garage/parking spaces
-- Stories/levels
-- Special features (pool, basement, etc.)
+- Lot size in square feet or acres
 
 Search specific sites:
 - site:zillow.com "${address}"
@@ -723,142 +797,174 @@ Search specific sites:
 - site:realtor.com "${address}"
 - "${address}" county records property details
 
-Provide specific facts with numbers. If any critical data is missing, clearly state "MISSING" for that field.`;
+Provide specific facts with numbers and source URLs.`;
 
-    const text = await vertexGenerate({ sa, projectId, location, model, prompt, grounded: true, json: false, timeoutMs });
-    console.log(`   📄 Primary search response: ${text.substring(0, 200)}...`);
-
-    console.log(`   🔄 Calling parseFreeformWithLLM for detailed extraction...`);
-    propertyDetails = await parseFreeformWithLLM(text, sa, projectId, location, model, address);
-    console.log(`   📊 Parsed data: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}, propertyType=${propertyDetails.propertyType}`);
-
-  } catch (err) {
-    console.log(`   ⚠️  Primary grounded search failed: ${err}`);
-    // Re-throw if it's our fast-fail error
-    if (err instanceof Error && err.message.includes('Invalid address - no property data found')) {
-      throw err;
-    }
-  }
-
-  // CRITICAL DATA VALIDATION - Stop if missing essential fields
-  const hasCriticalData = propertyDetails.sqft && propertyDetails.beds && propertyDetails.baths && propertyDetails.yearBuilt;
-
-  if (!hasCriticalData) {
-    console.log(`   🛑 MISSING CRITICAL DATA - Attempting targeted fallback searches...`);
-
-    // FALLBACK: County records search for missing data
-    const missingFields = [];
-    if (!propertyDetails.sqft) missingFields.push('square footage');
-    if (!propertyDetails.beds) missingFields.push('bedrooms');
-    if (!propertyDetails.baths) missingFields.push('bathrooms');
-    if (!propertyDetails.yearBuilt) missingFields.push('year built');
-
-    try {
-      const countyPrompt = `Use Google Search grounding to find missing property data from county records and tax assessor for: ${address}
-
-MISSING FIELDS TO FIND: ${missingFields.join(', ')}
+  const countyPrompt = `Use Google Search grounding to find property data from county records and tax assessor for: ${address}
 
 Search county assessor and tax records:
 - "${address}" tax assessor records
 - "${address}" property tax records
 - "${address}" county property details
-- "${address}" square feet bedrooms bathrooms
+- "${address}" square feet bedrooms bathrooms year built
 
-Focus only on finding: ${missingFields.join(', ')}. Provide exact numbers.`;
+Focus on official county/tax data. Provide exact numbers and source URLs.`;
 
-      const countyText = await vertexGenerate({ sa, projectId, location, model, prompt: countyPrompt, grounded: true, json: false, timeoutMs });
-      const countyData = await parseFreeformWithLLM(countyText, sa, projectId, location, model, address);
+  const primaryStart = Date.now();
+  const countyStart = Date.now();
 
-      // Fill in missing critical data
-      if (!propertyDetails.sqft && countyData.sqft) propertyDetails.sqft = countyData.sqft;
-      if (!propertyDetails.beds && countyData.beds) propertyDetails.beds = countyData.beds;
-      if (!propertyDetails.baths && countyData.baths) propertyDetails.baths = countyData.baths;
-      if (!propertyDetails.yearBuilt && countyData.yearBuilt) propertyDetails.yearBuilt = countyData.yearBuilt;
+  const primaryPromise = vertexGenerate({ ...ctx, prompt: primaryPrompt, grounded: true, json: false, timeoutMs: SPD_PRIMARY_TIMEOUT_MS })
+    .then(text => {
+      const duration = Date.now() - primaryStart;
+      console.log(`   ✅ Primary grounded search completed in ${duration}ms`);
+      console.log(`   📄 PRIMARY GROUNDED RESPONSE (${text.length} chars): ${text}`);
+      return { text, source: 'primary' as const, duration, error: null };
+    })
+    .catch(err => {
+      const duration = Date.now() - primaryStart;
+      console.error(`   ❌ Primary grounded search failed after ${duration}ms:`, err.message || err);
+      return { text: null, source: 'primary' as const, duration, error: err };
+    });
 
-      // OVERRIDE: If county data is more complete, use it for ALL fields including property type
-      if (countyData.sqft && countyData.beds && countyData.baths && countyData.yearBuilt && countyData.propertyType) {
-        console.log(`   🔄 County records provided complete data - using ALL county values for accuracy`);
-        propertyDetails.sqft = countyData.sqft;
-        propertyDetails.beds = countyData.beds;
-        propertyDetails.baths = countyData.baths;
-        propertyDetails.yearBuilt = countyData.yearBuilt;
-        propertyDetails.propertyType = countyData.propertyType;
-        console.log(`   ✅ OVERRIDE: Using complete county data - sqft=${countyData.sqft}, beds=${countyData.beds}, baths=${countyData.baths}, yearBuilt=${countyData.yearBuilt}, propertyType=${countyData.propertyType}`);
-      } else {
-        console.log(`   🔍 County records filled: sqft=${propertyDetails.sqft}, beds=${propertyDetails.beds}, baths=${propertyDetails.baths}, yearBuilt=${propertyDetails.yearBuilt}`);
-      }
+  const countyPromise = vertexGenerate({ ...ctx, prompt: countyPrompt, grounded: true, json: false, timeoutMs: SPD_COUNTY_TIMEOUT_MS })
+    .then(text => {
+      const duration = Date.now() - countyStart;
+      console.log(`   ✅ County grounded search completed in ${duration}ms`);
+      console.log(`   📄 COUNTY GROUNDED RESPONSE (${text.length} chars): ${text}`);
+      return { text, source: 'county' as const, duration, error: null };
+    })
+    .catch(err => {
+      const duration = Date.now() - countyStart;
+      console.error(`   ❌ County grounded search failed after ${duration}ms:`, err.message || err);
+      return { text: null, source: 'county' as const, duration, error: err };
+    });
 
+  // Race to get the first winner
+  const winnerResult = await Promise.race([primaryPromise, countyPromise]);
+  console.log(`   🏆 Winner: ${winnerResult.source} (${winnerResult.duration}ms)`);
+
+  if (!winnerResult.text) {
+    console.error(`   ❌ Winner ${winnerResult.source} failed after ${winnerResult.duration}ms:`, winnerResult.error?.message || winnerResult.error);
+    // Wait for the other one
+    console.log(`   🔄 Waiting for ${winnerResult.source === 'primary' ? 'county' : 'primary'} to complete...`);
+    const [p, c] = await Promise.all([primaryPromise, countyPromise]);
+    const loserResult = winnerResult.source === 'primary' ? c : p;
+
+    if (!loserResult.text) {
+      console.error(`   ❌ Loser ${loserResult.source} also failed after ${loserResult.duration}ms:`, loserResult.error?.message || loserResult.error);
+      console.error(`   🛑 FATAL: Both primary and county searches failed - cannot retrieve SPD`);
+      return null;
+    }
+
+    console.log(`   🔄 Using fallback: ${loserResult.source} (${loserResult.duration}ms)`);
+    // Parse the loser
+    try {
+      const parseStart = Date.now();
+      const parsed = await parseTextToJSON(loserResult.text, ctx);
+      const parseDuration = Date.now() - parseStart;
+      console.log(`   ✅ Fallback parse completed in ${parseDuration}ms`);
+      return normalize(address, { ...parsed, source: loserResult.source, lotSize: null, success: true });
     } catch (err) {
-      console.log(`   ⚠️  County records search failed: ${err}`);
+      console.error(`   ❌ Fallback parse failed:`, err);
+      return null;
     }
   }
 
-  // FINAL VALIDATION - Must have ALL critical data to proceed
-  const finalValidation = propertyDetails.sqft && propertyDetails.beds && propertyDetails.baths && propertyDetails.yearBuilt;
+  // ===== STEP 2: Parse Winner Immediately =====
+  console.log(`   🔍 Parsing winner (${winnerResult.source})...`);
+  let parsedWinner: Partial<BasicDetails>;
+  try {
+    const parseStart = Date.now();
+    parsedWinner = await parseTextToJSON(winnerResult.text, ctx);
+    const parseDuration = Date.now() - parseStart;
+    console.log(`   ✅ Winner parsed in ${parseDuration}ms: sqft=${parsedWinner.sqft}, beds=${parsedWinner.beds}, baths=${parsedWinner.baths}, yearBuilt=${parsedWinner.yearBuilt}`);
+  } catch (err) {
+    console.error(`   ❌ Winner parse failed:`, err);
+    console.log(`   🔄 Waiting for loser to complete...`);
+    // Try the loser
+    const loserPromise = winnerResult.source === 'primary' ? countyPromise : primaryPromise;
+    const loserResult = await loserPromise;
+    if (!loserResult.text) {
+      console.error(`   ❌ Loser also failed - cannot retrieve SPD`);
+      return null;
+    }
+    try {
+      const parseStart = Date.now();
+      parsedWinner = await parseTextToJSON(loserResult.text, ctx);
+      const parseDuration = Date.now() - parseStart;
+      console.log(`   ✅ Loser parsed in ${parseDuration}ms (used as fallback)`);
+      return normalize(address, { ...parsedWinner, source: loserResult.source, lotSize: null, success: true });
+    } catch (err2) {
+      console.error(`   ❌ Loser parse also failed:`, err2);
+      return null;
+    }
+  }
 
-  // Skip grounded JSON lookup for subdivision; leave as-is if missing
+  // ===== STEP 3: Grace Window for Loser (for reconciliation) =====
+  console.log(`   ⏱️  Waiting ${SPD_GRACE_WINDOW_MS}ms for ${winnerResult.source === 'primary' ? 'county' : 'primary'} (grace window)...`);
+  let parsedLoser: Partial<BasicDetails> | null = null;
+  try {
+    const loserPromise = winnerResult.source === 'primary' ? countyPromise : primaryPromise;
+    const loserResult = await Promise.race([
+      loserPromise,
+      sleep(SPD_GRACE_WINDOW_MS)
+    ]);
 
-  if (!finalValidation) {
-    const stillMissing = [];
-    if (!propertyDetails.sqft) stillMissing.push('square footage');
-    if (!propertyDetails.beds) stillMissing.push('bedrooms');
-    if (!propertyDetails.baths) stillMissing.push('bathrooms');
-    if (!propertyDetails.yearBuilt) stillMissing.push('year built');
+    if (loserResult && loserResult.text) {
+      console.log(`   ✅ Loser arrived in grace window: ${loserResult.source} (${loserResult.duration}ms)`);
+      try {
+        const parseStart = Date.now();
+        parsedLoser = await parseTextToJSON(loserResult.text, ctx);
+        const parseDuration = Date.now() - parseStart;
+        console.log(`   ✅ Loser parsed in ${parseDuration}ms: sqft=${parsedLoser.sqft}, beds=${parsedLoser.beds}, baths=${parsedLoser.baths}, yearBuilt=${parsedLoser.yearBuilt}`);
+      } catch (err) {
+        console.error(`   ❌ Loser parse failed:`, err);
+        parsedLoser = null;
+      }
+    } else if (loserResult && !loserResult.text) {
+      console.error(`   ❌ Loser ${loserResult.source} failed in grace window after ${loserResult.duration}ms:`, loserResult.error?.message || loserResult.error);
+    }
+  } catch (err) {
+    console.log(`   ⏱️  Grace window expired (${SPD_GRACE_WINDOW_MS}ms) - using winner only`);
+  }
 
-    console.log(`   ❌ ANALYSIS STOPPED - Missing critical data: ${stillMissing.join(', ')}`);
-    console.log(`   🛑 Cannot proceed with ARV analysis without complete property details`);
+  // ===== STEP 4: Reconcile if we have both =====
+  let finalDetails: Partial<BasicDetails>;
+
+  if (parsedLoser) {
+    const primaryWon = winnerResult.source === 'primary';
+    const primaryData = primaryWon ? parsedWinner : parsedLoser;
+    const countyData = primaryWon ? parsedLoser : parsedWinner;
+
+    console.log(`   🔄 Reconciling: primary=${primaryWon ? 'winner' : 'loser'}, county=${primaryWon ? 'loser' : 'winner'}`);
+    finalDetails = reconcileResults(primaryData, countyData, primaryWon);
+  } else {
+    console.log(`   📋 Using winner only (no reconciliation): ${winnerResult.source}`);
+    finalDetails = { ...parsedWinner, source: winnerResult.source };
+  }
+
+  // ===== STEP 5: Final Validation =====
+  console.log(`   🔍 Validating final details...`);
+  const hasCriticalData = finalDetails.sqft && finalDetails.beds && finalDetails.baths && finalDetails.yearBuilt;
+
+  if (!hasCriticalData) {
+    const missing = [];
+    if (!finalDetails.sqft) missing.push('sqft');
+    if (!finalDetails.beds) missing.push('beds');
+    if (!finalDetails.baths) missing.push('baths');
+    if (!finalDetails.yearBuilt) missing.push('yearBuilt');
+
+    console.error(`   ❌ Validation failed - Missing critical fields: ${missing.join(', ')}`);
+    console.error(`   📊 Partial data: sqft=${finalDetails.sqft}, beds=${finalDetails.beds}, baths=${finalDetails.baths}, yearBuilt=${finalDetails.yearBuilt}`);
+    console.error(`   🛑 FATAL: Cannot proceed - insufficient data for SPD`);
     return null;
   }
 
-  console.log(`   ✅ All critical data found - Proceeding with analysis`);
+  const totalDuration = Date.now() - totalStartTime;
+  console.log(`   ✅ Validation passed - All critical fields present`);
+  console.log(`   ✅ SPD Complete in ${totalDuration}ms (${(totalDuration/1000).toFixed(1)}s)`);
+  console.log(`   📊 Final: sqft=${finalDetails.sqft}, beds=${finalDetails.beds}, baths=${finalDetails.baths}, yearBuilt=${finalDetails.yearBuilt}, type=${finalDetails.propertyType}, source=${finalDetails.source}`);
 
-  // FALLBACK: Enhanced detection for any missing critical fields
-  const missingFields = [];
-  if (!propertyDetails.sqft || propertyDetails.sqft <= 0) missingFields.push('sqft');
-  if (!propertyDetails.beds || propertyDetails.beds <= 0) missingFields.push('beds');
-  if (!propertyDetails.baths || propertyDetails.baths <= 0) missingFields.push('baths');
-  if (!propertyDetails.yearBuilt) missingFields.push('yearBuilt');
-  if (!propertyDetails.propertyType) missingFields.push('propertyType');
-
-  if (missingFields.length > 0) {
-    console.log(`   🔄 Missing critical fields: ${missingFields.join(', ')} - running enhanced fallback detection...`);
-    const fallbackData = await fallbackPropertyDetection(address, sa, projectId, location, model, missingFields);
-
-    // OVERRIDE: If final fallback is more complete, use it for ALL fields
-    if (fallbackData.sqft && fallbackData.beds && fallbackData.baths && fallbackData.yearBuilt && fallbackData.propertyType) {
-      console.log(`   🔄 Final fallback provided complete data - using ALL fallback values for accuracy`);
-      propertyDetails.sqft = fallbackData.sqft;
-      propertyDetails.beds = fallbackData.beds;
-      propertyDetails.baths = fallbackData.baths;
-      propertyDetails.yearBuilt = fallbackData.yearBuilt;
-      propertyDetails.propertyType = fallbackData.propertyType;
-      console.log(`   ✅ OVERRIDE: Using complete fallback data - sqft=${fallbackData.sqft}, beds=${fallbackData.beds}, baths=${fallbackData.baths}, yearBuilt=${fallbackData.yearBuilt}, propertyType=${fallbackData.propertyType}`);
-    } else {
-      // Fill in missing fields from fallback data
-      if (fallbackData.sqft && (!propertyDetails.sqft || propertyDetails.sqft <= 0)) {
-        propertyDetails.sqft = fallbackData.sqft;
-        console.log(`   ✅ Fallback: Found sqft = ${fallbackData.sqft}`);
-      }
-      if (fallbackData.beds && (!propertyDetails.beds || propertyDetails.beds <= 0)) {
-        propertyDetails.beds = fallbackData.beds;
-        console.log(`   ✅ Fallback: Found beds = ${fallbackData.beds}`);
-      }
-      if (fallbackData.baths && (!propertyDetails.baths || propertyDetails.baths <= 0)) {
-        propertyDetails.baths = fallbackData.baths;
-        console.log(`   ✅ Fallback: Found baths = ${fallbackData.baths}`);
-      }
-      if (fallbackData.yearBuilt && !propertyDetails.yearBuilt) {
-        propertyDetails.yearBuilt = fallbackData.yearBuilt;
-        console.log(`   ✅ Fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
-      }
-      if (fallbackData.propertyType && !propertyDetails.propertyType) {
-        propertyDetails.propertyType = fallbackData.propertyType;
-        console.log(`   ✅ Fallback: Found propertyType = ${fallbackData.propertyType}`);
-      }
-    }
-  }
-
-  return normalize(address, propertyDetails);
+  return normalize(address, { ...finalDetails, lotSize: null, success: true });
 }
 
 function normalize(address: string, obj: any): BasicDetails {

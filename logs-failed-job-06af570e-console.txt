@@ -1,0 +1,508 @@
+2025-10-08T16:14:11.474999904Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (234 bytes, TTL=3600s)
+2025-10-08T16:14:11.594000101Z | 📋 Job 06af570e-c1be-4ff2-bbb3-4348d3165593 enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:14:11.594000101Z | ✅ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:14:11.594000101Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:11.594000101Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:11.594000101Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:11.594000101Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:11.632999897Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (234 bytes, TTL=3600s)
+2025-10-08T16:14:11.632999897Z | 📋 Job 06af570e-c1be-4ff2-bbb3-4348d3165593 enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:14:11.632999897Z | ✅ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:14:11.632999897Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:11.632999897Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:11.632999897Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:11.632999897Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:11.648000001Z | ⚙️  [1759940051476-0] Processing job 06af570e-c1be-4ff2-bbb3-4348d3165593: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:14:11.648000001Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:11.648000001Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:11.648000001Z | 🔍 [1759940051476-0] Job 06af570e-c1be-4ff2-bbb3-4348d3165593 not currently processing (status: queued)
+2025-10-08T16:14:11.648000001Z | 📝 [1759940051476-0] Claiming ownership of job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:11.648000001Z | 💾 Updating job 06af570e-c1be-4ff2-bbb3-4348d3165593 with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"MacBookPro.attlocal.net:92180","processingMessageId":"1759940051476-0"}
+2025-10-08T16:14:11.648000001Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:11.648000001Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:11.648000001Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (343 bytes, TTL=3600s)
+2025-10-08T16:14:11.648000001Z | ✅ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 saved to Redis: status=processing, progress=10
+2025-10-08T16:14:12.082000017Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:12.082000017Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:12.082000017Z | 💾 Updating job 06af570e-c1be-4ff2-bbb3-4348d3165593 with: {"progress":10,"phase":"Subject Property Research","phaseMessage":"Fetching property details from public records...","estimatedTimeRemaining":295,"phaseStartTime":1759940051920}
+2025-10-08T16:14:12.082000017Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:12.082000017Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:12.082000017Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:12.082000017Z | ✅ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 saved to Redis: status=processing, progress=10
+2025-10-08T16:14:13.612999916Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:13.612999916Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:13.773000001Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:13.773000001Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:13.773000001Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:13.773000001Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:13.773000001Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:13.773000001Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:15.701999902Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:15.703000068Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:15.816999912Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:15.816999912Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:15.816999912Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:15.865000009Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:15.865999937Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:15.865999937Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:17.730000019Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:17.730999946Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:17.881000041Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:17.881000041Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:17.881000041Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:17.890000104Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:17.890000104Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:17.890000104Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:18.506999969Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:18.657000064Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:18.657000064Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:19.750999927Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:19.752000093Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:19.915999889Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:19.915999889Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:19.915999889Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:19.934999942Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:19.934999942Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:19.934999942Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:21.772000074Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:21.792000055Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:21.792000055Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:21.792000055Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:21.792000055Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:21.931999921Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:21.931999921Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:21.931999921Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:23.789000034Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:23.789000034Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:23.940999984Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:23.940999984Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:23.941999912Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:23.956000089Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:23.956000089Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:23.956000089Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:25.506999969Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:25.634000062Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:25.634000062Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:25.806999921Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:25.806999921Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:25.926000118Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:25.926000118Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:25.926000118Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:26.013000011Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:26.013000011Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:26.013000011Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:27.825999975Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:27.825999975Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:27.963999986Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:27.963999986Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:27.963999986Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:27.967999935Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:27.967999935Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:27.967999935Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:29.740999937Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:29.740999937Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:29.740999937Z | ⚙️  [1759940051476-0] Processing job 06af570e-c1be-4ff2-bbb3-4348d3165593: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:14:29.740999937Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:29.740999937Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:29.740999937Z | 🔍 [1759940051476-0] Job 06af570e-c1be-4ff2-bbb3-4348d3165593 status=processing, messageId=1759940051476-0
+2025-10-08T16:14:29.740999937Z | ⚠️  [1759940051476-0] Job 06af570e-c1be-4ff2-bbb3-4348d3165593 still active (heartbeat 4s ago), skipping XAUTOCLAIM reclaim
+2025-10-08T16:14:29.848000049Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:29.848000049Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:29.993999958Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:29.993999958Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:29.993999958Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:29.993999958Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:29.993999958Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:29.993999958Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:32.151999950Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:32.157000064Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:32.275000095Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:32.275000095Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:32.275000095Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:32.336999893Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:32.336999893Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:32.336999893Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:32.509999990Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:32.687000036Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:32.687000036Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:34.194000005Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:34.194000005Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:34.380000114Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:34.380000114Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:34.380000114Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:34.380000114Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:34.380000114Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:34.380000114Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:36.358000040Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:36.358000040Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:36.358000040Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:36.358000040Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:36.371999979Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:36.371999979Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:36.371999979Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:36.371999979Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:38.226999998Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:38.226999998Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:38.459000110Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:38.459000110Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:38.459000110Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:38.622999906Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:38.624000072Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:38.624000072Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:39.509000062Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:39.789000034Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:39.789000034Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:40.500Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:40.500Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:40.500Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:40.500Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:40.500Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:40.500Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:40.500Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:40.500Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:42.262000083Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:42.263000011Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:42.361000061Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:42.361000061Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:42.361000061Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:42.411000013Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:42.411000013Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:42.411000013Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:44.279000043Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:44.279000043Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:44.385999917Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:44.385999917Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:44.385999917Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:44.434999942Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:44.434999942Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:44.434999942Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:46.295000076Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:46.296000003Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:46.430999994Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:46.430999994Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:46.430999994Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:46.474999904Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:46.474999904Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:46.474999904Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:46.509999990Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:46.654999971Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:46.654999971Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:48.312000036Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:48.312000036Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:48.447999954Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:48.447999954Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:48.447999954Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:48.473999977Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:48.473999977Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:48.473999977Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:50.328999996Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:50.352999925Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:50.352999925Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:50.352999925Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:50.352999925Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:50.470999956Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:50.470999956Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:50.470999956Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:52.345999956Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:52.345999956Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:52.480000019Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:52.480000019Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:52.480000019Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:52.506000041Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:52.506000041Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:52.506000041Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:53.510999917Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:53.664000034Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:53.664000034Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:14:54.364000082Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:54.364000082Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:54.484999895Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:54.484999895Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:54.484999895Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:54.493000030Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:54.493000030Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:54.493000030Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:56.378999948Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:56.380000114Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:56.500Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:56.500Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:56.500Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:56.542000055Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:56.542000055Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:56.542000055Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:58.394999980Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:58.394999980Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:14:58.556999921Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:58.556999921Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:58.556999921Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:14:58.566999912Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:14:58.566999912Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:14:58.566999912Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:00.411000013Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:00.411000013Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:00.509999990Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:00.569999933Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:00.569999933Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:00.569999933Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:00.578000068Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:00.578000068Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:00.578000068Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:00.618000030Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:00.618000030Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:02.427999973Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:02.427999973Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:02.539000034Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:02.539000034Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:02.539000034Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:02.540999889Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:02.540999889Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:02.540999889Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:04.444000005Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:04.444999933Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:04.575999975Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:04.575999975Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:04.575999975Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:04.624000072Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:04.624000072Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:04.624000072Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:06.459000110Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:06.460000038Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:06.592999935Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:06.592999935Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:06.592999935Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:06.592999935Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:06.592999935Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:06.592999935Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:07.512000083Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:07.755000114Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:07.755000114Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:08.476999998Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:08.476999998Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:08.767999887Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:08.767999887Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:08.767999887Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:08.769000053Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:08.769000053Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:08.769000053Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:10.492000102Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:10.493000030Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:10.618999958Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:10.618999958Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:10.618999958Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:10.641000032Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:10.641999959Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:10.641999959Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:12.509000062Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:12.509000062Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:12.650000095Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:12.650000095Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:12.650000095Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:12.665999889Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:12.665999889Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:12.665999889Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:14.512000083Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:14.526999950Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:14.526999950Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:14.625Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:14.625Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:14.625Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:14.634000062Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:14.634000062Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:14.686000108Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:14.686000108Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:14.686000108Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:16.542000055Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:16.542000055Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:16.640000104Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:16.640000104Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:16.640000104Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:16.700999975Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:16.700999975Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:16.700999975Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:18.569000005Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:18.569999933Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:18.693000078Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:18.693000078Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:18.693000078Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:18.703000068Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:18.703000068Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:18.703000068Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:20.586999893Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:20.586999893Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:20.681999921Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:20.681999921Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:20.681999921Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:20.724999904Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:20.724999904Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:20.724999904Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:21.513999938Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:21.635999917Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:21.635999917Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:22.602999925Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:22.602999925Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:22.765000104Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:22.765000104Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:22.765000104Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:22.789000034Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:22.789000034Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:22.789000034Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:24.618999958Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:24.619999885Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:24.773000001Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:24.773000001Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:24.773000001Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:24.780999898Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:24.780999898Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:24.780999898Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:26.642999887Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:26.644000053Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:26.759000062Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:26.759000062Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:26.759000062Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:26.779000043Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:26.779000043Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:26.779000043Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:28.513999938Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:28.654000043Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:28.654000043Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:28.667000055Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:28.667999982Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:28.821000099Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:28.821000099Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:28.821000099Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:28.838999986Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:28.838999986Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:28.838999986Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:30.805000066Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:30.805000066Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:30.805000066Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:30.805000066Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:30.838000059Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:30.838000059Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:30.838000059Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:30.838000059Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:32.832000017Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:32.835000038Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:33.010999917Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:33.010999917Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:33.010999917Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:33.012000083Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:33.012000083Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:33.012000083Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:34.871000051Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:34.871999979Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:34.986999988Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:34.986999988Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:34.986999988Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:35.046999931Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:35.046999931Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:35.046999931Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:35.517999887Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:35.654999971Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:35.654999971Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:36.898000001Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:36.898999929Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:37.036000013Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:37.036000013Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:37.036999940Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:37.065999984Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:37.065999984Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:37.065999984Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:38.920000076Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:38.921000003Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:39.019999980Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:39.019999980Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:39.019999980Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:39.035000085Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:39.035000085Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:39.035000085Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:40.940999984Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:40.940999984Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:41.079999923Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:41.079999923Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:41.079999923Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:41.079999923Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:41.079999923Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:41.079999923Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:42.516999959Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:42.641000032Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:42.641000032Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:42.959000110Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:42.960000038Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:43.094000101Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:43.094000101Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:43.094000101Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:43.121000051Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:43.121000051Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:43.121000051Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:44.977999925Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:44.977999925Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:45.128999948Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:45.128999948Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:45.128999948Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:45.134000062Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:45.134999990Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:45.134999990Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:47.009999990Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:47.010999917Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:47.134999990Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:47.134999990Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:47.134999990Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:47.171999931Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:47.171999931Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:47.171999931Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:49.033999919Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:49.033999919Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:49.033999919Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:49.033999919Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:49.045000076Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:49.045000076Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:49.045000076Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:49.045000076Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:49.519000053Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:49.671000003Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:49.671000003Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:51.045000076Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:51.045000076Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:51.142999887Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:51.142999887Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:51.142999887Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:51.151000022Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:51.151000022Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:51.151000022Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:53.061000108Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:53.061000108Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:53.168999910Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:53.168999910Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:53.168999910Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:53.223000049Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:53.223000049Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:53.223000049Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:55.078999996Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:55.078999996Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:55.196000099Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:55.196000099Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:55.196000099Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:55.197000026Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:55.197000026Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:55.197000026Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:56.519000053Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:56.671000003Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:56.671000003Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (471 bytes, TTL=3600s)
+2025-10-08T16:15:57.094000101Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:57.095000028Z | 🔍 STATUS: Looking for job 06af570e-c1be-4ff2-bbb3-4348d3165593
+2025-10-08T16:15:57.198999881Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:57.198999881Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:57.198999881Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:57.229000091Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:57.229000091Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:57.230000019Z | 🔍 STATUS: Job 06af570e-c1be-4ff2-bbb3-4348d3165593 result: FOUND
+2025-10-08T16:15:57.312999963Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:57.312999963Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:57.312999963Z | ❌ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 failed (attempt 1/1): Could not fetch subject property details
+2025-10-08T16:15:57.312999963Z | 💾 Updating job 06af570e-c1be-4ff2-bbb3-4348d3165593 with: {"status":"failed","error":"Could not fetch subject property details","attempts":1,"completedAt":1759940157051}
+2025-10-08T16:15:57.312999963Z | 🔍 REDIS getJob: jobId=06af570e-c1be-4ff2-bbb3-4348d3165593, connected=true, client=true
+2025-10-08T16:15:57.312999963Z | 🔍 REDIS getJob: key=job:06af570e-c1be-4ff2-bbb3-4348d3165593, found=true
+2025-10-08T16:15:57.450999975Z | 📝 Redis SET job:06af570e-c1be-4ff2-bbb3-4348d3165593 (546 bytes, TTL=3600s)
+2025-10-08T16:15:57.450999975Z | ✅ Job 06af570e-c1be-4ff2-bbb3-4348d3165593 saved to Redis: status=failed, progress=10
+2025-10-08T16:15:58.588000059Z | 💀 Job 06af570e-c1be-4ff2-bbb3-4348d3165593 moved to DLQ after 1 attempts

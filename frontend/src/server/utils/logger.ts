@@ -2,9 +2,20 @@ import winston from 'winston';
 import { LoggingWinston } from '@google-cloud/logging-winston';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { AsyncLocalStorage } from 'async_hooks';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// AsyncLocalStorage for trace context propagation
+interface TraceContext {
+  traceId?: string;
+  spanId?: string;
+  jobId?: string;
+  address?: string;
+}
+
+const traceStorage = new AsyncLocalStorage<TraceContext>();
 
 const loggingWinston = new LoggingWinston({
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
@@ -106,6 +117,83 @@ export function logSearchError(data: {
   });
 }
 
+/**
+ * Extract trace ID from X-Cloud-Trace-Context header
+ * Format: TRACE_ID/SPAN_ID;o=TRACE_TRUE
+ */
+function parseTraceHeader(header: string | undefined): { traceId: string; spanId?: string } | null {
+  if (!header) return null;
+  const [traceId, spanId] = header.split('/');
+  return traceId ? { traceId, spanId: spanId?.split(';')[0] } : null;
+}
+
+/**
+ * Get fully qualified trace path for Cloud Logging
+ */
+function getTracePath(traceId: string): string {
+  const projectId = process.env.GOOGLE_CLOUD_PROJECT || process.env.GCP_PROJECT || 'agile-device-472202-i8';
+  return `projects/${projectId}/traces/${traceId}`;
+}
+
+/**
+ * Set trace context from HTTP request (call in API handlers)
+ */
+export function setTraceContext(req: any, additionalContext?: Partial<TraceContext>): void {
+  const traceHeader = req.headers?.['x-cloud-trace-context'] || req.headers?.['traceparent'];
+  const parsed = parseTraceHeader(traceHeader);
+
+  const context: TraceContext = {
+    traceId: parsed?.traceId,
+    spanId: parsed?.spanId,
+    ...additionalContext
+  };
+
+  traceStorage.enterWith(context);
+}
+
+/**
+ * Update trace context (e.g., add jobId after job starts)
+ */
+export function updateTraceContext(updates: Partial<TraceContext>): void {
+  const current = traceStorage.getStore() || {};
+  traceStorage.enterWith({ ...current, ...updates });
+}
+
+/**
+ * Get current trace context
+ */
+export function getTraceContext(): TraceContext | undefined {
+  return traceStorage.getStore();
+}
+
+/**
+ * Get trace metadata for logging
+ */
+function getTraceMetadata(): any {
+  const context = getTraceContext();
+  if (!context) return {};
+
+  const metadata: any = {};
+
+  if (context.traceId) {
+    metadata['logging.googleapis.com/trace'] = getTracePath(context.traceId);
+  }
+
+  if (context.spanId) {
+    metadata['logging.googleapis.com/spanId'] = context.spanId;
+  }
+
+  if (context.jobId) {
+    metadata.jobId = context.jobId;
+  }
+
+  if (context.address) {
+    metadata.address = context.address;
+  }
+
+  return metadata;
+}
+
 // Override console.log to send to Cloud Logging in addition to stdout
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
@@ -116,7 +204,14 @@ console.log = (...args: any[]) => {
   const message = args.map(arg =>
     typeof arg === 'string' ? arg : JSON.stringify(arg)
   ).join(' ');
-  logger.info(message, { source: 'console.log' });
+  const metadata = getTraceMetadata();
+  logger.info(message, {
+    source: 'console.log',
+    ...metadata,
+    // Flatten jobId and address to top level for easier Cloud Logging queries
+    ...(metadata.jobId && { jobId: metadata.jobId }),
+    ...(metadata.address && { address: metadata.address }),
+  });
 };
 
 console.error = (...args: any[]) => {
@@ -124,7 +219,13 @@ console.error = (...args: any[]) => {
   const message = args.map(arg =>
     typeof arg === 'string' ? arg : JSON.stringify(arg)
   ).join(' ');
-  logger.error(message, { source: 'console.error' });
+  const metadata = getTraceMetadata();
+  logger.error(message, {
+    source: 'console.error',
+    ...metadata,
+    ...(metadata.jobId && { jobId: metadata.jobId }),
+    ...(metadata.address && { address: metadata.address }),
+  });
 };
 
 console.warn = (...args: any[]) => {
@@ -132,7 +233,13 @@ console.warn = (...args: any[]) => {
   const message = args.map(arg =>
     typeof arg === 'string' ? arg : JSON.stringify(arg)
   ).join(' ');
-  logger.warn(message, { source: 'console.warn' });
+  const metadata = getTraceMetadata();
+  logger.warn(message, {
+    source: 'console.warn',
+    ...metadata,
+    ...(metadata.jobId && { jobId: metadata.jobId }),
+    ...(metadata.address && { address: metadata.address }),
+  });
 };
 
 export default logger;

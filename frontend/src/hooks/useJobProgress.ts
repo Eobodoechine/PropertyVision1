@@ -10,17 +10,15 @@ interface JobStatus {
   serverNow?: number;
 }
 
-// Phase progression map for smooth interpolation
+// Phase progression map for smooth interpolation (V10 parallel search)
 const PHASE_NEXT_PROGRESS: Record<number, number> = {
   0: 10,    // QUEUED → SUBJECT_PROPERTY
-  10: 25,   // SUBJECT_PROPERTY → COMPARABLE_SEARCH_L1
-  25: 45,   // COMPARABLE_SEARCH_L1 → L2
-  45: 60,   // COMPARABLE_SEARCH_L2 → L3
-  60: 75,   // COMPARABLE_SEARCH_L3 → L4
-  75: 85,   // COMPARABLE_SEARCH_L4 → DEDUPLICATION
-  85: 92,   // DEDUPLICATION → ARV_CALCULATION
-  92: 97,   // ARV_CALCULATION → FINALIZING
-  97: 100   // FINALIZING → COMPLETED
+  10: 30,   // SUBJECT_PROPERTY → COMPARABLE_SEARCH_L1 (parallel levels launch)
+  30: 60,   // All 4 levels running in parallel
+  60: 75,   // DEDUPLICATION
+  75: 90,   // ARV_CALCULATION
+  90: 97,   // FINALIZING
+  97: 100   // COMPLETED
 };
 
 /**

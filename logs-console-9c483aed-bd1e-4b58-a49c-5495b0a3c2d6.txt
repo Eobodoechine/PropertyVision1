@@ -1,0 +1,117 @@
+2025-10-08T05:36:53.420000076Z | 💾 Updating job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"2369 Three Bars Dr, Snellville, GA 30078","sqft":2231,"beds":3,"baths":2,"yearBuilt":1980,"lotSize":0,"subdivisi
+2025-10-08T05:36:53.420000076Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (9302 bytes, TTL=3600s)
+2025-10-08T05:36:53.420000076Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 saved to Redis: status=completed, progress=100
+2025-10-08T05:36:53.420000076Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 completed
+2025-10-08T05:36:53.280401Z | [32minfo[39m: ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 completed {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:53.143Z"}
+2025-10-08T05:36:53.280319Z | [32minfo[39m: ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 saved to Redis: status=completed, progress=100 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:53.143Z"}
+2025-10-08T05:36:53.280280Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (9302 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:53.143Z"}
+2025-10-08T05:36:53.280258Z | [32minfo[39m: 💾 Updating job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"2369 Three Bars Dr, Snellville, GA 30078","sqft":2231,"beds":3,"baths":2,"yearBuilt":1980,"lotSize":0,"subdivisi {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:53.142Z"}
+2025-10-08T05:36:52.030761Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 completed
+2025-10-08T05:36:52.029056Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 saved to Redis: status=completed, progress=100
+2025-10-08T05:36:52.029052Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (9302 bytes, TTL=3600s)
+2025-10-08T05:36:52.025499Z | 💾 Updating job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"2369 Three Bars Dr, Snellville, GA 30078","sqft":2231,"beds":3,"baths":2,"yearBuilt":1980,"lotSize":0,"subdivisi
+2025-10-08T05:36:50.704999923Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:50.704892Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:50.705Z"}
+2025-10-08T05:36:50.704781Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:40.700999975Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:40.699979Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:40.701Z"}
+2025-10-08T05:36:40.699896Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:30.701148Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:30.701Z"}
+2025-10-08T05:36:30.701104Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:30.700999975Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:20.703999996Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:20.703829Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:20.704Z"}
+2025-10-08T05:36:20.703737Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:10.701999902Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:10.701411Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:10.702Z"}
+2025-10-08T05:36:10.701306Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:00.700999975Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:36:00.700143Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:36:00.701Z"}
+2025-10-08T05:36:00.700046Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:50.861999988Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:50.736202Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:35:50.702Z"}
+2025-10-08T05:35:50.701509Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:40.697999954Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:40.697370Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:35:40.698Z"}
+2025-10-08T05:35:40.697312Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:30.697000026Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:30.696622Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:35:30.697Z"}
+2025-10-08T05:35:30.696487Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:20.697999954Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:20.697600Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:35:20.698Z"}
+2025-10-08T05:35:20.697505Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:10.696000099Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:10.695085Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:35:10.695Z"}
+2025-10-08T05:35:10.694953Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:00.694082Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:35:00.694Z"}
+2025-10-08T05:35:00.694000005Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:35:00.693963Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:50.697000026Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:50.696644Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:34:50.697Z"}
+2025-10-08T05:34:50.696510Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:40.700000047Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:40.699473Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:34:40.699Z"}
+2025-10-08T05:34:40.699365Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:30.937999963Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:30.795480Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:34:30.696Z"}
+2025-10-08T05:34:30.690697Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:20.694000005Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:20.693306Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:34:20.694Z"}
+2025-10-08T05:34:20.693207Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:10.691128Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:34:10.691Z"}
+2025-10-08T05:34:10.691116Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:10.690999984Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:00.690999984Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:34:00.690413Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:34:00.691Z"}
+2025-10-08T05:34:00.690295Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:50.693153Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:50.693Z"}
+2025-10-08T05:33:50.693062Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:50.693000078Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:41.450000047Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:41.450000047Z | ⚙️  [1759901580667-0] Processing job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:41.450000047Z | 🔍 [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 status=processing, messageId=1759901580667-0
+2025-10-08T05:33:41.450000047Z | ⚠️  [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 still active (heartbeat 0s ago), skipping XAUTOCLAIM reclaim
+2025-10-08T05:33:41.305625Z | [33mwarn[39m: ⚠️  [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 still active (heartbeat 0s ago), skipping XAUTOCLAIM reclaim {"environment":"production","service":"propertyvision-backend","source":"console.warn","timestamp":"2025-10-08T05:33:41.148Z"}
+2025-10-08T05:33:41.305576Z | [32minfo[39m: 🔍 [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 status=processing, messageId=1759901580667-0 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:41.148Z"}
+2025-10-08T05:33:41.305487Z | [32minfo[39m: ⚙️  [1759901580667-0] Processing job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6: 2369 Three Bars Dr, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:41.148Z"}
+2025-10-08T05:33:41.305389Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:41.148Z"}
+2025-10-08T05:33:41.032599Z | ⚠️  [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 still active (heartbeat 0s ago), skipping XAUTOCLAIM reclaim
+2025-10-08T05:33:41.032261Z | 🔍 [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 status=processing, messageId=1759901580667-0
+2025-10-08T05:33:41.030346Z | ⚙️  [1759901580667-0] Processing job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:40.690896Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:30.690000057Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:30.689882Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:30.690Z"}
+2025-10-08T05:33:30.689757Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:20.690999984Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:20.690855Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:20.691Z"}
+2025-10-08T05:33:20.690734Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:17.392999887Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (232 bytes, TTL=3600s)
+2025-10-08T05:33:17.392999887Z | 📋 Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 enqueued for address: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:17.392999887Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 created for address: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:10.687999963Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:10.687748Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:10.688Z"}
+2025-10-08T05:33:10.687623Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:00.809000015Z | ⚙️  [1759901580667-0] Processing job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:00.809000015Z | 🔍 [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 not currently processing (status: queued)
+2025-10-08T05:33:00.809000015Z | 📝 [1759901580667-0] Claiming ownership of job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6
+2025-10-08T05:33:00.809000015Z | 💾 Updating job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:23","processingMessageId":"1759901580667-0"}
+2025-10-08T05:33:00.809000015Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:00.809000015Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 saved to Redis: status=processing, progress=10
+2025-10-08T05:33:00.684334Z | [32minfo[39m: ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 created for address: 2369 Three Bars Dr, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.684Z"}
+2025-10-08T05:33:00.683846Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 created for address: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:00.683746Z | [32minfo[39m: 📋 Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 enqueued for address: 2369 Three Bars Dr, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.684Z"}
+2025-10-08T05:33:00.683175Z | 📋 Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 enqueued for address: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:00.682179Z | [32minfo[39m: ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 saved to Redis: status=processing, progress=10 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.682Z"}
+2025-10-08T05:33:00.682175Z | ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 saved to Redis: status=processing, progress=10
+2025-10-08T05:33:00.682170Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.682Z"}
+2025-10-08T05:33:00.681759Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (324 bytes, TTL=3600s)
+2025-10-08T05:33:00.676875Z | [32minfo[39m: 💾 Updating job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:23","processingMessageId":"1759901580667-0"} {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.677Z"}
+2025-10-08T05:33:00.676793Z | 💾 Updating job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:23","processingMessageId":"1759901580667-0"}
+2025-10-08T05:33:00.676715Z | [32minfo[39m: 📝 [1759901580667-0] Claiming ownership of job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.677Z"}
+2025-10-08T05:33:00.676596Z | 📝 [1759901580667-0] Claiming ownership of job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6
+2025-10-08T05:33:00.676555Z | [32minfo[39m: 🔍 [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 not currently processing (status: queued) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.677Z"}
+2025-10-08T05:33:00.676489Z | 🔍 [1759901580667-0] Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 not currently processing (status: queued)
+2025-10-08T05:33:00.669438Z | [32minfo[39m: ⚙️  [1759901580667-0] Processing job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6: 2369 Three Bars Dr, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.670Z"}
+2025-10-08T05:33:00.669359Z | ⚙️  [1759901580667-0] Processing job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6: 2369 Three Bars Dr, Snellville, GA 30078
+2025-10-08T05:33:00.666076Z | [32minfo[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (232 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-08T05:33:00.666Z"}
+2025-10-08T05:33:00.665374Z | 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (232 bytes, TTL=3600s)

@@ -259,13 +259,19 @@ export class RedisCache {
    * Get job status from Redis
    */
   async getJob(jobId: string): Promise<any | null> {
-    if (!this.client || !this.isConnected) {
+    console.log(`🔍 REDIS getJob: jobId=${jobId}, connected=${this.isConnected}, client=${!!this.client}`);
+    if (!this.client) {
+      console.log(`❌ REDIS getJob: NO CLIENT - returning null`);
       return null;
     }
+
+    // Ensure connection is ready before reading
+    await this.ensureConnected();
 
     try {
       const key = `job:${jobId}`;
       const data = await this.client.get(key);
+      console.log(`🔍 REDIS getJob: key=${key}, found=${!!data}`);
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error('❌ Redis GET JOB error:', error);
@@ -388,6 +394,189 @@ export class RedisCache {
     }
   }
 
+  // ==================== Hybrid Cache: Global Comp Storage ====================
+
+  /**
+   * Get global comp by address (canonical comp data)
+   */
+  async getGlobalComp(address: string): Promise<any | null> {
+    if (!this.client || !this.isConnected) {
+      return null;
+    }
+
+    try {
+      const key = `comp:${this.normalizeAddress(address)}`;
+      const data = await this.client.get(key);
+
+      if (!data) {
+        return null;
+      }
+
+      return JSON.parse(data);
+    } catch (error) {
+      console.error(`❌ Redis GET GLOBAL COMP error for "${address}":`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Set global comp by address (upsert - always uses latest data)
+   */
+  async setGlobalComp(address: string, compData: any): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      const key = `comp:${this.normalizeAddress(address)}`;
+      const value = JSON.stringify({
+        ...compData,
+        lastUpdated: new Date().toISOString()
+      });
+      await this.client.set(key, value);
+    } catch (error) {
+      console.error(`❌ Redis SET GLOBAL COMP error for "${address}":`, error);
+    }
+  }
+
+  /**
+   * Get multiple global comps in parallel
+   */
+  async getGlobalComps(addresses: string[]): Promise<Map<string, any>> {
+    if (!this.client || !this.isConnected) {
+      return new Map();
+    }
+
+    try {
+      const keys = addresses.map(addr => `comp:${this.normalizeAddress(addr)}`);
+      const results = await this.client.mget(...keys);
+
+      const compMap = new Map<string, any>();
+      results.forEach((data, i) => {
+        if (data) {
+          try {
+            compMap.set(addresses[i], JSON.parse(data));
+          } catch (error) {
+            console.error(`❌ Failed to parse comp data for "${addresses[i]}":`, error);
+          }
+        }
+      });
+
+      return compMap;
+    } catch (error) {
+      console.error(`❌ Redis MGET GLOBAL COMPS error:`, error);
+      return new Map();
+    }
+  }
+
+  /**
+   * Set multiple global comps in parallel (pipeline)
+   */
+  async setGlobalComps(comps: any[]): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      const pipeline = this.client.pipeline();
+      const timestamp = new Date().toISOString();
+
+      for (const comp of comps) {
+        if (comp.address) {
+          const key = `comp:${this.normalizeAddress(comp.address)}`;
+          const value = JSON.stringify({
+            ...comp,
+            lastUpdated: timestamp
+          });
+          pipeline.set(key, value);
+        }
+      }
+
+      await pipeline.exec();
+    } catch (error) {
+      console.error(`❌ Redis SET GLOBAL COMPS (pipeline) error:`, error);
+    }
+  }
+
+  // ==================== Hybrid Cache: Subject-Comp Junction ====================
+
+  /**
+   * Get subject's comp references (junction table)
+   */
+  async getSubjectCompRefs(subjectAddress: string): Promise<Array<{compAddress: string, distanceMi: number, foundAt: string}>> {
+    if (!this.client || !this.isConnected) {
+      return [];
+    }
+
+    try {
+      const key = `subjects:${this.normalizeAddress(subjectAddress)}`;
+      const data = await this.client.get(key);
+
+      if (!data) {
+        return [];
+      }
+
+      const parsed = JSON.parse(data);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      console.error(`❌ Redis GET SUBJECT COMP REFS error for "${subjectAddress}":`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Update subject's comp references (merge with existing)
+   */
+  async updateSubjectCompRefs(
+    subjectAddress: string,
+    newRefs: Array<{compAddress: string, distanceMi: number}>
+  ): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      const key = `subjects:${this.normalizeAddress(subjectAddress)}`;
+      const existing = await this.getSubjectCompRefs(subjectAddress);
+
+      // Create map of existing refs by address
+      const existingMap = new Map(
+        existing.map(ref => [ref.compAddress.toLowerCase(), ref])
+      );
+
+      // Add/update refs
+      const timestamp = new Date().toISOString();
+      for (const newRef of newRefs) {
+        const normalizedAddr = newRef.compAddress.toLowerCase();
+        existingMap.set(normalizedAddr, {
+          compAddress: normalizedAddr,
+          distanceMi: newRef.distanceMi,
+          foundAt: existingMap.has(normalizedAddr)
+            ? existingMap.get(normalizedAddr)!.foundAt
+            : timestamp
+        });
+      }
+
+      const updated = Array.from(existingMap.values());
+      await this.client.set(key, JSON.stringify(updated));
+    } catch (error) {
+      console.error(`❌ Redis UPDATE SUBJECT COMP REFS error for "${subjectAddress}":`, error);
+    }
+  }
+
+  /**
+   * Normalize address for cache keys
+   */
+  private normalizeAddress(address: string): string {
+    return address
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s,]/g, '')
+      .replace(/\s+/g, ' ')
+      .replace(/,+/g, ',')
+      .trim();
+  }
+
   /**
    * Get cache statistics
    */
@@ -425,6 +614,85 @@ export class RedisCache {
     return this.isConnected;
   }
 
+  // ==================== Generic Redis Methods (for GeocodeCache) ====================
+
+  /**
+   * Generic GET operation
+   */
+  async get(key: string): Promise<string | null> {
+    if (!this.client || !this.isConnected) {
+      return null;
+    }
+
+    try {
+      return await this.client.get(key);
+    } catch (error) {
+      console.error(`❌ Redis GET error for key "${key}":`, error);
+      return null;
+    }
+  }
+
+  /**
+   * Generic SET operation (set without expiry)
+   */
+  async set(key: string, value: string): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      await this.client.set(key, value);
+    } catch (error) {
+      console.error(`❌ Redis SET error for key "${key}":`, error);
+    }
+  }
+
+  /**
+   * Generic SETEX operation (set with expiry)
+   */
+  async setex(key: string, seconds: number, value: string): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      await this.client.setex(key, seconds, value);
+    } catch (error) {
+      console.error(`❌ Redis SETEX error for key "${key}":`, error);
+    }
+  }
+
+  /**
+   * Generic KEYS operation (get keys matching pattern)
+   */
+  async keys(pattern: string): Promise<string[]> {
+    if (!this.client || !this.isConnected) {
+      return [];
+    }
+
+    try {
+      return await this.client.keys(pattern);
+    } catch (error) {
+      console.error(`❌ Redis KEYS error for pattern "${pattern}":`, error);
+      return [];
+    }
+  }
+
+  /**
+   * Generic DEL operation (delete keys)
+   */
+  async del(...keys: string[]): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      await this.client.del(...keys);
+    } catch (error) {
+      console.error(`❌ Redis DEL error for keys:`, keys, error);
+    }
+  }
+
   /**
    * Generate cache key for an address
    */
@@ -444,10 +712,24 @@ export class RedisCache {
   }
 }
 
+// Declare global type for development mode hot reload persistence
+declare global {
+  var __redisCache: RedisCache | undefined;
+}
+
 // Singleton instance
 let redisCacheInstance: RedisCache | null = null;
 
 export function getRedisCache(): RedisCache {
+  // In development, use globalThis to persist across hot reloads
+  if (process.env.NODE_ENV !== 'production') {
+    if (!global.__redisCache) {
+      global.__redisCache = new RedisCache();
+    }
+    return global.__redisCache;
+  }
+
+  // In production, use regular singleton
   if (!redisCacheInstance) {
     redisCacheInstance = new RedisCache();
   }

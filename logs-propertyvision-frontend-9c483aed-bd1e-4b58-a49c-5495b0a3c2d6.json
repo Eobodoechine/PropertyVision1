@@ -1,0 +1,197 @@
+[
+  {
+    "insertId": ".........04xVW_EweK5K9aTj.UJgF1K",
+    "jsonPayload": {
+      "message": "✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 created for address: 2369 Three Bars Dr, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T05:33:19.811829229Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T05:33:17.392999887Z"
+  },
+  {
+    "insertId": "..........xxVW_EweK5K9aTj.UJgF1K",
+    "jsonPayload": {
+      "message": "📋 Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 enqueued for address: 2369 Three Bars Dr, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T05:33:19.811829229Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T05:33:17.392999887Z"
+  },
+  {
+    "insertId": "..........pxVW_EweK5K9aTj.UJgF1K",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (232 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-08T05:33:19.811829229Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-08T05:33:17.392999887Z"
+  },
+  {
+    "insertId": "68e5f78c000a712e57a68a71",
+    "labels": {
+      "instanceId": "0069c7a98877a18f53e2d970d19866bf872775e50cc0393a0c2066a80b4fe4c2bf52cae81063a6b442727f0553678070f69ab32ad099cd6d74b7f6aa38701816d4c8b37267909074f5b8f3adfb0aaf"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-08T05:33:00.906375092Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 created for address: 2369 Three Bars Dr, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-08T05:33:00.684Z\"}",
+    "timestamp": "2025-10-08T05:33:00.684334Z"
+  },
+  {
+    "insertId": "68e5f78c000a6f46761bd341",
+    "labels": {
+      "instanceId": "0069c7a98877a18f53e2d970d19866bf872775e50cc0393a0c2066a80b4fe4c2bf52cae81063a6b442727f0553678070f69ab32ad099cd6d74b7f6aa38701816d4c8b37267909074f5b8f3adfb0aaf"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-08T05:33:00.906375092Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 created for address: 2369 Three Bars Dr, Snellville, GA 30078",
+    "timestamp": "2025-10-08T05:33:00.683846Z"
+  },
+  {
+    "insertId": "68e5f78c000a6ee2a9d2305d",
+    "labels": {
+      "instanceId": "0069c7a98877a18f53e2d970d19866bf872775e50cc0393a0c2066a80b4fe4c2bf52cae81063a6b442727f0553678070f69ab32ad099cd6d74b7f6aa38701816d4c8b37267909074f5b8f3adfb0aaf"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-08T05:33:00.906375092Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📋 Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 enqueued for address: 2369 Three Bars Dr, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-08T05:33:00.684Z\"}",
+    "timestamp": "2025-10-08T05:33:00.683746Z"
+  },
+  {
+    "insertId": "68e5f78c000a6ca7cb44dbaa",
+    "labels": {
+      "instanceId": "0069c7a98877a18f53e2d970d19866bf872775e50cc0393a0c2066a80b4fe4c2bf52cae81063a6b442727f0553678070f69ab32ad099cd6d74b7f6aa38701816d4c8b37267909074f5b8f3adfb0aaf"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-08T05:33:00.906375092Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📋 Job 9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 enqueued for address: 2369 Three Bars Dr, Snellville, GA 30078",
+    "timestamp": "2025-10-08T05:33:00.683175Z"
+  },
+  {
+    "insertId": "68e5f78c000a29dcf59f7bbb",
+    "labels": {
+      "instanceId": "0069c7a98877a18f53e2d970d19866bf872775e50cc0393a0c2066a80b4fe4c2bf52cae81063a6b442727f0553678070f69ab32ad099cd6d74b7f6aa38701816d4c8b37267909074f5b8f3adfb0aaf"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-08T05:33:00.906375092Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (232 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-08T05:33:00.666Z\"}",
+    "timestamp": "2025-10-08T05:33:00.666076Z"
+  },
+  {
+    "insertId": "68e5f78c000a271ed09b190b",
+    "labels": {
+      "instanceId": "0069c7a98877a18f53e2d970d19866bf872775e50cc0393a0c2066a80b4fe4c2bf52cae81063a6b442727f0553678070f69ab32ad099cd6d74b7f6aa38701816d4c8b37267909074f5b8f3adfb0aaf"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-08T05:33:00.906375092Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:9c483aed-bd1e-4b58-a49c-5495b0a3c2d6 (232 bytes, TTL=3600s)",
+    "timestamp": "2025-10-08T05:33:00.665374Z"
+  }
+]

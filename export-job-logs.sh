@@ -3,8 +3,8 @@ set -euo pipefail
 
 # ---------- CONFIG ----------
 PROJECT="agile-device-472202-i8"
-JOB_ID="26c9b2a7-b6da-49d1-818b-25053eeafaac"
-FRESHNESS="72h"   # widen if needed: 168h, 14d, etc.
+JOB_ID="${1:-b918bf79-917a-4223-8a79-bf12ab1911a1}"
+FRESHNESS="24h"   # widen if needed: 168h, 14d, etc.
 SERVICES=( "propertyvision-frontend" "propertyvision-worker" "geo-proxy" "vertex-proxy" )
 # ----------------------------
 
@@ -21,6 +21,7 @@ JOB_FILTER=$(
   OR jsonPayload.message:"$JOB_ID"
   OR jsonPayload.jobId="$JOB_ID"
   OR jsonPayload.job_id="$JOB_ID"
+  OR jsonPayload.metadata.jobId="$JOB_ID"
 )
 EOF2
 )
@@ -66,10 +67,34 @@ if [[ "$found_any" -eq 0 ]]; then
   fi
 fi
 
+# If still nothing, try global resource type (local worker logs)
+if [[ "$found_any" -eq 0 ]]; then
+  echo
+  echo "No Cloud Run logs found. Searching global resource type (local worker) within $FRESHNESS..."
+  gcloud logging read \
+    "resource.type=\"global\"
+     AND ${JOB_FILTER}" \
+    --project "$PROJECT" \
+    --freshness "$FRESHNESS" \
+    --format=json \
+    --limit=5000 > "logs-global-${JOB_ID}.json" || true
+
+  count=$(jq 'length' "logs-global-${JOB_ID}.json" 2>/dev/null || echo 0)
+  echo "  -> ${count} entries -> logs-global-${JOB_ID}.json"
+  if [[ "$count" -gt 0 ]]; then
+    found_any=1
+  fi
+fi
+
 # Merge everything we captured (even if one or two files are empty).
 jq -s '[.[][]] | sort_by(.timestamp)' logs-*-"${JOB_ID}".json > "logs-merged-${JOB_ID}.json" || echo "Nothing to merge."
 if [[ -s "logs-merged-${JOB_ID}.json" ]]; then
   echo "Created logs-merged-${JOB_ID}.json (entries: $(jq 'length' "logs-merged-${JOB_ID}.json"))"
+
+  # Create human-readable console log format (reversed: newest first)
+  cat "logs-merged-${JOB_ID}.json" | jq -r '.[] | "\(.timestamp) | \(.textPayload // .jsonPayload.message // "")"' | grep -v '^.*|[[:space:]]*$' | tail -r > "logs-console-${JOB_ID}.txt"
+  echo "Created logs-console-${JOB_ID}.txt (readable console format, newest first)"
+
   zip -9 "logs-${JOB_ID}.zip" logs-*-"${JOB_ID}".json >/dev/null 2>&1 || true
   echo "Zipped raw files to logs-${JOB_ID}.zip"
 else

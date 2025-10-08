@@ -184,22 +184,27 @@ if (job.phaseStartTime && job.estimatedTimeRemaining) {
 
 ## What Was Implemented
 
-### 1. Progress Tracking System
+### 1. Progress Tracking System (V10 Parallel Search)
 
-**10-Phase Progress Flow:**
+**7-Phase Progress Flow (All 4 search levels run in parallel):**
 
 | Phase | Progress | Message | Est. Time |
 |-------|----------|---------|-----------|
 | QUEUED | 0% | Queued for processing | 5s |
-| SUBJECT_PROPERTY | 10% | Fetching property details | 40s |
-| COMPARABLE_SEARCH_L1 | 25% | Searching 1-mile radius | 90s |
-| COMPARABLE_SEARCH_L2 | 40% | Expanding to 2-mile radius | 60s |
-| COMPARABLE_SEARCH_L3 | 55% | Expanding to 3-mile radius | 60s |
-| COMPARABLE_SEARCH_L4 | 70% | Expanding to 5-mile radius | 60s |
-| DEDUPLICATION | 85% | Removing duplicate properties | 15s |
-| ARV_CALCULATION | 92% | Calculating ARV | 20s |
-| FINALIZING | 97% | Preparing analysis report | 2s |
+| SUBJECT_PROPERTY | 10% | Fetching property details | 540s |
+| COMPARABLE_SEARCH_L1-4 | 30% | Running parallel comparable search (Levels 1-4) | 240s |
+| DEDUPLICATION | 60% | Removing duplicate properties | 40s |
+| ARV_CALCULATION | 75% | Calculating ARV | 10s |
+| FINALIZING | 90% | Preparing analysis report | 5s |
 | COMPLETED | 100% | Complete | - |
+
+**V10 Parallel Search Features:**
+- All 4 search levels (1-mile, 2-mile, 3-mile, 5-mile) run **simultaneously**
+- Progressive qualification: Apply L1→L2→L3→L4 criteria on accumulated results
+- Early exit when target comps (6) found
+- **39-42% faster**: 449s → 254-274s total time
+- Visual green progress bar shows real-time completion
+- 90+ comprehensive error handlers with full context logging
 
 **Real ETA Countdown:**
 - Tracks `phaseStartTime` when each phase begins
@@ -207,12 +212,23 @@ if (job.phaseStartTime && job.estimatedTimeRemaining) {
 - Frontend polls every 2 seconds to update countdown
 - ETA counts down: 40s → 39s → 38s → ... → 0s
 
-### 2. Files Modified
+### 2. Files Modified (V10 Parallel Search)
 
-#### Progress Tracking Core
-- **[src/server/utils/jobQueue.ts](frontend/src/server/utils/jobQueue.ts)** - Job queue with `PHASES` config and `phaseStartTime` tracking
-- **[src/app/api/analyze/status/[jobId]/route.ts](frontend/src/app/api/analyze/status/[jobId]/route.ts)** - Real-time ETA calculation in status endpoint
-- **[src/server/comprehensive-comp-search-v5.ts](frontend/src/server/comprehensive-comp-search-v5.ts)** - Global job context for progress updates across modules
+#### V10 Core Implementation
+- **[src/server/comprehensive-comp-search-v10.ts](frontend/src/server/comprehensive-comp-search-v10.ts)** - Main V10 search entry point with 9 error handlers
+- **[src/server/utils/parallelSearchOrchestrator.ts](frontend/src/server/utils/parallelSearchOrchestrator.ts)** - Parallel coordination with 23 error handlers
+- **[src/server/utils/parallelSearchConfig.ts](frontend/src/server/utils/parallelSearchConfig.ts)** - V10 configuration (enabled by default)
+- **[src/server/utils/boundedQueue.ts](frontend/src/server/utils/boundedQueue.ts)** - Local concurrency control (3 error handlers)
+- **[src/server/utils/minHeap.ts](frontend/src/server/utils/minHeap.ts)** - Memory-efficient top-K selection (4 error handlers)
+- **[src/server/utils/geocodeCache.ts](frontend/src/server/utils/geocodeCache.ts)** - LRU cache for geocoding (12 error handlers)
+- **[src/server/utils/compScoring.ts](frontend/src/server/utils/compScoring.ts)** - Scoring and deduplication (9 error handlers)
+- **[src/server/utils/redisSemaphore.ts](frontend/src/server/utils/redisSemaphore.ts)** - Global concurrency control (3 error handlers)
+
+#### Progress Tracking & UI
+- **[src/server/utils/jobQueue.ts](frontend/src/server/utils/jobQueue.ts)** - Routes to V10, updated `PHASES` with parallel search messaging
+- **[src/hooks/useJobProgress.ts](frontend/src/hooks/useJobProgress.ts)** - Updated progress milestones for V10 (0→10→30→60→75→90→97→100)
+- **[src/app/page.tsx](frontend/src/app/page.tsx)** - Added visual green progress bar with smooth animations
+- **[src/app/api/analyze/status/[jobId]/route.ts](frontend/src/app/api/analyze/status/[jobId]/route.ts)** - Real-time ETA calculation
 
 #### Authentication Bypass
 - **[src/contexts/AuthContext.tsx](frontend/src/contexts/AuthContext.tsx)** - Added `NEXT_PUBLIC_DISABLE_AUTH` flag to bypass Firebase auth with mock user
@@ -303,6 +319,145 @@ exit
 ```
 
 ## Troubleshooting
+
+### Frontend Shows "Analysis failed - Failed to get job status"
+
+**Symptoms:**
+- Jobs complete successfully in worker (email confirms success)
+- Frontend displays error: "Analysis failed - Failed to get job status"
+- Status endpoint returns 404 even though job exists in Redis
+- Dev server logs show job was created but status polls return 404
+
+**Root Cause:**
+Next.js development mode hot module reload (HMR) creates multiple `RedisCache` singleton instances. Each API route compilation creates a new instance, so:
+- `/api/analyze` writes job using one Redis instance
+- `/api/analyze/status/[jobId]` reads job using a different Redis instance
+- The instances don't share connections, causing "Job not found" errors
+
+**Debug Evidence:**
+```
+🔍 REDIS getJob: jobId=xxx, connected=false, client=true
+❌ REDIS getJob: NOT CONNECTED - returning null
+```
+This shows the Redis client exists (`client=true`) but the connection flag is stale (`connected=false`) after hot reload.
+
+**Fix Applied:**
+Used `globalThis` to persist Redis singleton across hot module reloads in development:
+
+**File Modified:**
+- **[src/server/utils/redisCache.ts](frontend/src/server/utils/redisCache.ts)** - Persist singleton in `globalThis` during development
+
+**Solution:**
+```typescript
+// redisCache.ts - Persist singleton across HMR
+declare global {
+  var __redisCache: RedisCache | undefined;
+}
+
+export function getRedisCache(): RedisCache {
+  // In development, use globalThis to persist across hot reloads
+  if (process.env.NODE_ENV !== 'production') {
+    if (!global.__redisCache) {
+      global.__redisCache = new RedisCache();
+    }
+    return global.__redisCache;
+  }
+
+  // In production, use regular singleton
+  if (!redisCacheInstance) {
+    redisCacheInstance = new RedisCache();
+  }
+  return redisCacheInstance;
+}
+
+// Also ensure connection is ready before reading
+async getJob(jobId: string): Promise<any | null> {
+  if (!this.client) {
+    return null;
+  }
+
+  // Ensure connection is ready before reading
+  await this.ensureConnected();
+
+  const key = `job:${jobId}`;
+  const data = await this.client.get(key);
+  return data ? JSON.parse(data) : null;
+}
+```
+
+**Impact:**
+- ✅ **All API routes share same Redis instance** - Jobs written by one route can be read by another
+- ✅ **Status polling works correctly** - No more 404 errors for existing jobs
+- ✅ **Production unaffected** - Only applies to `NODE_ENV !== 'production'`
+- ✅ **No Redis connection leaks** - Single persistent connection during development
+
+**Verification:**
+```bash
+# After fix, dev server logs should show:
+# 🔍 REDIS getJob: jobId=xxx, connected=true, client=true
+# 🔍 REDIS getJob: key=job:xxx, found=true
+# 🔍 STATUS: Job xxx result: FOUND
+# GET /api/analyze/status/xxx 200 in 20ms
+```
+
+**Additional Context:**
+This is a known Next.js limitation documented in:
+- GitHub Issue: [#45483 - Fast Refresh causes database connection exhaustion](https://github.com/vercel/next.js/issues/45483)
+- Stack Overflow: [Using a Redis Singleton for NextJS API Routes](https://stackoverflow.com/questions/71489656/using-a-redis-singleton-for-nextjs-api-routes)
+
+The `globalThis` workaround is the official recommended solution for persisting stateful connections across HMR in development mode.
+
+### Frontend Page Crashes During Development
+
+**Symptoms:**
+- Page refreshes unexpectedly
+- Intermittent errors: `⨯ SyntaxError: Unexpected end of JSON input`
+- `GET / 500` in server logs
+- Fast Refresh warnings: "had to perform a full reload due to a runtime error"
+
+**Root Cause:**
+Firebase SDK initialization causing JSON parsing errors during Next.js hot-reload when `NEXT_PUBLIC_DISABLE_AUTH=true`.
+
+**Fix Applied:**
+Updated Firebase initialization to skip when auth is disabled:
+
+**Files Modified:**
+1. **[src/lib/firebase.ts](frontend/src/lib/firebase.ts#L16-21)** - Skip Firebase init when `NEXT_PUBLIC_DISABLE_AUTH=true`
+2. **[src/contexts/AuthContext.tsx](frontend/src/contexts/AuthContext.tsx#L68-72)** - Add null checks for auth/db
+
+**Solution:**
+```typescript
+// firebase.ts - Only initialize if auth not disabled
+const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+const app = disableAuth ? undefined : initializeApp(firebaseConfig);
+export const auth = app ? getAuth(app) : null;
+export const db = app ? getFirestore(app) : null;
+
+// AuthContext.tsx - Skip Firebase setup if auth is null
+if (!auth) {
+  setLoading(false);
+  return;
+}
+```
+
+**Impact:**
+- ✅ **Local dev only** - `NEXT_PUBLIC_DISABLE_AUTH` only in `.env.local`
+- ✅ **Production unaffected** - Firebase initializes normally in staging/production
+- ✅ **Reduces crashes** - Firebase SDK not loaded when bypassing auth
+
+**If crashes still occur (Next.js dev mode issue):**
+```bash
+# Option 1: Clear Next.js cache
+cd /Users/eobodoechine/PropertyVision1/frontend
+rm -rf .next
+npm run dev
+
+# Option 2: Hard refresh browser
+# Press: Cmd+Shift+R (Mac) or Ctrl+Shift+R (Windows)
+
+# Option 3: Restart dev server
+# Ctrl+C to stop, then npm run dev
+```
 
 ### Redis Connection Timeout
 ```

@@ -1,0 +1,996 @@
+2025-10-08T19:19:59.430000066Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:54.385999917Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:49.318000078Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:44.275000095Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:39.232000112Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:34.178999900Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:29.132999897Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:24.081000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:19.032999992Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:13.986999988Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:08.937000036Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:19:03.894000053Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:58.842999935Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:53.796000003Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:48.747999906Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:43.703999996Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:38.661999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:33.617000102Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:28.572999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:23.529000043Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:18.486000061Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:13.420000076Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:08.371999979Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:18:03.312999963Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:58.270999908Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:53.226000070Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:48.174999952Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:43.134000062Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:38.072999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:33.026999950Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:27.977999925Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:22.908999919Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:17.864000082Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:12.795000076Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:07.752000093Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:17:02.694000005Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:57.654000043Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:52.591000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:47.548000097Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:42.499000072Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:37.453999996Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:32.403000116Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:27.401999950Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:22.357000112Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:17.299000024Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:12.250999927Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:07.203000068Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:16:02.157999992Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:57.114000082Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:52.048000097Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:47.000999927Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:41.954999923Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:36.901999950Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:31.855999946Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:26.806999921Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:21.760999917Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:16.713999986Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:11.647000074Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:06.592999935Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:15:01.545000076Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:56.497999906Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:51.434000015Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:46.385999917Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:41.332000017Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:36.286999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:31.266000032Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:26.217000007Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:21.171999931Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:16.108999967Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:11.062999963Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:06.000999927Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:14:00.953999996Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:55.911999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:50.865000009Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:45.825999975Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:40.822000026Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:35.766000032Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:30.726000070Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:25.584000110Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:20.506000041Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:15.426000118Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:10.335000038Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:05.265000104Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:13:00.219000101Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:55.171000003Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:50.119999885Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:45.071000099Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:40.022000074Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:34.974999904Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:29.934999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:24.891000032Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:19.835000038Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:14.790999889Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:09.750Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:12:04.634000062Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:59.605999946Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:54.523000001Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:49.446000099Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:44.398000001Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:39.355000019Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:34.305999994Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:29.259999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:24.216000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:19.168999910Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:14.121999979Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:09.075999975Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:11:04.019000053Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:58.977999925Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:53.933000087Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:48.884999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:43.832999944Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:38.792999982Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:33.753999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:28.709000110Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:23.648999929Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:18.611999988Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:13.552000045Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:08.507999897Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:10:03.466000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:58.424999952Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:53.381000041Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:48.336999893Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:43.289000034Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:38.240000009Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:33.191999912Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:28.132999897Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:23.089999914Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:18.072999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:13.025000095Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:07.976999998Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:09:02.927000045Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:57.881999969Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:52.836999893Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:47.789999961Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:42.742000102Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:37.697000026Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:32.651000022Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:27.612999916Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:22.559000015Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:17.477999925Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:12.431999921Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:07.384000062Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:08:02.338999986Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:57.292999982Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:52.247999906Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:47.200000047Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:42.157000064Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:37.111000061Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:32.063999891Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:27.022000074Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:21.976000070Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:16.934000015Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:11.881999969Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:06.792000055Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:07:01.770999908Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:56.723999977Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:51.671000003Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:46.628999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:41.563999891Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:36.519000053Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:31.463000059Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:26.417000055Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:21.371000051Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:16.322999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:11.267999887Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:06.221999883Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:06:01.167999982Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:56.124000072Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:51.063999891Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:46.020999908Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:40.970999956Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:35.923000097Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:30.849999904Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:25.805999994Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:20.757999897Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:15.710000038Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:10.658999919Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:05.617000102Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:05:00.568000078Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:55.517999887Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:50.470999956Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:45.427999973Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:40.375999927Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:35.328000068Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:30.276000022Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:25.227999925Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:20.127000093Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:15.075999975Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:10.022000074Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:04:04.980000019Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:59.938999891Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:54.894000053Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:49.848999977Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:44.802999973Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:39.765000104Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:34.717999935Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:29.668999910Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:24.661000013Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:19.573999881Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:14.530999898Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:09.476999998Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:03:04.413000106Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:59.359999895Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:54.315000057Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:49.259999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:44.213999986Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:39.158999919Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:34.108999967Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:29.061000108Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:24.016000032Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:18.971999883Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:13.930000066Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:08.887000083Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:02:03.839999914Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:58.790999889Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:53.743000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:48.698999881Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:43.651999950Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:38.605000019Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:33.559999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:28.483999967Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:23.437000036Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:18.378999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:13.329999923Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:08.253000020Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:01:03.207000017Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:58.157999992Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:53.075000047Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:48.028000116Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:42.980999946Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:37.934999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:32.875999927Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:27.832000017Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:22.786999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:17.703999996Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:12.663000106Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:07.618000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T19:00:02.523999929Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:57.479000091Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:52.430999994Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:47.382999897Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:42.313999891Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:37.266999959Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:32.210999965Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:27.167000055Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:22.118999958Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:17.065999984Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:12.005000114Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:06.960999965Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:59:01.917999982Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:56.867000102Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:51.816999912Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:46.769999980Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:41.710999965Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:36.661999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:31.615999937Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:26.568000078Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:21.509999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:16.450000047Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:11.401999950Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:06.352999925Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:58:01.302999973Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:56.253000020Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:51.206000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:46.158999919Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:41.119999885Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:36.069999933Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:31.009999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:25.961999893Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:20.917000055Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:15.832999944Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:10.783999919Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:05.723000049Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:57:00.667000055Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:55.568000078Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:50.519000053Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:45.473000049Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:40.424000024Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:35.378000020Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:30.332999944Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:25.280999898Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:20.232000112Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:15.174999952Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:10.130000114Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:05.085000038Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:56:00.029999971Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:54.996999979Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:49.947999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:44.898000001Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:39.848000049Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:34.805000066Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:29.755000114Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:24.670000076Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:19.624000072Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:14.546999931Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:09.479000091Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:55:04.434999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:59.381999969Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:54.339999914Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:49.296999931Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:44.242000102Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:39.157000064Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:34.114000082Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:29.053999900Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:24.009000062Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:18.966000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:13.911000013Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:08.868999958Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:54:03.822999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:58.775000095Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:53.721999883Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:48.676000118Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:43.630000114Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:38.584000110Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:33.538000106Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:28.493000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:23.446000099Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:18.403000116Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:13.358000040Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:08.312000036Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:53:03.256999969Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:58.216000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:53.171000003Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:48.128000020Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:43.081000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:38.036999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:32.993000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:27.944999933Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:22.898999929Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:17.848000049Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:12.801000118Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:07.753999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:52:02.706000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:57.665999889Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:52.621000051Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:47.572999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:42.517999887Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:37.470000028Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:32.426000118Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:27.378999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:22.338000059Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:17.306999921Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:12.256999969Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:07.210000038Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:51:02.134999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:57.092000007Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:52.045000076Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:46.993000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:41.931999921Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:36.881000041Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:31.818000078Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:26.773000001Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:21.723999977Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:16.680000066Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:11.632999897Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:06.586999893Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:50:01.532000064Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:56.486000061Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:51.440000057Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:46.384999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:41.345000028Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:36.276999950Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:31.230000019Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:26.217000007Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:21.167999982Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:16.114000082Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:11.059999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:06.006000041Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:49:00.948999881Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:55.904000043Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:50.858999967Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:45.809999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:40.747999906Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:35.703999996Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:30.658999919Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:25.614000082Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:20.569000005Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:15.517999887Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:10.444999933Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:05.398999929Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:48:00.341000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:55.295000076Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:50.211999893Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:45.164999961Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:40.118000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:35.072999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:30.028000116Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:24.979000091Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:19.930999994Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:14.878000020Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:09.831000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:47:04.779999971Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:46:59.717999935Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:46:54.671999931Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:46:49.596999883Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T18:46:44.726000070Z | ✅ XACK successful: stream=jobs, id=1759949106696-0, result=0
+2025-10-08T18:46:44.726000070Z | 💀 Job b918bf79-917a-4223-8a79-bf12ab1911a1 moved to DLQ after 1 attempts
+2025-10-08T18:46:44.684000015Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:44.684000015Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:44.684000015Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:44.683000087Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:44.683000087Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:44.683000087Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:44.572999954Z | 📧 Error notification sent to nnamdi@enohomebuyers.com for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:46:44.551000118Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:44.551000118Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:44.013999938Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:44.013999938Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (546 bytes, TTL=3600s)
+2025-10-08T18:46:44.013999938Z | ✅ Job b918bf79-917a-4223-8a79-bf12ab1911a1 saved to Redis: status=failed, progress=10
+2025-10-08T18:46:43.841000080Z |       - beds=undefined (from county)
+2025-10-08T18:46:43.841000080Z |       - baths=undefined (from county)
+2025-10-08T18:46:43.841000080Z |       - type=undefined (from county)
+2025-10-08T18:46:43.841000080Z |    🔍 Validating final details...
+2025-10-08T18:46:43.841000080Z |    ❌ Validation failed - Missing critical fields: beds, baths
+2025-10-08T18:46:43.841000080Z |    📊 Partial data: sqft=3936, beds=undefined, baths=undefined, yearBuilt=2000
+2025-10-08T18:46:43.841000080Z |    🛑 FATAL: Cannot proceed - insufficient data for SPD
+2025-10-08T18:46:43.841000080Z | ❌ COMPREHENSIVE SEARCH V10 FATAL ERROR: {}
+2025-10-08T18:46:43.841000080Z |    Error type: object
+2025-10-08T18:46:43.841000080Z |    Error message: Could not fetch subject property details
+    at async JobQueue.processJobs (/Users/eobodoechine/PropertyVision1/frontend/src/server/utils/jobQueue.ts:300:15)
+    at async JobQueue.processJob (/Users/eobodoechine/PropertyVision1/frontend/src/server/utils/jobQueue.ts:417:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at ComprehensiveComparableSearchV10.findComparables (/Users/eobodoechine/PropertyVision1/frontend/src/server/comprehensive-comp-search-v10.ts:115:15)
+2025-10-08T18:46:43.841000080Z |    Error stack: Error: Could not fetch subject property details
+2025-10-08T18:46:43.841000080Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:43.841000080Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:43.841000080Z | ❌ Job b918bf79-917a-4223-8a79-bf12ab1911a1 failed (attempt 1/1): Could not fetch subject property details
+2025-10-08T18:46:43.841000080Z | 💾 Updating job b918bf79-917a-4223-8a79-bf12ab1911a1 with: {"status":"failed","error":"Could not fetch subject property details","attempts":1,"completedAt":1759949203514}
+2025-10-08T18:46:43.841000080Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+"yearBuilt": 2000.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}
+"sqft": 3936,
+2025-10-08T18:46:43.665999889Z |    📄 FULL VERTEX RESPONSE: {
+2025-10-08T18:46:43.665999889Z |    ✅ JSON.parse() successful: parsed 2 fields
+}
+  "yearBuilt": 2000
+  "sqft": 3936,
+2025-10-08T18:46:43.665999889Z |    📋 PARSED FIELDS: {
+2025-10-08T18:46:43.665999889Z |    ❌ Validation failed on attempt 2/2: missing beds, baths
+"yearBuilt": 2000.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+"sqft": 3936,
+2025-10-08T18:46:43.665999889Z |    📄 Response text with missing fields (first 1000 chars): "{
+2025-10-08T18:46:43.665999889Z |    ⚠️  Max retries reached - returning partial data for reconciliation
+2025-10-08T18:46:43.665999889Z |    ⚡ Non-grounded JSON parse completed in 45853ms
+2025-10-08T18:46:43.665999889Z |    🔧 Post-processed values: sqft=3936, beds=undefined, baths=undefined, yearBuilt=2000
+2025-10-08T18:46:43.665999889Z |    ✅ Loser parsed in 45855ms: sqft=3936, beds=undefined, baths=undefined, yearBuilt=2000
+2025-10-08T18:46:43.665999889Z |    🔄 Reconciling: primary=loser, county=winner
+2025-10-08T18:46:43.665999889Z |    🔄 Reconciling: primary (loser) vs county (winner)
+2025-10-08T18:46:43.665999889Z |    📊 Primary data: sqft=3936, beds=undefined, baths=undefined, yearBuilt=2000, type=undefined
+2025-10-08T18:46:43.665999889Z |    📊 County data: sqft=undefined, beds=undefined, baths=undefined, yearBuilt=2000, type=undefined
+2025-10-08T18:46:43.665999889Z |    ✅ Reconciliation complete:
+2025-10-08T18:46:43.665999889Z |       - sqft=3936 (from primary)
+2025-10-08T18:46:43.665999889Z |       - yearBuilt=2000 (from county)
+2025-10-08T18:46:43.493000030Z |    ✅ Vertex AI response received in 45853ms (2044 chars)
+2025-10-08T18:46:42.694000005Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:42.694000005Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:42.694000005Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:42.651000022Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:42.651000022Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:42.651000022Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:42.536000013Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:42.535000085Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:40.687999963Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:40.687999963Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:40.687999963Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:40.640000104Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:40.640000104Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:40.640000104Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:40.517999887Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:40.516999959Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:38.625Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:38.625Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:38.625Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:38.625999927Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:38.625999927Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:38.625999927Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:38.496999979Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:38.496999979Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:37.867000102Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:37.867000102Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:46:37.736999988Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:36.601000070Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:36.601000070Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:36.601000070Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:36.575000047Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:36.575000047Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:36.575000047Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:36.480999946Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:36.480999946Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:34.546000003Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:34.546000003Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:34.546000003Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:34.546000003Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:34.496999979Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:34.496999979Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:34.496999979Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:34.496999979Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:32.573999881Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:32.573999881Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:32.573999881Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:32.559000015Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:32.559000015Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:32.559000015Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:32.447000026Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:32.441999912Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:30.880000114Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:30.880000114Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:46:30.736000061Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:30.539999961Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:30.539999961Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:30.539999961Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:30.533999919Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:30.533999919Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:30.533999919Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:30.420000076Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:30.420000076Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:28.533999919Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:28.533999919Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:28.533999919Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:28.513000011Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:28.513000011Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:28.513000011Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:28.404999971Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:28.404999971Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:26.539000034Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:26.539000034Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:26.539000034Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:26.523000001Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:26.523000001Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:26.523000001Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:26.388000011Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:26.388000011Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:24.460999965Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:24.460999965Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:24.460999965Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:24.460999965Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:24.404999971Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:24.404999971Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:24.404000043Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:24.404000043Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:23.887000083Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:23.887000083Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:46:23.736999988Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:22.471999883Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:22.471999883Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:22.471999883Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:22.401000022Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:22.401000022Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:22.401000022Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:22.308000087Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:22.308000087Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:20.426000118Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:20.426000118Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:20.426000118Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:20.417000055Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:20.417000055Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:20.415999889Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:20.282000064Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:20.279000043Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:18.375999927Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:18.375999927Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:18.375999927Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:18.371000051Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:18.371000051Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:18.371000051Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:18.217000007Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:18.216000080Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:16.904000043Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:16.904000043Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:46:16.733000040Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:16.466000080Z |    🔍 Calling non-grounded Vertex AI for JSON parsing (attempt 2/2, timeout: 30000ms)...
+2025-10-08T18:46:16.339999914Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:16.339999914Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:16.339999914Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:16.338000059Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:16.338000059Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:16.338000059Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:16.200999975Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:16.200999975Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+}
+"yearBuilt": 2000.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+"sqft": 3936,
+2025-10-08T18:46:15.615999937Z |    📄 FULL VERTEX RESPONSE: {
+2025-10-08T18:46:15.615999937Z |    ✅ JSON.parse() successful: parsed 2 fields
+}
+  "yearBuilt": 2000
+  "sqft": 3936,
+2025-10-08T18:46:15.615999937Z |    📋 PARSED FIELDS: {
+2025-10-08T18:46:15.615999937Z |    ❌ Validation failed on attempt 1/2: missing beds, baths
+}"
+"yearBuilt": 2000.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+"sqft": 3936,
+2025-10-08T18:46:15.615999937Z |    📄 Response text with missing fields (first 1000 chars): "{
+2025-10-08T18:46:15.615999937Z |    🔄 Retrying in 1000ms due to missing fields...
+2025-10-08T18:46:15.464999914Z |    ✅ Vertex AI response received in 17825ms (580 chars)
+2025-10-08T18:46:14.299000024Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:14.299000024Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:14.299000024Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:14.296999931Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:14.296999931Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:14.296999931Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:14.184000015Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:14.183000087Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:12.295000076Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:12.295000076Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:12.295000076Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:12.292999982Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:12.292999982Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:12.292999982Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:12.167999982Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:12.167999982Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:10.319999933Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:10.319999933Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:10.319999933Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:10.288000106Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:10.288000106Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:10.288000106Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:10.153000116Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:10.151999950Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:09.923000097Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:09.923000097Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:46:09.732000112Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:08.303999900Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:08.303999900Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:08.303999900Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:08.257999897Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:08.257999897Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:08.257999897Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:08.134000062Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:08.134000062Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:06.253999948Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:06.253999948Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:06.253999948Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:06.200999975Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:06.200999975Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:06.200999975Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:06.118000030Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:06.118000030Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:04.233000040Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:04.233000040Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:04.233000040Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:04.232000112Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:04.232000112Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:04.232000112Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:04.102999925Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:04.101999998Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:02.937000036Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:46:02.936000108Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:02.730999946Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:02.203999996Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:02.203000068Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:02.203000068Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:02.201999902Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:02.201999902Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:02.201999902Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:02.088000059Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:02.088000059Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:00.220999956Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:00.220999956Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:00.220999956Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:00.186000108Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:46:00.186000108Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:46:00.186000108Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:46:00.072999954Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:46:00.072000026Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:58.223000049Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:58.223000049Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:58.223000049Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:58.217000007Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:58.217000007Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:58.217000007Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:58.055999994Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:58.055000066Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+}
+  "yearBuilt": 2000
+2025-10-08T18:45:57.766999959Z |    📄 FULL VERTEX RESPONSE: {
+2025-10-08T18:45:57.766999959Z |    ✅ JSON.parse() successful: parsed 1 fields
+}
+  "yearBuilt": 2000
+2025-10-08T18:45:57.766999959Z |    📋 PARSED FIELDS: {
+2025-10-08T18:45:57.766999959Z |    ❌ Validation failed on attempt 2/2: missing sqft, beds, baths
+}"
+  "yearBuilt": 2000
+2025-10-08T18:45:57.766999959Z |    📄 Response text with missing fields (first 1000 chars): "{
+2025-10-08T18:45:57.766999959Z |    ⚠️  Max retries reached - returning partial data for reconciliation
+2025-10-08T18:45:57.766999959Z |    ⚡ Non-grounded JSON parse completed in 21931ms
+2025-10-08T18:45:57.766999959Z |    🔧 Post-processed values: sqft=undefined, beds=undefined, baths=undefined, yearBuilt=2000
+2025-10-08T18:45:57.766999959Z |    ✅ Winner parsed in 21934ms: sqft=undefined, beds=undefined, baths=undefined, yearBuilt=2000
+2025-10-08T18:45:57.766999959Z |    ⏱️  Waiting 10000ms for primary (grace window)...
+2025-10-08T18:45:57.766999959Z |    ✅ Loser arrived in grace window: primary (30228ms)
+2025-10-08T18:45:57.766999959Z |    🔍 Calling non-grounded Vertex AI for JSON parsing (attempt 1/2, timeout: 30000ms)...
+2025-10-08T18:45:57.638000011Z |    ✅ Vertex AI response received in 21931ms (23 chars)
+2025-10-08T18:45:56.148999929Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:56.148999929Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:56.148999929Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:56.132999897Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:56.132999897Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:56.132999897Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:56.039000034Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:56.039000034Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:55.864000082Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:55.864000082Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:55.730999946Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:54.209000110Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:54.209000110Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:54.209000110Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:54.161000013Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:54.161000013Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:54.161000013Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:54.023000001Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:54.022000074Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:52.154000043Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:52.154000043Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:52.154000043Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:52.131999969Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:52.131999969Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:52.131999969Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:52.005000114Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:52.005000114Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:50.138999938Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:50.138999938Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:50.138999938Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:50.134000062Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:50.134000062Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:50.134000062Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:49.987999916Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:49.986999988Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:48.861999988Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:48.861999988Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:48.730000019Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:48.085999965Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:48.085999965Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:48.085000038Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:48.084000110Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:48.084000110Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:48.084000110Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:47.957999944Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:47.957999944Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:46.404000043Z |    🔍 Calling non-grounded Vertex AI for JSON parsing (attempt 2/2, timeout: 30000ms)...
+2025-10-08T18:45:46.101999998Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:46.101999998Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:46.101999998Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:46.071000099Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:46.071000099Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:46.071000099Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:45.943000078Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:45.941999912Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+}
+"yearBuilt": 2000
+2025-10-08T18:45:45.559999942Z |    📄 FULL VERTEX RESPONSE: {
+2025-10-08T18:45:45.559999942Z |    ✅ JSON.parse() successful: parsed 1 fields
+}
+  "yearBuilt": 2000
+2025-10-08T18:45:45.559999942Z |    📋 PARSED FIELDS: {
+2025-10-08T18:45:45.559999942Z |    ❌ Validation failed on attempt 1/2: missing sqft, beds, baths
+}"
+"yearBuilt": 2000
+2025-10-08T18:45:45.559999942Z |    📄 Response text with missing fields (first 1000 chars): "{
+2025-10-08T18:45:45.559999942Z |    🔄 Retrying in 1000ms due to missing fields...
+2025-10-08T18:45:45.401000022Z |    ✅ Vertex AI response received in 9694ms (21 chars)
+2025-10-08T18:45:44.056999921Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:44.056999921Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:44.056999921Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:44.028000116Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:44.028000116Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:44.028000116Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:43.926000118Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:43.926000118Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:42.061000108Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:42.061000108Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:42.061000108Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:42.042000055Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:42.042000055Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:42.040999889Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:41.910000085Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:41.910000085Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:41.878000020Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:41.878000020Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:41.729000091Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:40.026999950Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:40.026999950Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:40.026999950Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:40.023000001Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:40.023000001Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:40.023000001Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:39.892999887Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:39.892999887Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:38.025000095Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:38.025000095Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:38.025000095Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:38.003999948Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:38.003999948Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:38.003999948Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:37.878000020Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:37.877000093Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+This information is corroborated by multiple real estate platforms sourcing county records. While some platforms showed conflicting data, the details provided by Redfin and Realtor.com align with the public record information available. Zillow lists the property with differing details, reporting 6 bedrooms, 5 bathrooms, and a smaller living area of 3,585 square feet. However, the data sourced from county records is considered more authoritative.
+
+*   **Parcel Number:** The Gwinnett County parcel number for this property is R5022 424.
+*   **Lot Size:** 0.32 acres, which is equivalent to 13,939 square feet.
+*   **Subdivision/Neighborhood:** The property is located in a neighborhood with a homeowners' association (HOA), with a reported monthly fee of $78.
+
+### Additional Property Information:
+
+*   **Property Type:** Single-Family Residence
+*   **Year Built:** 2000
+*   **Number of Bathrooms:** 4
+*   **Number of Bedrooms:** 5
+*   **Exact Square Footage:** 3,936 sq. ft.
+
+### Critical Property Data:
+
+**Snellville, GA** – The single-family home located at 1100 Water Shine Way in Snellville, Georgia, built in 2000, features five bedrooms and four bathrooms. The property's living area spans 3,936 square feet and it sits on a 0.32-acre lot.
+
+2025-10-08T18:45:37.528000116Z |    📄 PRIMARY GROUNDED RESPONSE (1317 chars): ## Property Details for 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:37.321000099Z |    ✅ Primary grounded search completed in 30228ms
+2025-10-08T18:45:35.990999937Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:35.990999937Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:35.990999937Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:35.982000112Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:35.982000112Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:35.982000112Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+For matters related to property tax payments, the Gwinnett County Tax Commissioner's Office is the responsible department.
+
+It is important to note that various real estate websites display data for this property; however, the details can be inconsistent and may not reflect the official county records. For instance, some sites list the property as having 6 bedrooms and 5 bathrooms with 3,585 square feet, while others report 5 bedrooms and 4 bathrooms with 3,936 square feet. The year built is consistently listed as 2000. For the most accurate and official information, consulting the Gwinnett County resources listed above is recommended.
+
+**Information from Third-Party Real Estate Websites:**
+
+*   **Property Ownership Database:** For bulk data or broader searches, the county also maintains a property ownership database: [https://www.gwinnettcounty.com/web/gwinnett/departments/financialservices/taxassessorsoffice/propertyownershipdatabase](https://www.gwinnettcounty.com/web/gwinnett/departments/financialservices/taxassessorsoffice/propertyownershipdatabase)
+*   **Gwinnett County Property/GIS Search:** The county provides a dedicated online search portal for property information. You can search by address on this website: [https://gis.aumentumtech.com/GwinnettGA/](https://gis.aumentumtech.com/GwinnettGA/)
+*   **Gwinnett County Tax Assessor's Office:** This is the primary office responsible for property assessments and records. You can begin a property search through their main page: [https://www.gwinnettcounty.com/web/gwinnett/departments/financialservices/taxassessorsoffice](https://www.gwinnettcounty.com/web/gwinnett/departments/financialservices/taxassessorsoffice)
+
+**To access the official records, you can visit the following Gwinnett County government websites:**
+
+Official property and tax assessment data for 1100 Water Shine Way in Snellville, Georgia, can be found through the Gwinnett County Tax Assessor's online portal. While direct access to the database is not available through this search, the official websites provide avenues for the public to look up this information.
+
+2025-10-08T18:45:35.892999887Z |    📄 COUNTY GROUNDED RESPONSE (2182 chars): ### Property Details for 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:35.892999887Z |    🏆 Winner: county (28612ms)
+2025-10-08T18:45:35.892999887Z |    🔍 Parsing winner (county)...
+2025-10-08T18:45:35.892999887Z |    🔍 Calling non-grounded Vertex AI for JSON parsing (attempt 1/2, timeout: 30000ms)...
+2025-10-08T18:45:35.861000061Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:35.861000061Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:35.704999923Z |    ✅ County grounded search completed in 28612ms
+2025-10-08T18:45:34.852999925Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:34.852999925Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:34.729000091Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:34.023000001Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:34.023000001Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:34.022000074Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:33.946000099Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:33.946000099Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:33.946000099Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:33.845999956Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:33.845000028Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:33.138999938Z | ✅ XACK successful: stream=jobs, id=1759949106696-0, result=1
+2025-10-08T18:45:33.138000011Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:33.138000011Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:33.138000011Z | ⚙️  [1759949106696-0] Processing job b918bf79-917a-4223-8a79-bf12ab1911a1: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:33.138000011Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:33.138000011Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:33.138000011Z | 🔍 [1759949106696-0] Job b918bf79-917a-4223-8a79-bf12ab1911a1 status=processing, messageId=1759949106696-0
+2025-10-08T18:45:33.138000011Z | 🔍 [1759949106696-0] Heartbeat age: 5s
+2025-10-08T18:45:33.138000011Z | ⚠️  [1759949106696-0] Job b918bf79-917a-4223-8a79-bf12ab1911a1 still active (heartbeat 5s ago), skipping XAUTOCLAIM reclaim
+2025-10-08T18:45:31.971999883Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:31.971999883Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:31.970999956Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:31.947999954Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:31.947999954Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:31.947999954Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:31.829999923Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:31.829999923Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:29.964999914Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:29.964999914Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:29.964999914Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:29.908999919Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:29.908999919Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:29.907999992Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:29.813999891Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:29.813999891Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:27.933000087Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:27.933000087Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:27.933000087Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:27.931999921Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:27.931999921Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:27.931999921Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:27.927000045Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:27.927000045Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:27.796000003Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:27.796000003Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:27.730000019Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:25.921000003Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:25.921000003Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:25.921000003Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:25.900000095Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:25.900000095Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:25.900000095Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:25.766000032Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:25.766000032Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:23.907999992Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:23.907999992Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:23.907999992Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:23.890000104Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:23.890000104Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:23.890000104Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:23.743999958Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:23.743999958Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:21.854000091Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:21.854000091Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:21.854000091Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:21.838000059Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:21.838000059Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:21.838000059Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:21.724999904Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:21.723999977Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:20.921999931Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:20.921999931Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:20.726999998Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:19.849999904Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:19.849999904Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:19.849999904Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:19.795000076Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:19.795000076Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:19.795000076Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:19.691999912Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:19.690999984Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:16.638999938Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:16.638999938Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:16.638999938Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:16.638000011Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:16.638000011Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:16.638000011Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:16.516000032Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:16.515000104Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:14.665999889Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:14.665999889Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:14.665999889Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:14.607000112Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:14.607000112Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:14.607000112Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:14.496999979Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:14.496999979Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:13.859999895Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:13.858999967Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:13.727999925Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:12.640000104Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:12.640000104Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:12.638999938Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:12.621999979Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:12.621999979Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:12.621999979Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:12.479000091Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:12.477999925Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:10.581000089Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:10.581000089Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:10.581000089Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:10.566999912Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:10.566999912Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:10.566999912Z | 🔍 STATUS: Job b918bf79-917a-4223-8a79-bf12ab1911a1 result: FOUND
+2025-10-08T18:45:10.444000005Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:10.443000078Z | 🔍 STATUS: Looking for job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:07.588000059Z | 🔍 ENV CHECK: GCP_SA_JSON=SET
+2025-10-08T18:45:07.588000059Z | 🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=NOT_SET
+2025-10-08T18:45:07.588000059Z | 🔍 ENV CHECK: GCP_SA_JSON_B64=NOT_SET
+2025-10-08T18:45:07.588000059Z | 🔍 hasServiceAccount() returning: true
+2025-10-08T18:45:07.588000059Z | 🔍 SPD SERVICE ACCOUNT CHECK: true
+🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:07.299000024Z | ✅ Job b918bf79-917a-4223-8a79-bf12ab1911a1 saved to Redis: status=processing, progress=10
+2025-10-08T18:45:07.299000024Z | 🔍 SPD ENTRY: fetchPropertyDetailsViaVertex called for 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:07.298000097Z | 🎯 Direct Google Maps result: 33.893126, -84.0425292
+2025-10-08T18:45:07.298000097Z | 📍 Location type: ROOFTOP
+2025-10-08T18:45:07.298000097Z | 📮 Formatted address: 1100 Water Shine Way, Snellville, GA 30078, USA
+2025-10-08T18:45:07.298000097Z | ✅ [1759949106696-0] Address validated via geocoding in 355ms: 33.893126, -84.0425292
+🔍 COMPREHENSIVE COMPARABLE SEARCH V10 - Parallel Immediate Mode
+2025-10-08T18:45:07.298000097Z | ============================================================
+2025-10-08T18:45:07.298000097Z | 📍 Analyzing: 1100 Water Shine Way, Snellville, GA 30078
+📋 Step 1: Subject Property Research
+2025-10-08T18:45:07.298000097Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:07.298000097Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:07.298000097Z | 💾 Updating job b918bf79-917a-4223-8a79-bf12ab1911a1 with: {"progress":10,"phase":"Subject Property Research","phaseMessage":"Fetching property details from public records...","estimatedTimeRemaining":295,"phaseStartTime":1759949107086}
+2025-10-08T18:45:07.298000097Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:07.298000097Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:07.298000097Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (471 bytes, TTL=3600s)
+2025-10-08T18:45:07.076999902Z | 🗺️  Google Maps API status: OK
+2025-10-08T18:45:07.062000036Z | ✅ Job b918bf79-917a-4223-8a79-bf12ab1911a1 created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:07.061000108Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (234 bytes, TTL=3600s)
+2025-10-08T18:45:07.061000108Z | 📋 Job b918bf79-917a-4223-8a79-bf12ab1911a1 enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:06.859999895Z | ⚙️  [1759949106696-0] Processing job b918bf79-917a-4223-8a79-bf12ab1911a1: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:06.859999895Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:06.859999895Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:06.859999895Z | 🔍 [1759949106696-0] Job b918bf79-917a-4223-8a79-bf12ab1911a1 not currently processing (status: queued)
+2025-10-08T18:45:06.859999895Z | 📝 [1759949106696-0] Claiming ownership of job b918bf79-917a-4223-8a79-bf12ab1911a1
+2025-10-08T18:45:06.859999895Z | 💾 Updating job b918bf79-917a-4223-8a79-bf12ab1911a1 with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"MacBookPro.attlocal.net:19466","processingMessageId":"1759949106696-0"}
+2025-10-08T18:45:06.859999895Z | 🔍 REDIS getJob: jobId=b918bf79-917a-4223-8a79-bf12ab1911a1, connected=true, client=true
+2025-10-08T18:45:06.859999895Z | 🔍 REDIS getJob: key=job:b918bf79-917a-4223-8a79-bf12ab1911a1, found=true
+2025-10-08T18:45:06.859999895Z | 📝 Redis SET job:b918bf79-917a-4223-8a79-bf12ab1911a1 (343 bytes, TTL=3600s)
+2025-10-08T18:45:06.859999895Z | ✅ Job b918bf79-917a-4223-8a79-bf12ab1911a1 saved to Redis: status=processing, progress=10
+2025-10-08T18:45:06.859999895Z | 🗺️  [1759949106696-0] Validating address via geocoding: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T18:45:06.859999895Z | 🗺️  Direct Google Maps geocoding: 1100 Water Shine Way, Snellville, GA 30078

@@ -1,0 +1,142 @@
+2025-10-08T16:11:55.358000040Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:50.266999959Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:45.197999954Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:40.141999959Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:35.086999893Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:30.010999917Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:24.950999975Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:19.880000114Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:14.812999963Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:09.753999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:11:04.698999881Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:59.642999887Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:54.581000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:49.528000116Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:44.470000028Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:39.415999889Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:34.358000040Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:29.301000118Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:24.244999885Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:19.188999891Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:14.134999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:09.082999944Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:10:04.056999921Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:59.003999948Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:53.944000005Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:48.888999938Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:43.828000068Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:38.770999908Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:33.716000080Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:28.657999992Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:23.601999998Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:18.549000024Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:13.492000102Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:08.437999963Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:09:03.385999917Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:58.319999933Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:53.266999959Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:48.180000066Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:43.107000112Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:38.046000003Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:32.990000009Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:27.937999963Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:22.884999990Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:17.831000089Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:12.776000022Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:07.721999883Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:08:02.671000003Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:57.608000040Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:52.553999900Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:47.493000030Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:42.436000108Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:37.375999927Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:32.322000026Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:27.265000104Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:22.207999944Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:17.154000043Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:12.098000049Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:07.042000055Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:07:01.987999916Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:56.934999942Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:51.880000114Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:46.825999975Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:41.769000053Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:36.713999986Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:31.654999971Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:26.604000091Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:21.551000118Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:16.500Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:11.447000026Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:06.397000074Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:06:01.342999935Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:56.286999940Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:51.233999967Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:46.180000066Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:41.124000072Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:36.071000099Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:31.015000104Z | ⏱️  No messages received (timeout or empty queue)
+2025-10-08T16:05:28.260999917Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:28.260999917Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:28.260999917Z | 🔍 STATUS: Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd result: FOUND
+2025-10-08T16:05:28.213999986Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:28.213999986Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:28.213999986Z | 🔍 STATUS: Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd result: FOUND
+2025-10-08T16:05:28.085000038Z | 🔍 STATUS: Looking for job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd
+2025-10-08T16:05:28.084000110Z | 🔍 STATUS: Looking for job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd
+2025-10-08T16:05:26.404000043Z | 📝 Redis SET job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd (546 bytes, TTL=3600s)
+2025-10-08T16:05:26.404000043Z | ✅ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd saved to Redis: status=failed, progress=10
+2025-10-08T16:05:26.404000043Z | ⚠️  Email not configured, skipping error notification
+2025-10-08T16:05:26.404000043Z | ✅ XACK successful: stream=jobs, id=1759939525695-0, result=1
+2025-10-08T16:05:26.404000043Z | 💀 Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd moved to DLQ after 1 attempts
+2025-10-08T16:05:26.288000106Z | 🔍 ENV CHECK: GCP_SA_JSON_B64=NOT_SET
+2025-10-08T16:05:26.288000106Z | 🔍 hasServiceAccount() returning: false
+2025-10-08T16:05:26.288000106Z | 🔍 SPD SERVICE ACCOUNT CHECK: false
+2025-10-08T16:05:26.288000106Z | ❌ SPD ABORTED: No service account found - returning null
+2025-10-08T16:05:26.288000106Z | ❌ COMPREHENSIVE SEARCH V10 FATAL ERROR: {}
+2025-10-08T16:05:26.288000106Z |    Error type: object
+2025-10-08T16:05:26.288000106Z |    Error message: Could not fetch subject property details
+    at async JobQueue.processJobs (/Users/eobodoechine/PropertyVision1/frontend/src/server/utils/jobQueue.ts:300:15)
+    at async JobQueue.processJob (/Users/eobodoechine/PropertyVision1/frontend/src/server/utils/jobQueue.ts:417:22)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at ComprehensiveComparableSearchV10.findComparables (/Users/eobodoechine/PropertyVision1/frontend/src/server/comprehensive-comp-search-v10.ts:115:15)
+2025-10-08T16:05:26.288000106Z |    Error stack: Error: Could not fetch subject property details
+2025-10-08T16:05:26.288000106Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:26.288000106Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:26.288000106Z | ❌ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd failed (attempt 1/1): Could not fetch subject property details
+2025-10-08T16:05:26.288000106Z | 💾 Updating job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd with: {"status":"failed","error":"Could not fetch subject property details","attempts":1,"completedAt":1759939525980}
+2025-10-08T16:05:26.288000106Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:26.288000106Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:26.286999940Z | 🔍 ENV CHECK: GCP_SA_JSON=NOT_SET
+2025-10-08T16:05:26.286999940Z | 🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=NOT_SET
+2025-10-08T16:05:26.108000040Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:26.108000040Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:26.108000040Z | 📝 Redis SET job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd (471 bytes, TTL=3600s)
+2025-10-08T16:05:26.108000040Z | ✅ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd saved to Redis: status=processing, progress=10
+2025-10-08T16:05:26.108000040Z | 🔍 SPD ENTRY: fetchPropertyDetailsViaVertex called for 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:05:26.107000112Z | 🎯 Direct Google Maps result: 33.893126, -84.0425292
+2025-10-08T16:05:26.107000112Z | 📍 Location type: ROOFTOP
+2025-10-08T16:05:26.107000112Z | 📮 Formatted address: 1100 Water Shine Way, Snellville, GA 30078, USA
+2025-10-08T16:05:26.107000112Z | ✅ [1759939525695-0] Address validated via geocoding in 253ms: 33.893126, -84.0425292
+🔍 COMPREHENSIVE COMPARABLE SEARCH V10 - Parallel Immediate Mode
+2025-10-08T16:05:26.107000112Z | ============================================================
+2025-10-08T16:05:26.107000112Z | 📍 Analyzing: 1100 Water Shine Way, Snellville, GA 30078
+📋 Step 1: Subject Property Research
+2025-10-08T16:05:26.107000112Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:26.107000112Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:26.107000112Z | 💾 Updating job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd with: {"progress":10,"phase":"Subject Property Research","phaseMessage":"Fetching property details from public records...","estimatedTimeRemaining":295,"phaseStartTime":1759939525966}
+2025-10-08T16:05:26.101999998Z | ✅ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:05:26.101000070Z | 📝 Redis SET job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd (234 bytes, TTL=3600s)
+2025-10-08T16:05:26.101000070Z | 📋 Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:05:25.963000059Z | 🗺️  Google Maps API status: OK
+2025-10-08T16:05:25.874000072Z | ⚙️  [1759939525695-0] Processing job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:05:25.874000072Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:25.874000072Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:25.874000072Z | 🔍 [1759939525695-0] Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd not currently processing (status: queued)
+2025-10-08T16:05:25.874000072Z | 📝 [1759939525695-0] Claiming ownership of job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd
+2025-10-08T16:05:25.874000072Z | 💾 Updating job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"MacBookPro.attlocal.net:87067","processingMessageId":"1759939525695-0"}
+2025-10-08T16:05:25.874000072Z | 🔍 REDIS getJob: jobId=d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, connected=true, client=true
+2025-10-08T16:05:25.874000072Z | 🔍 REDIS getJob: key=job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd, found=true
+2025-10-08T16:05:25.874000072Z | 📝 Redis SET job:d2118ce5-f70c-4b23-b55a-a979c5f2c0bd (343 bytes, TTL=3600s)
+2025-10-08T16:05:25.874000072Z | ✅ Job d2118ce5-f70c-4b23-b55a-a979c5f2c0bd saved to Redis: status=processing, progress=10
+2025-10-08T16:05:25.874000072Z | 🗺️  [1759939525695-0] Validating address via geocoding: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-08T16:05:25.874000072Z | 🗺️  Direct Google Maps geocoding: 1100 Water Shine Way, Snellville, GA 30078

@@ -1,7 +1,10 @@
 // Job Queue with Redis Streams for async processing
 import { getRedisCache } from './redisCache';
 import { ComprehensiveComparableSearchV5 } from '../comprehensive-comp-search-v5';
+import { ComprehensiveComparableSearchV10 } from '../comprehensive-comp-search-v10';
+import { parallelSearchConfig } from './parallelSearchConfig';
 import { sendErrorNotification, sendSuccessNotification } from './emailNotification';
+import { GoogleMapsGeocoder } from './googleMapsGeocoder';
 import { randomUUID } from 'crypto';
 import os from 'os';
 
@@ -36,17 +39,18 @@ interface JobData {
   cancelRequested?: boolean; // User requested cancellation
 }
 
-// Phase definitions with progress ranges and estimated durations (based on actual observed timings)
+// Phase definitions with progress ranges and estimated durations (V10 parallel search)
+// Total allocated: 300 seconds (VPC grounded searches are slow)
 export const PHASES = {
   QUEUED: { name: 'Queued', progress: 0, message: 'Waiting to start analysis...', estimatedSeconds: 5 },
-  SUBJECT_PROPERTY: { name: 'Subject Property Research', progress: 10, message: 'Fetching property details from public records...', estimatedSeconds: 540 }, // ~9 min actual
-  COMPARABLE_SEARCH_L1: { name: 'Comparable Search - Level 1', progress: 25, message: 'Searching for similar homes nearby (Tight Local)...', estimatedSeconds: 160 }, // ~2.7 min actual
-  COMPARABLE_SEARCH_L2: { name: 'Comparable Search - Level 2', progress: 45, message: 'Expanding search radius (Extended Local)...', estimatedSeconds: 130 }, // ~2.1 min actual
-  COMPARABLE_SEARCH_L3: { name: 'Comparable Search - Level 3', progress: 60, message: 'Broadening search area (Broader Market)...', estimatedSeconds: 240 }, // ~4 min actual (includes enrichment)
-  COMPARABLE_SEARCH_L4: { name: 'Comparable Search - Level 4', progress: 75, message: 'Final wide-area search (Extended Market)...', estimatedSeconds: 240 }, // Estimated based on L3
-  DEDUPLICATION: { name: 'Deduplication', progress: 85, message: 'Removing duplicate listings...', estimatedSeconds: 40 },
-  ARV_CALCULATION: { name: 'ARV Calculation', progress: 92, message: 'Calculating After Repair Value...', estimatedSeconds: 10 }, // ~10s actual
-  FINALIZING: { name: 'Finalizing', progress: 97, message: 'Preparing your analysis report...', estimatedSeconds: 5 },
+  SUBJECT_PROPERTY: { name: 'Subject Property Research', progress: 10, message: 'Fetching property details from public records...', estimatedSeconds: 60 }, // VPC grounded search (primary + county)
+  COMPARABLE_SEARCH_L1: { name: 'Parallel Comparable Search', progress: 30, message: 'Running parallel comparable search (Levels 1-4)...', estimatedSeconds: 180 }, // VPC parallel grounded searches across 4 levels
+  COMPARABLE_SEARCH_L2: { name: 'Parallel Comparable Search', progress: 30, message: 'Running parallel comparable search (Levels 1-4)...', estimatedSeconds: 0 }, // Hidden - runs in parallel with L1
+  COMPARABLE_SEARCH_L3: { name: 'Parallel Comparable Search', progress: 30, message: 'Running parallel comparable search (Levels 1-4)...', estimatedSeconds: 0 }, // Hidden - runs in parallel with L1
+  COMPARABLE_SEARCH_L4: { name: 'Parallel Comparable Search', progress: 30, message: 'Running parallel comparable search (Levels 1-4)...', estimatedSeconds: 0 }, // Hidden - runs in parallel with L1
+  DEDUPLICATION: { name: 'Deduplication', progress: 60, message: 'Removing duplicate listings...', estimatedSeconds: 40 },
+  ARV_CALCULATION: { name: 'ARV Calculation', progress: 75, message: 'Calculating After Repair Value...', estimatedSeconds: 10 },
+  FINALIZING: { name: 'Finalizing', progress: 90, message: 'Preparing your analysis report...', estimatedSeconds: 5 },
   COMPLETED: { name: 'Completed', progress: 100, message: 'Analysis complete! 🎉', estimatedSeconds: 0 }
 } as const;
 
@@ -68,14 +72,20 @@ export async function isJobCancelled(): Promise<boolean> {
 
 export class JobQueue {
   private redis = getRedisCache();
-  private analysisService: ComprehensiveComparableSearchV5;
+  private analysisService: ComprehensiveComparableSearchV5 | ComprehensiveComparableSearchV10;
   private isProcessing = false;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private reclaimInterval: NodeJS.Timeout | null = null;
   private shouldRestart = false;
 
   constructor() {
-    this.analysisService = new ComprehensiveComparableSearchV5();
+    // Use V10 if parallel search is enabled, otherwise V5
+    const useV10 = parallelSearchConfig.enabled;
+    this.analysisService = useV10
+      ? new ComprehensiveComparableSearchV10()
+      : new ComprehensiveComparableSearchV5();
+
+    console.log(`✅ JobQueue initialized with ${useV10 ? 'V10 (Parallel Search)' : 'V5 (Sequential Search)'}`);
 
     // Register reconnect callback to restart worker
     this.redis.onReconnect(() => {
@@ -153,12 +163,31 @@ export class JobQueue {
 
     const now = Date.now();
 
+    // Calculate countdown: total max time minus sum of previous phases' allocated times
+    const TOTAL_MAX_TIME = 300; // Total max time in seconds
+    const phaseOrder: (keyof typeof PHASES)[] = [
+      'QUEUED', 'SUBJECT_PROPERTY', 'COMPARABLE_SEARCH_L1',
+      'DEDUPLICATION', 'ARV_CALCULATION', 'FINALIZING', 'COMPLETED'
+    ];
+
+    const currentPhaseIndex = phaseOrder.indexOf(phaseKey);
+    const allocatedTimeConsumed = phaseOrder
+      .slice(0, currentPhaseIndex)
+      .reduce((sum, key) => sum + PHASES[key].estimatedSeconds, 0);
+
+    const countdownRemaining = TOTAL_MAX_TIME - allocatedTimeConsumed;
+
+    // If we're running over time, update the message to reflect that
+    const phaseMessage = countdownRemaining <= 0
+      ? `${phase.message} (Taking a bit longer than usual...)`
+      : phase.message;
+
     // Store phase start time for real ETA calculation
     await this.updateJob(jobId, {
       progress: phase.progress,
       phase: phase.name,
-      phaseMessage: phase.message,
-      estimatedTimeRemaining: phase.estimatedSeconds,
+      phaseMessage,
+      estimatedTimeRemaining: Math.max(0, countdownRemaining),
       phaseStartTime: now
     });
   }
@@ -299,6 +328,16 @@ export class JobQueue {
    * Process a single job
    */
   private async processJob(jobId: string, address: string, messageId: string): Promise<void> {
+    // Import trace context helpers
+    const { updateTraceContext } = await import('./logger');
+
+    // Set trace context for this job (propagates to all console.log calls)
+    updateTraceContext({
+      jobId,
+      address,
+      traceId: jobId // Use jobId as traceId for worker jobs
+    });
+
     console.log(`⚙️  [${messageId}] Processing job ${jobId}: ${address}`);
 
     // Check if job is already being processed (use message ID for same-consumer detection)
@@ -351,20 +390,28 @@ export class JobQueue {
       // Validate address can be geocoded before running expensive Vertex searches
       // Invalid addresses like "333" will fail here in ~10s instead of ~4 minutes
       console.log(`🗺️  [${messageId}] Validating address via geocoding: ${address}`);
-      const geocodeTimeout = 30000; // 30 second timeout for geocode (geo-proxy can take up to 30s through VPC)
       const geocodeStart = Date.now();
 
-      // Access geocoding method from compService via analysisService
-      const coords = await (this.analysisService as any).compService.geocodeWithTimeout(address, geocodeTimeout);
+      // Use GoogleMapsGeocoder for address validation (works with both V5 and V10)
+      try {
+        const geocoder = new GoogleMapsGeocoder();
+        const result = await geocoder.geocodeAddress(address);
+        const geocodeDuration = Date.now() - geocodeStart;
 
-      const geocodeDuration = Date.now() - geocodeStart;
+        if (!result || !result.lat || !result.lng) {
+          console.error(`❌ [${messageId}] Address geocoding failed in ${geocodeDuration}ms - invalid address`);
+          throw new Error(`Invalid address: could not geocode "${address}"`);
+        }
 
-      if (!coords || !coords.lat || !coords.lon) {
-        console.error(`❌ [${messageId}] Address geocoding failed in ${geocodeDuration}ms - invalid address`);
-        throw new Error(`Invalid address: could not geocode "${address}"`);
+        console.log(`✅ [${messageId}] Address validated via geocoding in ${geocodeDuration}ms: ${result.lat}, ${result.lng}`);
+      } catch (error) {
+        const geocodeDuration = Date.now() - geocodeStart;
+        console.error(`❌ [${messageId}] Geocoder initialization or geocoding failed in ${geocodeDuration}ms:`);
+        console.error(`   Error type: ${typeof error}`);
+        console.error(`   Error message: ${error instanceof Error ? error.message : String(error)}`);
+        console.error(`   Error stack:`, error instanceof Error ? error.stack : 'N/A');
+        throw new Error(`Invalid address: could not geocode "${address}"${error instanceof Error ? ` - ${error.message}` : ''}`);
       }
-
-      console.log(`✅ [${messageId}] Address validated via geocoding in ${geocodeDuration}ms: ${coords.lat}, ${coords.lon}`);
 
       // Run analysis
       const result = await this.analysisService.findComparables(address);
@@ -395,17 +442,56 @@ export class JobQueue {
       currentJobContext = null; // Clear job context
       console.log(`✅ Job ${jobId} completed`);
 
-      // Send success notification email
+      // Validate ARV before sending success notification
       const completedAt = Date.now();
-      const duration = completedAt - (existingJob.createdAt || Date.now());
+      const duration = completedAt - (existingJob?.createdAt || Date.now());
+
+      // Handle both V10 (result.arv?.estimate) and V5 (result.arv?.conservative?.arv_price) structures
+      const arvValue = result.arv?.estimate || (result.arv as any)?.conservative?.arv_price;
+      const compsCount = result.qualified_comps?.length || 0;
+
+      // ARV=$0 or 0 comps is a failed run, not a success
+      if (!arvValue || arvValue === 0 || compsCount === 0) {
+        const errorMessage = !arvValue || arvValue === 0
+          ? `ARV unavailable (ARV=$${arvValue || 0}, comps=${compsCount})`
+          : `No comparable properties found (comps=${compsCount})`;
+
+        console.error(`❌ Job ${jobId} completed but failed validation: ${errorMessage}`);
+
+        // Send error notification instead of success
+        await sendErrorNotification({
+          jobId,
+          address,
+          error: errorMessage,
+          phase: 'ARV Calculation',
+          attempts: 1,
+          timestamp: completedAt,
+          userId: existingJob?.userId
+        });
+
+        // Mark job as failed
+        await this.updateJob(jobId, {
+          status: 'failed',
+          error: errorMessage,
+          completedAt
+        });
+
+        // Acknowledge message to remove from queue
+        await this.redis.xack(STREAM, GROUP, messageId);
+        clearInterval(heartbeat);
+        currentJobContext = null;
+        return;
+      }
+
+      // Send success notification email
       await sendSuccessNotification({
         jobId,
         address,
-        arv: result.arv?.estimate || result.arv?.conservative?.arv_price,
-        compsCount: result.qualified_comps?.length,
+        arv: arvValue,
+        compsCount,
         duration,
         timestamp: completedAt,
-        userId: existingJob.userId
+        userId: existingJob?.userId
       });
 
     } catch (error: any) {
