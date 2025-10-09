@@ -105,19 +105,24 @@ class RedisClient {
     }
 
     // If we're in an in-between state, wait for 'ready'
-    if (['connecting', 'connect', 'reconnecting', 'wait'].includes(this.client.status)) {
-      // If it's 'wait', kick off a connect
-      if (this.client.status === 'wait') {
-        this.connectionPromise = this.client.connect().finally(() => { this.connectionPromise = null; });
-      }
-      await Promise.race([
-        new Promise<void>((resolve, reject) => {
-          const t = setTimeout(() => reject(new Error(`Redis connect timeout (status=${this.client!.status})`)), timeoutMs);
-          this.client!.once('ready', () => { clearTimeout(t); resolve(); });
-        }),
-        this.connectionPromise ?? new Promise<void>((r) => r()), // no-op if none
-      ]);
+    if (['connecting', 'connect', 'reconnecting'].includes(this.client.status)) {
+      // Already connecting, just wait for ready event
+      await new Promise<void>((resolve, reject) => {
+        const t = setTimeout(() => reject(new Error(`Redis connect timeout (status=${this.client!.status})`)), timeoutMs);
+        this.client!.once('ready', () => { clearTimeout(t); resolve(); });
+      });
       if (!this.isConnected) throw new Error(`Redis connection not ready (status=${this.client.status})`);
+      return;
+    }
+
+    // If in 'wait' status, we need to actively connect
+    if (this.client.status === 'wait') {
+      this.connectionPromise = this.client.connect().finally(() => { this.connectionPromise = null; });
+      await Promise.race([
+        this.connectionPromise,
+        new Promise<void>((_, rej) => setTimeout(() => rej(new Error('Redis connect timeout')), timeoutMs)),
+      ]);
+      if (!this.isConnected) throw new Error(`Redis connection failed (status=${this.client.status})`);
       return;
     }
 
