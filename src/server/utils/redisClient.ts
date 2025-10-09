@@ -89,43 +89,41 @@ class RedisClient {
    * Ensure Redis connection is established before operations
    * @param timeoutMs Connection timeout in milliseconds (default: 15000)
    */
-  async ensureConnected(timeoutMs: number = 15000): Promise<void> {
-    if (!this.client) {
-      throw new Error('Redis client not initialized');
-    }
+  async ensureConnected(timeoutMs = 15000): Promise<void> {
+    if (!this.client) throw new Error('Redis client not initialized');
 
-    // If already connected, return immediately
-    if (this.isConnected && this.client.status === 'connect') {
-      return;
-    }
+    // Already good to go - use isConnected flag which is set by 'ready' event
+    if (this.isConnected && this.client.status === 'connect') return;
 
-    // If currently connecting, wait for existing connection attempt
+    // If a connection is in flight, wait for it
     if (this.connectionPromise) {
       await Promise.race([
         this.connectionPromise,
-        new Promise<void>((_, reject) =>
-          setTimeout(() => reject(new Error('Redis connect timeout')), timeoutMs)
-        ),
+        new Promise<void>((_, rej) => setTimeout(() => rej(new Error('Redis connect timeout')), timeoutMs)),
       ]);
+      if (!this.isConnected) throw new Error(`Redis connection not ready (status=${this.client.status})`);
       return;
     }
 
-    // Start new connection attempt
-    this.connectionPromise = this.client.connect().finally(() => {
-      this.connectionPromise = null;
-    });
+    // If we're in early states, wait for 'ready' event
+    if (this.client.status === 'connecting' || this.client.status === 'connect' || this.client.status === 'reconnecting' || this.client.status === 'wait') {
+      await new Promise<void>((resolve, reject) => {
+        const t = setTimeout(() => reject(new Error(`Redis connect timeout (status=${this.client?.status})`)), timeoutMs);
+        this.client!.once('ready', () => { clearTimeout(t); resolve(); });
+      });
+      if (!this.isConnected) throw new Error(`Redis connection not ready (status=${this.client.status})`);
+      return;
+    }
+
+    // Disconnected: actively connect
+    this.connectionPromise = this.client.connect().finally(() => { this.connectionPromise = null; });
 
     await Promise.race([
       this.connectionPromise,
-      new Promise<void>((_, reject) =>
-        setTimeout(() => reject(new Error('Redis connect timeout')), timeoutMs)
-      ),
+      new Promise<void>((_, rej) => setTimeout(() => rej(new Error('Redis connect timeout')), timeoutMs)),
     ]);
 
-    // Verify connection succeeded
-    if (!this.isConnected) {
-      throw new Error(`Redis connection failed (status=${this.client.status})`);
-    }
+    if (!this.isConnected) throw new Error(`Redis connection failed (status=${this.client.status})`);
   }
 
   /**
@@ -163,14 +161,13 @@ class RedisClient {
    * GET: Retrieve value for a key
    */
   async get(key: string): Promise<string | null> {
-    if (!this.client || !this.isConnected) {
-      return null;
-    }
+    if (!this.client) throw new Error('Redis client not available');
+    await this.ensureConnected();
     try {
       return await this.client.get(key);
     } catch (error) {
       console.error(`❌ Redis GET error for ${key}:`, error);
-      return null;
+      throw error;
     }
   }
 
@@ -442,10 +439,10 @@ class RedisClient {
   // ==================== Utility Methods ====================
 
   /**
-   * Check if Redis is connected
+   * Check if Redis is connected and ready
    */
   isReady(): boolean {
-    return this.isConnected;
+    return this.isConnected && this.client?.status === 'connect';
   }
 
   /**
