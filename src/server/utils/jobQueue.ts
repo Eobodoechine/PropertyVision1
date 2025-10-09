@@ -347,26 +347,7 @@ export class JobQueue {
     }, HEARTBEAT_MS);
 
     try {
-      // **FAST-FAIL: Early geocode validation**
-      // Validate address can be geocoded before running expensive Vertex searches
-      // Invalid addresses like "333" will fail here in ~10s instead of ~4 minutes
-      console.log(`🗺️  [${messageId}] Validating address via geocoding: ${address}`);
-      const geocodeTimeout = 30000; // 30 second timeout for geocode (geo-proxy can take up to 30s through VPC)
-      const geocodeStart = Date.now();
-
-      // Access geocoding method from compService via analysisService
-      const coords = await (this.analysisService as any).compService.geocodeWithTimeout(address, geocodeTimeout);
-
-      const geocodeDuration = Date.now() - geocodeStart;
-
-      if (!coords || !coords.lat || !coords.lon) {
-        console.error(`❌ [${messageId}] Address geocoding failed in ${geocodeDuration}ms - invalid address`);
-        throw new Error(`Invalid address: could not geocode "${address}"`);
-      }
-
-      console.log(`✅ [${messageId}] Address validated via geocoding in ${geocodeDuration}ms: ${coords.lat}, ${coords.lon}`);
-
-      // Run analysis
+      // Run analysis (V10 handles address validation internally)
       const result = await this.analysisService.findComparables(address);
 
       // Mark complete
