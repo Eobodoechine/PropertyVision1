@@ -31,7 +31,7 @@ class RedisClient {
         lazyConnect: true, // Don't connect immediately - wait for ensureConnected()
         enableReadyCheck: true,
         keepAlive: 60000,
-        connectTimeout: 10000,
+        connectTimeout: 30000, // 30s for cold VPC connector startup
         enableOfflineQueue: false,
         reconnectOnError: (err) => {
           const needsReconnect = /READONLY|ECONNRESET|ETIMEDOUT|EPIPE/i.test(err.message);
@@ -89,13 +89,12 @@ class RedisClient {
    * Ensure Redis connection is established before operations
    * @param timeoutMs Connection timeout in milliseconds (default: 15000)
    */
-  async ensureConnected(timeoutMs = 15000): Promise<void> {
+  async ensureConnected(timeoutMs = 60000): Promise<void> { // 60s for cold start
     if (!this.client) throw new Error('Redis client not initialized');
 
-    // Already good to go - use isConnected flag which is set by 'ready' event
+    // Check if ready using isConnected flag (set by 'ready' event)
     if (this.isConnected && this.client.status === 'connect') return;
 
-    // If a connection is in flight, wait for it
     if (this.connectionPromise) {
       await Promise.race([
         this.connectionPromise,
@@ -105,24 +104,29 @@ class RedisClient {
       return;
     }
 
-    // If we're in early states, wait for 'ready' event
-    if (this.client.status === 'connecting' || this.client.status === 'connect' || this.client.status === 'reconnecting' || this.client.status === 'wait') {
-      await new Promise<void>((resolve, reject) => {
-        const t = setTimeout(() => reject(new Error(`Redis connect timeout (status=${this.client?.status})`)), timeoutMs);
-        this.client!.once('ready', () => { clearTimeout(t); resolve(); });
-      });
+    // If we're in an in-between state, wait for 'ready'
+    if (['connecting', 'connect', 'reconnecting', 'wait'].includes(this.client.status)) {
+      // If it's 'wait', kick off a connect
+      if (this.client.status === 'wait') {
+        this.connectionPromise = this.client.connect().finally(() => { this.connectionPromise = null; });
+      }
+      await Promise.race([
+        new Promise<void>((resolve, reject) => {
+          const t = setTimeout(() => reject(new Error(`Redis connect timeout (status=${this.client!.status})`)), timeoutMs);
+          this.client!.once('ready', () => { clearTimeout(t); resolve(); });
+        }),
+        this.connectionPromise ?? new Promise<void>((r) => r()), // no-op if none
+      ]);
       if (!this.isConnected) throw new Error(`Redis connection not ready (status=${this.client.status})`);
       return;
     }
 
-    // Disconnected: actively connect
+    // Hard disconnected: connect now
     this.connectionPromise = this.client.connect().finally(() => { this.connectionPromise = null; });
-
     await Promise.race([
       this.connectionPromise,
       new Promise<void>((_, rej) => setTimeout(() => rej(new Error('Redis connect timeout')), timeoutMs)),
     ]);
-
     if (!this.isConnected) throw new Error(`Redis connection failed (status=${this.client.status})`);
   }
 
