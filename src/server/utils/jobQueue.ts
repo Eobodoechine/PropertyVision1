@@ -1,6 +1,6 @@
 // Job Queue with Redis Streams for async processing
 import { getRedisCache } from './redisCache';
-import { ComprehensiveComparableSearchV5 } from '../comprehensive-comp-search-v5';
+import { ComprehensiveComparableSearchV10 } from '../comprehensive-comp-search-v10';
 import { sendErrorNotification, sendSuccessNotification } from './emailNotification';
 import { randomUUID } from 'crypto';
 import os from 'os';
@@ -68,14 +68,14 @@ export async function isJobCancelled(): Promise<boolean> {
 
 export class JobQueue {
   private redis = getRedisCache();
-  private analysisService: ComprehensiveComparableSearchV5;
+  private analysisService: ComprehensiveComparableSearchV10;
   private isProcessing = false;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private reclaimInterval: NodeJS.Timeout | null = null;
   private shouldRestart = false;
 
   constructor() {
-    this.analysisService = new ComprehensiveComparableSearchV5();
+    this.analysisService = new ComprehensiveComparableSearchV10();
 
     // Register reconnect callback to restart worker
     this.redis.onReconnect(() => {
@@ -397,15 +397,15 @@ export class JobQueue {
 
       // Send success notification email
       const completedAt = Date.now();
-      const duration = completedAt - (existingJob.createdAt || Date.now());
+      const duration = completedAt - (existingJob?.createdAt || Date.now());
       await sendSuccessNotification({
         jobId,
         address,
-        arv: result.arv?.estimate || result.arv?.conservative?.arv_price,
+        arv: result.arv?.estimate,
         compsCount: result.qualified_comps?.length,
         duration,
         timestamp: completedAt,
-        userId: existingJob.userId
+        userId: existingJob?.userId
       });
 
     } catch (error: any) {
