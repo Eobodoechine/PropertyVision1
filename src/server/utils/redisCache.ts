@@ -448,6 +448,90 @@ export class RedisCache {
       this.isConnected = false;
     }
   }
+
+  /**
+   * V10: Get subject-comp references for an address
+   * Returns array of {compAddress, distanceMi}
+   */
+  async getSubjectCompRefs(address: string): Promise<Array<{ compAddress: string; distanceMi: number }>> {
+    if (!this.client || !this.isConnected) {
+      return [];
+    }
+
+    try {
+      const key = `subject:${address}:refs`;
+      const data = await this.client.get(key);
+      if (!data) {
+        return [];
+      }
+      return JSON.parse(data);
+    } catch (error) {
+      console.error('❌ Redis getSubjectCompRefs error:', error);
+      return [];
+    }
+  }
+
+  /**
+   * V10: Get global comp data for multiple addresses
+   * Returns Map of address -> comp data
+   */
+  async getGlobalComps(addresses: string[]): Promise<Map<string, any>> {
+    if (!this.client || !this.isConnected || addresses.length === 0) {
+      return new Map();
+    }
+
+    try {
+      const keys = addresses.map(addr => `globalComp:${addr}`);
+      const values = await this.client.mget(...keys);
+
+      const map = new Map<string, any>();
+      for (let i = 0; i < addresses.length; i++) {
+        if (values[i]) {
+          try {
+            map.set(addresses[i], JSON.parse(values[i] as string));
+          } catch (parseError) {
+            console.error(`❌ Error parsing global comp for ${addresses[i]}:`, parseError);
+          }
+        }
+      }
+      return map;
+    } catch (error) {
+      console.error('❌ Redis getGlobalComps error:', error);
+      return new Map();
+    }
+  }
+
+  /**
+   * V10: Store subject-comp references
+   */
+  async setSubjectCompRefs(address: string, refs: Array<{ compAddress: string; distanceMi: number }>, ttlSeconds: number = 86400): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      const key = `subject:${address}:refs`;
+      await this.client.setex(key, ttlSeconds, JSON.stringify(refs));
+    } catch (error) {
+      console.error('❌ Redis setSubjectCompRefs error:', error);
+    }
+  }
+
+  /**
+   * V10: Store global comp data
+   */
+  async setGlobalComp(address: string, compData: any, ttlSeconds: number = 86400): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      const key = `globalComp:${address}`;
+      await this.client.setex(key, ttlSeconds, JSON.stringify(compData));
+    } catch (error) {
+      console.error('❌ Redis setGlobalComp error:', error);
+    }
+  }
 }
 
 // Declare global type for development mode hot reload persistence
