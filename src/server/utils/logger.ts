@@ -1,19 +1,14 @@
 import winston from 'winston';
-import { LoggingWinston } from '@google-cloud/logging-winston';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const loggingWinston = new LoggingWinston({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-  logName: 'propertyvision-api',
-});
-
 const isProduction = process.env.NODE_ENV === 'production';
 
+// Cloud Run automatically captures console output and sends to Cloud Logging
+// No need for LoggingWinston transport - it causes timeouts with private-ranges-only VPC egress
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
@@ -26,15 +21,13 @@ const logger = winston.createLogger({
     environment: process.env.NODE_ENV || 'development',
   },
   transports: [
-    // Console transport for all environments
+    // Console transport - Cloud Run captures this automatically for Cloud Logging
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.simple()
       ),
     }),
-    // Google Cloud Logging for ALL environments (production + development)
-    loggingWinston,
     // Development/Local: File-based logging
     ...(!isProduction ? [
       new winston.transports.File({
@@ -106,33 +99,7 @@ export function logSearchError(data: {
   });
 }
 
-// Override console.log to send to Cloud Logging in addition to stdout
-const originalConsoleLog = console.log;
-const originalConsoleError = console.error;
-const originalConsoleWarn = console.warn;
-
-console.log = (...args: any[]) => {
-  originalConsoleLog(...args); // Keep stdout output
-  const message = args.map(arg =>
-    typeof arg === 'string' ? arg : JSON.stringify(arg)
-  ).join(' ');
-  logger.info(message, { source: 'console.log' });
-};
-
-console.error = (...args: any[]) => {
-  originalConsoleError(...args);
-  const message = args.map(arg =>
-    typeof arg === 'string' ? arg : JSON.stringify(arg)
-  ).join(' ');
-  logger.error(message, { source: 'console.error' });
-};
-
-console.warn = (...args: any[]) => {
-  originalConsoleWarn(...args);
-  const message = args.map(arg =>
-    typeof arg === 'string' ? arg : JSON.stringify(arg)
-  ).join(' ');
-  logger.warn(message, { source: 'console.warn' });
-};
+// Cloud Run automatically captures console.log/error/warn output
+// No need to override console methods - let them write directly to stdout/stderr
 
 export default logger;
