@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import https from 'https';
-async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
+async function httpsPostJson(url, payload, headers, timeoutMs = 300000) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const body = JSON.stringify(payload);
@@ -16,12 +16,23 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
                 }
             });
         });
+        req.setTimeout(timeoutMs, () => {
+            req.destroy();
+            reject(new Error(`Request timeout after ${timeoutMs}ms`));
+        });
         req.on('error', reject);
         req.write(body);
         req.end();
     });
 }
-console.log('🚨🚨🚨 VERTEX-FREEFORM.JS LOADED - TOKEN DEBUG VERSION 🚨🚨🚨');
+console.log('🚨🚨🚨 VERTEX-FREEFORM.JS LOADED - WITH VERTEX CLIENT 🚨🚨🚨');
+
+// Import optimized Vertex client
+import { vertexClient } from './utils/vertexClient.ts';
+
+// Legacy wrapper: Use vertexClient if available, fallback to direct calls
+const USE_VERTEX_CLIENT = process.env.USE_VERTEX_CLIENT !== 'false'; // Default: true
+
 // REMOVED: groundedFreeform function - replaced with deterministic vertexGenerate
 // Service account token generation
 async function getServiceAccountToken(sa, scope) {
@@ -54,12 +65,12 @@ async function getServiceAccountToken(sa, scope) {
     const signature = sign.sign(formattedPrivateKey).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const assertion = `${unsigned}.${signature}`;
     const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion });
-    const resp = await httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' }, 20000);
+    const resp = await httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' });
     if (!resp?.access_token)
         throw new Error('sa-token-failed');
     return resp.access_token;
 }
-async function httpsPostForm(url, body, headers, timeoutMs) {
+async function httpsPostForm(url, body, headers, timeoutMs = 0) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { ...headers, 'Content-Length': Buffer.byteLength(body).toString() } }, (res) => {
@@ -72,6 +83,12 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
                 resolve(null);
             } });
         });
+        if (timeoutMs > 0) {
+            req.setTimeout(timeoutMs, () => {
+                req.destroy();
+                reject(new Error(`Request timeout after ${timeoutMs}ms`));
+            });
+        }
         req.on('error', reject);
         req.write(body);
         req.end();
@@ -79,6 +96,18 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
 }
 // Direct vertex generate function for LLM parsing
 export async function vertexGenerate(opts) {
+    // Route through optimized VertexClient if enabled
+    if (USE_VERTEX_CLIENT) {
+        console.log(`🔄 Routing through optimized VertexClient (keep-alive, retries, token cache)`);
+        try {
+            return await vertexClient.generate(opts);
+        } catch (error) {
+            console.error(`❌ VertexClient failed, falling back to direct call:`, error);
+            // Fall through to legacy implementation
+        }
+    }
+
+    // Legacy direct implementation (fallback)
     console.log(`🔍 VERTEX DEBUG 1: vertexGenerate called with opts keys:`, Object.keys(opts));
     console.log(`🔍 VERTEX DEBUG 2: projectId="${opts.projectId}", location="${opts.location}", model="${opts.model}"`);
     console.log(`🔍 VERTEX DEBUG 3: prompt length=${opts.prompt?.length}, grounded=${opts.grounded}, json=${opts.json}`);

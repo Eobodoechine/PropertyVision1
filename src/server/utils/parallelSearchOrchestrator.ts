@@ -75,15 +75,23 @@ export class ParallelSearchOrchestrator {
       console.log(`   Subdivision: ${subject.subdivision || 'N/A'}`);
       console.log(`   Running levels: ${config.levels.join(', ')}`);
 
+      // Geocode subject property once before launching all levels
+      console.log(`\n🌍 Pre-geocoding subject property for all levels...`);
+      const subjectCoords = await this.compService['geocodeWithTimeout'](subject.address, 30000);
+      if (!subjectCoords) {
+        throw new Error(`Failed to geocode subject property: ${subject.address}`);
+      }
+      console.log(`   ✅ Subject coordinates: ${subjectCoords.lat}, ${subjectCoords.lon}`);
+
       // Global state
       const pools = new Map<number, ComparableProperty[]>(); // Raw results per level
       const seenComps = new Map<string, ComparableProperty>(); // Deduplicated pool
       const levelPromises: Promise<SearchLevelResult>[] = [];
 
-      // Launch all levels immediately
+      // Launch all levels immediately with shared subject coordinates
       for (const level of config.levels) {
         console.log(`   🚀 Launching Level ${level} search...`);
-        const promise = this.executeLevelSearch(level, subject, subjectPropertyType);
+        const promise = this.executeLevelSearch(level, subject, subjectPropertyType, subjectCoords);
         levelPromises.push(promise);
 
         // Set up handler for when this level completes
@@ -359,7 +367,8 @@ export class ParallelSearchOrchestrator {
   private async executeLevelSearch(
     level: number,
     subject: SubjectProperty,
-    propertyType?: string
+    propertyType?: string,
+    subjectCoords?: { lat: number; lon: number }
   ): Promise<SearchLevelResult> {
     const startTime = Date.now();
 
@@ -421,7 +430,8 @@ export class ParallelSearchOrchestrator {
                 baths: subject.baths || 0,
                 yearBuilt: subject.yearBuilt || 0,
               },
-              { subdivision: subject.subdivision }
+              { subdivision: subject.subdivision },
+              subjectCoords  // Pass pre-geocoded coordinates
             );
           }, this.abortController.signal);
         } catch (error) {

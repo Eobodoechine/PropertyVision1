@@ -82,7 +82,8 @@ class VertexComparableSearchService {
     searchRadius: number = 3,
     timeWindowMonths: number = 18,
     subjectDetails?: { sqft: number; beds: number; baths: number; yearBuilt: number },
-    extra?: { subdivision?: string }
+    extra?: { subdivision?: string },
+    preGeocodedSubjectCoords?: { lat: number; lon: number }
   ): Promise<FindComparablesResult> {
     try {
       // Pre-warm proxy connection (fire-and-forget, non-blocking)
@@ -92,10 +93,18 @@ class VertexComparableSearchService {
       console.log(`   • Radius: ${searchRadius} miles`);
       console.log(`   • Max results: ${maxResults}`);
 
-      // Get subject property coordinates
-      const subjectCoords = await this.geocodeWithTimeout(subjectAddress, 30000);
-      if (!subjectCoords) {
-        throw new Error('Failed to geocode subject property');
+      // Get subject property coordinates (use provided coords or geocode)
+      let subjectCoords: { lat: number; lon: number };
+      if (preGeocodedSubjectCoords) {
+        subjectCoords = preGeocodedSubjectCoords;
+        console.log(`   ✅ Using pre-geocoded coordinates: ${subjectCoords.lat}, ${subjectCoords.lon}`);
+      } else {
+        console.log(`   🌍 Geocoding subject property...`);
+        const coords = await this.geocodeWithTimeout(subjectAddress, 30000);
+        if (!coords) {
+          throw new Error('Failed to geocode subject property');
+        }
+        subjectCoords = coords;
       }
 
       // Check for service account
@@ -177,7 +186,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         const { vertexGenerate } = await import('./vertex-freeform.js');
         console.log(`🔍 FETCH DEBUG: vertex-freeform.js imported successfully`);
 
-        console.log(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 60000ms`);
+        console.log(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 300000ms`);
         const startVertex = Date.now();
         const r = await vertexGenerate({
           sa: sa,
@@ -186,7 +195,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           model,
           prompt: p,
           grounded: true,
-          timeoutMs: 60000
+          timeoutMs: 300000
         });
         const vertexTime = Date.now() - startVertex;
         console.log(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);

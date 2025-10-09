@@ -518,6 +518,46 @@ export class RedisCache {
   }
 
   /**
+   * V10: Update subject-comp references (merge with existing)
+   */
+  async updateSubjectCompRefs(address: string, newRefs: Array<{ compAddress: string; distanceMi: number }>, ttlSeconds: number = 86400): Promise<void> {
+    if (!this.client || !this.isConnected) {
+      return;
+    }
+
+    try {
+      const key = `subject:${address}:refs`;
+
+      // Get existing refs
+      const existing = await this.getSubjectCompRefs(address);
+
+      // Merge: use Map to dedupe by compAddress, keeping shortest distance
+      const merged = new Map<string, number>();
+
+      for (const ref of existing) {
+        merged.set(ref.compAddress, ref.distanceMi);
+      }
+
+      for (const ref of newRefs) {
+        const existingDist = merged.get(ref.compAddress);
+        if (existingDist === undefined || ref.distanceMi < existingDist) {
+          merged.set(ref.compAddress, ref.distanceMi);
+        }
+      }
+
+      // Convert back to array
+      const mergedRefs = Array.from(merged.entries()).map(([compAddress, distanceMi]) => ({
+        compAddress,
+        distanceMi
+      }));
+
+      await this.client.setex(key, ttlSeconds, JSON.stringify(mergedRefs));
+    } catch (error) {
+      console.error('❌ Redis updateSubjectCompRefs error:', error);
+    }
+  }
+
+  /**
    * V10: Store global comp data
    */
   async setGlobalComp(address: string, compData: any, ttlSeconds: number = 86400): Promise<void> {
@@ -530,6 +570,29 @@ export class RedisCache {
       await this.client.setex(key, ttlSeconds, JSON.stringify(compData));
     } catch (error) {
       console.error('❌ Redis setGlobalComp error:', error);
+    }
+  }
+
+  /**
+   * V10: Batch store multiple global comps
+   */
+  async setGlobalComps(comps: any[], ttlSeconds: number = 86400): Promise<void> {
+    if (!this.client || !this.isConnected || comps.length === 0) {
+      return;
+    }
+
+    try {
+      // Use pipeline for batch writes
+      const pipeline = this.client.pipeline();
+      for (const comp of comps) {
+        if (comp.address) {
+          const key = `globalComp:${comp.address}`;
+          pipeline.setex(key, ttlSeconds, JSON.stringify(comp));
+        }
+      }
+      await pipeline.exec();
+    } catch (error) {
+      console.error('❌ Redis setGlobalComps error:', error);
     }
   }
 }

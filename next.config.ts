@@ -7,9 +7,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  experimental: {
-    instrumentationHook: true,
-  } as any,
 };
 
 export default nextConfig;
