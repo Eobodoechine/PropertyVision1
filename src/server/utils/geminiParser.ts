@@ -66,14 +66,20 @@ Return JSON in exactly this format (no other text):
     console.log('🔄 GeminiParser: Calling Vertex AI Gemini...');
 
     try {
-      // Load service account from environment
-      const saPath = process.env.GCP_SA_JSON;
-      if (!saPath) {
-        throw new Error('GCP_SA_JSON environment variable not set');
+      // Load service account from environment (supports both file path and base64)
+      let serviceAccount;
+      if (process.env.GCP_SA_JSON_B64) {
+        // Production: base64 encoded JSON from Secret Manager
+        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
+        serviceAccount = JSON.parse(saJson);
+      } else if (process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON) {
+        // Local: file path
+        const fs = await import('fs');
+        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+        serviceAccount = JSON.parse(fs.readFileSync(saPath!, 'utf8'));
+      } else {
+        throw new Error('GCP_SA_JSON_B64 or GCP_SA_JSON environment variable not set');
       }
-
-      const fs = await import('fs');
-      const serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf8'));
 
       const result = await vertexGenerate({
         projectId: this.projectId,
