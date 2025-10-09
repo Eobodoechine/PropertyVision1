@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import { ComprehensiveComparableSearchV5 } from './comprehensive-comp-search-v5.js';
+import { ComprehensiveComparableSearchV10 } from './comprehensive-comp-search-v10.js';
 import logger, { logSearchRequest, logSearchResult, logSearchError } from './utils/logger.js';
 
 const app = express();
@@ -15,7 +15,7 @@ const corsOrigins = process.env.CORS_ORIGIN
 app.use(corsOrigins?.length ? cors({ origin: corsOrigins, credentials: true }) : cors());
 app.use(express.json({ limit: '1mb' }));
 
-const analysisService = new ComprehensiveComparableSearchV5();
+const analysisService = new ComprehensiveComparableSearchV10();
 
 app.get('/api/health', (_req, res) => {
   res.json({ ok: true, time: new Date().toISOString() });
