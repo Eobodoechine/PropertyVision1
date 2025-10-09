@@ -175,6 +175,16 @@ export class RedisCache {
   }
 
   /**
+   * Register reconnect callback
+   */
+  onReconnect(callback: () => void): void {
+    const client = redis.getRawClient();
+    if (client) {
+      client.on('reconnecting', callback);
+    }
+  }
+
+  /**
    * V10: Get subject-comp references for an address
    */
   async getSubjectCompRefs(address: string): Promise<Array<{ compAddress: string; distanceMi: number }>> {
