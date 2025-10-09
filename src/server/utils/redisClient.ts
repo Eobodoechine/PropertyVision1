@@ -22,21 +22,24 @@ class RedisClient {
         (process.env.REDIS_HOST ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT || '6379'}` : 'redis://localhost:6379');
 
       this.client = new Redis(redisUrl, {
-        maxRetriesPerRequest: 1,
+        maxRetriesPerRequest: null, // Allow operations during reconnect
         retryStrategy: (times) => {
-          if (times > 10) {
-            console.warn('⚠️  Redis connection failed after 10 retries');
-            return null; // Stop retrying
-          }
-          const delay = Math.min(times * 1000, 5000); // Max 5s between retries
-          console.log(`🔄 Redis retry ${times}/10 in ${delay}ms`);
+          const delay = Math.min(1000 * Math.pow(2, Math.min(times, 5)), 15000);
+          console.log(`🔄 Redis retry ${times} in ${delay}ms`);
           return delay;
         },
-        lazyConnect: false,
+        lazyConnect: true, // Don't connect immediately - wait for ensureConnected()
         enableReadyCheck: true,
-        keepAlive: 30000, // TCP keepalive every 30s
+        keepAlive: 60000,
         connectTimeout: 10000,
         enableOfflineQueue: false,
+        reconnectOnError: (err) => {
+          const needsReconnect = /READONLY|ECONNRESET|ETIMEDOUT|EPIPE/i.test(err.message);
+          if (needsReconnect) {
+            console.log(`🔄 Reconnecting on error: ${err.message}`);
+          }
+          return needsReconnect;
+        },
         ...(redisUrl.includes('rediss://') ? {
           tls: process.env.REDIS_TLS_ENABLED === 'true' ? {} : undefined,
         } : {}),
@@ -46,7 +49,7 @@ class RedisClient {
       });
 
       this.client.on('connect', () => {
-        console.log('✅ Redis connected');
+        console.log('🟢 Redis connected');
         this.isConnected = true;
         this.startKeepalive();
       });
@@ -57,7 +60,7 @@ class RedisClient {
       });
 
       this.client.on('error', (err) => {
-        console.warn('⚠️  Redis connection error:', err.message);
+        console.error('🔴 Redis error:', err.message);
         this.isConnected = false;
       });
 
@@ -72,32 +75,56 @@ class RedisClient {
         this.isConnected = false;
       });
 
-      // lazyConnect:false means connection starts immediately, no need to call connect()
-      this.connectionPromise = Promise.resolve();
+      this.client.on('end', () => {
+        console.log('🔌 Redis connection ended');
+        this.isConnected = false;
+      });
     } catch (error) {
-      console.warn('⚠️  Failed to initialize Redis client:', error);
+      console.error('⚠️  Failed to initialize Redis client:', error);
       this.client = null;
-      this.connectionPromise = Promise.reject(error);
     }
   }
 
   /**
    * Ensure Redis connection is established before operations
+   * @param timeoutMs Connection timeout in milliseconds (default: 15000)
    */
-  async ensureConnected(): Promise<void> {
-    if (this.isConnected) {
+  async ensureConnected(timeoutMs: number = 15000): Promise<void> {
+    if (!this.client) {
+      throw new Error('Redis client not initialized');
+    }
+
+    // If already connected, return immediately
+    if (this.isConnected && this.client.status === 'connect') {
       return;
     }
 
+    // If currently connecting, wait for existing connection attempt
     if (this.connectionPromise) {
-      try {
-        await this.connectionPromise;
-      } catch (error) {
-        console.error('❌ Redis connection failed:', error);
-        throw new Error('Redis connection failed');
-      }
-    } else {
-      throw new Error('Redis client not initialized');
+      await Promise.race([
+        this.connectionPromise,
+        new Promise<void>((_, reject) =>
+          setTimeout(() => reject(new Error('Redis connect timeout')), timeoutMs)
+        ),
+      ]);
+      return;
+    }
+
+    // Start new connection attempt
+    this.connectionPromise = this.client.connect().finally(() => {
+      this.connectionPromise = null;
+    });
+
+    await Promise.race([
+      this.connectionPromise,
+      new Promise<void>((_, reject) =>
+        setTimeout(() => reject(new Error('Redis connect timeout')), timeoutMs)
+      ),
+    ]);
+
+    // Verify connection succeeded
+    if (!this.isConnected) {
+      throw new Error(`Redis connection failed (status=${this.client.status})`);
     }
   }
 
@@ -151,8 +178,9 @@ class RedisClient {
    * SET: Store value with optional TTL
    */
   async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
-    if (!this.client || !this.isConnected) {
-      return;
+    await this.ensureConnected();
+    if (!this.client) {
+      throw new Error('Redis client not available');
     }
     try {
       if (ttlSeconds) {
@@ -162,6 +190,7 @@ class RedisClient {
       }
     } catch (error) {
       console.error(`❌ Redis SET error for ${key}:`, error);
+      throw error;
     }
   }
 
@@ -312,8 +341,9 @@ class RedisClient {
    * Add entry to Redis Stream
    */
   async xadd(stream: string, fields: Record<string, string>): Promise<string | null> {
-    if (!this.client || !this.isConnected) {
-      return null;
+    await this.ensureConnected();
+    if (!this.client) {
+      throw new Error('Redis client not available');
     }
 
     try {
@@ -321,10 +351,14 @@ class RedisClient {
       for (const [key, value] of Object.entries(fields)) {
         args.push(key, value);
       }
-      return await (this.client.xadd as any)(...args);
+      const result = await (this.client.xadd as any)(...args);
+      if (!result) {
+        throw new Error('XADD returned empty ID');
+      }
+      return result;
     } catch (error) {
       console.error('❌ Redis XADD error:', error);
-      return null;
+      throw error;
     }
   }
 
