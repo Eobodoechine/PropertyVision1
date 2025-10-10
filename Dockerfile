@@ -14,7 +14,7 @@ RUN npm ci
 COPY . .
 
 # Copy service account JSON
-COPY agile-device-472202-i8-319f002d9438.json /app/agile-device-472202-i8-319f002d9438.json
+# COPY agile-device-472202-i8-319f002d9438.json /app/agile-device-472202-i8-319f002d9438.json
 
 # Copy start script
 COPY start-server.sh /app/start-server.sh
