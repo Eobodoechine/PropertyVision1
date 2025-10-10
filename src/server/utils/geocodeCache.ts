@@ -4,6 +4,7 @@
 // FAILURE: Configurable negative cache TTL via GEOCODE_NEGATIVE_CACHE_TTL_SECONDS (default: 3600s)
 
 import { redis } from './redisClient';
+import { normalizeAddress } from './addressNormalizer';
 
 interface GeoLocation {
   lat: number;
@@ -122,21 +123,6 @@ export class GeocodeCache {
     }
   }
 
-  /**
-   * Normalize address for cache key consistency
-   */
-  private normalizeAddress(address: string): string {
-    return address
-      .toLowerCase()
-      .trim()
-      // Remove punctuation except commas
-      .replace(/[^\w\s,]/g, '')
-      // Collapse whitespace
-      .replace(/\s+/g, ' ')
-      // Remove extra commas
-      .replace(/,+/g, ',')
-      .trim();
-  }
 
   /**
    * Get cache stats (uses SCAN for safe iteration)

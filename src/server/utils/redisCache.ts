@@ -1,4 +1,5 @@
 import { redis } from './redisClient';
+import { normalizeAddress } from './addressNormalizer';
 
 /**
  * Redis Cache Client for Raw Comps
@@ -31,12 +32,12 @@ export class RedisCache {
       // Get existing cache
       const existing = await this.getRawComps(address);
 
-      // Create a set of existing addresses for fast lookup
-      const existingAddresses = new Set(existing.map(comp => comp.address?.toLowerCase()));
+      // Create a set of existing addresses for fast lookup (use normalized addresses)
+      const existingAddresses = new Set(existing.map(comp => normalizeAddress(comp.address || '')));
 
       // Find new comps not in cache
       const uniqueNewComps = newComps.filter(comp =>
-        comp.address && !existingAddresses.has(comp.address.toLowerCase())
+        comp.address && !existingAddresses.has(normalizeAddress(comp.address))
       );
 
       if (uniqueNewComps.length > 0) {
@@ -164,7 +165,7 @@ export class RedisCache {
    * Generate cache key for an address
    */
   private getCacheKey(address: string): string {
-    return `rawComps:${address.toLowerCase().trim()}`;
+    return `rawComps:${normalizeAddress(address)}`;
   }
 
   /**
@@ -188,7 +189,7 @@ export class RedisCache {
    * V10: Get subject-comp references for an address
    */
   async getSubjectCompRefs(address: string): Promise<Array<{ compAddress: string; distanceMi: number }>> {
-    const key = `subject:${address}:refs`;
+    const key = `subject:${normalizeAddress(address)}:refs`;
     const data = await redis.getJson<Array<{ compAddress: string; distanceMi: number }>>(key);
     return data || [];
   }
@@ -201,14 +202,18 @@ export class RedisCache {
       return new Map();
     }
 
-    const keys = addresses.map(addr => `globalComp:${addr}`);
+    const keys = addresses.map(addr => `globalComp:${normalizeAddress(addr)}`);
     const results = await redis.mgetJson(keys);
 
     const map = new Map<string, any>();
     for (const [key, value] of results.entries()) {
       if (value) {
-        const addr = key.substring('globalComp:'.length);
-        map.set(addr, value);
+        const normalizedAddr = key.substring('globalComp:'.length);
+        // Find original address that matches this normalized version
+        const originalAddr = addresses.find(a => normalizeAddress(a) === normalizedAddr);
+        if (originalAddr) {
+          map.set(originalAddr, value);
+        }
       }
     }
     return map;
@@ -218,15 +223,16 @@ export class RedisCache {
    * V10: Store subject-comp references
    */
   async setSubjectCompRefs(address: string, refs: Array<{ compAddress: string; distanceMi: number }>, ttlSeconds: number = 86400): Promise<void> {
-    const key = `subject:${address}:refs`;
+    const key = `subject:${normalizeAddress(address)}:refs`;
     await redis.setJson(key, refs, ttlSeconds);
+    console.log(`💾 Wrote subject refs → ${key} (${refs.length} refs)`);
   }
 
   /**
    * V10: Update subject-comp references (merge with existing)
    */
   async updateSubjectCompRefs(address: string, newRefs: Array<{ compAddress: string; distanceMi: number }>, ttlSeconds: number = 86400): Promise<void> {
-    const key = `subject:${address}:refs`;
+    const key = `subject:${normalizeAddress(address)}:refs`;
 
     // Get existing refs
     const existing = await this.getSubjectCompRefs(address);
@@ -258,7 +264,7 @@ export class RedisCache {
    * V10: Store global comp data
    */
   async setGlobalComp(address: string, compData: any, ttlSeconds: number = 86400): Promise<void> {
-    const key = `globalComp:${address}`;
+    const key = `globalComp:${normalizeAddress(address)}`;
     await redis.setJson(key, compData, ttlSeconds);
   }
 
@@ -270,16 +276,25 @@ export class RedisCache {
       return;
     }
 
+    await redis.ensureConnected(); // Ensure connection before pipeline
+
     const pipeline = redis.pipeline();
-    if (!pipeline) return;
+    if (!pipeline) throw new Error('Redis pipeline unavailable');
 
     for (const comp of comps) {
       if (comp.address) {
-        const key = `globalComp:${comp.address}`;
+        const key = `globalComp:${normalizeAddress(comp.address)}`;
         pipeline.setex(key, ttlSeconds, JSON.stringify(comp));
       }
     }
-    await pipeline.exec();
+
+    try {
+      await pipeline.exec();
+      console.log(`💾 Wrote global comps → ${comps.length} keys, e.g. globalComp:${normalizeAddress(comps[0].address)}`);
+    } catch (err) {
+      console.error('❌ setGlobalComps pipeline error:', err);
+      throw err;
+    }
   }
 }
 

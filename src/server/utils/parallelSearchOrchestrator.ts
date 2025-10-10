@@ -45,6 +45,7 @@ export class ParallelSearchOrchestrator {
   private abortController: AbortController;
   private dataVersion = 0; // Incremented when new level results land
   private lastTriedVersion: Record<number, number> = { 1: -1, 2: -1, 3: -1, 4: -1 };
+  private totalCacheHits = 0; // Track cache hits across all levels
 
   constructor() {
     const config = parallelSearchConfig;
@@ -68,6 +69,7 @@ export class ParallelSearchOrchestrator {
   ): Promise<ParallelSearchResult> {
     const startTime = Date.now();
     const config = parallelSearchConfig;
+    this.totalCacheHits = 0; // Reset cache hits for this search
 
     try {
       console.log(`\n🔥 PARALLEL SEARCH START for: ${subject.address}`);
@@ -149,7 +151,7 @@ export class ParallelSearchOrchestrator {
           totalSearchTime: totalTime,
           levelsRun: config.levels,
           totalRawComps: seenComps.size,
-          cacheHits: 0, // TODO: track cache hits
+          cacheHits: this.totalCacheHits,
           metrics: {
             vertexQueueStats: this.vertexQueue.getStats(),
             geocodeQueueStats: this.geocodeQueue.getStats(),
@@ -402,6 +404,7 @@ export class ParallelSearchOrchestrator {
           .filter((comp): comp is any => comp !== null);
 
         console.log(`   💾 Loaded ${cachedComps.length}/${cachedRefs.length} cached comps from Redis`);
+        this.totalCacheHits += cachedComps.length; // Track cache hits
       }
 
       // Acquire semaphore tokens (if multi-worker)
