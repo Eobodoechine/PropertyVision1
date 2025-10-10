@@ -1,6 +1,8 @@
 // Direct Google Maps Geocoding API Integration
 // Bypasses Vertex AI for 100% accurate coordinates
 
+import { jobLog } from './jobQueue';
+
 interface GoogleMapsGeocodeResult {
   lat: number;
   lng: number;
