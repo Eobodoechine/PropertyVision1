@@ -4,6 +4,7 @@
 import { BoundedQueue } from './boundedQueue';
 import { redisSemaphore } from './redisSemaphore';
 import { geocodeCache } from './geocodeCache';
+import { GoogleMapsGeocoder } from './googleMapsGeocoder';
 import { getRedisCache } from './redisCache';
 import { topK } from './minHeap';
 import {
@@ -42,6 +43,7 @@ export interface ParallelSearchResult {
 export class ParallelSearchOrchestrator {
   private vertexQueue: BoundedQueue;
   private geocodeQueue: BoundedQueue;
+  private geocoder: GoogleMapsGeocoder;
   private compService: VertexComparableSearchService;
   private abortController: AbortController;
   private dataVersion = 0; // Incremented when new level results land
@@ -51,6 +53,7 @@ export class ParallelSearchOrchestrator {
     const config = parallelSearchConfig;
     this.vertexQueue = new BoundedQueue(config.vertexLocalConcurrency);
     this.geocodeQueue = new BoundedQueue(config.geocodeConcurrency);
+    this.geocoder = new GoogleMapsGeocoder(process.env.GOOGLE_MAPS_API_KEY || '');
     this.compService = new VertexComparableSearchService();
     this.abortController = new AbortController();
 
@@ -547,7 +550,13 @@ export class ParallelSearchOrchestrator {
     candidates: ComparableProperty[],
     subject: SubjectProperty
   ): Promise<void> {
-    const toGeocode = candidates.filter(c => !c.lat || !c.lon);
+    // Filter for comps that need geocoding - check for truly valid coordinates
+    // This catches: missing fields, null, undefined, 0, and non-numeric values
+    const isValidCoordinate = (val: any): boolean => {
+      return typeof val === 'number' && val !== 0 && !isNaN(val);
+    };
+
+    const toGeocode = candidates.filter(c => !isValidCoordinate(c.lat) || !isValidCoordinate(c.lon));
 
     if (toGeocode.length === 0) {
       jobLog(`   ✅ All candidates already have coordinates`);
@@ -567,9 +576,15 @@ export class ParallelSearchOrchestrator {
           return;
         }
 
-        // Geocode via Maps API (TODO: implement actual geocoding)
-        // For now, skip actual geocoding
-        jobLog(`   ⚠️  Geocoding not implemented yet for: ${comp.address}`);
+        // Geocode via Google Maps API
+        const result = await this.geocoder.geocodeAddress(comp.address);
+        if (result) {
+          comp.lat = result.lat;
+          comp.lon = result.lon;
+          comp.distanceMi = this.calculateDistance(subject, comp);
+        } else {
+          jobLog(`   ⚠️  Could not geocode: ${comp.address}`);
+        }
 
       } catch (error) {
         console.error(`❌ GEOCODE ERROR for "${comp.address}":`, error);
@@ -623,29 +638,67 @@ export class ParallelSearchOrchestrator {
 
     const criteria = passCriteria[passLevel as keyof typeof passCriteria];
 
-    return candidates.filter(comp => {
+    jobLog(`\n🔍 PASS ${passLevel} FILTER DIAGNOSTICS`);
+    jobLog(`   Subject specs: ${subject.beds} beds, ${subject.baths} baths, ${subject.sqft} sqft`);
+    jobLog(`   Criteria: maxDist=${criteria.maxDistance}mi, beds±${criteria.bedsTolerance}, baths±${criteria.bathsTolerance}, sqft±${criteria.sqftTolerance * 100}%`);
+    jobLog(`   Filtering ${candidates.length} candidates...\n`);
+
+    let passCount = 0;
+    let failCount = 0;
+
+    const filtered = candidates.filter(comp => {
+      const reasons: string[] = [];
+
       // Distance filter
-      if (comp.distanceMi && comp.distanceMi > criteria.maxDistance) return false;
+      const distanceToCheck = comp.distanceMi || (comp as any).distance;
+      if (distanceToCheck && distanceToCheck > criteria.maxDistance) {
+        reasons.push(`distance=${distanceToCheck.toFixed(2)}mi > ${criteria.maxDistance}mi`);
+        failCount++;
+        jobLog(`   ❌ ${comp.address}: ${reasons.join(', ')}`);
+        return false;
+      }
 
       // Bedroom filter
       if (subject.beds && comp.beds) {
-        if (Math.abs(comp.beds - subject.beds) > criteria.bedsTolerance) return false;
+        const bedDiff = Math.abs(comp.beds - subject.beds);
+        if (bedDiff > criteria.bedsTolerance) {
+          reasons.push(`beds=${comp.beds} (diff=${bedDiff} > tol=${criteria.bedsTolerance})`);
+          failCount++;
+          jobLog(`   ❌ ${comp.address}: ${reasons.join(', ')}`);
+          return false;
+        }
       }
 
       // Bathroom filter
       if (subject.baths && comp.baths) {
-        if (Math.abs(comp.baths - subject.baths) > criteria.bathsTolerance) return false;
+        const bathDiff = Math.abs(comp.baths - subject.baths);
+        if (bathDiff > criteria.bathsTolerance) {
+          reasons.push(`baths=${comp.baths} (diff=${bathDiff} > tol=${criteria.bathsTolerance})`);
+          failCount++;
+          jobLog(`   ❌ ${comp.address}: ${reasons.join(', ')}`);
+          return false;
+        }
       }
 
       // Sqft filter
       if (subject.sqft && comp.sqft) {
         const diff = Math.abs(comp.sqft - subject.sqft);
         const pct = diff / subject.sqft;
-        if (pct > criteria.sqftTolerance) return false;
+        if (pct > criteria.sqftTolerance) {
+          reasons.push(`sqft=${comp.sqft} (diff=${pct.toFixed(1)}% > ${criteria.sqftTolerance * 100}%)`);
+          failCount++;
+          jobLog(`   ❌ ${comp.address}: ${reasons.join(', ')}`);
+          return false;
+        }
       }
 
+      passCount++;
+      jobLog(`   ✅ ${comp.address}: PASS (${comp.beds}bd/${comp.baths}ba/${comp.sqft}sf, ${distanceToCheck?.toFixed(2) || 'N/A'}mi)`);
       return true;
     });
+
+    jobLog(`\n📊 Pass ${passLevel} results: ${passCount} passed, ${failCount} rejected\n`);
+    return filtered;
   }
 
   /**
