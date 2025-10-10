@@ -39,14 +39,14 @@ interface JobData {
 // Phase definitions with progress ranges and estimated durations (based on actual observed timings)
 export const PHASES = {
   QUEUED: { name: 'Queued', progress: 0, message: 'Waiting to start analysis...', estimatedSeconds: 5 },
-  SUBJECT_PROPERTY: { name: 'Subject Property Research', progress: 10, message: 'Fetching property details from public records...', estimatedSeconds: 540 }, // ~9 min actual
-  COMPARABLE_SEARCH_L1: { name: 'Comparable Search - Level 1', progress: 25, message: 'Searching for similar homes nearby (Tight Local)...', estimatedSeconds: 160 }, // ~2.7 min actual
-  COMPARABLE_SEARCH_L2: { name: 'Comparable Search - Level 2', progress: 45, message: 'Expanding search radius (Extended Local)...', estimatedSeconds: 130 }, // ~2.1 min actual
-  COMPARABLE_SEARCH_L3: { name: 'Comparable Search - Level 3', progress: 60, message: 'Broadening search area (Broader Market)...', estimatedSeconds: 240 }, // ~4 min actual (includes enrichment)
-  COMPARABLE_SEARCH_L4: { name: 'Comparable Search - Level 4', progress: 75, message: 'Final wide-area search (Extended Market)...', estimatedSeconds: 240 }, // Estimated based on L3
-  DEDUPLICATION: { name: 'Deduplication', progress: 85, message: 'Removing duplicate listings...', estimatedSeconds: 40 },
-  ARV_CALCULATION: { name: 'ARV Calculation', progress: 92, message: 'Calculating After Repair Value...', estimatedSeconds: 10 }, // ~10s actual
-  FINALIZING: { name: 'Finalizing', progress: 97, message: 'Preparing your analysis report...', estimatedSeconds: 5 },
+  SUBJECT_PROPERTY: { name: 'Subject Property Research', progress: 10, message: 'Fetching property details from public records...', estimatedSeconds: 60 }, // actual ~33s, budget 60s
+  COMPARABLE_SEARCH_L1: { name: 'Comparable Search', progress: 25, message: 'Searching for similar properties across all levels...', estimatedSeconds: 190 }, // actual ~125s, budget 190s (V12 runs all levels in parallel)
+  COMPARABLE_SEARCH_L2: { name: 'Comparable Search - Level 2', progress: 45, message: 'Expanding search radius (Extended Local)...', estimatedSeconds: 130 }, // UNUSED - V12 runs all in parallel
+  COMPARABLE_SEARCH_L3: { name: 'Comparable Search - Level 3', progress: 60, message: 'Broadening search area (Broader Market)...', estimatedSeconds: 240 }, // UNUSED - V12 runs all in parallel
+  COMPARABLE_SEARCH_L4: { name: 'Comparable Search - Level 4', progress: 75, message: 'Final wide-area search (Extended Market)...', estimatedSeconds: 240 }, // UNUSED - V12 runs all in parallel
+  DEDUPLICATION: { name: 'Deduplication', progress: 85, message: 'Removing duplicate listings...', estimatedSeconds: 35 }, // actual ~29s, budget 35s
+  ARV_CALCULATION: { name: 'ARV Calculation', progress: 92, message: 'Calculating After Repair Value...', estimatedSeconds: 10 }, // actual ~10s
+  FINALIZING: { name: 'Finalizing', progress: 97, message: 'Preparing your analysis report...', estimatedSeconds: 0 }, // instant
   COMPLETED: { name: 'Completed', progress: 100, message: 'Analysis complete! 🎉', estimatedSeconds: 0 }
 } as const;
 

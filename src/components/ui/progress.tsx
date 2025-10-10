@@ -13,7 +13,7 @@ const Progress = React.forwardRef<HTMLDivElement, ProgressProps>(({ className, v
     {...props}
   >
     <div
-      className="h-full w-full origin-left scale-x-0 rounded-full bg-slate-900 transition-transform duration-500"
+      className="h-full w-full origin-left scale-x-0 rounded-full bg-emerald-500 transition-transform duration-500"
       style={{ transform: `scaleX(${Math.min(100, Math.max(0, value)) / 100})` }}
     />
   </div>
