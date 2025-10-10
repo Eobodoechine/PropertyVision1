@@ -564,6 +564,8 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           yearBuilt: prop.year_built || null,
           soldDate: prop.sold_date || '',
           distance: distance,
+          lat: coords.lat,
+          lon: coords.lon,
           source: prop.source_url || 'Unknown',
           confidence: 'High' // Gemini parsing is generally high confidence
         };

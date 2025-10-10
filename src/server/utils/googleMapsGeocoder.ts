@@ -2,6 +2,7 @@
 // Bypasses Vertex AI for 100% accurate coordinates
 
 import { jobLog } from './jobQueue';
+import { geocodeCache } from './geocodeCache';
 
 interface GoogleMapsGeocodeResult {
   lat: number;
@@ -39,6 +40,18 @@ export class GoogleMapsGeocoder {
    * Geocode a single address using Google Maps API
    */
   async geocodeAddress(address: string): Promise<GoogleMapsGeocodeResult | null> {
+    // Check cache first
+    const cached = await geocodeCache.get(address);
+    if (cached) {
+      return {
+        lat: cached.lat,
+        lng: cached.lon,
+        formattedAddress: address,
+        locationType: 'ROOFTOP' as any,
+        addressComponents: []
+      };
+    }
+
     jobLog(`🗺️  Direct Google Maps geocoding: ${address}`);
 
     try {
@@ -57,6 +70,9 @@ export class GoogleMapsGeocoder {
         jobLog(`🎯 Direct Google Maps result: ${location.lat}, ${location.lng}`);
         jobLog(`📍 Location type: ${result.geometry.location_type}`);
         jobLog(`📮 Formatted address: ${result.formatted_address}`);
+
+        // Save to cache
+        await geocodeCache.set(address, location.lat, location.lng);
 
         return {
           lat: location.lat,

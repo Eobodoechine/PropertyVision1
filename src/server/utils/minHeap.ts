@@ -1,6 +1,8 @@
 // Min-Heap for Top-K Selection
 // Efficiently maintains K best items without storing entire array
 
+import { jobLog } from './jobQueue';
+
 export class MinHeap<T> {
   private heap: Array<{ item: T; score: number }> = [];
   private readonly maxSize: number;
