@@ -2,7 +2,8 @@
 // Replaces redundant identical searches with intelligent expansion
 
 import { getRedisCache } from './redisCache';
-import { jobLog, updateJobProgress, isJobCancelled } from './jobQueue';
+import { jobLog } from './logger';
+import { updateJobProgress, isJobCancelled } from './jobQueue';
 
 interface SearchLevel {
   level: number;

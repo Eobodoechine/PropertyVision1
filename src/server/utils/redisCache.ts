@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { jobLog } from '../utils/jobQueue';
+import { jobLog } from '../utils/logger';
 
 /**
  * Redis Cache Client for Raw Comps

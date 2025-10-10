@@ -2,7 +2,7 @@
 // Caches normalized address → {lat, lon} mappings
 
 import { getRedisCache } from './redisCache';
-import { jobLog } from '../utils/jobQueue';
+import { jobLog } from '../utils/logger';
 
 interface GeoLocation {
   lat: number;

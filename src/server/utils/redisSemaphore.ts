@@ -2,7 +2,7 @@
 // Only used when WORKER_COUNT > 1 (multiple workers)
 
 import { getRedisCache } from './redisCache';
-import { jobLog } from '../utils/jobQueue';
+import { jobLog } from '../utils/logger';
 
 export class RedisSemaphore {
   private redis = getRedisCache();

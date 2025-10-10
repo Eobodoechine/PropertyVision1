@@ -1,6 +1,6 @@
 import https from 'https';
 import pLimit from 'p-limit';
-import { jobLog } from '../utils/jobQueue';
+import { jobLog } from '../utils/logger';
 
 /**
  * Vertex AI Client with Connection Pooling, Token Caching, and Retry Logic

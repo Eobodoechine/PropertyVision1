@@ -5,7 +5,7 @@
  * - SLO monitoring and alerting thresholds
  */
 
-import { jobLog } from './jobQueue';
+import { jobLog } from './logger';
 
 interface MetricsCounter {
   total: number;

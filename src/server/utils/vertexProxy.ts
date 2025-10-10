@@ -7,7 +7,7 @@
  * - gemini-2.5-pro: Slower (2252ms) but supports grounded search for property details
  */
 
-import { jobLog } from './jobQueue';
+import { jobLog } from './logger';
 
 const USE_VERTEX_PROXY = process.env.USE_VERTEX_PROXY === 'true';
 const VERTEX_PROXY_URL = process.env.VERTEX_PROXY_URL || '';

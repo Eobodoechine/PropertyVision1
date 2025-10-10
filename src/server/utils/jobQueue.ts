@@ -7,20 +7,11 @@ import { sendErrorNotification, sendSuccessNotification } from './emailNotificat
 import { GoogleMapsGeocoder } from './googleMapsGeocoder';
 import { randomUUID } from 'crypto';
 import os from 'os';
+import { jobLog, setJobContext } from './logger';
 
 // Global job context - allows comprehensive-comp-search to update progress
 // Initialized immediately to avoid Temporal Dead Zone issues during module imports
 let currentJobContext: { jobId: string; jobQueue: any } | null = null;
-
-// Job-aware logging helper - automatically prepends jobId to all logs
-export function jobLog(...args: any[]): void {
-  if (currentJobContext) {
-    const shortId = currentJobContext.jobId.substring(0, 8);
-    console.log(`[${shortId}]`, ...args);
-  } else {
-    console.log(...args);
-  }
-}
 
 const STREAM = 'jobs';
 const GROUP = 'workers';
@@ -339,15 +330,8 @@ export class JobQueue {
    * Process a single job
    */
   private async processJob(jobId: string, address: string, messageId: string): Promise<void> {
-    // Import trace context helpers
-    const { updateTraceContext } = await import('./logger');
-
-    // Set trace context for this job (propagates to all console.log calls)
-    updateTraceContext({
-      jobId,
-      address,
-      traceId: jobId // Use jobId as traceId for worker jobs
-    });
+    // Set job context for logging (propagates jobId to all jobLog calls)
+    setJobContext(jobId);
 
     jobLog(`⚙️  [${messageId}] Processing job ${jobId}: ${address}`);
 
@@ -451,6 +435,7 @@ export class JobQueue {
 
       clearInterval(heartbeat);
       currentJobContext = null; // Clear job context
+      setJobContext(null); // Clear logger context too
       jobLog(`✅ Job ${jobId} completed`);
 
       // Validate ARV before sending success notification
@@ -491,6 +476,7 @@ export class JobQueue {
         await this.redis.xack(STREAM, GROUP, messageId);
         clearInterval(heartbeat);
         currentJobContext = null;
+        setJobContext(null);
         return;
       }
 
@@ -508,6 +494,7 @@ export class JobQueue {
     } catch (error: any) {
       clearInterval(heartbeat);
       currentJobContext = null; // Clear job context
+      setJobContext(null); // Clear logger context too
       throw error;
     }
   }

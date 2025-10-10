@@ -1,7 +1,7 @@
 // Property Data Normalization and Validation
 // Fixes inconsistent parsing and conflicting property data
 
-import { jobLog } from './jobQueue';
+import { jobLog } from './logger';
 
 interface RawPropertyData {
   address: string;

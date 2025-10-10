@@ -1,7 +1,7 @@
 // Vertex AI-Powered Intelligent Deduplication
 // Replaces rule-based deduplication with AI that understands real estate data nuances
 import fs from 'fs';
-import { jobLog } from '../utils/jobQueue';
+import { jobLog } from '../utils/logger';
 
 interface PropertyData {
   address: string;

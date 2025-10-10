@@ -16,7 +16,7 @@ import {
 } from './compScoring';
 import { parallelSearchConfig } from './parallelSearchConfig';
 import { VertexComparableSearchService } from '../step3-find-comparables';
-import { jobLog } from '../utils/jobQueue';
+import { jobLog } from '../utils/logger';
 
 export interface SearchLevelResult {
   level: number;
