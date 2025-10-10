@@ -64,14 +64,14 @@ class FeatureFlagManager {
   }
 
   private logFlagStatus() {
-    console.log('🚩 Feature Flags Status:');
-    console.log(`   NEW_ORCHESTRATOR_V12: ${this.flags.newOrchestratorV12}`);
-    console.log(`   USE_VERTEX_PROXY: ${this.flags.useVertexProxy}`);
-    console.log(`   USE_VERTEX_CLIENT: ${this.flags.useVertexClient}`);
-    console.log(`   VERTEX_CONCURRENCY: ${this.flags.vertexConcurrency}`);
-    console.log(`   GEOCODE_NEGATIVE_CACHE_TTL: ${this.flags.geocodeNegativeCacheTTL}s`);
-    console.log(`   ENABLE_STRUCTURED_LOGGING: ${this.flags.enableStructuredLogging}`);
-    console.log(`   ENABLE_METRICS: ${this.flags.enableMetrics}`);
+    jobLog('🚩 Feature Flags Status:');
+    jobLog(`   NEW_ORCHESTRATOR_V12: ${this.flags.newOrchestratorV12}`);
+    jobLog(`   USE_VERTEX_PROXY: ${this.flags.useVertexProxy}`);
+    jobLog(`   USE_VERTEX_CLIENT: ${this.flags.useVertexClient}`);
+    jobLog(`   VERTEX_CONCURRENCY: ${this.flags.vertexConcurrency}`);
+    jobLog(`   GEOCODE_NEGATIVE_CACHE_TTL: ${this.flags.geocodeNegativeCacheTTL}s`);
+    jobLog(`   ENABLE_STRUCTURED_LOGGING: ${this.flags.enableStructuredLogging}`);
+    jobLog(`   ENABLE_METRICS: ${this.flags.enableMetrics}`);
   }
 
   /**
@@ -142,7 +142,7 @@ class FeatureFlagManager {
    * Reload flags from environment
    */
   reload() {
-    console.log('🔄 Reloading feature flags from environment...');
+    jobLog('🔄 Reloading feature flags from environment...');
     this.flags = this.loadFlags();
     this.logFlagStatus();
   }

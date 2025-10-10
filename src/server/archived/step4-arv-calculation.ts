@@ -1,4 +1,5 @@
 import { ComparableProperty } from './step3-find-comparables';
+import { jobLog } from '../utils/jobQueue';
 
 interface ARVResult {
   arv: number;
@@ -32,13 +33,13 @@ class ARVCalculationService {
       };
     }
 
-    console.log(`📊 ARV Calculation: ${comparables.length} total comparables`);
+    jobLog(`📊 ARV Calculation: ${comparables.length} total comparables`);
 
     // Step 1: Use comparables as-is (no outlier filtering)
     const filteredComparables = comparables;
     
     if (filteredComparables.length === 0) {
-      console.log(`⚠️ All comparables filtered out as outliers, using original set`);
+      jobLog(`⚠️ All comparables filtered out as outliers, using original set`);
       // If all are outliers, use original set but flag as low confidence
     }
 
@@ -54,7 +55,7 @@ class ARVCalculationService {
     const needsBathAdjustments = subjectBathsNormalized != null
       && finalComparables.some(comp => Number.isFinite(comp.baths as any) && comp.baths > (subjectBathsNormalized as number));
     if (needsBathAdjustments) {
-      console.log(`🚿 Applying bathroom adjustments where comps exceed subject baths (${subjectBathsNormalized})...`);
+      jobLog(`🚿 Applying bathroom adjustments where comps exceed subject baths (${subjectBathsNormalized})...`);
       
       // Estimate second bathroom premium
       const bathPremium = this.estimateSecondBathPremium(subjectSqft, finalComparables);
@@ -91,18 +92,18 @@ class ARVCalculationService {
       }));
     }
 
-    console.log(`📊 Final ARV Calculation: ${dataPoints.length} data points (after outlier filtering)`);
+    jobLog(`📊 Final ARV Calculation: ${dataPoints.length} data points (after outlier filtering)`);
     dataPoints.forEach(point => {
-      console.log(`   ${point.address}: ${point.x} sqft → $${point.y.toLocaleString()}`);
+      jobLog(`   ${point.address}: ${point.x} sqft → $${point.y.toLocaleString()}`);
     });
 
     // Calculate ARV using direct comparable analysis
     const arvResult = this.calculateARVFromComps(dataPoints, subjectSqft);
 
-    console.log(`📈 Comparable-based ARV calculation:`);
-    console.log(`   Method: ${arvResult.method}`);
-    console.log(`   ARV: $${arvResult.arv.toLocaleString()}`);
-    console.log(`   Confidence: ${arvResult.confidence}`);
+    jobLog(`📈 Comparable-based ARV calculation:`);
+    jobLog(`   Method: ${arvResult.method}`);
+    jobLog(`   ARV: $${arvResult.arv.toLocaleString()}`);
+    jobLog(`   Confidence: ${arvResult.confidence}`);
 
     return arvResult;
   }
@@ -130,9 +131,9 @@ class ARVCalculationService {
       ppsf: point.y / point.x
     }));
 
-    console.log(`📊 PPSF Analysis:`);
+    jobLog(`📊 PPSF Analysis:`);
     ppsfData.forEach(comp => {
-      console.log(`   ${comp.address}: $${comp.price.toLocaleString()} ÷ ${comp.sqft} = $${comp.ppsf.toFixed(2)}/sqft`);
+      jobLog(`   ${comp.address}: $${comp.price.toLocaleString()} ÷ ${comp.sqft} = $${comp.ppsf.toFixed(2)}/sqft`);
     });
 
     // Calculate statistics
@@ -140,9 +141,9 @@ class ARVCalculationService {
     const meanPpsf = ppsfValues.reduce((sum, ppsf) => sum + ppsf, 0) / n;
     const medianPpsf = this.calculatePercentile(ppsfValues.sort((a, b) => a - b), 50);
 
-    console.log(`📊 PPSF Statistics:`);
-    console.log(`   Mean PPSF: $${meanPpsf.toFixed(2)}/sqft`);
-    console.log(`   Median PPSF: $${medianPpsf.toFixed(2)}/sqft`);
+    jobLog(`📊 PPSF Statistics:`);
+    jobLog(`   Mean PPSF: $${meanPpsf.toFixed(2)}/sqft`);
+    jobLog(`   Median PPSF: $${medianPpsf.toFixed(2)}/sqft`);
 
     // Use median PPSF for ARV calculation (more robust than mean)
     const arv = Math.round(medianPpsf * subjectSqft);
@@ -267,9 +268,9 @@ class ARVCalculationService {
       address: comp.address
     }));
 
-    console.log(`📊 Weighted ARV Calculation: ${dataPoints.length} data points`);
+    jobLog(`📊 Weighted ARV Calculation: ${dataPoints.length} data points`);
     dataPoints.forEach(point => {
-      console.log(`   ${point.address}: ${point.x} sqft → $${point.y.toLocaleString()} (weight: ${point.weight.toFixed(2)})`);
+      jobLog(`   ${point.address}: ${point.x} sqft → $${point.y.toLocaleString()} (weight: ${point.weight.toFixed(2)})`);
     });
 
     // Calculate weighted zero-intercept linear regression
@@ -286,11 +287,11 @@ class ARVCalculationService {
       confidence = 'low';
     }
 
-    console.log(`📈 Weighted zero-intercept regression results:`);
-    console.log(`   Slope (PPSF): $${regression.slope.toFixed(2)}`);
-    console.log(`   R²: ${regression.r2.toFixed(3)}`);
-    console.log(`   ARV: $${arv.toLocaleString()}`);
-    console.log(`   Confidence: ${confidence}`);
+    jobLog(`📈 Weighted zero-intercept regression results:`);
+    jobLog(`   Slope (PPSF): $${regression.slope.toFixed(2)}`);
+    jobLog(`   R²: ${regression.r2.toFixed(3)}`);
+    jobLog(`   ARV: $${arv.toLocaleString()}`);
+    jobLog(`   Confidence: ${confidence}`);
 
     return {
       arv,
@@ -342,7 +343,7 @@ class ARVCalculationService {
    * REMOVED: Outlier detection disabled - use all comparables as-is
    */
   private detectAndFilterOutliers(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
-    console.log(`📊 Outlier detection disabled - using all ${comparables.length} comparables`);
+    jobLog(`📊 Outlier detection disabled - using all ${comparables.length} comparables`);
     return comparables; // Return all comparables without filtering
   }
 
@@ -357,7 +358,7 @@ class ARVCalculationService {
     subjectSqft: number,
     escalationStep: number = 1
   ): ComparableProperty[] {
-    console.log(`🔄 ESCALATION STEP ${escalationStep}: Starting complex escalation process...`);
+    jobLog(`🔄 ESCALATION STEP ${escalationStep}: Starting complex escalation process...`);
     
     let currentComps = [...originalComparables];
     let stepName = "";
@@ -365,62 +366,62 @@ class ARVCalculationService {
     switch (escalationStep) {
       case 1:
         stepName = "Timeline Expansion (18 months)";
-        console.log(`   ⚠️ Timeline expansion requires re-searching - handled at full-analysis level`);
-        console.log(`   📋 Proceeding to Step 2: GLA Bucket Expansion`);
+        jobLog(`   ⚠️ Timeline expansion requires re-searching - handled at full-analysis level`);
+        jobLog(`   📋 Proceeding to Step 2: GLA Bucket Expansion`);
         return this.applyComplexEscalation(originalComparables, subjectSqft, 2);
         
       case 2:
         stepName = "GLA Bucket Expansion (±25%)";
-        console.log(`🔄 Step 2: Expanding GLA bucket to ±25%...`);
+        jobLog(`🔄 Step 2: Expanding GLA bucket to ±25%...`);
         currentComps = this.applyExpandedGLABucketing(originalComparables, subjectSqft);
         break;
         
       case 3:
         stepName = "Bathroom Escalation (Allow 2-bath comps)";
-        console.log(`🔄 Step 3: Allowing 2-bath comparables with penalty system...`);
+        jobLog(`🔄 Step 3: Allowing 2-bath comparables with penalty system...`);
         currentComps = this.applyBathroomEscalation(currentComps, subjectSqft);
         break;
         
       case 4:
         stepName = "Distance Expansion (Same Municipality)";
-        console.log(`🔄 Step 4: Expanding search radius within same municipality...`);
-        console.log(`   ⚠️ Distance expansion requires re-searching - handled at full-analysis level`);
-        console.log(`   📋 Proceeding to Step 5: Municipal Boundary Expansion`);
+        jobLog(`🔄 Step 4: Expanding search radius within same municipality...`);
+        jobLog(`   ⚠️ Distance expansion requires re-searching - handled at full-analysis level`);
+        jobLog(`   📋 Proceeding to Step 5: Municipal Boundary Expansion`);
         return this.applyComplexEscalation(originalComparables, subjectSqft, 5);
         
       case 5:
         stepName = "Municipal Boundary Expansion (Last Resort)";
-        console.log(`🔄 Step 5: Crossing municipal boundaries with down-weighting...`);
-        console.log(`   ⚠️ Municipal expansion requires re-searching - handled at full-analysis level`);
-        console.log(`   🚨 CRITICAL: All escalation options exhausted`);
+        jobLog(`🔄 Step 5: Crossing municipal boundaries with down-weighting...`);
+        jobLog(`   ⚠️ Municipal expansion requires re-searching - handled at full-analysis level`);
+        jobLog(`   🚨 CRITICAL: All escalation options exhausted`);
         return originalComparables; // Return what we have
         
       default:
-        console.log(`   🚨 ERROR: Invalid escalation step ${escalationStep}`);
+        jobLog(`   🚨 ERROR: Invalid escalation step ${escalationStep}`);
         return originalComparables;
     }
     
-    console.log(`   📊 ${stepName} found: ${currentComps.length} comps`);
+    jobLog(`   📊 ${stepName} found: ${currentComps.length} comps`);
     
     if (currentComps.length >= 3) {
-      console.log(`   🔄 Re-applying complete analysis pipeline to escalated set...`);
+      jobLog(`   🔄 Re-applying complete analysis pipeline to escalated set...`);
       
       // Apply complete analysis pipeline (GLA + outlier detection + bathroom analysis)
       const reFilteredComps = this.applyCompleteAnalysisPipeline(currentComps, subjectSqft);
       
-      console.log(`   📊 Complete analysis results: ${reFilteredComps.length} valid comps`);
+      jobLog(`   📊 Complete analysis results: ${reFilteredComps.length} valid comps`);
       
       if (reFilteredComps.length >= 3) {
-        console.log(`   ✅ ${stepName} successful: ${reFilteredComps.length} valid comps for ARV`);
+        jobLog(`   ✅ ${stepName} successful: ${reFilteredComps.length} valid comps for ARV`);
         return reFilteredComps;
       } else {
-        console.log(`   ⚠️ After ${stepName}: Still insufficient comps (${reFilteredComps.length} < 3)`);
-        console.log(`   📋 NEXT STEP: ${escalationStep + 1}`);
+        jobLog(`   ⚠️ After ${stepName}: Still insufficient comps (${reFilteredComps.length} < 3)`);
+        jobLog(`   📋 NEXT STEP: ${escalationStep + 1}`);
         return this.applyComplexEscalation(originalComparables, subjectSqft, escalationStep + 1);
       }
     } else {
-      console.log(`   🚨 CRITICAL: ${stepName} insufficient comps (${currentComps.length} < 3)`);
-      console.log(`   📋 NEXT STEP: ${escalationStep + 1}`);
+      jobLog(`   🚨 CRITICAL: ${stepName} insufficient comps (${currentComps.length} < 3)`);
+      jobLog(`   📋 NEXT STEP: ${escalationStep + 1}`);
       return this.applyComplexEscalation(originalComparables, subjectSqft, escalationStep + 1);
     }
   }
@@ -451,7 +452,7 @@ class ARVCalculationService {
     originalComparables: ComparableProperty[], 
     subjectSqft: number
   ): ComparableProperty[] {
-    console.log(`   🚿 Allowing 2-bath comparables with penalty system...`);
+    jobLog(`   🚿 Allowing 2-bath comparables with penalty system...`);
     
     // For now, return original comps (bathroom escalation logic would be implemented here)
     // This would include:
@@ -466,7 +467,7 @@ class ARVCalculationService {
    * REMOVED: Core outlier detection disabled
    */
   private applyCoreOutlierDetection(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
-    console.log(`📊 Core outlier detection disabled - using all ${comparables.length} comparables`);
+    jobLog(`📊 Core outlier detection disabled - using all ${comparables.length} comparables`);
     return comparables; // Return all comparables without filtering
   }
 
@@ -478,11 +479,11 @@ class ARVCalculationService {
     const minSqft = subjectSqft - expandedRange;
     const maxSqft = subjectSqft + expandedRange;
 
-    console.log(`   📏 Expanded GLA bucket: ${minSqft.toFixed(0)} - ${maxSqft.toFixed(0)} sqft (±25%)`);
+    jobLog(`   📏 Expanded GLA bucket: ${minSqft.toFixed(0)} - ${maxSqft.toFixed(0)} sqft (±25%)`);
 
     const filtered = comparables.filter(comp => {
       const inRange = comp.sqft >= minSqft && comp.sqft <= maxSqft;
-      console.log(`   ${comp.address}: ${comp.sqft} sqft ${inRange ? '✅' : '❌'}`);
+      jobLog(`   ${comp.address}: ${comp.sqft} sqft ${inRange ? '✅' : '❌'}`);
       return inRange;
     });
 
@@ -509,7 +510,7 @@ class ARVCalculationService {
    * Bathroom adjustment system for 2-bath comparables
    */
   private estimateSecondBathPremium(subjectSqft: number, comps: ComparableProperty[]): { full: number; halfFactor: number } {
-    console.log(`🚿 Estimating second bathroom premium for ${subjectSqft} sqft subject...`);
+    jobLog(`🚿 Estimating second bathroom premium for ${subjectSqft} sqft subject...`);
 
     // 1) Try paired sales: find near-identical 1-bath vs 2-bath pairs
     const bucket = (c: ComparableProperty) => Math.abs(c.sqft - subjectSqft) <= subjectSqft * 0.10;
@@ -517,7 +518,7 @@ class ARVCalculationService {
     const twos = comps.filter(c => c.baths >= 2 && bucket(c));
     const pairs: number[] = [];
 
-    console.log(`   Found ${ones.length} 1-bath comps and ${twos.length} 2-bath comps in GLA bucket`);
+    jobLog(`   Found ${ones.length} 1-bath comps and ${twos.length} 2-bath comps in GLA bucket`);
 
     for (const oneBath of ones) {
       // Find nearest neighbor in 2-bath comps by sqft
@@ -530,7 +531,7 @@ class ARVCalculationService {
       
       if (nearest) {
         pairs.push(nearest.premium);
-        console.log(`   Pair: ${oneBath.address} (${oneBath.sqft} sqft, 1 bath) vs nearest 2-bath → $${nearest.premium.toLocaleString()} premium`);
+        jobLog(`   Pair: ${oneBath.address} (${oneBath.sqft} sqft, 1 bath) vs nearest 2-bath → $${nearest.premium.toLocaleString()} premium`);
       }
     }
 
@@ -540,13 +541,13 @@ class ARVCalculationService {
       fullPremium = pairs.length % 2 
         ? pairs[Math.floor(pairs.length / 2)] 
         : (pairs[pairs.length / 2 - 1] + pairs[pairs.length / 2]) / 2;
-      console.log(`   ✅ Paired sales analysis: $${fullPremium.toLocaleString()} premium (${pairs.length} pairs)`);
+      jobLog(`   ✅ Paired sales analysis: $${fullPremium.toLocaleString()} premium (${pairs.length} pairs)`);
     }
 
     // 2) Fallback bands if pairs are thin
     if (!Number.isFinite(fullPremium)) {
       fullPremium = subjectSqft < 1000 ? 10000 : subjectSqft < 1500 ? 14000 : 16000;
-      console.log(`   📊 Fallback premium: $${fullPremium.toLocaleString()} (based on size band)`);
+      jobLog(`   📊 Fallback premium: $${fullPremium.toLocaleString()} (based on size band)`);
     }
 
     return { full: fullPremium, halfFactor: 0.35 };
@@ -576,10 +577,10 @@ class ARVCalculationService {
     
     const finalIndication = Math.max(0, adjustedIndication - penalty);
     
-    console.log(`   🚿 ${comp.address}: $${comp.price.toLocaleString()} (${comp.baths} baths)`);
-    console.log(`      Raw indication: $${adjustedIndication.toLocaleString()}`);
-    console.log(`      Bath penalty: $${penalty.toLocaleString()} (${deltaFull} full + ${deltaHalf} half baths)`);
-    console.log(`      Adjusted indication: $${finalIndication.toLocaleString()}`);
+    jobLog(`   🚿 ${comp.address}: $${comp.price.toLocaleString()} (${comp.baths} baths)`);
+    jobLog(`      Raw indication: $${adjustedIndication.toLocaleString()}`);
+    jobLog(`      Bath penalty: $${penalty.toLocaleString()} (${deltaFull} full + ${deltaHalf} half baths)`);
+    jobLog(`      Adjusted indication: $${finalIndication.toLocaleString()}`);
     
     return finalIndication;
   }
@@ -589,7 +590,7 @@ class ARVCalculationService {
    * Filters comparables by similar size to ensure apples-to-apples PPSF comparisons
    */
   private applyGLABucketing(comparables: ComparableProperty[], subjectSqft: number): ComparableProperty[] {
-    console.log(`📏 Applying GLA bucketing for subject: ${subjectSqft} sqft`);
+    jobLog(`📏 Applying GLA bucketing for subject: ${subjectSqft} sqft`);
 
     // Determine GLA bucket based on subject size
     let bucketRange: { min: number; max: number };
@@ -600,7 +601,7 @@ class ARVCalculationService {
         min: subjectSqft - 150,
         max: subjectSqft + 150
       };
-      console.log(`🏠 Very small home: using absolute band ±150 sqft`);
+      jobLog(`🏠 Very small home: using absolute band ±150 sqft`);
     } else if (subjectSqft > 3000) {
       // Large homes: tighter ±8-10%
       const margin = Math.round(subjectSqft * 0.10);
@@ -608,7 +609,7 @@ class ARVCalculationService {
         min: subjectSqft - margin,
         max: subjectSqft + margin
       };
-      console.log(`🏠 Large home: using ±10% margin (${margin} sqft)`);
+      jobLog(`🏠 Large home: using ±10% margin (${margin} sqft)`);
     } else {
       // Default houses (800-3000 sf): ±20% standard, expand to ±25% if thin inventory
       const margin20 = Math.round(subjectSqft * 0.20);
@@ -620,20 +621,20 @@ class ARVCalculationService {
         max: subjectSqft + margin20
       };
 
-      console.log(`🏠 Default house: starting with ±20% bucket (${margin20} sqft)`);
-      console.log(`   ±20% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
+      jobLog(`🏠 Default house: starting with ±20% bucket (${margin20} sqft)`);
+      jobLog(`   ±20% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
     }
 
     // Filter comparables by GLA bucket
     const glaFiltered = comparables.filter(comp => {
       const inBucket = comp.sqft >= bucketRange.min && comp.sqft <= bucketRange.max;
-      console.log(`   ${comp.address}: ${comp.sqft} sqft ${inBucket ? '✅' : '❌'} ${inBucket ? '' : `(outside ${bucketRange.min}-${bucketRange.max})`}`);
+      jobLog(`   ${comp.address}: ${comp.sqft} sqft ${inBucket ? '✅' : '❌'} ${inBucket ? '' : `(outside ${bucketRange.min}-${bucketRange.max})`}`);
       return inBucket;
     });
 
     // If inventory is thin (< 3 comps), expand to ±25% for default houses
     if (glaFiltered.length < 3 && subjectSqft >= 800 && subjectSqft <= 3000) {
-      console.log(`⚠️ Thin inventory (${glaFiltered.length} comps), expanding to ±25% bucket`);
+      jobLog(`⚠️ Thin inventory (${glaFiltered.length} comps), expanding to ±25% bucket`);
 
       const margin25 = Math.round(subjectSqft * 0.25);
       bucketRange = {
@@ -641,21 +642,21 @@ class ARVCalculationService {
         max: subjectSqft + margin25
       };
 
-      console.log(`   ±25% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
+      jobLog(`   ±25% bucket: ${bucketRange.min} - ${bucketRange.max} sqft`);
       
       const expandedFiltered = comparables.filter(comp => {
         const inBucket = comp.sqft >= bucketRange.min && comp.sqft <= bucketRange.max;
-        console.log(`   ${comp.address}: ${comp.sqft} sqft ${inBucket ? '✅' : '❌'} ${inBucket ? '' : `(outside ${bucketRange.min}-${bucketRange.max})`}`);
+        jobLog(`   ${comp.address}: ${comp.sqft} sqft ${inBucket ? '✅' : '❌'} ${inBucket ? '' : `(outside ${bucketRange.min}-${bucketRange.max})`}`);
         return inBucket;
       });
       
       return expandedFiltered;
     }
 
-    console.log(`📊 GLA Bucket Summary:`);
-    console.log(`   Subject: ${subjectSqft} sqft`);
-    console.log(`   Bucket range: ${bucketRange.min} - ${bucketRange.max} sqft`);
-    console.log(`   Comps in bucket: ${glaFiltered.length}/${comparables.length}`);
+    jobLog(`📊 GLA Bucket Summary:`);
+    jobLog(`   Subject: ${subjectSqft} sqft`);
+    jobLog(`   Bucket range: ${bucketRange.min} - ${bucketRange.max} sqft`);
+    jobLog(`   Comps in bucket: ${glaFiltered.length}/${comparables.length}`);
 
     return glaFiltered;
   }
@@ -682,20 +683,20 @@ async function testARVCalculation() {
     throw new Error('Invalid COMPARABLES_DATA JSON format');
   }
   
-  console.log(`\n💰 STEP 4: ARV CALCULATION`);
-  console.log(`============================================================`);
+  jobLog(`\n💰 STEP 4: ARV CALCULATION`);
+  jobLog(`============================================================`);
   
   const arvService = new ARVCalculationService();
   
-  console.log(`\n📊 Standard Zero-Intercept Regression:`);
+  jobLog(`\n📊 Standard Zero-Intercept Regression:`);
   const standardResult = arvService.calculateARV(comparables, subjectSqft);
   
-  console.log(`\n📊 Distance-Weighted Zero-Intercept Regression:`);
+  jobLog(`\n📊 Distance-Weighted Zero-Intercept Regression:`);
   const weightedResult = arvService.calculateWeightedARV(comparables, subjectSqft);
   
-  console.log(`\n✅ ARV Calculation Complete:`);
-  console.log(`   Standard ARV: $${standardResult.arv.toLocaleString()} (${standardResult.confidence} confidence)`);
-  console.log(`   Weighted ARV: $${weightedResult.arv.toLocaleString()} (${weightedResult.confidence} confidence)`);
+  jobLog(`\n✅ ARV Calculation Complete:`);
+  jobLog(`   Standard ARV: $${standardResult.arv.toLocaleString()} (${standardResult.confidence} confidence)`);
+  jobLog(`   Weighted ARV: $${weightedResult.arv.toLocaleString()} (${weightedResult.confidence} confidence)`);
   
   return { standardResult, weightedResult };
 }

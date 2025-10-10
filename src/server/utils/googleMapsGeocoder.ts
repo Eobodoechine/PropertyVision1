@@ -37,7 +37,7 @@ export class GoogleMapsGeocoder {
    * Geocode a single address using Google Maps API
    */
   async geocodeAddress(address: string): Promise<GoogleMapsGeocodeResult | null> {
-    console.log(`🗺️  Direct Google Maps geocoding: ${address}`);
+    jobLog(`🗺️  Direct Google Maps geocoding: ${address}`);
 
     try {
       const encodedAddress = encodeURIComponent(address);
@@ -46,15 +46,15 @@ export class GoogleMapsGeocoder {
       const response = await fetch(url);
       const data: GoogleMapsResponse = await response.json();
 
-      console.log(`🗺️  Google Maps API status: ${data.status}`);
+      jobLog(`🗺️  Google Maps API status: ${data.status}`);
 
       if (data.status === 'OK' && data.results.length > 0) {
         const result = data.results[0];
         const location = result.geometry.location;
 
-        console.log(`🎯 Direct Google Maps result: ${location.lat}, ${location.lng}`);
-        console.log(`📍 Location type: ${result.geometry.location_type}`);
-        console.log(`📮 Formatted address: ${result.formatted_address}`);
+        jobLog(`🎯 Direct Google Maps result: ${location.lat}, ${location.lng}`);
+        jobLog(`📍 Location type: ${result.geometry.location_type}`);
+        jobLog(`📮 Formatted address: ${result.formatted_address}`);
 
         return {
           lat: location.lat,
@@ -64,9 +64,9 @@ export class GoogleMapsGeocoder {
           addressComponents: result.address_components
         };
       } else {
-        console.log(`❌ Google Maps geocoding failed: ${data.status}`);
+        jobLog(`❌ Google Maps geocoding failed: ${data.status}`);
         if (data.error_message) {
-          console.log(`❌ Error: ${data.error_message}`);
+          jobLog(`❌ Error: ${data.error_message}`);
         }
         return null;
       }
@@ -80,7 +80,7 @@ export class GoogleMapsGeocoder {
    * Geocode multiple addresses in parallel
    */
   async geocodeAddresses(addresses: string[]): Promise<Map<string, GoogleMapsGeocodeResult>> {
-    console.log(`🗺️  Geocoding ${addresses.length} addresses with Google Maps API`);
+    jobLog(`🗺️  Geocoding ${addresses.length} addresses with Google Maps API`);
 
     const results = new Map<string, GoogleMapsGeocodeResult>();
 
@@ -95,7 +95,7 @@ export class GoogleMapsGeocoder {
 
     await Promise.all(promises);
 
-    console.log(`🗺️  Successfully geocoded ${results.size}/${addresses.length} addresses`);
+    jobLog(`🗺️  Successfully geocoded ${results.size}/${addresses.length} addresses`);
     return results;
   }
 
@@ -116,13 +116,13 @@ export class GoogleMapsGeocoder {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       const distance = R * c;
 
-      console.log(`\n🎯 ACCURACY TEST: ${address}`);
-      console.log(`📍 Reference: ${referenceLat}, ${referenceLng}`);
-      console.log(`📍 Google Maps: ${result.lat}, ${result.lng}`);
-      console.log(`📏 Distance error: ${distance.toFixed(6)} miles (${(distance * 5280).toFixed(1)} feet)`);
-      console.log(`✅ Location type: ${result.locationType}`);
+      jobLog(`\n🎯 ACCURACY TEST: ${address}`);
+      jobLog(`📍 Reference: ${referenceLat}, ${referenceLng}`);
+      jobLog(`📍 Google Maps: ${result.lat}, ${result.lng}`);
+      jobLog(`📏 Distance error: ${distance.toFixed(6)} miles (${(distance * 5280).toFixed(1)} feet)`);
+      jobLog(`✅ Location type: ${result.locationType}`);
     } else {
-      console.log(`❌ Failed to geocode: ${address}`);
+      jobLog(`❌ Failed to geocode: ${address}`);
     }
   }
 }

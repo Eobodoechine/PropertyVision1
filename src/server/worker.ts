@@ -1,13 +1,13 @@
-import { getJobQueue } from './utils/jobQueue';
+import { getJobQueue, jobLog } from './utils/jobQueue';
 import http from 'http';
 
 async function startWorker() {
   if (process.env.RUN_WORKER !== 'true') {
-    console.log('⏭️  Worker disabled (RUN_WORKER != true)');
+    jobLog('⏭️  Worker disabled (RUN_WORKER != true)');
     return;
   }
 
-  console.log('🚀 Starting job worker...');
+  jobLog('🚀 Starting job worker...');
   const jobQueue = getJobQueue();
 
   // Start HTTP server for Cloud Run health checks (required for Cloud Run Services)
@@ -25,14 +25,14 @@ async function startWorker() {
   // Start HTTP server and wait for it to be ready
   await new Promise<void>((resolve) => {
     server.listen(PORT, '0.0.0.0', () => {
-      console.log(`✅ Worker health check server listening on 0.0.0.0:${PORT}`);
+      jobLog(`✅ Worker health check server listening on 0.0.0.0:${PORT}`);
       resolve();
     });
   });
 
   // Graceful shutdown
   process.on('SIGTERM', async () => {
-    console.log('📪 SIGTERM received, stopping worker...');
+    jobLog('📪 SIGTERM received, stopping worker...');
     server.close();
     await jobQueue.stop();
     process.exit(0);

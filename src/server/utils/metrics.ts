@@ -5,6 +5,8 @@
  * - SLO monitoring and alerting thresholds
  */
 
+import { jobLog } from './jobQueue';
+
 interface MetricsCounter {
   total: number;
   failed: number;
@@ -306,6 +308,6 @@ export function logStructured(
   } else if (severity === 'WARN') {
     console.warn(logStr);
   } else {
-    console.log(logStr);
+    jobLog(logStr);
   }
 }

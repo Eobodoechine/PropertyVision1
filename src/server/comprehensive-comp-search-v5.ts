@@ -12,7 +12,7 @@ import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
 import { ARVCalculator } from './arvCalculator';
 import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder';
-import { updateJobProgress, isJobCancelled } from './utils/jobQueue';
+import { updateJobProgress, isJobCancelled, jobLog } from './utils/jobQueue';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -79,13 +79,13 @@ export class ComprehensiveComparableSearchV5 {
 
   async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
     const startTime = Date.now();
-    console.log(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI`);
-    console.log(`============================================================`);
-    console.log(`📍 Analyzing: ${address}`);
+    jobLog(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI`);
+    jobLog(`============================================================`);
+    jobLog(`📍 Analyzing: ${address}`);
 
     try {
       // Step 1: Get subject property details
-      console.log(`\n📋 Step 1: Subject Property Research`);
+      jobLog(`\n📋 Step 1: Subject Property Research`);
       await updateJobProgress('SUBJECT_PROPERTY');
 
       const subjectDetails = await fetchPropertyDetailsViaVertex(address);
@@ -94,18 +94,18 @@ export class ComprehensiveComparableSearchV5 {
         throw new Error('Could not fetch subject property details');
       }
 
-      console.log(`   ✅ Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft, Built ${subjectDetails.yearBuilt}`);
+      jobLog(`   ✅ Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft, Built ${subjectDetails.yearBuilt}`);
       if (subjectDetails.subdivision) {
-        console.log(`   🏘️  Subdivision: ${subjectDetails.subdivision}`);
+        jobLog(`   🏘️  Subdivision: ${subjectDetails.subdivision}`);
       }
 
       // Step 2: Progressive comparable search
-      console.log(`\n🔍 Step 2: Progressive Comparable Search`);
+      jobLog(`\n🔍 Step 2: Progressive Comparable Search`);
 
       // Determine subject property type for filtering
       const subjectPropertyType = subjectDetails.propertyType || undefined;
-      console.log(`   🏠 Property Type: ${subjectPropertyType || 'Not specified - will match similar properties'}`);
-      console.log(`   🔍 DEBUG: subjectPropertyType exact value = "${subjectPropertyType}" (type: ${typeof subjectPropertyType})`);
+      jobLog(`   🏠 Property Type: ${subjectPropertyType || 'Not specified - will match similar properties'}`);
+      jobLog(`   🔍 DEBUG: subjectPropertyType exact value = "${subjectPropertyType}" (type: ${typeof subjectPropertyType})`);
 
       let allComps: any[] = [];
       let searchLevel = 0;
@@ -113,11 +113,11 @@ export class ComprehensiveComparableSearchV5 {
 
       // Use progressive search strategy with subject details
       if (subjectDetails.beds && subjectDetails.baths && subjectDetails.sqft && subjectDetails.yearBuilt) {
-        console.log(`   📐 Using subject details for targeted search`);
+        jobLog(`   📐 Using subject details for targeted search`);
         // Set subdivision in environment for progressive search
         if (subjectDetails.subdivision) {
           process.env.SUBDIVISION = subjectDetails.subdivision;
-          console.log(`   🏘️  Using subdivision: ${subjectDetails.subdivision}`);
+          jobLog(`   🏘️  Using subdivision: ${subjectDetails.subdivision}`);
         }
 
         const progressiveResult = await this.progressiveSearch.executeProgressiveSearch(
@@ -129,14 +129,14 @@ export class ComprehensiveComparableSearchV5 {
         );
         allComps = progressiveResult.finalProperties;
       } else {
-        console.log(`   ⚠️  Subject details incomplete; using progressive search without strict filters.`);
+        jobLog(`   ⚠️  Subject details incomplete; using progressive search without strict filters.`);
         // Fallback to basic progressive search
         for (searchLevel = 0; searchLevel < maxSearchLevels; searchLevel++) {
           const radius = 1.5 + (searchLevel * 0.5); // 1.5, 2.0, 2.5 miles
           const timeWindow = 12 + (searchLevel * 6); // 12, 18, 24 months
           const maxResults = 15 + (searchLevel * 5); // 15, 20, 25 results
 
-          console.log(`   🎯 Search Level ${searchLevel + 1}: ${radius}mi radius, ${timeWindow}mo window, max ${maxResults} results`);
+          jobLog(`   🎯 Search Level ${searchLevel + 1}: ${radius}mi radius, ${timeWindow}mo window, max ${maxResults} results`);
 
           const result = await this.compService.findComparables(
             address,
@@ -149,24 +149,24 @@ export class ComprehensiveComparableSearchV5 {
 
           if (result.success && result.comparables.length > 0) {
             allComps.push(...result.comparables);
-            console.log(`      ➕ Found ${result.comparables.length} comps at level ${searchLevel + 1}`);
+            jobLog(`      ➕ Found ${result.comparables.length} comps at level ${searchLevel + 1}`);
           }
 
           // Stop if we have enough comparables
           if (allComps.length >= 10) {
-            console.log(`      ✅ Sufficient comparables found (${allComps.length}), stopping search`);
+            jobLog(`      ✅ Sufficient comparables found (${allComps.length}), stopping search`);
             break;
           }
         }
       }
 
-      console.log(`   📊 Total raw comparables found: ${allComps.length}`);
+      jobLog(`   📊 Total raw comparables found: ${allComps.length}`);
 
       if (allComps.length === 0) {
-        console.log(`\n❌ EARLY TERMINATION: No comparable properties found`);
-        console.log(`   🏠 Subject property exists but no recent sales in area`);
-        console.log(`   💡 Reason: Rural/sparse market with insufficient transaction data`);
-        console.log(`   📊 FINAL RESULT: Analysis terminated - no ARV calculation possible`);
+        jobLog(`\n❌ EARLY TERMINATION: No comparable properties found`);
+        jobLog(`   🏠 Subject property exists but no recent sales in area`);
+        jobLog(`   💡 Reason: Rural/sparse market with insufficient transaction data`);
+        jobLog(`   📊 FINAL RESULT: Analysis terminated - no ARV calculation possible`);
 
         // Return graceful "no data" response instead of throwing error
         const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
@@ -208,25 +208,25 @@ export class ComprehensiveComparableSearchV5 {
       }
 
       // Step 3: Data normalization
-      console.log(`\n🔧 Step 3: Data Normalization`);
+      jobLog(`\n🔧 Step 3: Data Normalization`);
       const normalizationResult = this.normalizer.processProperties(allComps);
       const normalizedComps = normalizationResult.normalized;
       const normalizationSummary = normalizationResult.summary;
-      console.log(`   ✅ Normalized: ${normalizedComps.length}/${allComps.length} properties improved`);
+      jobLog(`   ✅ Normalized: ${normalizedComps.length}/${allComps.length} properties improved`);
 
       // Step 4: Vertex AI deduplication
-      console.log(`\n🤖 Step 4: Vertex AI Deduplication`);
+      jobLog(`\n🤖 Step 4: Vertex AI Deduplication`);
       await updateJobProgress('DEDUPLICATION');
 
       const deduplicationResult = await this.deduplicator.deduplicateProperties(normalizedComps);
       const deduplicatedComps = deduplicationResult.uniqueProperties;
       const deduplicationSummary = { duplicatesRemoved: deduplicationResult.duplicatesRemoved, mergedGroups: deduplicationResult.mergedGroups };
-      console.log(`   ✅ Deduplicated: ${deduplicatedComps.length} unique (removed ${deduplicationResult.duplicatesRemoved} duplicates)`);
+      jobLog(`   ✅ Deduplicated: ${deduplicatedComps.length} unique (removed ${deduplicationResult.duplicatesRemoved} duplicates)`);
 
       // Step 5: All filtering now happens in step3-find-comparables.ts (bedroom, size, time, distance)
       // Deduplication already completed in step 4
-      console.log(`\n✅ Step 5: Filtering Complete (handled in step3-find-comparables.ts)`);
-      console.log(`   📊 Comps after all filters: ${deduplicatedComps.length}`);
+      jobLog(`\n✅ Step 5: Filtering Complete (handled in step3-find-comparables.ts)`);
+      jobLog(`   📊 Comps after all filters: ${deduplicatedComps.length}`);
 
       // Distance validation summary (filtering already done in step3)
       const distanceValidationSummary = {
@@ -239,14 +239,14 @@ export class ComprehensiveComparableSearchV5 {
       const currentLevel = 1; // TODO: Make this dynamic based on progressive search
 
       // Step 6: ARV Calculation using Central-Upper Chain Algorithm
-      console.log(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
+      jobLog(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
       await updateJobProgress('ARV_CALCULATION');
 
       let arvResult = undefined;
       let qualifiedComps = deduplicatedComps;
 
       if (deduplicatedComps.length >= 2 && subjectDetails.sqft) {
-        console.log(`   📊 Calculating ARV with ${deduplicatedComps.length} comps using PPSF clustering algorithm...`);
+        jobLog(`   📊 Calculating ARV with ${deduplicatedComps.length} comps using PPSF clustering algorithm...`);
 
         const arvCalcResult = this.arvCalculator.calculateARV(
           { sqft: subjectDetails.sqft },
@@ -254,9 +254,9 @@ export class ComprehensiveComparableSearchV5 {
         );
 
         if (arvCalcResult.conservative && arvCalcResult.conservative.arv_price > 0) {
-          console.log(`   ✅ ARV Success: ${arvCalcResult.method_used}`);
-          console.log(`   💰 Conservative ARV: $${arvCalcResult.conservative.arv_price.toLocaleString()}`);
-          console.log(`   📊 Comps used: ${arvCalcResult.kept_comps?.length || 0}`);
+          jobLog(`   ✅ ARV Success: ${arvCalcResult.method_used}`);
+          jobLog(`   💰 Conservative ARV: $${arvCalcResult.conservative.arv_price.toLocaleString()}`);
+          jobLog(`   📊 Comps used: ${arvCalcResult.kept_comps?.length || 0}`);
 
           // Enrich kept comps with full data from original comps
           const keptComps = arvCalcResult.kept_comps || deduplicatedComps;
@@ -269,10 +269,10 @@ export class ComprehensiveComparableSearchV5 {
                 ...originalComp,
                 ...keptComp  // Preserve id and reason from kept_comps
               };
-              console.log(`   🔍 Enriched comp ${enriched.id}: address="${enriched.address}", beds=${enriched.beds}, baths=${enriched.baths}, distance=${enriched.distance}, soldDate=${enriched.soldDate || enriched.sold_date}`);
+              jobLog(`   🔍 Enriched comp ${enriched.id}: address="${enriched.address}", beds=${enriched.beds}, baths=${enriched.baths}, distance=${enriched.distance}, soldDate=${enriched.soldDate || enriched.sold_date}`);
               return enriched;
             }
-            console.log(`   ⚠️  Could not find original comp for ${keptComp.id}: ${keptComp.address}`);
+            jobLog(`   ⚠️  Could not find original comp for ${keptComp.id}: ${keptComp.address}`);
             return keptComp;
           });
 
@@ -288,28 +288,28 @@ export class ComprehensiveComparableSearchV5 {
             dataPoints: keptCompsCount
           };
         } else {
-          console.log(`   ⚠️  ARV calculation returned insufficient data`);
+          jobLog(`   ⚠️  ARV calculation returned insufficient data`);
         }
       } else {
-        console.log(`   ⚠️ Insufficient comps for ARV (${deduplicatedComps.length} < 2)`);
+        jobLog(`   ⚠️ Insufficient comps for ARV (${deduplicatedComps.length} < 2)`);
       }
 
       // Step 7: Renovation analysis
-      console.log(`\n🔨 Step 7: Renovation Analysis`);
+      jobLog(`\n🔨 Step 7: Renovation Analysis`);
       const renovationAnalysis = this.analyzeRenovationLevels(qualifiedComps);
 
       // Calculate quality score based on count and distance only
       const qualityScore = this.assessOverallQuality(qualifiedComps.length);
       const totalSearchTime = Date.now() - startTime;
 
-      console.log(`\n📊 COMPREHENSIVE SEARCH V5 COMPLETE`);
-      console.log(`   Quality Score: ${qualityScore}`);
-      console.log(`   Total Time: ${totalSearchTime}ms`);
-      console.log(`   Final Comps: ${qualifiedComps.length}`);
+      jobLog(`\n📊 COMPREHENSIVE SEARCH V5 COMPLETE`);
+      jobLog(`   Quality Score: ${qualityScore}`);
+      jobLog(`   Total Time: ${totalSearchTime}ms`);
+      jobLog(`   Final Comps: ${qualifiedComps.length}`);
       if (arvResult) {
-        console.log(`   ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.method})`);
+        jobLog(`   ARV: $${arvResult.estimate.toLocaleString()} (${arvResult.method})`);
       }
-      console.log(`============================================================\n`);
+      jobLog(`============================================================\n`);
 
       // Update progress to finalizing before returning results
       await updateJobProgress('FINALIZING');
@@ -497,7 +497,7 @@ export class ComprehensiveComparableSearchV5 {
       }
     }
 
-    console.log(`   🛁 Market bathroom adjustment: $${bathroomAdjustmentPerSqft.toFixed(2)}/sqft per bathroom difference`);
+    jobLog(`   🛁 Market bathroom adjustment: $${bathroomAdjustmentPerSqft.toFixed(2)}/sqft per bathroom difference`);
 
     // Apply adjustments to each comparable
     return comps.map(comp => {
@@ -513,7 +513,7 @@ export class ComprehensiveComparableSearchV5 {
       const adjustment = -bathDiff * bathroomAdjustmentPerSqft * comp.sqft;
       const adjustedPrice = comp.price + adjustment;
 
-      console.log(`      ${comp.address}: ${compBaths} baths → ${subjectBaths} baths (${bathDiff > 0 ? '-' : '+'}$${Math.abs(adjustment).toLocaleString()})`);
+      jobLog(`      ${comp.address}: ${compBaths} baths → ${subjectBaths} baths (${bathDiff > 0 ? '-' : '+'}$${Math.abs(adjustment).toLocaleString()})`);
 
       return {
         ...comp,
@@ -611,10 +611,10 @@ export class ComprehensiveComparableSearchV5 {
       return propPpsf >= threshold * 0.9 && propPpsf < threshold;
     });
 
-    console.log(`   🔧 Renovation analysis:`);
-    console.log(`      Likely renovated: ${likely_renovated.length} (≥$${threshold.toFixed(2)}/sqft)`);
-    console.log(`      Market average: ${market_average.length}`);
-    console.log(`      Likely unrenovated: ${likely_unrenovated.length}`);
+    jobLog(`   🔧 Renovation analysis:`);
+    jobLog(`      Likely renovated: ${likely_renovated.length} (≥$${threshold.toFixed(2)}/sqft)`);
+    jobLog(`      Market average: ${market_average.length}`);
+    jobLog(`      Likely unrenovated: ${likely_unrenovated.length}`);
 
     return {
       likely_renovated,
@@ -927,20 +927,20 @@ export class ComprehensiveComparableSearchV5 {
   // Get subject coordinates from the compService
   private async getSubjectCoordinates(address: string): Promise<{ lat: number; lon: number } | null> {
     try {
-      console.log(`   🔍 Getting subject coordinates for: ${address}`);
+      jobLog(`   🔍 Getting subject coordinates for: ${address}`);
 
       // Access the geocoding method from the compService
       const subjectCoords = await (this.compService as any).geocodeWithTimeout(address, 5000);
 
       if (subjectCoords && subjectCoords.lat && subjectCoords.lon) {
-        console.log(`   📍 Subject coordinates retrieved: ${subjectCoords.lat}, ${subjectCoords.lon}`);
+        jobLog(`   📍 Subject coordinates retrieved: ${subjectCoords.lat}, ${subjectCoords.lon}`);
         return subjectCoords;
       } else {
-        console.log(`   ❌ Failed to get subject coordinates`);
+        jobLog(`   ❌ Failed to get subject coordinates`);
         return null;
       }
     } catch (error: any) {
-      console.log(`   ❌ Error getting subject coordinates: ${error.message}`);
+      jobLog(`   ❌ Error getting subject coordinates: ${error.message}`);
       return null;
     }
   }
@@ -950,14 +950,14 @@ export class ComprehensiveComparableSearchV5 {
     properties: any[],
     subjectCoords: { lat: number; lon: number }
   ): Promise<any[]> {
-    console.log(`   🔍 Extracting coordinates for ${properties.length} comparables...`);
+    jobLog(`   🔍 Extracting coordinates for ${properties.length} comparables...`);
 
     const propertiesWithDistances: any[] = [];
 
     // Extract coordinates using Vertex AI batch processing
     const coordinatesMap = await this.extractCoordinatesBatch(properties);
 
-    console.log(`   📊 Successfully extracted coordinates for ${coordinatesMap.size}/${properties.length} properties`);
+    jobLog(`   📊 Successfully extracted coordinates for ${coordinatesMap.size}/${properties.length} properties`);
 
     // Calculate distances for ALL properties (no filtering by radius)
     for (let i = 0; i < properties.length; i++) {
@@ -975,12 +975,12 @@ export class ComprehensiveComparableSearchV5 {
         // Always add distance to property - let progressive search handle radius filtering
         property.distanceFromSubject = distance;
         propertiesWithDistances.push(property);
-        console.log(`   📐 ${property.address}: ${distance.toFixed(2)} miles`);
+        jobLog(`   📐 ${property.address}: ${distance.toFixed(2)} miles`);
       } else {
         // If we can't get coordinates, still include property but mark distance as null
         property.distanceFromSubject = null;
         propertiesWithDistances.push(property);
-        console.log(`   ❓ ${property.address}: No coordinates found (distance: null)`);
+        jobLog(`   ❓ ${property.address}: No coordinates found (distance: null)`);
       }
     }
 
@@ -995,7 +995,7 @@ export class ComprehensiveComparableSearchV5 {
       return coordinatesMap;
     }
 
-    console.log(`🗺️  🎯 DIRECT GOOGLE MAPS GEOCODING for ${properties.length} properties...`);
+    jobLog(`🗺️  🎯 DIRECT GOOGLE MAPS GEOCODING for ${properties.length} properties...`);
 
     try {
       // Initialize Google Maps Geocoder
@@ -1014,17 +1014,17 @@ export class ComprehensiveComparableSearchV5 {
 
         if (result) {
           coordinatesMap.set(i, { lat: result.lat, lon: result.lng });
-          console.log(`   ✅ Property ${i + 1}: ${result.lat}, ${result.lng} (${result.locationType})`);
+          jobLog(`   ✅ Property ${i + 1}: ${result.lat}, ${result.lng} (${result.locationType})`);
         } else {
-          console.log(`   ❌ Property ${i + 1}: Failed to geocode "${address}"`);
+          jobLog(`   ❌ Property ${i + 1}: Failed to geocode "${address}"`);
         }
       }
 
-      console.log(`🗺️  ✅ Google Maps geocoding complete: ${coordinatesMap.size}/${properties.length} successful`);
+      jobLog(`🗺️  ✅ Google Maps geocoding complete: ${coordinatesMap.size}/${properties.length} successful`);
 
     } catch (error: any) {
-      console.log(`   ❌ Google Maps geocoding failed: ${error.message}`);
-      console.log(`   ⚠️  Proceeding without coordinates - distances will be unavailable`);
+      jobLog(`   ❌ Google Maps geocoding failed: ${error.message}`);
+      jobLog(`   ⚠️  Proceeding without coordinates - distances will be unavailable`);
     }
 
     return coordinatesMap;
@@ -1065,20 +1065,20 @@ async function testComprehensiveSearchV3() {
     const service = new ComprehensiveComparableSearchV5();
     const result = await service.findComparables(address);
 
-    console.log(`✅ Search completed successfully!`);
-    console.log(`   All Comps: ${result.all_comps.length}`);
-    console.log(`   Qualified: ${result.qualified_comps.length}`);
-    console.log(`   Renovated: ${result.renovation_analysis.likely_renovated.length}`);
-    console.log(`   Quality: ${result.searchMetadata.qualityScore}`);
+    jobLog(`✅ Search completed successfully!`);
+    jobLog(`   All Comps: ${result.all_comps.length}`);
+    jobLog(`   Qualified: ${result.qualified_comps.length}`);
+    jobLog(`   Renovated: ${result.renovation_analysis.likely_renovated.length}`);
+    jobLog(`   Quality: ${result.searchMetadata.qualityScore}`);
 
     if (result.arv) {
-      console.log(`   ARV: $${result.arv.estimate.toLocaleString()}`);
+      jobLog(`   ARV: $${result.arv.estimate.toLocaleString()}`);
     }
 
     if (result.twoBathARV) {
-      console.log(`   2-Bath ARV: $${result.twoBathARV.estimate.toLocaleString()}`);
-      console.log(`   Value Add: $${result.twoBathARV.valueAdd.toLocaleString()} (${result.twoBathARV.valueAddPercent.toFixed(1)}%)`);
-      console.log(`   ROI: ${result.twoBathARV.roiEstimate?.toFixed(1)}%`);
+      jobLog(`   2-Bath ARV: $${result.twoBathARV.estimate.toLocaleString()}`);
+      jobLog(`   Value Add: $${result.twoBathARV.valueAdd.toLocaleString()} (${result.twoBathARV.valueAddPercent.toFixed(1)}%)`);
+      jobLog(`   ROI: ${result.twoBathARV.roiEstimate?.toFixed(1)}%`);
     }
 
   } catch (error: any) {

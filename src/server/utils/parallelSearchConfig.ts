@@ -9,7 +9,6 @@ export interface ParallelSearchConfig {
   geocodeConcurrency: number;
   topKPerPass: number;
   targetComps: number;
-  getTargetForPass: (passLevel: number) => number;
 }
 
 export function getParallelSearchConfig(): ParallelSearchConfig {
@@ -29,11 +28,6 @@ export function getParallelSearchConfig(): ParallelSearchConfig {
     geocodeConcurrency: Number(process.env.PV_GEOCODE_CONC || 20),
     topKPerPass: Number(process.env.PV_TOPK_PER_PASS || 16),
     targetComps: Number(process.env.PV_TARGET_COMPS || 6),
-    getTargetForPass: (passLevel: number) => {
-      // Level 1-2: minimum 4 properties
-      // Level 3-4: minimum 3 properties
-      return passLevel <= 2 ? 4 : 3;
-    }
   };
 }
 

@@ -7,7 +7,7 @@ import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-detai
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
 import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ARVCalculator } from './arvCalculator';
-import { updateJobProgress, isJobCancelled } from './utils/jobQueue';
+import { updateJobProgress, isJobCancelled, jobLog } from './utils/jobQueue';
 import { ParallelSearchOrchestrator } from './utils/parallelSearchOrchestrator';
 import { parallelSearchConfig } from './utils/parallelSearchConfig';
 
@@ -72,21 +72,21 @@ export class ComprehensiveComparableSearchV10 {
     this.deduplicator = new VertexDeduplicator();
     this.parallelOrchestrator = new ParallelSearchOrchestrator();
 
-    console.log(`\n🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED`);
-    console.log(`   Parallel search enabled: ${parallelSearchConfig.enabled}`);
-    console.log(`   Vertex concurrency: ${parallelSearchConfig.vertexLocalConcurrency}`);
-    console.log(`   Levels: ${parallelSearchConfig.levels.join(',')}`);
+    jobLog(`\n🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED`);
+    jobLog(`   Parallel search enabled: ${parallelSearchConfig.enabled}`);
+    jobLog(`   Vertex concurrency: ${parallelSearchConfig.vertexLocalConcurrency}`);
+    jobLog(`   Levels: ${parallelSearchConfig.levels.join(',')}`);
   }
 
   async findComparables(address: string): Promise<ComprehensiveSearchResultV10> {
     const startTime = Date.now();
-    console.log(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V10 - Parallel Immediate Mode`);
-    console.log(`============================================================`);
-    console.log(`📍 Analyzing: ${address}`);
+    jobLog(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V10 - Parallel Immediate Mode`);
+    jobLog(`============================================================`);
+    jobLog(`📍 Analyzing: ${address}`);
 
     try {
       // Step 1: Get subject property details
-      console.log(`\n📋 Step 1: Subject Property Research`);
+      jobLog(`\n📋 Step 1: Subject Property Research`);
 
       try {
         await updateJobProgress('SUBJECT_PROPERTY');
@@ -115,13 +115,13 @@ export class ComprehensiveComparableSearchV10 {
         throw new Error('Could not fetch subject property details');
       }
 
-      console.log(`   ✅ Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft, Built ${subjectDetails.yearBuilt}`);
+      jobLog(`   ✅ Subject: ${subjectDetails.beds}BR/${subjectDetails.baths}BA, ${subjectDetails.sqft}sqft, Built ${subjectDetails.yearBuilt}`);
       if (subjectDetails.subdivision) {
-        console.log(`   🏘️  Subdivision: ${subjectDetails.subdivision}`);
+        jobLog(`   🏘️  Subdivision: ${subjectDetails.subdivision}`);
       }
 
       // Step 2: Parallel comparable search
-      console.log(`\n🔥 Step 2: Parallel Comparable Search (V10)`);
+      jobLog(`\n🔥 Step 2: Parallel Comparable Search (V10)`);
 
       try {
         await updateJobProgress('COMPARABLE_SEARCH_L1'); // Update to L1 to show search started
@@ -135,7 +135,7 @@ export class ComprehensiveComparableSearchV10 {
       }
 
       const subjectPropertyType = subjectDetails.propertyType || undefined;
-      console.log(`   🏠 Property Type: ${subjectPropertyType || 'Not specified'}`);
+      jobLog(`   🏠 Property Type: ${subjectPropertyType || 'Not specified'}`);
 
       // Execute parallel search
       let parallelResult;
@@ -162,13 +162,13 @@ export class ComprehensiveComparableSearchV10 {
       }
 
       const allComps = parallelResult.qualifiedComps;
-      console.log(`   📊 Parallel search complete: ${allComps.length} qualified comps in ${parallelResult.searchMetadata.totalSearchTime}ms`);
+      jobLog(`   📊 Parallel search complete: ${allComps.length} qualified comps in ${parallelResult.searchMetadata.totalSearchTime}ms`);
 
       if (allComps.length === 0) {
-        console.log(`\n❌ EARLY TERMINATION: No comparable properties found`);
-        console.log(`   🏠 Subject property exists but no recent sales in area`);
-        console.log(`   💡 Reason: Rural/sparse market with insufficient transaction data`);
-        console.log(`   📊 FINAL RESULT: Analysis terminated - no ARV calculation possible`);
+        jobLog(`\n❌ EARLY TERMINATION: No comparable properties found`);
+        jobLog(`   🏠 Subject property exists but no recent sales in area`);
+        jobLog(`   💡 Reason: Rural/sparse market with insufficient transaction data`);
+        jobLog(`   📊 FINAL RESULT: Analysis terminated - no ARV calculation possible`);
 
         const subjectSummary = this.buildSubjectSummary(address, subjectDetails);
         const endTime = Date.now();
@@ -210,12 +210,12 @@ export class ComprehensiveComparableSearchV10 {
       }
 
       // Step 3: Data Normalization
-      console.log(`\n🔧 Step 3: Data Normalization`);
+      jobLog(`\n🔧 Step 3: Data Normalization`);
       let normalizationResult;
       try {
         normalizationResult = this.normalizer.processProperties(allComps);
-        console.log(`   ✅ Normalized ${normalizationResult.normalized.length}/${normalizationResult.summary.originalCount} properties`);
-        console.log(`   📊 Normalization: ${normalizationResult.summary.duplicatesFound} duplicates, ${normalizationResult.summary.conflictsResolved} conflicts resolved`);
+        jobLog(`   ✅ Normalized ${normalizationResult.normalized.length}/${normalizationResult.summary.originalCount} properties`);
+        jobLog(`   📊 Normalization: ${normalizationResult.summary.duplicatesFound} duplicates, ${normalizationResult.summary.conflictsResolved} conflicts resolved`);
       } catch (error) {
         console.error(`❌ [NORMALIZATION] ERROR normalizing properties:`);
         console.error(`   Error type: ${typeof error}`);
@@ -226,7 +226,7 @@ export class ComprehensiveComparableSearchV10 {
       }
 
       // Step 4: Deduplication
-      console.log(`\n🤖 Step 4: Vertex AI Deduplication`);
+      jobLog(`\n🤖 Step 4: Vertex AI Deduplication`);
 
       try {
         await updateJobProgress('DEDUPLICATION');
@@ -242,7 +242,7 @@ export class ComprehensiveComparableSearchV10 {
       let dedupResult;
       try {
         dedupResult = await this.deduplicator.deduplicateProperties(normalizationResult.normalized);
-        console.log(`   ✅ Deduplication: ${allComps.length} → ${dedupResult.uniqueProperties.length} unique (removed ${dedupResult.duplicatesRemoved} duplicates)`);
+        jobLog(`   ✅ Deduplication: ${allComps.length} → ${dedupResult.uniqueProperties.length} unique (removed ${dedupResult.duplicatesRemoved} duplicates)`);
       } catch (error) {
         console.error(`❌ [DEDUPLICATION] ERROR deduplicating properties:`);
         console.error(`   Error type: ${typeof error}`);
@@ -255,7 +255,7 @@ export class ComprehensiveComparableSearchV10 {
       const finalComps = dedupResult.uniqueProperties;
 
       // Step 5: ARV Calculation
-      console.log(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
+      jobLog(`\n🧮 Step 6: ARV Calculation (PPSF Clustering)`);
 
       try {
         await updateJobProgress('ARV_CALCULATION');
@@ -268,7 +268,7 @@ export class ComprehensiveComparableSearchV10 {
         // Continue execution - progress update failure is non-critical
       }
 
-      console.log(`   📊 Calculating ARV with ${finalComps.length} comps using PPSF clustering algorithm...`);
+      jobLog(`   📊 Calculating ARV with ${finalComps.length} comps using PPSF clustering algorithm...`);
 
       let arvResult;
       try {
@@ -311,8 +311,8 @@ export class ComprehensiveComparableSearchV10 {
           throw new Error(`ARV unavailable (estimate: $${arvResult.arv.estimate}, method: ${arvResult.arv.method})`);
         }
 
-        console.log(`   ✅ ARV Result: $${arvResult.arv.estimate.toLocaleString()} (${arvResult.arv.method}, confidence: ${arvResult.arv.confidence})`);
-        console.log(`   📊 Comps Used: ${arvResult.arv.dataPoints} out of ${finalComps.length} qualified comps`);
+        jobLog(`   ✅ ARV Result: $${arvResult.arv.estimate.toLocaleString()} (${arvResult.arv.method}, confidence: ${arvResult.arv.confidence})`);
+        jobLog(`   📊 Comps Used: ${arvResult.arv.dataPoints} out of ${finalComps.length} qualified comps`);
       } catch (error) {
         console.error(`❌ [ARV_CALCULATION] ERROR calculating ARV:`);
         console.error(`   Error type: ${typeof error}`);
@@ -323,7 +323,7 @@ export class ComprehensiveComparableSearchV10 {
       }
 
       // Step 7: Renovation Analysis
-      console.log(`\n🔨 Step 7: Renovation Analysis`);
+      jobLog(`\n🔨 Step 7: Renovation Analysis`);
       const renovationAnalysis = {
         likely_renovated: arvResult.likely_renovated || [],
         likely_unrenovated: arvResult.likely_unrenovated || [],
@@ -335,11 +335,11 @@ export class ComprehensiveComparableSearchV10 {
       const endTime = Date.now();
       const totalTime = endTime - startTime;
 
-      console.log(`\n📊 COMPREHENSIVE SEARCH V10 COMPLETE`);
-      console.log(`   Total Time: ${totalTime}ms (${(totalTime / 1000).toFixed(1)}s)`);
-      console.log(`   Parallel Search: ${parallelResult.searchMetadata.totalSearchTime}ms`);
-      console.log(`   ARV: $${arvResult.arv.estimate.toLocaleString()} (${arvResult.arv.method})`);
-      console.log(`   Comps Used: ${finalComps.length}`);
+      jobLog(`\n📊 COMPREHENSIVE SEARCH V10 COMPLETE`);
+      jobLog(`   Total Time: ${totalTime}ms (${(totalTime / 1000).toFixed(1)}s)`);
+      jobLog(`   Parallel Search: ${parallelResult.searchMetadata.totalSearchTime}ms`);
+      jobLog(`   ARV: $${arvResult.arv.estimate.toLocaleString()} (${arvResult.arv.method})`);
+      jobLog(`   Comps Used: ${finalComps.length}`);
 
       return {
         subject: subjectSummary,

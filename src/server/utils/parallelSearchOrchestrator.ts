@@ -15,6 +15,7 @@ import {
 } from './compScoring';
 import { parallelSearchConfig } from './parallelSearchConfig';
 import { VertexComparableSearchService } from '../step3-find-comparables';
+import { jobLog } from '../utils/jobQueue';
 
 export interface SearchLevelResult {
   level: number;
@@ -45,7 +46,6 @@ export class ParallelSearchOrchestrator {
   private abortController: AbortController;
   private dataVersion = 0; // Incremented when new level results land
   private lastTriedVersion: Record<number, number> = { 1: -1, 2: -1, 3: -1, 4: -1 };
-  private totalCacheHits = 0; // Track cache hits across all levels
 
   constructor() {
     const config = parallelSearchConfig;
@@ -54,10 +54,10 @@ export class ParallelSearchOrchestrator {
     this.compService = new VertexComparableSearchService();
     this.abortController = new AbortController();
 
-    console.log(`🚀 PARALLEL SEARCH ORCHESTRATOR initialized:`);
-    console.log(`   Vertex concurrency: ${config.vertexLocalConcurrency}`);
-    console.log(`   Geocode concurrency: ${config.geocodeConcurrency}`);
-    console.log(`   Levels: ${config.levels.join(',')}`);
+    jobLog(`🚀 PARALLEL SEARCH ORCHESTRATOR initialized:`);
+    jobLog(`   Vertex concurrency: ${config.vertexLocalConcurrency}`);
+    jobLog(`   Geocode concurrency: ${config.geocodeConcurrency}`);
+    jobLog(`   Levels: ${config.levels.join(',')}`);
   }
 
   /**
@@ -69,31 +69,22 @@ export class ParallelSearchOrchestrator {
   ): Promise<ParallelSearchResult> {
     const startTime = Date.now();
     const config = parallelSearchConfig;
-    this.totalCacheHits = 0; // Reset cache hits for this search
 
     try {
-      console.log(`\n🔥 PARALLEL SEARCH START for: ${subject.address}`);
-      console.log(`   Subject: ${subject.beds}BR/${subject.baths}BA, ${subject.sqft}sqft`);
-      console.log(`   Subdivision: ${subject.subdivision || 'N/A'}`);
-      console.log(`   Running levels: ${config.levels.join(', ')}`);
-
-      // Geocode subject property once before launching all levels
-      console.log(`\n🌍 Pre-geocoding subject property for all levels...`);
-      const subjectCoords = await this.compService['geocodeWithTimeout'](subject.address, 30000);
-      if (!subjectCoords) {
-        throw new Error(`Failed to geocode subject property: ${subject.address}`);
-      }
-      console.log(`   ✅ Subject coordinates: ${subjectCoords.lat}, ${subjectCoords.lon}`);
+      jobLog(`\n🔥 PARALLEL SEARCH START for: ${subject.address}`);
+      jobLog(`   Subject: ${subject.beds}BR/${subject.baths}BA, ${subject.sqft}sqft`);
+      jobLog(`   Subdivision: ${subject.subdivision || 'N/A'}`);
+      jobLog(`   Running levels: ${config.levels.join(', ')}`);
 
       // Global state
       const pools = new Map<number, ComparableProperty[]>(); // Raw results per level
       const seenComps = new Map<string, ComparableProperty>(); // Deduplicated pool
       const levelPromises: Promise<SearchLevelResult>[] = [];
 
-      // Launch all levels immediately with shared subject coordinates
+      // Launch all levels immediately
       for (const level of config.levels) {
-        console.log(`   🚀 Launching Level ${level} search...`);
-        const promise = this.executeLevelSearch(level, subject, subjectPropertyType, subjectCoords);
+        jobLog(`   🚀 Launching Level ${level} search...`);
+        const promise = this.executeLevelSearch(level, subject, subjectPropertyType);
         levelPromises.push(promise);
 
         // Set up handler for when this level completes
@@ -119,18 +110,18 @@ export class ParallelSearchOrchestrator {
         throw error; // Critical - coordination failure
       }
 
-      console.log(`\n📊 ALL LEVELS COMPLETED:`);
+      jobLog(`\n📊 ALL LEVELS COMPLETED:`);
       results.forEach((result, idx) => {
         const level = config.levels[idx];
         if (result.status === 'fulfilled') {
-          console.log(`   ✅ Level ${level}: ${result.value.rawComps.length} raw comps in ${result.value.searchTime}ms`);
+          jobLog(`   ✅ Level ${level}: ${result.value.rawComps.length} raw comps in ${result.value.searchTime}ms`);
         } else {
-          console.log(`   ❌ Level ${level}: FAILED - ${result.reason}`);
+          jobLog(`   ❌ Level ${level}: FAILED - ${result.reason}`);
         }
       });
 
       // Final pass if no early exit occurred
-      console.log(`\n🔍 FINAL PASS - Clean ordered pass 1→2→3→4 on all accumulated comps`);
+      jobLog(`\n🔍 FINAL PASS - Clean ordered pass 1→2→3→4 on all accumulated comps`);
       let finalComps;
       try {
         finalComps = await this.tryProgressivePasses(pools, seenComps, subject, config.levels, true);
@@ -151,7 +142,7 @@ export class ParallelSearchOrchestrator {
           totalSearchTime: totalTime,
           levelsRun: config.levels,
           totalRawComps: seenComps.size,
-          cacheHits: this.totalCacheHits,
+          cacheHits: 0, // TODO: track cache hits
           metrics: {
             vertexQueueStats: this.vertexQueue.getStats(),
             geocodeQueueStats: this.geocodeQueue.getStats(),
@@ -178,7 +169,7 @@ export class ParallelSearchOrchestrator {
     subject: SubjectProperty
   ): Promise<void> {
     try {
-      console.log(`\n✅ LEVEL ${result.level} READY - ${result.rawComps.length} raw comps`);
+      jobLog(`\n✅ LEVEL ${result.level} READY - ${result.rawComps.length} raw comps`);
 
       // Store raw results
       pools.set(result.level, result.rawComps);
@@ -204,25 +195,21 @@ export class ParallelSearchOrchestrator {
         // Continue execution - partial deduplication is better than none
       }
 
-      console.log(`   📦 Total unique comps accumulated: ${seenComps.size}`);
+      jobLog(`   📦 Total unique comps accumulated: ${seenComps.size}`);
 
       // Bump data version since new data landed
       this.dataVersion++;
-      console.log(`   📊 Data version: ${this.dataVersion}`);
+      jobLog(`   📊 Data version: ${this.dataVersion}`);
 
       // Try progressive passes based on what we have
       const availableLevels = Array.from(pools.keys()).sort();
-      console.log(`   🔍 Attempting progressive passes with levels: ${availableLevels.join(',')}`);
+      jobLog(`   🔍 Attempting progressive passes with levels: ${availableLevels.join(',')}`);
 
       const qualified = await this.tryProgressivePasses(pools, seenComps, subject, availableLevels, false);
 
       // Note: No early exit - we always wait for all levels and run final pass
-      const targetForLevel = parallelSearchConfig.getTargetForPass(result.level);
-      if (qualified.length >= targetForLevel) {
-        console.log(`   ℹ️  Found ${qualified.length} qualified comps (target: ${targetForLevel}), but continuing to gather all level data`);
-        console.log(`   📊 NO_EARLY_EXIT: V10 design - waiting for all ${parallelSearchConfig.levels.length} levels to complete before final pass`);
-      } else {
-        console.log(`   📊 EARLY_PASS: ${qualified.length} qualified (need ${targetForLevel}), continuing level collection`);
+      if (qualified.length >= parallelSearchConfig.targetComps) {
+        jobLog(`   ℹ️  Found ${qualified.length} qualified comps (target: ${parallelSearchConfig.targetComps}), but continuing to gather all level data`);
       }
 
     } catch (error) {
@@ -247,38 +234,38 @@ export class ParallelSearchOrchestrator {
     const config = parallelSearchConfig;
     let bestResult: ComparableProperty[] = [];
 
-    console.log(`\n   🔄 ${finalRun ? '🏁 FINAL' : '⚡ EARLY'} Progressive Pass - dataVersion=${this.dataVersion}, seenComps=${seenComps.size}, availableLevels=[${availableLevels.join(',')}]`);
+    jobLog(`\n   🔄 ${finalRun ? '🏁 FINAL' : '⚡ EARLY'} Progressive Pass - dataVersion=${this.dataVersion}, seenComps=${seenComps.size}, availableLevels=[${availableLevels.join(',')}]`);
 
     // Try each pass in order (1 → 2 → 3 → 4)
     for (const passLevel of [1, 2, 3, 4]) {
       // Skip if we've already attempted this pass at the CURRENT dataVersion (unless final run)
       if (!finalRun && this.lastTriedVersion[passLevel] === this.dataVersion) {
-        console.log(`   ⏭️  Pass ${passLevel}: Skipping (already tried for dataVersion ${this.dataVersion})`);
+        jobLog(`   ⏭️  Pass ${passLevel}: Skipping (already tried for dataVersion ${this.dataVersion})`);
         continue;
       }
 
       // Check if we have enough data for this pass
       if (!availableLevels.includes(passLevel)) {
-        console.log(`   ⏭️  Pass ${passLevel}: Skipping (level not available yet)`);
+        jobLog(`   ⏭️  Pass ${passLevel}: Skipping (level not available yet)`);
         continue;
       }
 
       // Mark this pass as tried for the current dataVersion (only in early runs)
       if (!finalRun) {
         this.lastTriedVersion[passLevel] = this.dataVersion;
-        console.log(`   🔍 Trying Pass ${passLevel} (dataVersion ${this.dataVersion})...`);
+        jobLog(`   🔍 Trying Pass ${passLevel} (dataVersion ${this.dataVersion})...`);
       } else {
-        console.log(`   🔍 Trying Pass ${passLevel} (FINAL RUN - ignoring history)...`);
+        jobLog(`   🔍 Trying Pass ${passLevel} (FINAL RUN - ignoring history)...`);
       }
 
-      console.log(`\n🎯 TRYING PASS ${passLevel}:`);
+      jobLog(`\n🎯 TRYING PASS ${passLevel}:`);
 
       // Get comps up to this pass level
       const compsForPass = this.getCompsUpToLevel(seenComps, passLevel);
-      console.log(`   📊 ${compsForPass.length} comps available for pass ${passLevel}`);
+      jobLog(`   📊 ${compsForPass.length} comps available for pass ${passLevel}`);
 
       if (compsForPass.length === 0) {
-        console.log(`   ⏭️  Pass ${passLevel}: No comps available`);
+        jobLog(`   ⏭️  Pass ${passLevel}: No comps available`);
         continue;
       }
 
@@ -290,7 +277,7 @@ export class ParallelSearchOrchestrator {
           config.topKPerPass,
           comp => scoreComparable(comp, subject)
         );
-        console.log(`   🔝 Selected top ${topCandidates.length} candidates for geocoding`);
+        jobLog(`   🔝 Selected top ${topCandidates.length} candidates for geocoding`);
       } catch (error) {
         console.error(`❌ [TOP_K_SELECTION] ERROR selecting top candidates:`);
         console.error(`   Error type: ${typeof error}`);
@@ -299,7 +286,7 @@ export class ParallelSearchOrchestrator {
         console.error(`   Context: passLevel=${passLevel}, compsForPassCount=${compsForPass.length}, topKPerPass=${config.topKPerPass}`);
         // Fallback to all comps if top-K selection fails
         topCandidates = compsForPass.slice(0, config.topKPerPass);
-        console.log(`   ⚠️  Using fallback: first ${topCandidates.length} comps`);
+        jobLog(`   ⚠️  Using fallback: first ${topCandidates.length} comps`);
       }
 
       // Geocode missing lat/lon
@@ -328,38 +315,32 @@ export class ParallelSearchOrchestrator {
         qualified = [];
       }
 
-      console.log(`   ✅ Pass ${passLevel}: ${qualified.length} qualified comps`);
-
-      // Get level-specific target
-      const targetForPass = config.getTargetForPass(passLevel);
-
-      // Log pass result summary for visibility
-      console.log(`   📊 PASS_RESULT: pass=${passLevel} qualified=${qualified.length} target=${targetForPass} ${finalRun ? '(FINAL)' : '(EARLY)'}`);
+      jobLog(`   ✅ Pass ${passLevel}: ${qualified.length} qualified comps`);
 
       // Track best result
       if (qualified.length > bestResult.length) {
         bestResult = qualified;
       }
 
-      if (qualified.length >= targetForPass) {
-        console.log(`   🎯 Target met! Returning ${qualified.length} comps from Pass ${passLevel}`);
-        const result = qualified.slice(0, targetForPass);
-        console.log(`   📍 Returning comps: ${result.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
+      if (qualified.length >= config.targetComps) {
+        jobLog(`   🎯 Target met! Returning ${qualified.length} comps from Pass ${passLevel}`);
+        const result = qualified.slice(0, config.targetComps);
+        jobLog(`   📍 Returning comps: ${result.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
         return result;
       }
     }
 
     // Return best pass result (not raw union)
     if (bestResult.length > 0) {
-      console.log(`   📋 No pass met its target, returning best pass result: ${bestResult.length} comps`);
-      console.log(`   📍 Best result comps: ${bestResult.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
+      jobLog(`   📋 No pass met target (${config.targetComps}), returning best pass result: ${bestResult.length} comps`);
+      jobLog(`   📍 Best result comps: ${bestResult.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
       return bestResult;
     }
 
     // Last resort: return all comps if no passes produced any results
     const final = this.getCompsUpToLevel(seenComps, 4);
-    console.log(`   ⚠️  All passes failed, returning all ${final.length} comps as fallback`);
-    console.log(`   📍 Fallback comps: ${final.slice(0, 10).map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}${final.length > 10 ? '...' : ''}`);
+    jobLog(`   ⚠️  All passes failed, returning all ${final.length} comps as fallback`);
+    jobLog(`   📍 Fallback comps: ${final.slice(0, 10).map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}${final.length > 10 ? '...' : ''}`);
     return final;
   }
 
@@ -369,13 +350,12 @@ export class ParallelSearchOrchestrator {
   private async executeLevelSearch(
     level: number,
     subject: SubjectProperty,
-    propertyType?: string,
-    subjectCoords?: { lat: number; lon: number }
+    propertyType?: string
   ): Promise<SearchLevelResult> {
     const startTime = Date.now();
 
     try {
-      console.log(`🔍 LEVEL ${level} SEARCH STARTING...`);
+      jobLog(`🔍 LEVEL ${level} SEARCH STARTING...`);
 
       // Load cached comps from Redis (hybrid cache: junction + global comps)
       const redisCache = getRedisCache();
@@ -383,7 +363,7 @@ export class ParallelSearchOrchestrator {
 
       let cachedComps: any[] = [];
       if (cachedRefs.length > 0) {
-        console.log(`   💾 Found ${cachedRefs.length} cached comp references`);
+        jobLog(`   💾 Found ${cachedRefs.length} cached comp references`);
 
         // Load global comp data in parallel
         const compAddresses = cachedRefs.map(ref => ref.compAddress);
@@ -403,8 +383,7 @@ export class ParallelSearchOrchestrator {
           })
           .filter((comp): comp is any => comp !== null);
 
-        console.log(`   💾 Loaded ${cachedComps.length}/${cachedRefs.length} cached comps from Redis`);
-        this.totalCacheHits += cachedComps.length; // Track cache hits
+        jobLog(`   💾 Loaded ${cachedComps.length}/${cachedRefs.length} cached comps from Redis`);
       }
 
       // Acquire semaphore tokens (if multi-worker)
@@ -415,7 +394,7 @@ export class ParallelSearchOrchestrator {
         // Define level-specific search criteria
         const criteria = this.getLevelCriteria(level, subject.subdivision != null);
 
-        console.log(`   Level ${level} criteria: ${criteria.radius}mi, ${criteria.timeWindow}mo, ${criteria.maxResults} max`);
+        jobLog(`   Level ${level} criteria: ${criteria.radius}mi, ${criteria.timeWindow}mo, ${criteria.maxResults} max`);
 
         // Execute search via bounded queue
         let result;
@@ -433,8 +412,7 @@ export class ParallelSearchOrchestrator {
                 baths: subject.baths || 0,
                 yearBuilt: subject.yearBuilt || 0,
               },
-              { subdivision: subject.subdivision },
-              subjectCoords  // Pass pre-geocoded coordinates
+              { subdivision: subject.subdivision }
             );
           }, this.abortController.signal);
         } catch (error) {
@@ -448,7 +426,7 @@ export class ParallelSearchOrchestrator {
 
         const searchTime = Date.now() - startTime;
 
-        console.log(`✅ LEVEL ${level} SEARCH COMPLETE: ${result.comparables?.length || 0} comps in ${searchTime}ms`);
+        jobLog(`✅ LEVEL ${level} SEARCH COMPLETE: ${result.comparables?.length || 0} comps in ${searchTime}ms`);
 
         // Merge cached comps with live search results
         const liveComps = result.comparables || [];
@@ -464,7 +442,7 @@ export class ParallelSearchOrchestrator {
         }
         const rawComps = Array.from(uniqueComps.values());
 
-        console.log(`   📦 Total comps: ${rawComps.length} (${liveComps.length} live + ${cachedComps.length} cached)`);
+        jobLog(`   📦 Total comps: ${rawComps.length} (${liveComps.length} live + ${cachedComps.length} cached)`);
 
         // Update hybrid cache with new comps (fire-and-forget)
         if (liveComps.length > 0) {
@@ -558,7 +536,7 @@ export class ParallelSearchOrchestrator {
       }
     }
     if (cached > 0) {
-      console.log(`   💾 Cached ${cached} geocodes to Redis`);
+      jobLog(`   💾 Cached ${cached} geocodes to Redis`);
     }
   }
 
@@ -572,14 +550,11 @@ export class ParallelSearchOrchestrator {
     const toGeocode = candidates.filter(c => !c.lat || !c.lon);
 
     if (toGeocode.length === 0) {
-      console.log(`   ✅ All candidates already have coordinates`);
+      jobLog(`   ✅ All candidates already have coordinates`);
       return;
     }
 
-    console.log(`   🗺️  Geocoding ${toGeocode.length} candidates...`);
-
-    let cacheHits = 0;
-    let cacheMisses = 0;
+    jobLog(`   🗺️  Geocoding ${toGeocode.length} candidates...`);
 
     const geocodeTasks = toGeocode.map(comp => async () => {
       try {
@@ -589,14 +564,12 @@ export class ParallelSearchOrchestrator {
           comp.lat = cached.lat;
           comp.lon = cached.lon;
           comp.distanceMi = this.calculateDistance(subject, comp);
-          cacheHits++;
           return;
         }
 
-        cacheMisses++;
         // Geocode via Maps API (TODO: implement actual geocoding)
         // For now, skip actual geocoding
-        console.log(`   ⚠️  Geocoding not implemented yet for: ${comp.address}`);
+        jobLog(`   ⚠️  Geocoding not implemented yet for: ${comp.address}`);
 
       } catch (error) {
         console.error(`❌ GEOCODE ERROR for "${comp.address}":`, error);
@@ -604,10 +577,7 @@ export class ParallelSearchOrchestrator {
     });
 
     await this.geocodeQueue.runMany(geocodeTasks, this.abortController.signal);
-
-    // Log cache hit metrics summary
-    console.log(`   ✅ Geocoding complete`);
-    console.log(`   📊 GEOCODE cache hits: ${cacheHits}/${toGeocode.length} (${cacheMisses} misses)`);
+    jobLog(`   ✅ Geocoding complete`);
   }
 
   /**

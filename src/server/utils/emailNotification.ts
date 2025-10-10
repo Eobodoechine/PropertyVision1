@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { jobLog } from './jobQueue';
 
 // Email configuration
 const NOTIFICATION_EMAIL = 'nnamdi@enohomebuyers.com';
@@ -40,7 +41,7 @@ export async function sendErrorNotification(params: ErrorNotificationParams): Pr
   // Skip if email not configured
   const transport = getTransporter();
   if (!transport) {
-    console.log('⚠️  Email not configured, skipping error notification');
+    jobLog('⚠️  Email not configured, skipping error notification');
     return false;
   }
 
@@ -102,7 +103,7 @@ export async function sendErrorNotification(params: ErrorNotificationParams): Pr
 
   try {
     await transport.sendMail(mailOptions);
-    console.log(`📧 Error notification sent to ${NOTIFICATION_EMAIL} for address: ${address}`);
+    jobLog(`📧 Error notification sent to ${NOTIFICATION_EMAIL} for address: ${address}`);
     return true;
   } catch (emailError: any) {
     console.error('❌ Failed to send error notification email:', emailError.message);
@@ -126,7 +127,7 @@ export async function sendSuccessNotification(params: SuccessNotificationParams)
   // Skip if email not configured
   const transport = getTransporter();
   if (!transport) {
-    console.log('⚠️  Email not configured, skipping success notification');
+    jobLog('⚠️  Email not configured, skipping success notification');
     return false;
   }
 
@@ -193,7 +194,7 @@ export async function sendSuccessNotification(params: SuccessNotificationParams)
 
   try {
     await transport.sendMail(mailOptions);
-    console.log(`📧 Success notification sent to ${NOTIFICATION_EMAIL} for address: ${address}`);
+    jobLog(`📧 Success notification sent to ${NOTIFICATION_EMAIL} for address: ${address}`);
     return true;
   } catch (emailError: any) {
     console.error('❌ Failed to send success notification email:', emailError.message);

@@ -2,7 +2,7 @@
 // Replaces redundant identical searches with intelligent expansion
 
 import { getRedisCache } from './redisCache';
-import { updateJobProgress, isJobCancelled } from './jobQueue';
+import { jobLog, updateJobProgress, isJobCancelled } from './jobQueue';
 
 interface SearchLevel {
   level: number;
@@ -151,7 +151,7 @@ export class ProgressiveSearchStrategy {
     // Try Redis first
     const redisComps = await this.redisCache.getRawComps(subjectAddress);
     if (redisComps.length > 0) {
-      console.log(`   💾 Found ${redisComps.length} cached raw comps from Redis for ${subjectAddress}`);
+      jobLog(`   💾 Found ${redisComps.length} cached raw comps from Redis for ${subjectAddress}`);
       // Sync to in-memory cache
       ProgressiveSearchStrategy.globalRawCompsCache.set(subjectAddress, redisComps);
       return redisComps;
@@ -160,10 +160,10 @@ export class ProgressiveSearchStrategy {
     // Fallback to in-memory cache
     const cached = ProgressiveSearchStrategy.globalRawCompsCache.get(subjectAddress);
     if (!cached) {
-      console.log(`   💾 No cache found for ${subjectAddress}`);
+      jobLog(`   💾 No cache found for ${subjectAddress}`);
       return [];
     }
-    console.log(`   💾 Found ${cached.length} cached raw comps from in-memory for ${subjectAddress}`);
+    jobLog(`   💾 Found ${cached.length} cached raw comps from in-memory for ${subjectAddress}`);
     return cached;
   }
 
@@ -188,9 +188,9 @@ export class ProgressiveSearchStrategy {
     if (newComps.length > 0) {
       const updatedCache = [...existingCache, ...newComps];
       ProgressiveSearchStrategy.globalRawCompsCache.set(subjectAddress, updatedCache);
-      console.log(`   💾 In-memory cache updated: Added ${newComps.length} new comps. Total cached: ${updatedCache.length}`);
+      jobLog(`   💾 In-memory cache updated: Added ${newComps.length} new comps. Total cached: ${updatedCache.length}`);
     } else {
-      console.log(`   💾 In-memory cache unchanged: No new comps found. Total cached: ${existingCache.length}`);
+      jobLog(`   💾 In-memory cache unchanged: No new comps found. Total cached: ${existingCache.length}`);
     }
   }
 
@@ -300,8 +300,8 @@ export class ProgressiveSearchStrategy {
   ): Promise<SearchResult> {
     const startTime = Date.now();
 
-    console.log(`🔍 Level ${level.level}: ${level.name}`);
-    console.log(`   📐 ${level.description}`);
+    jobLog(`🔍 Level ${level.level}: ${level.name}`);
+    jobLog(`   📐 ${level.description}`);
 
     try {
       // Set search parameters
@@ -314,8 +314,8 @@ export class ProgressiveSearchStrategy {
       }
 
       // Execute search
-      console.log(`🔍 DEBUG LEVEL: About to call searchService.findComparables`);
-      console.log(`🔍 DEBUG LEVEL: Parameters - address="${address}", propertyType="${propertyType}", maxResults=${level.criteria.maxResults}, radius=${level.criteria.radius}, timeWindow=${level.criteria.timeWindow}`);
+      jobLog(`🔍 DEBUG LEVEL: About to call searchService.findComparables`);
+      jobLog(`🔍 DEBUG LEVEL: Parameters - address="${address}", propertyType="${propertyType}", maxResults=${level.criteria.maxResults}, radius=${level.criteria.radius}, timeWindow=${level.criteria.timeWindow}`);
       const searchResult = await searchService.findComparables(
         address,
         propertyType, // Pass through the propertyType parameter
@@ -324,25 +324,25 @@ export class ProgressiveSearchStrategy {
         level.criteria.timeWindow,
         subjectDetails
       );
-      console.log(`🔍 DEBUG LEVEL: searchService.findComparables completed`);
-      console.log(`🔍 DEBUG LEVEL: searchResult type:`, typeof searchResult);
-      console.log(`🔍 DEBUG LEVEL: searchResult keys:`, searchResult ? Object.keys(searchResult) : 'null');
+      jobLog(`🔍 DEBUG LEVEL: searchService.findComparables completed`);
+      jobLog(`🔍 DEBUG LEVEL: searchResult type:`, typeof searchResult);
+      jobLog(`🔍 DEBUG LEVEL: searchResult keys:`, searchResult ? Object.keys(searchResult) : 'null');
 
       // 🚨 CRITICAL DEBUG CHECKPOINT: STATE DUMP FOR 1408 LYLE AVE BUG
-      console.log('\n🔍 CRITICAL STATE DUMP - executeSearchLevel');
-      console.log('===========================================');
-      console.log(`🔍 Stage: POST_SEARCH_SERVICE_CALL`);
-      console.log(`🔍 Level: ${level.level} (${level.name})`);
-      console.log(`🔍 SearchResult structure:`, JSON.stringify(searchResult, null, 2));
+      jobLog('\n🔍 CRITICAL STATE DUMP - executeSearchLevel');
+      jobLog('===========================================');
+      jobLog(`🔍 Stage: POST_SEARCH_SERVICE_CALL`);
+      jobLog(`🔍 Level: ${level.level} (${level.name})`);
+      jobLog(`🔍 SearchResult structure:`, JSON.stringify(searchResult, null, 2));
 
       if (searchResult && searchResult.comparables) {
-        console.log(`🔍 SearchResult.comparables length: ${searchResult.comparables.length}`);
+        jobLog(`🔍 SearchResult.comparables length: ${searchResult.comparables.length}`);
         searchResult.comparables.forEach((comp, index) => {
-          console.log(`🔍   [${index}] ${comp.address || 'NO_ADDRESS'} - $${comp.price || 'NO_PRICE'} - ${comp.sqft || 'NO_SQFT'}sqft`);
+          jobLog(`🔍   [${index}] ${comp.address || 'NO_ADDRESS'} - $${comp.price || 'NO_PRICE'} - ${comp.sqft || 'NO_SQFT'}sqft`);
         });
       } else {
-        console.log(`🚨 SearchResult.comparables is NULL or UNDEFINED`);
-        console.log(`🚨 searchResult:`, searchResult);
+        jobLog(`🚨 SearchResult.comparables is NULL or UNDEFINED`);
+        jobLog(`🚨 searchResult:`, searchResult);
       }
 
       // Restore original subdivision
@@ -352,20 +352,20 @@ export class ProgressiveSearchStrategy {
       const qualified = searchResult.comparables || [];
       const rawComps = searchResult.all_comps || []; // Get raw unfiltered comps
 
-      console.log(`\n🔍 CRITICAL STATE DUMP - POST_EXTRACTION`);
-      console.log('========================================');
-      console.log(`🔍 Stage: POST_QUALIFIED_EXTRACTION`);
-      console.log(`🔍 qualified.length: ${qualified.length}`);
-      console.log(`🔍 rawComps.length: ${rawComps.length}`);
-      console.log(`🔍 qualified array:`, qualified.map(comp => `${comp.address} - $${comp.price}`));
+      jobLog(`\n🔍 CRITICAL STATE DUMP - POST_EXTRACTION`);
+      jobLog('========================================');
+      jobLog(`🔍 Stage: POST_QUALIFIED_EXTRACTION`);
+      jobLog(`🔍 qualified.length: ${qualified.length}`);
+      jobLog(`🔍 rawComps.length: ${rawComps.length}`);
+      jobLog(`🔍 qualified array:`, qualified.map(comp => `${comp.address} - $${comp.price}`));
 
       if (qualified.length === 0) {
-        console.log(`🚨 CRITICAL: qualified array is EMPTY despite potential searchResult.comparables`);
-        console.log(`🚨 This is the exact bug we're tracking!`);
+        jobLog(`🚨 CRITICAL: qualified array is EMPTY despite potential searchResult.comparables`);
+        jobLog(`🚨 This is the exact bug we're tracking!`);
       }
 
 
-      console.log(`   ✅ Found ${qualified.length} qualified comps and ${rawComps.length} raw comps in ${searchTime}ms`);
+      jobLog(`   ✅ Found ${qualified.length} qualified comps and ${rawComps.length} raw comps in ${searchTime}ms`);
 
       return {
         level,
@@ -378,7 +378,7 @@ export class ProgressiveSearchStrategy {
       };
 
     } catch (error: any) {
-      console.log(`   ❌ Level ${level.level} failed: ${error.message}`);
+      jobLog(`   ❌ Level ${level.level} failed: ${error.message}`);
 
       return {
         level,
@@ -402,12 +402,12 @@ export class ProgressiveSearchStrategy {
     subdivision?: string,
     propertyType?: string
   ): Promise<ProgressiveSearchResult> {
-    console.log('🎯 PROGRESSIVE EXPANSION SEARCH');
-    console.log('===============================');
-    console.log(`📍 Subject: ${address}`);
-    console.log(`🚨 DEBUG PROGRESSIVE SEARCH: propertyType="${propertyType}" (type: ${typeof propertyType})`);
+    jobLog('🎯 PROGRESSIVE EXPANSION SEARCH');
+    jobLog('===============================');
+    jobLog(`📍 Subject: ${address}`);
+    jobLog(`🚨 DEBUG PROGRESSIVE SEARCH: propertyType="${propertyType}" (type: ${typeof propertyType})`);
     if (subjectDetails) {
-      console.log(`🏠 Subject: ${subjectDetails.sqft}sqft, ${subjectDetails.beds}BR/${subjectDetails.baths}BA, built ${subjectDetails.yearBuilt}`);
+      jobLog(`🏠 Subject: ${subjectDetails.sqft}sqft, ${subjectDetails.beds}BR/${subjectDetails.baths}BA, built ${subjectDetails.yearBuilt}`);
     }
 
     const hasSubdivision = Boolean(subdivision || process.env.SUBDIVISION);
@@ -426,7 +426,7 @@ export class ProgressiveSearchStrategy {
 
       // Check if job was cancelled
       if (await isJobCancelled()) {
-        console.log(`🚫 Job cancelled at Level ${level.level}, stopping search`);
+        jobLog(`🚫 Job cancelled at Level ${level.level}, stopping search`);
         break;
       }
 
@@ -446,21 +446,21 @@ export class ProgressiveSearchStrategy {
           });
         }
 
-        console.log(`   📊 Level ${level.level}: Added ${newCompsAdded} new raw comps`);
-        console.log(`   📦 Total accumulated raw comps: ${allDiscoveredComps.size}`);
+        jobLog(`   📊 Level ${level.level}: Added ${newCompsAdded} new raw comps`);
+        jobLog(`   📦 Total accumulated raw comps: ${allDiscoveredComps.size}`);
 
         // INJECT CACHED COMPS AFTER LEVEL 1 COMPLETES
         if (level.level === 1) {
           const cachedComps = await this.getCachedRawComps(address);
           if (cachedComps.length > 0) {
-            console.log(`\n💾 Injecting ${cachedComps.length} cached raw comps from previous runs...`);
+            jobLog(`\n💾 Injecting ${cachedComps.length} cached raw comps from previous runs...`);
             cachedComps.forEach(cachedComp => {
               const key = `${cachedComp.address}|${cachedComp.price}|${cachedComp.sqft}`;
               if (!allDiscoveredComps.has(key)) {
                 allDiscoveredComps.set(key, { ...cachedComp, foundAtLevel: 0 }); // Mark as from cache
               }
             });
-            console.log(`   📦 Total after cache injection: ${allDiscoveredComps.size}`);
+            jobLog(`   📦 Total after cache injection: ${allDiscoveredComps.size}`);
           }
         }
 
@@ -468,14 +468,14 @@ export class ProgressiveSearchStrategy {
         const accumulatedRawComps = Array.from(allDiscoveredComps.values());
 
         // Step 3: Apply bedroom, size, time filtering to ALL accumulated comps
-        console.log(`\n🔍 Level ${level.level} Filtering: Bedroom, Size, Time on ${accumulatedRawComps.length} accumulated comps`);
+        jobLog(`\n🔍 Level ${level.level} Filtering: Bedroom, Size, Time on ${accumulatedRawComps.length} accumulated comps`);
         const beforeFiltering = accumulatedRawComps.length;
         const filteredComps = accumulatedRawComps.filter(comp => {
           // Bedroom filter: Use level's bedsVariance
           if (subjectDetails?.beds) {
             const bedroomDiff = Math.abs((comp.beds || 0) - subjectDetails.beds);
             if (bedroomDiff > level.criteria.bedsVariance) {
-              console.log(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff}, limit: ±${level.criteria.bedsVariance})`);
+              jobLog(`   ❌ BEDROOM REJECTED ${comp.address}: ${comp.beds}BR vs ${subjectDetails.beds}BR (diff: ${bedroomDiff}, limit: ±${level.criteria.bedsVariance})`);
               return false;
             }
           }
@@ -484,7 +484,7 @@ export class ProgressiveSearchStrategy {
           if (subjectDetails?.sqft) {
             const sizeVariance = Math.abs(comp.sqft - subjectDetails.sqft) / subjectDetails.sqft * 100;
             if (sizeVariance > level.criteria.sizeVariance) {
-              console.log(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> ${level.criteria.sizeVariance}% limit)`);
+              jobLog(`   ❌ SIZE REJECTED ${comp.address}: ${sizeVariance.toFixed(1)}% variance (> ${level.criteria.sizeVariance}% limit)`);
               return false;
             }
           }
@@ -496,11 +496,11 @@ export class ProgressiveSearchStrategy {
               const today = new Date();
               const ageInMonths = Math.floor((today.getTime() - soldDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44));
               if (Number.isFinite(ageInMonths) && ageInMonths > level.criteria.timeWindow) {
-                console.log(`   ❌ TIME REJECTED ${comp.address}: ${ageInMonths} months old (> ${level.criteria.timeWindow} months limit)`);
+                jobLog(`   ❌ TIME REJECTED ${comp.address}: ${ageInMonths} months old (> ${level.criteria.timeWindow} months limit)`);
                 return false;
               }
             } catch (error) {
-              console.log(`   ❌ TIME REJECTED ${comp.address}: Error parsing date`);
+              jobLog(`   ❌ TIME REJECTED ${comp.address}: Error parsing date`);
               return false;
             }
           }
@@ -509,71 +509,71 @@ export class ProgressiveSearchStrategy {
         });
 
         const afterFiltering = filteredComps.length;
-        console.log(`   📊 Bedroom/Size/Time filtering: ${beforeFiltering} → ${afterFiltering} (removed ${beforeFiltering - afterFiltering})`);
+        jobLog(`   📊 Bedroom/Size/Time filtering: ${beforeFiltering} → ${afterFiltering} (removed ${beforeFiltering - afterFiltering})`);
 
         // Step 4: Apply distance filtering to filtered comps
-        console.log(`\n📏 Level ${level.level} Filtering: Distance with radius ${level.criteria.radius}mi`);
+        jobLog(`\n📏 Level ${level.level} Filtering: Distance with radius ${level.criteria.radius}mi`);
         const beforeDistanceFilter = filteredComps.length;
         const distanceFilteredComps = filteredComps.filter((comp) => {
           if (comp.distance === null || comp.distance === undefined) {
-            console.log(`   ❌ DISTANCE REJECTED ${comp.address}: No distance calculated`);
+            jobLog(`   ❌ DISTANCE REJECTED ${comp.address}: No distance calculated`);
             return false;
           }
           if (comp.distance <= level.criteria.radius) {
-            console.log(`   ✅ DISTANCE OK ${comp.address}: ${comp.distance.toFixed(2)} miles (≤ ${level.criteria.radius} miles)`);
+            jobLog(`   ✅ DISTANCE OK ${comp.address}: ${comp.distance.toFixed(2)} miles (≤ ${level.criteria.radius} miles)`);
             return true;
           } else {
-            console.log(`   ❌ DISTANCE REJECTED ${comp.address}: ${comp.distance.toFixed(2)} miles (> ${level.criteria.radius} miles)`);
+            jobLog(`   ❌ DISTANCE REJECTED ${comp.address}: ${comp.distance.toFixed(2)} miles (> ${level.criteria.radius} miles)`);
             return false;
           }
         });
 
         const afterDistanceFilter = distanceFilteredComps.length;
-        console.log(`   📊 Distance filtering: ${beforeDistanceFilter} → ${afterDistanceFilter} (removed ${beforeDistanceFilter - afterDistanceFilter})`);
+        jobLog(`   📊 Distance filtering: ${beforeDistanceFilter} → ${afterDistanceFilter} (removed ${beforeDistanceFilter - afterDistanceFilter})`);
 
         // Store the last filtered result
         lastFilteredComps = distanceFilteredComps;
 
         // Termination criteria: check if we have enough qualified comps after ALL filtering
         if (afterDistanceFilter >= level.targetComps) {
-          console.log(`   🎯 Progressive search target achieved: ${afterDistanceFilter} qualified comps found (≥ ${level.targetComps} required) - stopping search`);
+          jobLog(`   🎯 Progressive search target achieved: ${afterDistanceFilter} qualified comps found (≥ ${level.targetComps} required) - stopping search`);
           break;
         } else {
-          console.log(`   ⏭️  Need ${level.targetComps - afterDistanceFilter} more qualified comps - continuing to next level`);
+          jobLog(`   ⏭️  Need ${level.targetComps - afterDistanceFilter} more qualified comps - continuing to next level`);
         }
       } else {
-        console.log(`   ⚠️  Level ${level.level} failed - continuing`);
+        jobLog(`   ⚠️  Level ${level.level} failed - continuing`);
       }
     }
 
     // Use the last filtered comps from the loop (already fully filtered)
     const finalProperties = lastFilteredComps.length > 0 ? lastFilteredComps : Array.from(allDiscoveredComps.values());
-    console.log(`\n✅ Final properties after progressive filtering: ${finalProperties.length}`);
+    jobLog(`\n✅ Final properties after progressive filtering: ${finalProperties.length}`);
 
     const totalTime = Date.now() - startTime;
     const cacheHits = searchHistory.filter(s => s.cacheHit).length;
     const qualityScore = this.calculateQualityScore(finalProperties, searchHistory);
 
-    console.log('\n📊 PROGRESSIVE SEARCH SUMMARY:');
-    console.log(`   🔍 Searches executed: ${searchHistory.length}`);
-    console.log(`   💾 Cache hits: ${cacheHits}/${searchHistory.length}`);
-    console.log(`   ⏱️  Total time: ${totalTime}ms`);
-    console.log(`   🏁 Stopped at level: ${stoppedAtLevel}`);
-    console.log(`   📈 Final count: ${finalProperties.length} properties`);
-    console.log(`   🎯 Quality score: ${qualityScore.toUpperCase()}`);
+    jobLog('\n📊 PROGRESSIVE SEARCH SUMMARY:');
+    jobLog(`   🔍 Searches executed: ${searchHistory.length}`);
+    jobLog(`   💾 Cache hits: ${cacheHits}/${searchHistory.length}`);
+    jobLog(`   ⏱️  Total time: ${totalTime}ms`);
+    jobLog(`   🏁 Stopped at level: ${stoppedAtLevel}`);
+    jobLog(`   📈 Final count: ${finalProperties.length} properties`);
+    jobLog(`   🎯 Quality score: ${qualityScore.toUpperCase()}`);
 
     // Log level breakdown
-    console.log('\n📋 LEVEL BREAKDOWN:');
+    jobLog('\n📋 LEVEL BREAKDOWN:');
     searchHistory.forEach(result => {
       const icon = result.success ? '✅' : '❌';
       const cache = result.cacheHit ? '💾' : '🔍';
-      console.log(`   ${icon} ${cache} Level ${result.level.level}: ${result.qualified.length} comps (${result.searchTime}ms)`);
+      jobLog(`   ${icon} ${cache} Level ${result.level.level}: ${result.qualified.length} comps (${result.searchTime}ms)`);
     });
 
     // UPDATE GLOBAL CACHE: Add all raw comps from this run to the address-specific cache
     const allRawCompsFromRun = Array.from(allDiscoveredComps.values()).filter(comp => comp.foundAtLevel > 0); // Exclude cached comps (foundAtLevel = 0)
     if (allRawCompsFromRun.length > 0) {
-      console.log(`\n💾 Updating global cache with ${allRawCompsFromRun.length} raw comps from this run...`);
+      jobLog(`\n💾 Updating global cache with ${allRawCompsFromRun.length} raw comps from this run...`);
       await this.updateGlobalCache(address, allRawCompsFromRun);
     }
 
@@ -597,7 +597,7 @@ export class ProgressiveSearchStrategy {
   async clearCache(): Promise<void> {
     await this.redisCache.clearAll();
     ProgressiveSearchStrategy.globalRawCompsCache.clear();
-    console.log('🗑️  Global raw comps cache cleared (Redis + in-memory)');
+    jobLog('🗑️  Global raw comps cache cleared (Redis + in-memory)');
   }
 
   /**
@@ -629,11 +629,11 @@ export class ProgressiveSearchStrategy {
   ): Promise<any[]> {
     if (rawComps.length === 0) return rawComps;
 
-    console.log(`🔄 Applying all filtering criteria to ${rawComps.length} raw comps for Level ${level.level}`);
+    jobLog(`🔄 Applying all filtering criteria to ${rawComps.length} raw comps for Level ${level.level}`);
 
     // For now, return all raw comps without filtering
     // TODO: Implement proper filtering logic that reuses existing comprehensive search filtering
-    console.log(`✅ Raw comp accumulation working - returning ${rawComps.length} comps (filtering to be implemented)`);
+    jobLog(`✅ Raw comp accumulation working - returning ${rawComps.length} comps (filtering to be implemented)`);
 
     return rawComps;
   }
@@ -648,7 +648,7 @@ export class ProgressiveSearchStrategy {
   ): Promise<any[]> {
     if (properties.length === 0) return properties;
 
-    console.log(`\n📐 DISTANCE VALIDATION (Level ${level.level}): Checking ${properties.length} properties`);
+    jobLog(`\n📐 DISTANCE VALIDATION (Level ${level.level}): Checking ${properties.length} properties`);
 
     // Import GoogleMapsGeocoder to get subject coordinates
     const { GoogleMapsGeocoder } = await import('./googleMapsGeocoder');
@@ -656,14 +656,14 @@ export class ProgressiveSearchStrategy {
 
     const subjectResult = await geocoder.geocodeAddress(subjectAddress);
     if (!subjectResult) {
-      console.log(`❌ Cannot get subject coordinates for ${subjectAddress} - skipping distance filtering`);
+      jobLog(`❌ Cannot get subject coordinates for ${subjectAddress} - skipping distance filtering`);
       return properties;
     }
 
     const subjectLat = subjectResult.lat;
     const subjectLng = subjectResult.lng;
     const maxRadius = level.criteria.radius;
-    console.log(`📍 Subject coordinates: ${subjectLat}, ${subjectLng} (max radius: ${maxRadius}mi)`);
+    jobLog(`📍 Subject coordinates: ${subjectLat}, ${subjectLng} (max radius: ${maxRadius}mi)`);
 
     const filteredProperties: any[] = [];
 
@@ -671,7 +671,7 @@ export class ProgressiveSearchStrategy {
       // Get property coordinates
       const propResult = await geocoder.geocodeAddress(property.address);
       if (!propResult) {
-        console.log(`   ❌ Cannot geocode ${property.address} - excluding`);
+        jobLog(`   ❌ Cannot geocode ${property.address} - excluding`);
         continue;
       }
 
@@ -683,14 +683,14 @@ export class ProgressiveSearchStrategy {
       property.distance = distance; // Add distance to property for logging
 
       if (distance <= maxRadius) {
-        console.log(`   ✅ ${property.address}: ${distance.toFixed(2)} miles (≤ ${maxRadius}mi)`);
+        jobLog(`   ✅ ${property.address}: ${distance.toFixed(2)} miles (≤ ${maxRadius}mi)`);
         filteredProperties.push(property);
       } else {
-        console.log(`   ❌ ${property.address}: ${distance.toFixed(2)} miles (> ${maxRadius}mi) - EXCLUDED`);
+        jobLog(`   ❌ ${property.address}: ${distance.toFixed(2)} miles (> ${maxRadius}mi) - EXCLUDED`);
       }
     }
 
-    console.log(`📐 Level ${level.level} distance filtering: ${properties.length} → ${filteredProperties.length} properties`);
+    jobLog(`📐 Level ${level.level} distance filtering: ${properties.length} → ${filteredProperties.length} properties`);
     return filteredProperties;
   }
 
@@ -704,7 +704,7 @@ export class ProgressiveSearchStrategy {
   ): Promise<any[]> {
     if (properties.length === 0) return properties;
 
-    console.log(`\n📐 DISTANCE VALIDATION: Checking ${properties.length} properties`);
+    jobLog(`\n📐 DISTANCE VALIDATION: Checking ${properties.length} properties`);
 
     // Import GoogleMapsGeocoder to get subject coordinates
     const { GoogleMapsGeocoder } = await import('./googleMapsGeocoder');
@@ -712,13 +712,13 @@ export class ProgressiveSearchStrategy {
 
     const subjectResult = await geocoder.geocodeAddress(subjectAddress);
     if (!subjectResult) {
-      console.log(`❌ Cannot get subject coordinates for ${subjectAddress} - skipping distance filtering`);
+      jobLog(`❌ Cannot get subject coordinates for ${subjectAddress} - skipping distance filtering`);
       return properties;
     }
 
     const subjectLat = subjectResult.lat;
     const subjectLng = subjectResult.lng;
-    console.log(`📍 Subject coordinates: ${subjectLat}, ${subjectLng}`);
+    jobLog(`📍 Subject coordinates: ${subjectLat}, ${subjectLng}`);
 
     const filteredProperties: any[] = [];
 
@@ -731,7 +731,7 @@ export class ProgressiveSearchStrategy {
       // Get property coordinates
       const propResult = await geocoder.geocodeAddress(property.address);
       if (!propResult) {
-        console.log(`   ❌ Cannot geocode ${property.address} - excluding`);
+        jobLog(`   ❌ Cannot geocode ${property.address} - excluding`);
         continue;
       }
 
@@ -743,14 +743,14 @@ export class ProgressiveSearchStrategy {
       property.distance = distance; // Add distance to property for logging
 
       if (distance <= maxRadius) {
-        console.log(`   ✅ ${property.address}: ${distance.toFixed(2)} miles (≤ ${maxRadius}mi for Level ${foundAtLevel})`);
+        jobLog(`   ✅ ${property.address}: ${distance.toFixed(2)} miles (≤ ${maxRadius}mi for Level ${foundAtLevel})`);
         filteredProperties.push(property);
       } else {
-        console.log(`   ❌ ${property.address}: ${distance.toFixed(2)} miles (> ${maxRadius}mi for Level ${foundAtLevel}) - EXCLUDED`);
+        jobLog(`   ❌ ${property.address}: ${distance.toFixed(2)} miles (> ${maxRadius}mi for Level ${foundAtLevel}) - EXCLUDED`);
       }
     }
 
-    console.log(`📐 Distance filtering: ${properties.length} → ${filteredProperties.length} properties`);
+    jobLog(`📐 Distance filtering: ${properties.length} → ${filteredProperties.length} properties`);
     return filteredProperties;
   }
 

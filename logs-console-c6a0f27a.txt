@@ -1,0 +1,87 @@
+2025-10-09T19:15:49.368830Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-09T19:15:49.372479Z | 📋 Job c6a0f27a-796a-43c8-b97f-21e963eaf0df enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-09T19:15:49.372540Z | ✅ Job c6a0f27a-796a-43c8-b97f-21e963eaf0df created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-09T20:48:41.963278Z | ⚙️  [1760037349370-0] Processing job c6a0f27a-796a-43c8-b97f-21e963eaf0df: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T02:37:44.725947Z | ⚙️  [1760037349370-0] Processing job c6a0f27a-796a-43c8-b97f-21e963eaf0df: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T02:37:49.747668Z | 🔍 [1760037349370-0] Job c6a0f27a-796a-43c8-b97f-21e963eaf0df not currently processing (status: none)
+2025-10-10T02:37:49.747737Z | 📝 [1760037349370-0] Claiming ownership of job c6a0f27a-796a-43c8-b97f-21e963eaf0df
+2025-10-10T02:37:49.748050Z | 💾 Updating job c6a0f27a-796a-43c8-b97f-21e963eaf0df with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:24","processingMessageId":"1760037349370-0"}
+2025-10-10T02:37:54.770501Z | ❌ CRITICAL: Job c6a0f27a-796a-43c8-b97f-21e963eaf0df not found in Redis during updateJob! Creating new entry.
+2025-10-10T02:37:54.937993Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:37:54.938228Z | ✅ Job c6a0f27a-796a-43c8-b97f-21e963eaf0df created in Redis: status=processing, progress=10
+2025-10-10T02:37:54.938273Z | ⚙️  [1760037349370-0] Processing job c6a0f27a-796a-43c8-b97f-21e963eaf0df: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T02:37:54.942118Z | 🔍 [1760037349370-0] Job c6a0f27a-796a-43c8-b97f-21e963eaf0df status=processing, messageId=1760037349370-0
+2025-10-10T02:37:54.942275Z | ⚠️  [1760037349370-0] Job c6a0f27a-796a-43c8-b97f-21e963eaf0df still active (heartbeat 0s ago), skipping XAUTOCLAIM reclaim
+2025-10-10T02:37:54.943298Z | 💾 Updating job c6a0f27a-796a-43c8-b97f-21e963eaf0df with: {"progress":10,"phase":"Subject Property Research","phaseMessage":"Fetching property details from public records...","estimatedTimeRemaining":540,"phaseStartTime":1760063874944}
+2025-10-10T02:37:54.947439Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:37:54.947494Z | ✅ Job c6a0f27a-796a-43c8-b97f-21e963eaf0df saved to Redis: status=processing, progress=10
+2025-10-10T02:38:01.953524Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:08.948006Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:15.950436Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:22.948860Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:29.949108Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:36.950040Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:43.948817Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:50.953058Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:38:57.953409Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:04.955848Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:11.954470Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:18.957670Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:25.956921Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:32.961832Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:39.958063Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:46.962979Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:39:53.962907Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:00.965354Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:07.963256Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:14.965375Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:21.966977Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:28.965866Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:35.967088Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:42.968184Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:49.972020Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:40:56.968623Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:03.973462Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:10.971986Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:17.975977Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:24.972790Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:31.977187Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:38.977478Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:45.977938Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:52.978956Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:41:59.979875Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:06.981379Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:13.979131Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:20.985100Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:27.979794Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:34.983784Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:41.988875Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:48.986380Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:42:55.983417Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:02.988498Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:09.985448Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:16.987918Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:23.990106Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:30.993015Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:37.991767Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:44.992195Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:51.991560Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:43:58.990063Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:05.992582Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:12.993444Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:19.994991Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:26.993832Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:33.994233Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:40.999864Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:47.995143Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:44:55.489629Z | 💾 Updating job c6a0f27a-796a-43c8-b97f-21e963eaf0df with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"1100 Water Shine Way, Snellville, GA 30078","sqft":3936,"beds":5,"baths":4,"yearBuilt":2000,"lotSize":null,"subd
+2025-10-10T02:45:04.248479Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:45:04.248512Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:45:04.248707Z | ✅ Job c6a0f27a-796a-43c8-b97f-21e963eaf0df saved to Redis: status=completed, progress=100
+2025-10-10T02:45:09.261652Z | ✅ Job c6a0f27a-796a-43c8-b97f-21e963eaf0df completed
+2025-10-10T02:45:09.262747Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:45:14.291826Z | 📝 Redis SET job:c6a0f27a-796a-43c8-b97f-21e963eaf0df (TTL=3600s)
+2025-10-10T02:55:02.412549Z | 🔍 STATUS: Looking for job c6a0f27a-796a-43c8-b97f-21e963eaf0df
+2025-10-10T02:55:02.416581Z | 🔍 STATUS: Job c6a0f27a-796a-43c8-b97f-21e963eaf0df result: FOUND
+2025-10-10T02:58:12.465460Z | 🔍 STATUS: Looking for job c6a0f27a-796a-43c8-b97f-21e963eaf0df
+2025-10-10T02:58:12.473128Z | 🔍 STATUS: Job c6a0f27a-796a-43c8-b97f-21e963eaf0df result: FOUND

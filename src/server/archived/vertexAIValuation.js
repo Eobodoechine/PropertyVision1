@@ -4,6 +4,7 @@
 import 'dotenv/config';
 import { readFileSync } from 'fs';
 import { vertexGenerate } from './vertex-freeform.js';
+import { jobLog } from '../utils/jobQueue';
 
 export class VertexAIValuationService {
   constructor() {
@@ -182,7 +183,7 @@ IMPORTANT: Calculate fresh results - timestamp: ${Date.now()}`;
    * Call VertexAI with valuation prompt and comparable data
    */
   async calculateARVWithAI(subject, comparables, level = 1) {
-    console.log(`🤖 Level ${level}: Calling VertexAI for ARV calculation with ${comparables.length} comps`);
+    jobLog(`🤖 Level ${level}: Calling VertexAI for ARV calculation with ${comparables.length} comps`);
 
     try {
       // Format data for VertexAI
@@ -191,7 +192,7 @@ IMPORTANT: Calculate fresh results - timestamp: ${Date.now()}`;
       // Create full prompt with data
       const fullPrompt = this.getValuationPrompt() + '\n\n' + JSON.stringify(inputData, null, 2);
 
-      console.log(`   📝 Sending ${comparables.length} comps to VertexAI...`);
+      jobLog(`   📝 Sending ${comparables.length} comps to VertexAI...`);
 
       // Call VertexAI
       const response = await vertexGenerate({
@@ -208,14 +209,14 @@ IMPORTANT: Calculate fresh results - timestamp: ${Date.now()}`;
       // Parse response
       const result = JSON.parse(response);
 
-      console.log(`   ✅ VertexAI Analysis: ${result.method_used}`);
-      console.log(`   📊 Conservative ARV: $${result.conservative.arv_price?.toLocaleString() || 'N/A'}`);
-      console.log(`   📊 Aggressive ARV: $${result.aggressive.arv_price?.toLocaleString() || 'N/A'}`);
-      console.log(`   🏠 Final comps used: ${result.kept_comps?.length || 0}`);
+      jobLog(`   ✅ VertexAI Analysis: ${result.method_used}`);
+      jobLog(`   📊 Conservative ARV: $${result.conservative.arv_price?.toLocaleString() || 'N/A'}`);
+      jobLog(`   📊 Aggressive ARV: $${result.aggressive.arv_price?.toLocaleString() || 'N/A'}`);
+      jobLog(`   🏠 Final comps used: ${result.kept_comps?.length || 0}`);
 
       // Check if sufficient data
       if (result.method_used === 'insufficient_data') {
-        console.log(`   ❌ Level ${level}: VertexAI returned insufficient data`);
+        jobLog(`   ❌ Level ${level}: VertexAI returned insufficient data`);
         return { success: false, reason: 'insufficient_data', details: result };
       }
 
@@ -238,7 +239,7 @@ IMPORTANT: Calculate fresh results - timestamp: ${Date.now()}`;
       };
 
     } catch (error) {
-      console.log(`   ❌ Level ${level}: VertexAI failed - ${error.message}`);
+      jobLog(`   ❌ Level ${level}: VertexAI failed - ${error.message}`);
       return {
         success: false,
         reason: 'vertex_ai_error',

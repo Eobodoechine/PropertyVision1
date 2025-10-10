@@ -1,5 +1,6 @@
 import https from 'https';
 import pLimit from 'p-limit';
+import { jobLog } from '../utils/jobQueue';
 
 /**
  * Vertex AI Client with Connection Pooling, Token Caching, and Retry Logic
@@ -48,7 +49,7 @@ class VertexClient {
     // Bounded concurrency limiter
     this.limiter = pLimit(concurrency);
 
-    console.log(`✅ VertexClient initialized: concurrency=${concurrency}, keepAlive=true`);
+    jobLog(`✅ VertexClient initialized: concurrency=${concurrency}, keepAlive=true`);
   }
 
   /**
@@ -64,7 +65,7 @@ class VertexClient {
     }
 
     // Generate new token
-    console.log(`🔑 Generating new OAuth token for ${sa.client_email}`);
+    jobLog(`🔑 Generating new OAuth token for ${sa.client_email}`);
     const token = await this.generateServiceAccountToken(sa, scope);
 
     // Cache token (expires in 3600s, refresh 5 min early)
@@ -238,11 +239,11 @@ class VertexClient {
 
           if (attempt > 0) {
             const delay = this.RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1);
-            console.log(`🔄 VERTEX RETRY ${attempt}/${this.MAX_RETRIES} after ${delay}ms delay`);
+            jobLog(`🔄 VERTEX RETRY ${attempt}/${this.MAX_RETRIES} after ${delay}ms delay`);
             await new Promise((r) => setTimeout(r, delay));
           }
 
-          console.log(
+          jobLog(
             `📊 VERTEX_CALL_START: attempt=${attempt + 1}, type=${callType}, timeout=${timeoutMs}ms`
           );
 
@@ -280,7 +281,7 @@ class VertexClient {
           );
 
           const duration = Date.now() - startTime;
-          console.log(
+          jobLog(
             `📊 VERTEX_CALL_COMPLETE: attempt=${attempt + 1}, type=${callType}, duration=${duration}ms`
           );
 
@@ -335,7 +336,7 @@ class VertexClient {
    */
   destroy() {
     this.agent.destroy();
-    console.log('🔌 VertexClient destroyed');
+    jobLog('🔌 VertexClient destroyed');
   }
 }
 

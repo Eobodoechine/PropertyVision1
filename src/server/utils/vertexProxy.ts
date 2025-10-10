@@ -15,7 +15,7 @@ const PROXY_SHARED_KEY = process.env.PROXY_SHARED_KEY || '';
 const DEFAULT_MODEL = 'gemini-2.0-flash-001';
 
 function diag(event: string, data?: any) {
-  console.log(JSON.stringify({
+  jobLog(JSON.stringify({
     timestamp: new Date().toISOString(),
     event,
     ...data

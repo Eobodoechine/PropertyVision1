@@ -8,38 +8,24 @@ interface JobStatus {
   estimatedTimeRemaining?: number;
   phaseStartTime?: number;
   serverNow?: number;
-  createdAt?: number;
 }
 
-// Phase budgets for 5-minute total (300 seconds)
-const PHASE_BUDGETS: Record<number, number> = {
-  0: 5,       // QUEUED
-  10: 60,     // SUBJECT_PROPERTY
-  25: 190,    // COMPARABLE_SEARCH
-  85: 35,     // DEDUPLICATION
-  92: 10,     // ARV_CALCULATION
-  97: 0,      // FINALIZING (instant)
-  100: 0      // COMPLETED
-};
-
-const TOTAL_BUDGET = 300; // 5 minutes
-
-// Phase progression map for smooth interpolation
+// Phase progression map for smooth interpolation (V10 parallel search)
 const PHASE_NEXT_PROGRESS: Record<number, number> = {
   0: 10,    // QUEUED → SUBJECT_PROPERTY
-  10: 25,   // SUBJECT_PROPERTY → COMPARABLE_SEARCH
-  25: 85,   // COMPARABLE_SEARCH → DEDUPLICATION (skip L2, L3, L4 since they don't get called)
-  85: 92,   // DEDUPLICATION → ARV_CALCULATION
-  92: 97,   // ARV_CALCULATION → FINALIZING
-  97: 100   // FINALIZING → COMPLETED
+  10: 30,   // SUBJECT_PROPERTY → COMPARABLE_SEARCH_L1 (parallel levels launch)
+  30: 60,   // All 4 levels running in parallel
+  60: 75,   // DEDUPLICATION
+  75: 90,   // ARV_CALCULATION
+  90: 97,   // FINALIZING
+  97: 100   // COMPLETED
 };
 
 /**
- * Hook for smart countdown: 300s - (sum of completed phase budgets)
- * Shows total remaining time, jumping down as each phase completes
+ * Hook for real-time countdown with clock-skew correction
  */
 export function useCountdown(jobStatus?: JobStatus) {
-  const [countdown, setCountdown] = useState(TOTAL_BUDGET);
+  const [countdown, setCountdown] = useState(0);
 
   // Calculate clock drift once per status update
   const driftMs = useMemo(() => {
@@ -47,38 +33,22 @@ export function useCountdown(jobStatus?: JobStatus) {
   }, [jobStatus?.serverNow]);
 
   useEffect(() => {
-    if (!jobStatus || jobStatus.status !== 'processing') {
-      setCountdown(TOTAL_BUDGET);
+    if (!jobStatus?.phaseStartTime || !jobStatus?.estimatedTimeRemaining) {
+      setCountdown(0);
       return;
     }
 
     const updateCountdown = () => {
-      const currentProgress = jobStatus.progress || 0;
+      // Use server-synced time to avoid clock-skew
+      const now = Date.now() - driftMs;
+      const elapsed = (now - jobStatus.phaseStartTime!) / 1000;
+      const remaining = Math.max(0, jobStatus.estimatedTimeRemaining! - elapsed);
 
-      // Calculate total budget consumed by completed phases
-      let budgetConsumed = 0;
-      for (const [progressKey, budget] of Object.entries(PHASE_BUDGETS)) {
-        const progress = Number(progressKey);
-        if (progress < currentProgress) {
-          budgetConsumed += budget;
-        }
-      }
-
-      // Calculate remaining time for current phase
-      let currentPhaseRemaining = 0;
-      if (jobStatus.phaseStartTime && jobStatus.estimatedTimeRemaining) {
-        const now = Date.now() - driftMs;
-        const elapsed = (now - jobStatus.phaseStartTime) / 1000;
-        currentPhaseRemaining = Math.max(0, jobStatus.estimatedTimeRemaining - elapsed);
-      }
-
-      // Total remaining = (Total budget - Budget consumed by completed phases) - Time elapsed in current phase
-      const currentPhaseBudget = PHASE_BUDGETS[currentProgress] || 0;
-      const currentPhaseElapsed = currentPhaseBudget - currentPhaseRemaining;
-      const totalRemaining = TOTAL_BUDGET - budgetConsumed - currentPhaseElapsed;
-
-      // Clamp to minimum 1 second while processing
-      const clamped = Math.max(1, Math.ceil(totalRemaining));
+      // Clamp to minimum 1 second until phase actually changes
+      // This prevents "0 seconds" showing while phase is still running
+      const clamped = jobStatus.status === 'processing' && remaining > 0
+        ? Math.max(1, Math.ceil(remaining))
+        : Math.ceil(remaining);
 
       setCountdown(clamped);
     };
@@ -90,7 +60,7 @@ export function useCountdown(jobStatus?: JobStatus) {
     const interval = setInterval(updateCountdown, 1000);
 
     return () => clearInterval(interval);
-  }, [jobStatus?.progress, jobStatus?.phaseStartTime, jobStatus?.estimatedTimeRemaining, jobStatus?.status, driftMs]);
+  }, [jobStatus?.phaseStartTime, jobStatus?.estimatedTimeRemaining, jobStatus?.status, driftMs]);
 
   return countdown;
 }

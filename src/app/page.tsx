@@ -287,12 +287,19 @@ function LoadingState({ progress: baseProgress, jobStatus }: { progress: number;
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-3">
           <div className="flex justify-between text-sm">
             <span className="font-medium">{jobStatus?.phase || 'Processing'}</span>
             <span className="text-slate-600">{smoothProgress}%</span>
           </div>
-          <Progress value={smoothProgress} />
+
+          {/* Visual progress bar */}
+          <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+            <div
+              className="h-full transition-all duration-300 ease-out"
+              style={{ width: `${smoothProgress}%`, backgroundColor: '#10b981' }}
+            />
+          </div>
 
           {/* Real-time countdown with accessibility */}
           <div aria-live="polite" aria-atomic="true">

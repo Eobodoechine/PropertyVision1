@@ -1,6 +1,7 @@
 // Vertex AI-Powered Intelligent Deduplication
 // Replaces rule-based deduplication with AI that understands real estate data nuances
 import fs from 'fs';
+import { jobLog } from '../utils/jobQueue';
 
 interface PropertyData {
   address: string;
@@ -35,15 +36,15 @@ export class VertexDeduplicator {
    * Handles address variations, coordinate proximity, unit numbers, etc.
    */
   async deduplicateProperties(properties: PropertyData[]): Promise<DeduplicationResult> {
-    console.log('🚨🚨🚨 DEDUP START: deduplicateProperties called 🚨🚨🚨');
-    console.log('🔍 DEDUP LINE 0: Function entry, properties type:', typeof properties);
-    console.log('🔍 DEDUP LINE 0.1: properties is array:', Array.isArray(properties));
-    console.log('🔍 DEDUP LINE 0.2: properties length:', properties?.length);
-    console.log('🔍 DEDUP LINE 1: Function entry');
-    console.log('🔍 DEDUP LINE 1.5: About to check properties.length');
+    jobLog('🚨🚨🚨 DEDUP START: deduplicateProperties called 🚨🚨🚨');
+    jobLog('🔍 DEDUP LINE 0: Function entry, properties type:', typeof properties);
+    jobLog('🔍 DEDUP LINE 0.1: properties is array:', Array.isArray(properties));
+    jobLog('🔍 DEDUP LINE 0.2: properties length:', properties?.length);
+    jobLog('🔍 DEDUP LINE 1: Function entry');
+    jobLog('🔍 DEDUP LINE 1.5: About to check properties.length');
 
     if (properties.length <= 1) {
-      console.log('🔍 DEDUP LINE 2: Early return for <= 1 properties');
+      jobLog('🔍 DEDUP LINE 2: Early return for <= 1 properties');
       return {
         uniqueProperties: properties,
         duplicatesRemoved: 0,
@@ -51,17 +52,17 @@ export class VertexDeduplicator {
       };
     }
 
-    console.log(`🤖 Vertex Deduplication: Analyzing ${properties.length} properties`);
-    console.log('🔍 DEDUP LINE 3: About to enter try block');
+    jobLog(`🤖 Vertex Deduplication: Analyzing ${properties.length} properties`);
+    jobLog('🔍 DEDUP LINE 3: About to enter try block');
 
     try {
-      console.log('🔍 DEDUP LINE 4: About to import vertex-freeform.js');
+      jobLog('🔍 DEDUP LINE 4: About to import vertex-freeform.js');
       const { vertexGenerate } = await import('../vertex-freeform.js');
-      console.log('🔍 DEDUP LINE 5: vertex-freeform.js imported successfully');
+      jobLog('🔍 DEDUP LINE 5: vertex-freeform.js imported successfully');
 
-      console.log('🔍 DEDUP LINE 6: About to call this.getVertexConfig()');
+      jobLog('🔍 DEDUP LINE 6: About to call this.getVertexConfig()');
       const { serviceAccount, projectId, location, model } = this.getVertexConfig();
-      console.log('🔍 DEDUP LINE 7: getVertexConfig() completed successfully');
+      jobLog('🔍 DEDUP LINE 7: getVertexConfig() completed successfully');
 
       // Prepare property data for AI analysis with required fields
       const propertyList = properties.map((prop, index) => ({
@@ -210,14 +211,14 @@ ${JSON.stringify(propertyList, null, 2)}`;
         required: ['duplicate_groups', 'kept_records', 'dropped_record_ids']
       };
 
-      console.log('🔍 DEDUP LINE 8: About to call vertexGenerate');
-      console.log('🔍 DEDUP LINE 8.1: serviceAccount type:', typeof serviceAccount);
-      console.log('🔍 DEDUP LINE 8.2: serviceAccount keys:', serviceAccount ? Object.keys(serviceAccount) : 'null');
-      console.log('🔍 DEDUP LINE 8.3: serviceAccount.private_key exists:', !!serviceAccount?.private_key);
-      console.log('🔍 DEDUP LINE 8.4: serviceAccount.private_key length:', serviceAccount?.private_key?.length || 'NO LENGTH');
-      console.log('🔍 DEDUP LINE 8.5: serviceAccount.client_email:', serviceAccount?.client_email || 'NO EMAIL');
+      jobLog('🔍 DEDUP LINE 8: About to call vertexGenerate');
+      jobLog('🔍 DEDUP LINE 8.1: serviceAccount type:', typeof serviceAccount);
+      jobLog('🔍 DEDUP LINE 8.2: serviceAccount keys:', serviceAccount ? Object.keys(serviceAccount) : 'null');
+      jobLog('🔍 DEDUP LINE 8.3: serviceAccount.private_key exists:', !!serviceAccount?.private_key);
+      jobLog('🔍 DEDUP LINE 8.4: serviceAccount.private_key length:', serviceAccount?.private_key?.length || 'NO LENGTH');
+      jobLog('🔍 DEDUP LINE 8.5: serviceAccount.client_email:', serviceAccount?.client_email || 'NO EMAIL');
 
-      console.log('🚨🚨🚨 DEDUPLICATOR CALLING VERTEXGENERATE 🚨🚨🚨');
+      jobLog('🚨🚨🚨 DEDUPLICATOR CALLING VERTEXGENERATE 🚨🚨🚨');
 
       const response = await vertexGenerate({
         sa: serviceAccount,
@@ -231,10 +232,10 @@ ${JSON.stringify(propertyList, null, 2)}`;
         timeoutMs: 120000
       });
 
-      console.log('🔍 DEDUP LINE 9: vertexGenerate completed successfully');
+      jobLog('🔍 DEDUP LINE 9: vertexGenerate completed successfully');
 
       const result = JSON.parse(response);
-      console.log(`🤖 Vertex identified ${result.duplicate_groups.length} duplicate groups`);
+      jobLog(`🤖 Vertex identified ${result.duplicate_groups.length} duplicate groups`);
 
       // Build final result
       const uniqueProperties: PropertyData[] = [];
@@ -289,13 +290,13 @@ ${JSON.stringify(propertyList, null, 2)}`;
           });
           duplicatesRemoved += duplicates.length;
 
-          console.log(`   🔗 Merged ${duplicates.length} duplicates (confidence: ${group.confidence.toFixed(2)}): ${group.notes || group.match_reason.join(', ')}`);
-          console.log(`      Master: ${canonicalProperty.address}`);
-          duplicates.forEach(dup => console.log(`      Duplicate: ${dup.address}`));
+          jobLog(`   🔗 Merged ${duplicates.length} duplicates (confidence: ${group.confidence.toFixed(2)}): ${group.notes || group.match_reason.join(', ')}`);
+          jobLog(`      Master: ${canonicalProperty.address}`);
+          duplicates.forEach(dup => jobLog(`      Duplicate: ${dup.address}`));
         }
       }
 
-      console.log(`✅ Vertex Deduplication complete: ${properties.length} → ${uniqueProperties.length} unique (removed ${duplicatesRemoved} duplicates)`);
+      jobLog(`✅ Vertex Deduplication complete: ${properties.length} → ${uniqueProperties.length} unique (removed ${duplicatesRemoved} duplicates)`);
 
       return {
         uniqueProperties,
@@ -304,14 +305,14 @@ ${JSON.stringify(propertyList, null, 2)}`;
       };
 
     } catch (error) {
-      console.log('🚨🚨🚨 DEDUP CATCH BLOCK ENTERED 🚨🚨🚨');
-      console.log('🔍 DEDUP LINE 10: Entered catch block');
-      console.log('🔍 DEDUP LINE 10.1: Error type:', typeof error);
-      console.log('🔍 DEDUP LINE 10.2: Error message:', (error as any)?.message);
-      console.log('🔍 DEDUP LINE 10.3: Error code:', (error as any)?.code);
-      console.log('🔍 DEDUP LINE 10.4: Error stack:', (error as any)?.stack);
-      console.log('🔍 DEDUP LINE 10.5: Error name:', (error as any)?.name);
-      console.log('🔍 DEDUP LINE 10.6: Full error object keys:', error ? Object.keys(error) : 'NO ERROR OBJECT');
+      jobLog('🚨🚨🚨 DEDUP CATCH BLOCK ENTERED 🚨🚨🚨');
+      jobLog('🔍 DEDUP LINE 10: Entered catch block');
+      jobLog('🔍 DEDUP LINE 10.1: Error type:', typeof error);
+      jobLog('🔍 DEDUP LINE 10.2: Error message:', (error as any)?.message);
+      jobLog('🔍 DEDUP LINE 10.3: Error code:', (error as any)?.code);
+      jobLog('🔍 DEDUP LINE 10.4: Error stack:', (error as any)?.stack);
+      jobLog('🔍 DEDUP LINE 10.5: Error name:', (error as any)?.name);
+      jobLog('🔍 DEDUP LINE 10.6: Full error object keys:', error ? Object.keys(error) : 'NO ERROR OBJECT');
       console.error('❌ Vertex deduplication failed, falling back to original properties:', error);
       return {
         uniqueProperties: properties,
@@ -340,63 +341,63 @@ ${JSON.stringify(propertyList, null, 2)}`;
 
   private getVertexConfig() {
     // Use EXACT same pattern as step3-find-comparables.ts
-    console.log('🚨🚨🚨 GETVERTEXCONFIG START 🚨🚨🚨');
-    console.log('🔍 DEDUPLICATOR DEBUG: getVertexConfig() called');
-    console.log('🔍 CONFIG DEBUG 1: Checking environment variables');
-    console.log('🔍 CONFIG DEBUG 1.1: GCP_SA_JSON_B64 exists:', !!process.env.GCP_SA_JSON_B64);
-    console.log('🔍 CONFIG DEBUG 1.2: GCP_SA_JSON exists:', !!process.env.GCP_SA_JSON);
-    console.log('🔍 CONFIG DEBUG 1.3: SERVICE_ACCOUNT_JSON exists:', !!process.env.SERVICE_ACCOUNT_JSON);
+    jobLog('🚨🚨🚨 GETVERTEXCONFIG START 🚨🚨🚨');
+    jobLog('🔍 DEDUPLICATOR DEBUG: getVertexConfig() called');
+    jobLog('🔍 CONFIG DEBUG 1: Checking environment variables');
+    jobLog('🔍 CONFIG DEBUG 1.1: GCP_SA_JSON_B64 exists:', !!process.env.GCP_SA_JSON_B64);
+    jobLog('🔍 CONFIG DEBUG 1.2: GCP_SA_JSON exists:', !!process.env.GCP_SA_JSON);
+    jobLog('🔍 CONFIG DEBUG 1.3: SERVICE_ACCOUNT_JSON exists:', !!process.env.SERVICE_ACCOUNT_JSON);
 
     let serviceAccount;
-    console.log('🔍 CONFIG DEBUG 2: About to check GCP_SA_JSON_B64 branch');
+    jobLog('🔍 CONFIG DEBUG 2: About to check GCP_SA_JSON_B64 branch');
     if (process.env.GCP_SA_JSON_B64) {
-      console.log('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON_B64');
-      console.log('🔍 CONFIG DEBUG 3: About to decode base64');
+      jobLog('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON_B64');
+      jobLog('🔍 CONFIG DEBUG 3: About to decode base64');
       const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-      console.log('🔍 CONFIG DEBUG 4: Base64 decoded, about to parse JSON');
+      jobLog('🔍 CONFIG DEBUG 4: Base64 decoded, about to parse JSON');
       serviceAccount = JSON.parse(saJson);
-      console.log('🔍 CONFIG DEBUG 5: JSON parsed successfully from base64');
+      jobLog('🔍 CONFIG DEBUG 5: JSON parsed successfully from base64');
     } else {
-      console.log('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON from file');
-      console.log('🔍 CONFIG DEBUG 6: About to get file path');
+      jobLog('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON from file');
+      jobLog('🔍 CONFIG DEBUG 6: About to get file path');
       const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-      console.log('🔍 CONFIG DEBUG 7: File path:', saPath);
+      jobLog('🔍 CONFIG DEBUG 7: File path:', saPath);
       if (!saPath) {
-        console.log('🔍 CONFIG DEBUG 8: No file path found, throwing error');
+        jobLog('🔍 CONFIG DEBUG 8: No file path found, throwing error');
         throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
       }
-      console.log('🔍 CONFIG DEBUG 9: About to read file');
+      jobLog('🔍 CONFIG DEBUG 9: About to read file');
       serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-      console.log('🔍 CONFIG DEBUG 10: File read and parsed successfully');
+      jobLog('🔍 CONFIG DEBUG 10: File read and parsed successfully');
     }
 
     // Debug the service account object
-    console.log('🔍 CONFIG DEBUG 11: About to debug service account');
-    console.log('🔍 SERVICE ACCOUNT DEBUG: Keys available:', Object.keys(serviceAccount));
-    console.log('🔍 SERVICE ACCOUNT DEBUG: Has private_key:', !!serviceAccount.private_key);
-    console.log('🔍 SERVICE ACCOUNT DEBUG: Private key starts with:', serviceAccount.private_key?.substring(0, 50));
-    console.log('🔍 SERVICE ACCOUNT DEBUG: Private key type:', typeof serviceAccount.private_key);
-    console.log('🔍 SERVICE ACCOUNT DEBUG: Private key length:', serviceAccount.private_key?.length);
-    console.log('🔍 SERVICE ACCOUNT DEBUG: Client email:', serviceAccount.client_email);
+    jobLog('🔍 CONFIG DEBUG 11: About to debug service account');
+    jobLog('🔍 SERVICE ACCOUNT DEBUG: Keys available:', Object.keys(serviceAccount));
+    jobLog('🔍 SERVICE ACCOUNT DEBUG: Has private_key:', !!serviceAccount.private_key);
+    jobLog('🔍 SERVICE ACCOUNT DEBUG: Private key starts with:', serviceAccount.private_key?.substring(0, 50));
+    jobLog('🔍 SERVICE ACCOUNT DEBUG: Private key type:', typeof serviceAccount.private_key);
+    jobLog('🔍 SERVICE ACCOUNT DEBUG: Private key length:', serviceAccount.private_key?.length);
+    jobLog('🔍 SERVICE ACCOUNT DEBUG: Client email:', serviceAccount.client_email);
 
-    console.log('🔍 CONFIG DEBUG 12: About to extract project_id');
+    jobLog('🔍 CONFIG DEBUG 12: About to extract project_id');
     const projectId = serviceAccount.project_id;
-    console.log('🔍 CONFIG DEBUG 13: Project ID:', projectId);
+    jobLog('🔍 CONFIG DEBUG 13: Project ID:', projectId);
 
-    console.log('🔍 CONFIG DEBUG 14: About to get location and model');
+    jobLog('🔍 CONFIG DEBUG 14: About to get location and model');
     const location = process.env.VERTEX_LOCATION || 'us-central1';
     const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-    console.log('🔍 CONFIG DEBUG 15: Location:', location, 'Model:', model);
+    jobLog('🔍 CONFIG DEBUG 15: Location:', location, 'Model:', model);
 
-    console.log('🔍 CONFIG DEBUG 16: About to return config object');
+    jobLog('🔍 CONFIG DEBUG 16: About to return config object');
     const config = {
       serviceAccount,
       projectId,
       location,
       model
     };
-    console.log('🔍 CONFIG DEBUG 17: Config object created, returning');
-    console.log('🚨🚨🚨 GETVERTEXCONFIG END 🚨🚨🚨');
+    jobLog('🔍 CONFIG DEBUG 17: Config object created, returning');
+    jobLog('🚨🚨🚨 GETVERTEXCONFIG END 🚨🚨🚨');
     return config;
   }
 }

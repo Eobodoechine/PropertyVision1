@@ -2,6 +2,7 @@
 // Only used when WORKER_COUNT > 1 (multiple workers)
 
 import { getRedisCache } from './redisCache';
+import { jobLog } from '../utils/jobQueue';
 
 export class RedisSemaphore {
   private redis = getRedisCache();
@@ -14,7 +15,7 @@ export class RedisSemaphore {
     this.enabled = workerCount > 1;
 
     if (this.enabled) {
-      console.log(`🔐 Redis Semaphore enabled (${workerCount} workers)`);
+      jobLog(`🔐 Redis Semaphore enabled (${workerCount} workers)`);
     }
   }
 

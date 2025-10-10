@@ -108,7 +108,7 @@ export class BoundedQueue {
         }
       });
       this.queue = [];
-      console.log(`🧹 Cleared ${cleared} queued tasks`);
+      jobLog(`🧹 Cleared ${cleared} queued tasks`);
     } catch (error) {
       console.error(`❌ BOUNDED QUEUE CLEAR ERROR:`);
       console.error(`   Error type: ${typeof error}`);

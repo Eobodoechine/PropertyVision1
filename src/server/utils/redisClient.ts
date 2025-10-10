@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import { jobLog } from '../utils/jobQueue';
 
 /**
  * Redis Singleton Client
@@ -25,7 +26,7 @@ class RedisClient {
         maxRetriesPerRequest: null, // Allow operations during reconnect
         retryStrategy: (times) => {
           const delay = Math.min(1000 * Math.pow(2, Math.min(times, 5)), 15000);
-          console.log(`🔄 Redis retry ${times} in ${delay}ms`);
+          jobLog(`🔄 Redis retry ${times} in ${delay}ms`);
           return delay;
         },
         lazyConnect: true, // Don't connect immediately - wait for ensureConnected()
@@ -36,7 +37,7 @@ class RedisClient {
         reconnectOnError: (err) => {
           const needsReconnect = /READONLY|ECONNRESET|ETIMEDOUT|EPIPE/i.test(err.message);
           if (needsReconnect) {
-            console.log(`🔄 Reconnecting on error: ${err.message}`);
+            jobLog(`🔄 Reconnecting on error: ${err.message}`);
           }
           return needsReconnect;
         },
@@ -49,12 +50,12 @@ class RedisClient {
       });
 
       this.client.on('connect', () => {
-        console.log('🟢 Redis TCP connected'); // TCP up, not yet ready
+        jobLog('🟢 Redis TCP connected'); // TCP up, not yet ready
         // DO NOT set isConnected here
       });
 
       this.client.on('ready', () => {
-        console.log('✅ Redis ready');
+        jobLog('✅ Redis ready');
         this.isConnected = true;
         this.startKeepalive(); // move keepalive start here
       });
@@ -65,18 +66,18 @@ class RedisClient {
       });
 
       this.client.on('close', () => {
-        console.log('🔌 Redis connection closed');
+        jobLog('🔌 Redis connection closed');
         this.isConnected = false;
         this.stopKeepalive();
       });
 
       this.client.on('reconnecting', () => {
-        console.log('🔄 Redis reconnecting...');
+        jobLog('🔄 Redis reconnecting...');
         this.isConnected = false;
       });
 
       this.client.on('end', () => {
-        console.log('🔌 Redis connection ended');
+        jobLog('🔌 Redis connection ended');
         this.isConnected = false;
       });
     } catch (error) {
@@ -394,7 +395,7 @@ class RedisClient {
 
     try {
       const result = await this.client.xack(stream, group, id);
-      console.log(`✅ XACK successful: stream=${stream}, id=${id}, result=${result}`);
+      jobLog(`✅ XACK successful: stream=${stream}, id=${id}, result=${result}`);
     } catch (error) {
       console.error(`❌ Redis XACK error for ${id}:`, error);
       throw error; // Re-throw so caller knows it failed

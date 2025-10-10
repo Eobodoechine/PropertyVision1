@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import https from 'https';
 import crypto from 'crypto';
+import { jobLog } from './utils/jobQueue';
 
 export type BasicDetails = {
   address: string;
@@ -17,24 +18,50 @@ export type BasicDetails = {
   source?: 'primary' | 'county' | 'reconciled';
 };
 
+// JSON Schema for BasicDetails - prevents truncated responses
+const BASIC_DETAILS_SCHEMA = {
+  type: 'object',
+  properties: {
+    sqft: { type: 'number', nullable: true },
+    beds: { type: 'number', nullable: true },
+    baths: { type: 'number', nullable: true },
+    yearBuilt: { type: 'number', nullable: true },
+    propertyType: { type: 'string', nullable: true, enum: ['single-family detached', 'townhome', 'condo', 'duplex', 'multi-family', null] },
+    subdivision: { type: 'string', nullable: true },
+    confidence: {
+      type: 'object',
+      nullable: true,
+      properties: {
+        sqft: { type: 'number', minimum: 0, maximum: 1 },
+        beds: { type: 'number', minimum: 0, maximum: 1 },
+        baths: { type: 'number', minimum: 0, maximum: 1 },
+        yearBuilt: { type: 'number', minimum: 0, maximum: 1 },
+        propertyType: { type: 'number', minimum: 0, maximum: 1 },
+        subdivision: { type: 'number', minimum: 0, maximum: 1 }
+      }
+    }
+  }
+};
+
 // SPD Timeout Configuration (VPC-aware)
-const SPD_PRIMARY_TIMEOUT_MS = Number(process.env.SPD_PRIMARY_TIMEOUT_MS ?? 25000);  // 25s for VPC overhead
-const SPD_COUNTY_TIMEOUT_MS = Number(process.env.SPD_COUNTY_TIMEOUT_MS ?? 25000);    // 25s for VPC overhead
-const SPD_PARSE_TIMEOUT_MS = Number(process.env.SPD_PARSE_TIMEOUT_MS ?? 15000);      // 15s for non-grounded parsing
-const SPD_GRACE_WINDOW_MS = Number(process.env.SPD_GRACE_WINDOW_MS ?? 1500);         // 1.5s grace for reconciliation
+// Grounded searches through VPC can take 60-90 seconds due to private-ranges-only egress overhead
+const SPD_PRIMARY_TIMEOUT_MS = Number(process.env.SPD_PRIMARY_TIMEOUT_MS ?? 90000);  // 90s for VPC + grounded search overhead
+const SPD_COUNTY_TIMEOUT_MS = Number(process.env.SPD_COUNTY_TIMEOUT_MS ?? 90000);    // 90s for VPC + grounded search overhead
+const SPD_PARSE_TIMEOUT_MS = Number(process.env.SPD_PARSE_TIMEOUT_MS ?? 30000);      // 30s for non-grounded parsing (also through VPC)
+const SPD_GRACE_WINDOW_MS = Number(process.env.SPD_GRACE_WINDOW_MS ?? 10000);        // 10s grace for reconciliation
 
 function hasServiceAccount(): boolean {
   const gcpSaJson = process.env.GCP_SA_JSON;
   const serviceAccountJson = process.env.SERVICE_ACCOUNT_JSON;
   const gcpSaJsonB64 = process.env.GCP_SA_JSON_B64;
 
-  console.log(`🔍 ENV CHECK: GCP_SA_JSON=${gcpSaJson ? 'SET' : 'NOT_SET'}`);
-  console.log(`🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=${serviceAccountJson ? 'SET' : 'NOT_SET'}`);
-  console.log(`🔍 ENV CHECK: GCP_SA_JSON_B64=${gcpSaJsonB64 ? 'SET' : 'NOT_SET'}`);
+  jobLog(`🔍 ENV CHECK: GCP_SA_JSON=${gcpSaJson ? 'SET' : 'NOT_SET'}`);
+  jobLog(`🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=${serviceAccountJson ? 'SET' : 'NOT_SET'}`);
+  jobLog(`🔍 ENV CHECK: GCP_SA_JSON_B64=${gcpSaJsonB64 ? 'SET' : 'NOT_SET'}`);
 
   const p = gcpSaJson || serviceAccountJson || gcpSaJsonB64;
   const result = Boolean(p && p.trim().length > 0);
-  console.log(`🔍 hasServiceAccount() returning: ${result}`);
+  jobLog(`🔍 hasServiceAccount() returning: ${result}`);
   return result;
 }
 
@@ -64,6 +91,13 @@ async function httpsPostForm(url: string, body: string, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
+
+    // Set socket timeout to prevent hanging requests
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      reject(new Error(`socket hang up`));
+    });
+
     req.write(body);
     req.end();
   });
@@ -79,6 +113,13 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
       res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
     });
     req.on('error', reject);
+
+    // Set socket timeout to prevent hanging requests (critical for VPC grounded searches)
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      reject(new Error(`socket hang up`));
+    });
+
     req.write(body);
     req.end();
   });
@@ -102,7 +143,7 @@ async function vertexGenerate(opts: {
     generationConfig: {
       temperature: 0,           // Maximum determinism
       seed: 12345,             // Fixed seed for reproducibility
-      maxOutputTokens: 1500,
+      maxOutputTokens: 8192,   // Increased from 1500 to prevent truncation
       ...(opts.json ? { responseMimeType: 'application/json' } : {})
     },
   };
@@ -124,76 +165,137 @@ async function parseTextToJSON(
 ): Promise<Partial<BasicDetails>> {
   const startTime = Date.now();
 
-  const prompt = `You are a precise property data extractor. Extract property details from the text below.
+  const prompt = `You are a precise, highly-reliable property data extractor. Your sole function is to process the provided text and return a complete and valid JSON object following the required schema.
 
 CRITICAL RULES:
-- Use ONLY the information provided in the text
-- Never invent or assume values
-- If a field is not found or unclear, omit it from the response
-- Return valid JSON only
+1. **Extract All Available Fields**: You MUST extract all fields (sqft, beds, baths, yearBuilt) if the information is clearly present in the "TEXT TO PARSE" section below.
+2. **Omission Rule**: ONLY omit a field from the final JSON object if the value is explicitly not found or genuinely unclear in the provided text.
+3. **Data Integrity**: You MUST return numeric fields (sqft, beds, yearBuilt) as **integers**. The 'baths' field must be a **float** (e.g., 3.0, 3.5).
+4. **Format Adherence**: Return **valid JSON only**, with no preamble, explanation, or conversational text.
+5. **Thoroughness**: Scan the entire text carefully for bedroom and bathroom counts - they are CRITICAL fields and almost always present.
 
 Extract these fields:
 - sqft: interior living area square footage (integer)
-- beds: number of bedrooms (integer)
-- baths: number of bathrooms including half baths (float, e.g., 2.5)
+- beds: number of bedrooms (integer) - REQUIRED if present in text
+- baths: number of bathrooms including half baths (float, e.g., 2.5) - REQUIRED if present in text
 - yearBuilt: year the property was built (integer)
-- propertyType: one of: "single-family detached", "townhome", "condo", "duplex", "multi-family"
+- propertyType: one of: "single-family detached", "townhome", "condo", "duplex", "multi-family" (string)
 - subdivision: subdivision or neighborhood name (string)
-- confidence: for each field, estimate confidence 0.0-1.0 based on source clarity
+- confidence: for each extracted field, estimate confidence 0.0-1.0 based on source clarity (object)
 
 TEXT TO PARSE:
 ${text}
 
-Return JSON with this structure:
+Return JSON with this exact structure:
 {
-  "sqft": <number>,
-  "beds": <number>,
-  "baths": <number>,
-  "yearBuilt": <number>,
+  "sqft": <integer>,
+  "beds": <integer>,
+  "baths": <float>,
+  "yearBuilt": <integer>,
   "propertyType": "<type>",
   "subdivision": "<name>",
   "confidence": {
-    "sqft": <0.0-1.0>,
-    "beds": <0.0-1.0>,
-    "baths": <0.0-1.0>,
-    "yearBuilt": <0.0-1.0>,
-    "propertyType": <0.0-1.0>,
-    "subdivision": <0.0-1.0>
+    "sqft": <number>,
+    "beds": <number>,
+    "baths": <number>,
+    "yearBuilt": <number>,
+    "propertyType": <number>,
+    "subdivision": <number>
   }
 }`;
 
-  try {
-    console.log(`   🔍 Calling non-grounded Vertex AI for JSON parsing (timeout: ${SPD_PARSE_TIMEOUT_MS}ms)...`);
-    const responseText = await vertexGenerate({
-      ...ctx,
-      prompt,
-      grounded: false,  // CRITICAL: No web search, just parse the provided text
-      json: true,       // Request JSON output
-      timeoutMs: SPD_PARSE_TIMEOUT_MS,
-    });
+  // Retry logic with exponential backoff for truncated JSON responses
+  const MAX_RETRIES = 2;
+  let lastError: any = null;
 
-    const duration = Date.now() - startTime;
-    console.log(`   ✅ Vertex AI response received in ${duration}ms (${responseText.length} chars)`);
-
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
-      const parsed = JSON.parse(responseText);
-      console.log(`   ✅ JSON.parse() successful: parsed ${Object.keys(parsed).length} fields`);
-      console.log(`   ⚡ Non-grounded JSON parse completed in ${duration}ms`);
-      return parsed;
-    } catch (jsonError) {
-      console.error(`   ❌ JSON.parse() failed after ${duration}ms:`, jsonError);
-      console.error(`   📄 Response text that failed to parse (first 500 chars): "${responseText.substring(0, 500)}"`);
-      return {};
+      jobLog(`   🔍 Calling non-grounded Vertex AI for JSON parsing (attempt ${attempt}/${MAX_RETRIES}, timeout: ${SPD_PARSE_TIMEOUT_MS}ms)...`);
+      const responseText = await vertexGenerate({
+        ...ctx,
+        prompt,
+        grounded: false,  // CRITICAL: No web search, just parse the provided text
+        json: true,       // Request JSON output
+        responseSchema: BASIC_DETAILS_SCHEMA,  // Use schema to prevent truncation
+        timeoutMs: SPD_PARSE_TIMEOUT_MS,
+      });
+
+      const duration = Date.now() - startTime;
+      jobLog(`   ✅ Vertex AI response received in ${duration}ms (${responseText.length} chars)`);
+      jobLog(`   📄 FULL VERTEX RESPONSE: ${responseText}`);
+
+      try {
+        const parsed = JSON.parse(responseText);
+        jobLog(`   ✅ JSON.parse() successful: parsed ${Object.keys(parsed).length} fields`);
+        jobLog(`   📋 PARSED FIELDS: ${JSON.stringify(parsed, null, 2)}`);
+
+        // Validate critical fields - retry if missing
+        const missingFields: string[] = [];
+        if (!parsed.sqft) missingFields.push('sqft');
+        if (!parsed.beds) missingFields.push('beds');
+        if (!parsed.baths) missingFields.push('baths');
+        if (!parsed.yearBuilt) missingFields.push('yearBuilt');
+
+        if (missingFields.length > 0) {
+          console.error(`   ❌ Validation failed on attempt ${attempt}/${MAX_RETRIES}: missing ${missingFields.join(', ')}`);
+          console.error(`   📄 Response text with missing fields (first 1000 chars): "${responseText.substring(0, 1000)}"`);
+          lastError = new Error(`Missing critical fields: ${missingFields.join(', ')}`);
+
+          // If not last attempt, retry
+          if (attempt < MAX_RETRIES) {
+            const backoffMs = 1000 * Math.pow(2, attempt - 1);
+            jobLog(`   🔄 Retrying in ${backoffMs}ms due to missing fields...`);
+            await new Promise(resolve => setTimeout(resolve, backoffMs));
+            continue; // Retry the loop
+          }
+
+          // Last attempt failed - return partial data for reconciliation
+          console.error(`   ⚠️  Max retries reached - returning partial data for reconciliation`);
+        }
+
+        jobLog(`   ⚡ Non-grounded JSON parse completed in ${duration}ms`);
+
+        // Post-process: Normalize numeric fields to handle precision issues
+        if (parsed.sqft) parsed.sqft = Math.floor(Number(parsed.sqft));
+        if (parsed.beds) parsed.beds = Math.floor(Number(parsed.beds));
+        if (parsed.baths) parsed.baths = Number(Number(parsed.baths).toFixed(1)); // Round to 1 decimal
+        if (parsed.yearBuilt) parsed.yearBuilt = Math.floor(Number(parsed.yearBuilt));
+
+        jobLog(`   🔧 Post-processed values: sqft=${parsed.sqft}, beds=${parsed.beds}, baths=${parsed.baths}, yearBuilt=${parsed.yearBuilt}`);
+
+        return parsed;
+      } catch (jsonError) {
+        console.error(`   ❌ JSON.parse() failed on attempt ${attempt}/${MAX_RETRIES} after ${duration}ms:`, jsonError);
+        console.error(`   📄 Response text that failed to parse (first 500 chars): "${responseText.substring(0, 500)}"`);
+        lastError = jsonError;
+
+        // If not last attempt, wait before retrying with exponential backoff
+        if (attempt < MAX_RETRIES) {
+          const backoffMs = 1000 * Math.pow(2, attempt - 1); // 1s, 2s, 4s
+          jobLog(`   🔄 Retrying in ${backoffMs}ms...`);
+          await new Promise(resolve => setTimeout(resolve, backoffMs));
+        }
+      }
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      console.error(`   ❌ Vertex AI call failed on attempt ${attempt}/${MAX_RETRIES} after ${duration}ms:`, error);
+      if (error instanceof Error) {
+        console.error(`   📋 Error message: ${error.message}`);
+        console.error(`   📋 Error stack: ${error.stack?.split('\n')[0]}`);
+      }
+      lastError = error;
+
+      // If not last attempt, wait before retrying
+      if (attempt < MAX_RETRIES) {
+        const backoffMs = 1000 * Math.pow(2, attempt - 1);
+        jobLog(`   🔄 Retrying in ${backoffMs}ms...`);
+        await new Promise(resolve => setTimeout(resolve, backoffMs));
+      }
     }
-  } catch (error) {
-    const duration = Date.now() - startTime;
-    console.error(`   ❌ Vertex AI call failed after ${duration}ms:`, error);
-    if (error instanceof Error) {
-      console.error(`   📋 Error message: ${error.message}`);
-      console.error(`   📋 Error stack: ${error.stack?.split('\n')[0]}`);
-    }
-    return {};
   }
+
+  console.error(`   ❌ All ${MAX_RETRIES} attempts failed. Last error:`, lastError);
+  return {};
 }
 
 /**
@@ -205,9 +307,9 @@ function reconcileResults(
   county: Partial<BasicDetails>,
   primaryWon: boolean
 ): BasicDetails {
-  console.log(`   🔄 Reconciling: primary (${primaryWon ? 'winner' : 'loser'}) vs county (${primaryWon ? 'loser' : 'winner'})`);
-  console.log(`   📊 Primary data: sqft=${primary.sqft}, beds=${primary.beds}, baths=${primary.baths}, yearBuilt=${primary.yearBuilt}, type=${primary.propertyType}`);
-  console.log(`   📊 County data: sqft=${county.sqft}, beds=${county.beds}, baths=${county.baths}, yearBuilt=${county.yearBuilt}, type=${county.propertyType}`);
+  jobLog(`   🔄 Reconciling: primary (${primaryWon ? 'winner' : 'loser'}) vs county (${primaryWon ? 'loser' : 'winner'})`);
+  jobLog(`   📊 Primary data: sqft=${primary.sqft}, beds=${primary.beds}, baths=${primary.baths}, yearBuilt=${primary.yearBuilt}, type=${primary.propertyType}`);
+  jobLog(`   📊 County data: sqft=${county.sqft}, beds=${county.beds}, baths=${county.baths}, yearBuilt=${county.yearBuilt}, type=${county.propertyType}`);
 
   const winner = primaryWon ? primary : county;
   const loser = primaryWon ? county : primary;
@@ -237,12 +339,12 @@ function reconcileResults(
     source: 'reconciled' as const,
   };
 
-  console.log(`   ✅ Reconciliation complete:`);
-  console.log(`      - sqft=${reconciled.sqft} (from ${county.sqft ? 'county' : 'primary'})`);
-  console.log(`      - yearBuilt=${reconciled.yearBuilt} (from ${county.yearBuilt ? 'county' : 'primary'})`);
-  console.log(`      - beds=${reconciled.beds} (from ${primaryWon ? 'primary' : 'county'})`);
-  console.log(`      - baths=${reconciled.baths} (from ${primaryWon ? 'primary' : 'county'})`);
-  console.log(`      - type=${reconciled.propertyType} (from ${primaryWon ? 'primary' : 'county'})`);
+  jobLog(`   ✅ Reconciliation complete:`);
+  jobLog(`      - sqft=${reconciled.sqft} (from ${county.sqft ? 'county' : 'primary'})`);
+  jobLog(`      - yearBuilt=${reconciled.yearBuilt} (from ${county.yearBuilt ? 'county' : 'primary'})`);
+  jobLog(`      - beds=${reconciled.beds} (from ${primaryWon ? 'primary' : 'county'})`);
+  jobLog(`      - baths=${reconciled.baths} (from ${primaryWon ? 'primary' : 'county'})`);
+  jobLog(`      - type=${reconciled.propertyType} (from ${primaryWon ? 'primary' : 'county'})`);
 
   return reconciled as BasicDetails;
 }
@@ -258,10 +360,10 @@ function sleep(ms: number): Promise<never> {
 // Keeping below for reference only, not used in optimized SPD flow
 /*
 async function parseFreeformWithLLM(text: string, sa: any, projectId: string, location: string, model: string, address?: string): Promise<Partial<BasicDetails>> {
-  console.log(`   🤖 Starting LLM extraction for property details...`);
+  jobLog(`   🤖 Starting LLM extraction for property details...`);
   try {
     // STEP 1: Validation extraction - send raw data back for clean parsing
-    console.log(`   🔍 Step 1: Validation extraction from raw data...`);
+    jobLog(`   🔍 Step 1: Validation extraction from raw data...`);
     const validationPrompt = `Extract property details from this text. You MUST provide ALL five values - if any value is not found, write "UNKNOWN":
 
 "${text}"
@@ -288,21 +390,21 @@ TYPE: [property type or UNKNOWN]`;
       timeoutMs: 10000
     });
 
-    console.log(`   🔍 Validation response: "${validationResponse}"`);
+    jobLog(`   🔍 Validation response: "${validationResponse}"`);
     const validationData = parsePropertyResponse(validationResponse);
-    console.log(`   🔍 Validation extracted: sqft=${validationData.sqft}, beds=${validationData.beds}, baths=${validationData.baths}, year=${validationData.yearBuilt}`);
+    jobLog(`   🔍 Validation extracted: sqft=${validationData.sqft}, beds=${validationData.beds}, baths=${validationData.baths}, year=${validationData.yearBuilt}`);
 
     // Check if validation got all critical fields - but continue to verify with fallback
     const hasAllCriticalFields = validationData.sqft && validationData.beds && validationData.baths && validationData.yearBuilt;
     if (hasAllCriticalFields) {
-      console.log(`   ✅ Validation found all critical fields - but continuing to verify with fallback for accuracy`);
+      jobLog(`   ✅ Validation found all critical fields - but continuing to verify with fallback for accuracy`);
       // Don't return early - continue to fallback to verify/improve the data
     }
 
-    console.log(`   🔍 Continuing with original extraction for comparison and verification...`);
+    jobLog(`   🔍 Continuing with original extraction for comparison and verification...`);
 
     // STEP 2: Original LLM extraction logic for comparison and verification
-    console.log(`   🔍 Step 2: Original extraction logic for comparison...`);
+    jobLog(`   🔍 Step 2: Original extraction logic for comparison...`);
 
     // Extract square footage using LLM - ask for clean number only
     const sqftPrompt = `Extract the house square footage (interior living space only, not lot size) from this text. Return ONLY the number with no commas, units, or other text:
@@ -317,9 +419,9 @@ TYPE: [property type or UNKNOWN]`;
       timeoutMs: 10000
     });
 
-    console.log(`   🔍 Original sqft response: "${sqftResponse}"`);
+    jobLog(`   🔍 Original sqft response: "${sqftResponse}"`);
     const sqft = sqftResponse && sqftResponse.trim() ? Number(sqftResponse.trim()) : null;
-    console.log(`   🔍 Original sqft parsed: ${sqft}`);
+    jobLog(`   🔍 Original sqft parsed: ${sqft}`);
 
     // Extract bedrooms using LLM
     const bedsPrompt = `Extract the number of bedrooms from this text. Return ONLY the number:
@@ -334,9 +436,9 @@ TYPE: [property type or UNKNOWN]`;
       timeoutMs: 10000
     });
 
-    console.log(`   🔍 Original beds response: "${bedsResponse}"`);
+    jobLog(`   🔍 Original beds response: "${bedsResponse}"`);
     const beds = bedsResponse && bedsResponse.trim() ? Number(bedsResponse.trim()) : null;
-    console.log(`   🔍 Original beds parsed: ${beds}`);
+    jobLog(`   🔍 Original beds parsed: ${beds}`);
 
     // Extract bathrooms using LLM
     const bathsPrompt = `Extract the number of bathrooms (including half baths as 0.5) from this text. Return ONLY the number (use decimals like 2.5):
@@ -351,9 +453,9 @@ TYPE: [property type or UNKNOWN]`;
       timeoutMs: 10000
     });
 
-    console.log(`   🔍 Original baths response: "${bathsResponse}"`);
+    jobLog(`   🔍 Original baths response: "${bathsResponse}"`);
     const baths = bathsResponse && bathsResponse.trim() ? Number(bathsResponse.trim()) : null;
-    console.log(`   🔍 Original baths parsed: ${baths}`);
+    jobLog(`   🔍 Original baths parsed: ${baths}`);
 
     // Extract year built using LLM
     const yearPrompt = `Extract the year this property was built from this text. Return ONLY the 4-digit year:
@@ -368,9 +470,9 @@ TYPE: [property type or UNKNOWN]`;
       timeoutMs: 10000
     });
 
-    console.log(`   🔍 Original year response: "${yearResponse}"`);
+    jobLog(`   🔍 Original year response: "${yearResponse}"`);
     const yearBuilt = yearResponse && yearResponse.trim() ? Number(yearResponse.trim()) : null;
-    console.log(`   🔍 Original year parsed: ${yearBuilt}`);
+    jobLog(`   🔍 Original year parsed: ${yearBuilt}`);
 
     // Try to extract subdivision/neighborhood from text
     let subdivision: string | null = null;
@@ -386,10 +488,10 @@ TYPE: [property type or UNKNOWN]`;
     // Try to extract property type from text
     let propertyType: string | null = null;
     try {
-      console.log(`   🏠 Extracting property type from text...`);
+      jobLog(`   🏠 Extracting property type from text...`);
       const typePrompt = `From this text, what is the property type? Answer with one of: single-family detached, townhome, condo, duplex, multi-family, or UNKNOWN.\n\n"${text}"\n\nRespond with only one of those exact terms.`;
       const typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: true, json: false, timeoutMs: 600000 });
-      console.log(`   🏠 Raw property type response: "${typeResp}"`);
+      jobLog(`   🏠 Raw property type response: "${typeResp}"`);
       const cleaned = (typeResp || '').trim().toLowerCase();
       if (cleaned && !/^unknown$/i.test(cleaned)) {
         // Normalize property type terms
@@ -398,16 +500,16 @@ TYPE: [property type or UNKNOWN]`;
         else if (cleaned.includes('condo')) propertyType = 'condo';
         else if (cleaned.includes('townhome') || cleaned.includes('townhouse')) propertyType = 'townhome';
         else if (cleaned.includes('single-family') || cleaned.includes('single family')) propertyType = 'single-family detached';
-        console.log(`   🏠 Normalized property type: "${propertyType}"`);
+        jobLog(`   🏠 Normalized property type: "${propertyType}"`);
       } else {
-        console.log(`   🏠 Property type extraction returned: "${cleaned}" (treating as unknown)`);
+        jobLog(`   🏠 Property type extraction returned: "${cleaned}" (treating as unknown)`);
       }
     } catch (error) {
-      console.log(`   ❌ Property type extraction failed: ${error}`);
+      jobLog(`   ❌ Property type extraction failed: ${error}`);
     }
 
     const originalData = { sqft, beds, baths, yearBuilt, lotSize: null, subdivision, propertyType };
-    console.log(`   🤖 Original LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
+    jobLog(`   🤖 Original LLM Extraction: SQFT=${sqft}, Beds=${beds}, Baths=${baths}, Built=${yearBuilt}${subdivision ? `, Subdivision=${subdivision}` : ''}${propertyType ? `, Type=${propertyType}` : ''}`);
 
     // **FAST-FAIL: Check if LLM extraction found ZERO critical data**
     // If all critical fields are missing, the address is likely invalid - fail immediately
@@ -421,34 +523,34 @@ TYPE: [property type or UNKNOWN]`;
     }
 
     // STEP 3: Enrich validation data with original extraction for missing fields only
-    console.log(`   🔄 Step 3: Enriching validation data with original extraction...`);
+    jobLog(`   🔄 Step 3: Enriching validation data with original extraction...`);
 
     const finalData = { ...validationData };
 
     // Only use original data to fill missing fields from validation
     if (!finalData.sqft && sqft) {
       finalData.sqft = sqft;
-      console.log(`   ✅ ENRICHED: Added sqft from original extraction: ${sqft}`);
+      jobLog(`   ✅ ENRICHED: Added sqft from original extraction: ${sqft}`);
     }
     if (!finalData.beds && beds) {
       finalData.beds = beds;
-      console.log(`   ✅ ENRICHED: Added beds from original extraction: ${beds}`);
+      jobLog(`   ✅ ENRICHED: Added beds from original extraction: ${beds}`);
     }
     if (!finalData.baths && baths) {
       finalData.baths = baths;
-      console.log(`   ✅ ENRICHED: Added baths from original extraction: ${baths}`);
+      jobLog(`   ✅ ENRICHED: Added baths from original extraction: ${baths}`);
     }
     if (!finalData.yearBuilt && yearBuilt) {
       finalData.yearBuilt = yearBuilt;
-      console.log(`   ✅ ENRICHED: Added yearBuilt from original extraction: ${yearBuilt}`);
+      jobLog(`   ✅ ENRICHED: Added yearBuilt from original extraction: ${yearBuilt}`);
     }
     if (!finalData.subdivision && subdivision) {
       finalData.subdivision = subdivision;
-      console.log(`   ✅ ENRICHED: Added subdivision from original extraction: ${subdivision}`);
+      jobLog(`   ✅ ENRICHED: Added subdivision from original extraction: ${subdivision}`);
     }
     if (!finalData.propertyType && propertyType) {
       finalData.propertyType = propertyType;
-      console.log(`   ✅ ENRICHED: Added propertyType from original extraction: ${propertyType}`);
+      jobLog(`   ✅ ENRICHED: Added propertyType from original extraction: ${propertyType}`);
     }
 
     finalData.lotSize = null; // Always null for now
@@ -461,30 +563,30 @@ TYPE: [property type or UNKNOWN]`;
     if (!finalData.yearBuilt) missingCriticalFields.push('yearBuilt');
 
     if (missingCriticalFields.length > 0) {
-      console.log(`   ⚠️  Still missing critical fields after validation+original: ${missingCriticalFields.join(', ')}`);
-      console.log(`   🔄 Step 4: Enhanced fallback detection for missing fields...`);
+      jobLog(`   ⚠️  Still missing critical fields after validation+original: ${missingCriticalFields.join(', ')}`);
+      jobLog(`   🔄 Step 4: Enhanced fallback detection for missing fields...`);
 
       // Try the existing fallback detection for ALL fields to get complete data
-      console.log(`   🔍 Requesting complete fallback data for all fields to ensure accuracy...`);
+      jobLog(`   🔍 Requesting complete fallback data for all fields to ensure accuracy...`);
       const fallbackData = address ? await fallbackPropertyDetection(address, sa, projectId, location, model, ['sqft', 'beds', 'baths', 'yearBuilt', 'propertyType']) : {};
 
       // Fill in any missing critical fields from fallback
       missingCriticalFields.forEach(field => {
         if (field === 'sqft' && fallbackData.sqft && (!finalData.sqft || finalData.sqft <= 0)) {
           finalData.sqft = fallbackData.sqft;
-          console.log(`   ✅ Enhanced fallback: Found sqft = ${fallbackData.sqft}`);
+          jobLog(`   ✅ Enhanced fallback: Found sqft = ${fallbackData.sqft}`);
         }
         if (field === 'beds' && fallbackData.beds && (!finalData.beds || finalData.beds <= 0)) {
           finalData.beds = fallbackData.beds;
-          console.log(`   ✅ Enhanced fallback: Found beds = ${fallbackData.beds}`);
+          jobLog(`   ✅ Enhanced fallback: Found beds = ${fallbackData.beds}`);
         }
         if (field === 'baths' && fallbackData.baths && (!finalData.baths || finalData.baths <= 0)) {
           finalData.baths = fallbackData.baths;
-          console.log(`   ✅ Enhanced fallback: Found baths = ${fallbackData.baths}`);
+          jobLog(`   ✅ Enhanced fallback: Found baths = ${fallbackData.baths}`);
         }
         if (field === 'yearBuilt' && fallbackData.yearBuilt && !finalData.yearBuilt) {
           finalData.yearBuilt = fallbackData.yearBuilt;
-          console.log(`   ✅ Enhanced fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
+          jobLog(`   ✅ Enhanced fallback: Found yearBuilt = ${fallbackData.yearBuilt}`);
         }
       });
 
@@ -495,9 +597,9 @@ TYPE: [property type or UNKNOWN]`;
           (finalData.propertyType && fallbackData.propertyType !== finalData.propertyType);
 
         if (hasConflicts) {
-          console.log(`   🔍 CONFLICT DETECTED: Verification search needed`);
-          console.log(`   📊 Current: yearBuilt=${finalData.yearBuilt}, propertyType=${finalData.propertyType}`);
-          console.log(`   📊 Fallback: yearBuilt=${fallbackData.yearBuilt}, propertyType=${fallbackData.propertyType}`);
+          jobLog(`   🔍 CONFLICT DETECTED: Verification search needed`);
+          jobLog(`   📊 Current: yearBuilt=${finalData.yearBuilt}, propertyType=${finalData.propertyType}`);
+          jobLog(`   📊 Fallback: yearBuilt=${fallbackData.yearBuilt}, propertyType=${fallbackData.propertyType}`);
 
           try {
             const verificationPrompt = `Search multiple real estate sources to verify conflicting property data for: ${address}
@@ -528,7 +630,7 @@ EVIDENCE: [brief summary of which sources support the chosen values]`;
               timeoutMs: 30000
             });
 
-            console.log(`   🔍 Verification result: ${verificationResult}`);
+            jobLog(`   🔍 Verification result: ${verificationResult}`);
 
             // Parse verification result
             const yearMatch = verificationResult.match(/YEAR_BUILT:\s*(\d{4})/i);
@@ -537,17 +639,17 @@ EVIDENCE: [brief summary of which sources support the chosen values]`;
             if (yearMatch) {
               const verifiedYear = parseInt(yearMatch[1]);
               finalData.yearBuilt = verifiedYear;
-              console.log(`   ✅ VERIFIED: Using year built = ${verifiedYear}`);
+              jobLog(`   ✅ VERIFIED: Using year built = ${verifiedYear}`);
             }
 
             if (typeMatch) {
               const verifiedType = typeMatch[1].trim();
               finalData.propertyType = verifiedType;
-              console.log(`   ✅ VERIFIED: Using property type = ${verifiedType}`);
+              jobLog(`   ✅ VERIFIED: Using property type = ${verifiedType}`);
             }
 
           } catch (error) {
-            console.log(`   ⚠️  Verification search failed, using fallback data: ${error}`);
+            jobLog(`   ⚠️  Verification search failed, using fallback data: ${error}`);
             if (fallbackData.yearBuilt) finalData.yearBuilt = fallbackData.yearBuilt;
             if (fallbackData.propertyType) finalData.propertyType = fallbackData.propertyType;
           }
@@ -562,15 +664,15 @@ EVIDENCE: [brief summary of which sources support the chosen values]`;
       if (!finalData.yearBuilt) stillMissing.push('yearBuilt');
 
       if (stillMissing.length > 0) {
-        console.log(`   🆘 Step 5: Last resort - manual extraction for: ${stillMissing.join(', ')}`);
-        console.log(`   ❌ EXTRACTION FAILED: Could not find ${stillMissing.join(', ')} after all attempts`);
+        jobLog(`   🆘 Step 5: Last resort - manual extraction for: ${stillMissing.join(', ')}`);
+        jobLog(`   ❌ EXTRACTION FAILED: Could not find ${stillMissing.join(', ')} after all attempts`);
       } else {
-        console.log(`   🎉 Enhanced fallback SUCCESS: All critical fields now found!`);
+        jobLog(`   🎉 Enhanced fallback SUCCESS: All critical fields now found!`);
       }
     }
 
     // CONFLICT RESOLUTION: Use existing fallback data to resolve conflicts with validation data
-    console.log(`   🔍 Conflict resolution: Using Step 2 fallback to validate Step 1 data...`);
+    jobLog(`   🔍 Conflict resolution: Using Step 2 fallback to validate Step 1 data...`);
 
     // We already have fallbackData from the enhanced fallback detection above
     // Let's also get the original validation conflicts we saw earlier
@@ -578,26 +680,26 @@ EVIDENCE: [brief summary of which sources support the chosen values]`;
                                originalData.propertyType !== validationData.propertyType;
 
     if (hasConflictingData) {
-      console.log(`   🔍 CONFLICT DETECTED between validation and original extraction:`);
-      console.log(`   📊 Validation: yearBuilt=${validationData.yearBuilt}, propertyType=${validationData.propertyType}`);
-      console.log(`   📊 Original: yearBuilt=${originalData.yearBuilt}, propertyType=${originalData.propertyType}`);
+      jobLog(`   🔍 CONFLICT DETECTED between validation and original extraction:`);
+      jobLog(`   📊 Validation: yearBuilt=${validationData.yearBuilt}, propertyType=${validationData.propertyType}`);
+      jobLog(`   📊 Original: yearBuilt=${originalData.yearBuilt}, propertyType=${originalData.propertyType}`);
 
       // Use the more complete dataset - prefer original extraction data when it has both fields
       if (originalData.yearBuilt && originalData.propertyType) {
-        console.log(`   ✅ CONFLICT RESOLVED: Using original extraction data (more complete)`);
+        jobLog(`   ✅ CONFLICT RESOLVED: Using original extraction data (more complete)`);
         finalData.yearBuilt = originalData.yearBuilt;
         finalData.propertyType = originalData.propertyType;
-        console.log(`   ✅ RESOLVED: yearBuilt=${originalData.yearBuilt}, propertyType=${originalData.propertyType}`);
+        jobLog(`   ✅ RESOLVED: yearBuilt=${originalData.yearBuilt}, propertyType=${originalData.propertyType}`);
       } else if (validationData.yearBuilt && validationData.propertyType) {
-        console.log(`   ✅ CONFLICT RESOLVED: Using validation data (more complete)`);
+        jobLog(`   ✅ CONFLICT RESOLVED: Using validation data (more complete)`);
         finalData.yearBuilt = validationData.yearBuilt;
         finalData.propertyType = validationData.propertyType;
       }
     } else {
-      console.log(`   ✅ No conflicts detected between validation and original data`);
+      jobLog(`   ✅ No conflicts detected between validation and original data`);
     }
 
-    console.log(`   📊 Final combined result: SQFT=${finalData.sqft}, Beds=${finalData.beds}, Baths=${finalData.baths}, Built=${finalData.yearBuilt}${finalData.subdivision ? `, Subdivision=${finalData.subdivision}` : ''}${finalData.propertyType ? `, Type=${finalData.propertyType}` : ''}`);
+    jobLog(`   📊 Final combined result: SQFT=${finalData.sqft}, Beds=${finalData.beds}, Baths=${finalData.baths}, Built=${finalData.yearBuilt}${finalData.subdivision ? `, Subdivision=${finalData.subdivision}` : ''}${finalData.propertyType ? `, Type=${finalData.propertyType}` : ''}`);
 
     return finalData;
 
@@ -607,8 +709,8 @@ EVIDENCE: [brief summary of which sources support the chosen values]`;
       throw error;
     }
 
-    console.log(`   ❌ LLM parsing completely failed, falling back to regex: ${error}`);
-    console.log(`   📄 Text that caused LLM parsing failure: ${text.substring(0, 300)}...`);
+    jobLog(`   ❌ LLM parsing completely failed, falling back to regex: ${error}`);
+    jobLog(`   📄 Text that caused LLM parsing failure: ${text.substring(0, 300)}...`);
     return parseFreeformRegex(text);
   }
 }
@@ -649,12 +751,12 @@ function parseFreeformRegex(text: string): Partial<BasicDetails> {
 export async function fetchPropertyDetailsViaVertex(address: string): Promise<BasicDetails | null> {
   const totalStartTime = Date.now();
 
-  console.log(`🔍 SPD ENTRY: fetchPropertyDetailsViaVertex called for ${address}`);
+  jobLog(`🔍 SPD ENTRY: fetchPropertyDetailsViaVertex called for ${address}`);
   const hasSA = hasServiceAccount();
-  console.log(`🔍 SPD SERVICE ACCOUNT CHECK: ${hasSA}`);
+  jobLog(`🔍 SPD SERVICE ACCOUNT CHECK: ${hasSA}`);
 
   if (!hasSA) {
-    console.log(`❌ SPD ABORTED: No service account found - returning null`);
+    jobLog(`❌ SPD ABORTED: No service account found - returning null`);
     return null;
   }
 
@@ -674,7 +776,7 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
 
   const ctx = { sa, projectId, location, model };
 
-  console.log(`\n🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: ${address}`);
+  jobLog(`\n🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: ${address}`);
 
   // ===== STEP 1: Parallel Grounded Fetch (Primary + County) =====
   const primaryPrompt = `Use Google Search grounding with authoritative real estate sources (Zillow, Redfin, Realtor.com, county records) to find COMPLETE property details for: ${address}
@@ -714,7 +816,8 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   const primaryPromise = vertexGenerate({ ...ctx, prompt: primaryPrompt, grounded: true, json: false, timeoutMs: SPD_PRIMARY_TIMEOUT_MS })
     .then(text => {
       const duration = Date.now() - primaryStart;
-      console.log(`   ✅ Primary grounded search completed in ${duration}ms`);
+      jobLog(`   ✅ Primary grounded search completed in ${duration}ms`);
+      jobLog(`   📄 PRIMARY GROUNDED RESPONSE (${text.length} chars): ${text}`);
       return { text, source: 'primary' as const, duration, error: null };
     })
     .catch(err => {
@@ -726,7 +829,8 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   const countyPromise = vertexGenerate({ ...ctx, prompt: countyPrompt, grounded: true, json: false, timeoutMs: SPD_COUNTY_TIMEOUT_MS })
     .then(text => {
       const duration = Date.now() - countyStart;
-      console.log(`   ✅ County grounded search completed in ${duration}ms`);
+      jobLog(`   ✅ County grounded search completed in ${duration}ms`);
+      jobLog(`   📄 COUNTY GROUNDED RESPONSE (${text.length} chars): ${text}`);
       return { text, source: 'county' as const, duration, error: null };
     })
     .catch(err => {
@@ -737,12 +841,12 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
 
   // Race to get the first winner
   const winnerResult = await Promise.race([primaryPromise, countyPromise]);
-  console.log(`   🏆 Winner: ${winnerResult.source} (${winnerResult.duration}ms)`);
+  jobLog(`   🏆 Winner: ${winnerResult.source} (${winnerResult.duration}ms)`);
 
   if (!winnerResult.text) {
     console.error(`   ❌ Winner ${winnerResult.source} failed after ${winnerResult.duration}ms:`, winnerResult.error?.message || winnerResult.error);
     // Wait for the other one
-    console.log(`   🔄 Waiting for ${winnerResult.source === 'primary' ? 'county' : 'primary'} to complete...`);
+    jobLog(`   🔄 Waiting for ${winnerResult.source === 'primary' ? 'county' : 'primary'} to complete...`);
     const [p, c] = await Promise.all([primaryPromise, countyPromise]);
     const loserResult = winnerResult.source === 'primary' ? c : p;
 
@@ -752,13 +856,13 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
       return null;
     }
 
-    console.log(`   🔄 Using fallback: ${loserResult.source} (${loserResult.duration}ms)`);
+    jobLog(`   🔄 Using fallback: ${loserResult.source} (${loserResult.duration}ms)`);
     // Parse the loser
     try {
       const parseStart = Date.now();
       const parsed = await parseTextToJSON(loserResult.text, ctx);
       const parseDuration = Date.now() - parseStart;
-      console.log(`   ✅ Fallback parse completed in ${parseDuration}ms`);
+      jobLog(`   ✅ Fallback parse completed in ${parseDuration}ms`);
       return normalize(address, { ...parsed, source: loserResult.source, lotSize: null, success: true });
     } catch (err) {
       console.error(`   ❌ Fallback parse failed:`, err);
@@ -767,16 +871,16 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   }
 
   // ===== STEP 2: Parse Winner Immediately =====
-  console.log(`   🔍 Parsing winner (${winnerResult.source})...`);
+  jobLog(`   🔍 Parsing winner (${winnerResult.source})...`);
   let parsedWinner: Partial<BasicDetails>;
   try {
     const parseStart = Date.now();
     parsedWinner = await parseTextToJSON(winnerResult.text, ctx);
     const parseDuration = Date.now() - parseStart;
-    console.log(`   ✅ Winner parsed in ${parseDuration}ms: sqft=${parsedWinner.sqft}, beds=${parsedWinner.beds}, baths=${parsedWinner.baths}, yearBuilt=${parsedWinner.yearBuilt}`);
+    jobLog(`   ✅ Winner parsed in ${parseDuration}ms: sqft=${parsedWinner.sqft}, beds=${parsedWinner.beds}, baths=${parsedWinner.baths}, yearBuilt=${parsedWinner.yearBuilt}`);
   } catch (err) {
     console.error(`   ❌ Winner parse failed:`, err);
-    console.log(`   🔄 Waiting for loser to complete...`);
+    jobLog(`   🔄 Waiting for loser to complete...`);
     // Try the loser
     const loserPromise = winnerResult.source === 'primary' ? countyPromise : primaryPromise;
     const loserResult = await loserPromise;
@@ -788,7 +892,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
       const parseStart = Date.now();
       parsedWinner = await parseTextToJSON(loserResult.text, ctx);
       const parseDuration = Date.now() - parseStart;
-      console.log(`   ✅ Loser parsed in ${parseDuration}ms (used as fallback)`);
+      jobLog(`   ✅ Loser parsed in ${parseDuration}ms (used as fallback)`);
       return normalize(address, { ...parsedWinner, source: loserResult.source, lotSize: null, success: true });
     } catch (err2) {
       console.error(`   ❌ Loser parse also failed:`, err2);
@@ -797,7 +901,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   }
 
   // ===== STEP 3: Grace Window for Loser (for reconciliation) =====
-  console.log(`   ⏱️  Waiting ${SPD_GRACE_WINDOW_MS}ms for ${winnerResult.source === 'primary' ? 'county' : 'primary'} (grace window)...`);
+  jobLog(`   ⏱️  Waiting ${SPD_GRACE_WINDOW_MS}ms for ${winnerResult.source === 'primary' ? 'county' : 'primary'} (grace window)...`);
   let parsedLoser: Partial<BasicDetails> | null = null;
   try {
     const loserPromise = winnerResult.source === 'primary' ? countyPromise : primaryPromise;
@@ -807,12 +911,12 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
     ]);
 
     if (loserResult && loserResult.text) {
-      console.log(`   ✅ Loser arrived in grace window: ${loserResult.source} (${loserResult.duration}ms)`);
+      jobLog(`   ✅ Loser arrived in grace window: ${loserResult.source} (${loserResult.duration}ms)`);
       try {
         const parseStart = Date.now();
         parsedLoser = await parseTextToJSON(loserResult.text, ctx);
         const parseDuration = Date.now() - parseStart;
-        console.log(`   ✅ Loser parsed in ${parseDuration}ms: sqft=${parsedLoser.sqft}, beds=${parsedLoser.beds}, baths=${parsedLoser.baths}, yearBuilt=${parsedLoser.yearBuilt}`);
+        jobLog(`   ✅ Loser parsed in ${parseDuration}ms: sqft=${parsedLoser.sqft}, beds=${parsedLoser.beds}, baths=${parsedLoser.baths}, yearBuilt=${parsedLoser.yearBuilt}`);
       } catch (err) {
         console.error(`   ❌ Loser parse failed:`, err);
         parsedLoser = null;
@@ -821,7 +925,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
       console.error(`   ❌ Loser ${loserResult.source} failed in grace window after ${loserResult.duration}ms:`, loserResult.error?.message || loserResult.error);
     }
   } catch (err) {
-    console.log(`   ⏱️  Grace window expired (${SPD_GRACE_WINDOW_MS}ms) - using winner only`);
+    jobLog(`   ⏱️  Grace window expired (${SPD_GRACE_WINDOW_MS}ms) - using winner only`);
   }
 
   // ===== STEP 4: Reconcile if we have both =====
@@ -832,15 +936,15 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
     const primaryData = primaryWon ? parsedWinner : parsedLoser;
     const countyData = primaryWon ? parsedLoser : parsedWinner;
 
-    console.log(`   🔄 Reconciling: primary=${primaryWon ? 'winner' : 'loser'}, county=${primaryWon ? 'loser' : 'winner'}`);
+    jobLog(`   🔄 Reconciling: primary=${primaryWon ? 'winner' : 'loser'}, county=${primaryWon ? 'loser' : 'winner'}`);
     finalDetails = reconcileResults(primaryData, countyData, primaryWon);
   } else {
-    console.log(`   📋 Using winner only (no reconciliation): ${winnerResult.source}`);
+    jobLog(`   📋 Using winner only (no reconciliation): ${winnerResult.source}`);
     finalDetails = { ...parsedWinner, source: winnerResult.source };
   }
 
   // ===== STEP 5: Final Validation =====
-  console.log(`   🔍 Validating final details...`);
+  jobLog(`   🔍 Validating final details...`);
   const hasCriticalData = finalDetails.sqft && finalDetails.beds && finalDetails.baths && finalDetails.yearBuilt;
 
   if (!hasCriticalData) {
@@ -857,9 +961,9 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   }
 
   const totalDuration = Date.now() - totalStartTime;
-  console.log(`   ✅ Validation passed - All critical fields present`);
-  console.log(`   ✅ SPD Complete in ${totalDuration}ms (${(totalDuration/1000).toFixed(1)}s)`);
-  console.log(`   📊 Final: sqft=${finalDetails.sqft}, beds=${finalDetails.beds}, baths=${finalDetails.baths}, yearBuilt=${finalDetails.yearBuilt}, type=${finalDetails.propertyType}, source=${finalDetails.source}`);
+  jobLog(`   ✅ Validation passed - All critical fields present`);
+  jobLog(`   ✅ SPD Complete in ${totalDuration}ms (${(totalDuration/1000).toFixed(1)}s)`);
+  jobLog(`   📊 Final: sqft=${finalDetails.sqft}, beds=${finalDetails.beds}, baths=${finalDetails.baths}, yearBuilt=${finalDetails.yearBuilt}, type=${finalDetails.propertyType}, source=${finalDetails.source}`);
 
   return normalize(address, { ...finalDetails, lotSize: null, success: true });
 }

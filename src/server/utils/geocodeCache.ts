@@ -1,10 +1,8 @@
-// Geocode Cache - Avoid redundant Google Maps API calls
+// LRU Geocode Cache - Avoid redundant Google Maps API calls
 // Caches normalized address → {lat, lon} mappings
-// SUCCESS: No TTL (permanent)
-// FAILURE: Configurable negative cache TTL via GEOCODE_NEGATIVE_CACHE_TTL_SECONDS (default: 3600s)
 
-import { redis } from './redisClient';
-import { normalizeAddress } from './addressNormalizer';
+import { getRedisCache } from './redisCache';
+import { jobLog } from '../utils/jobQueue';
 
 interface GeoLocation {
   lat: number;
@@ -12,14 +10,11 @@ interface GeoLocation {
   cached: boolean;
 }
 
-interface GeocodeFailure {
-  error: string;
-  timestamp: number;
-}
-
 export class GeocodeCache {
+  private get redis() {
+    return getRedisCache(); // Get fresh instance each time to survive HMR
+  }
   private readonly KEY_PREFIX = 'geocode:';
-  private readonly NEGATIVE_CACHE_TTL_SECONDS = parseInt(process.env.GEOCODE_NEGATIVE_CACHE_TTL_SECONDS || '3600', 10);
 
   /**
    * Get cached geocode result
@@ -27,16 +22,18 @@ export class GeocodeCache {
   async get(address: string): Promise<GeoLocation | null> {
     try {
       const key = this.KEY_PREFIX + this.normalizeAddress(address);
+      const redis = this.redis;
       await redis.ensureConnected();
 
-      const cached = await redis.getJson<{ lat: number; lon: number }>(key);
+      const cached = await redis.get(key);
       if (!cached) {
-        console.log(`🗺️  GEOCODE CACHE MISS: ${address}`);
+        jobLog(`🗺️  GEOCODE CACHE MISS: ${address}`);
         return null;
       }
 
-      console.log(`🗺️  GEOCODE CACHE HIT: ${address} → (${cached.lat}, ${cached.lon})`);
-      return { ...cached, cached: true };
+      const parsed = JSON.parse(cached);
+      jobLog(`🗺️  GEOCODE CACHE HIT: ${address} → (${parsed.lat}, ${parsed.lon})`);
+      return { ...parsed, cached: true };
     } catch (error) {
       console.error(`❌ GEOCODE CACHE GET ERROR for "${address}":`, error);
       console.error(`   Error type: ${typeof error}`);
@@ -47,17 +44,18 @@ export class GeocodeCache {
   }
 
   /**
-   * Store geocode result in cache (NO TTL - permanent)
+   * Store geocode result in cache
    */
   async set(address: string, lat: number, lon: number): Promise<void> {
     try {
       const key = this.KEY_PREFIX + this.normalizeAddress(address);
+      const redis = this.redis;
       await redis.ensureConnected();
 
-      // No TTL - successful geocodes are cached forever
-      await redis.setJson(key, { lat, lon });
+      const value = JSON.stringify({ lat, lon });
+      await redis.set(key, value);
 
-      console.log(`🗺️  GEOCODE CACHED (permanent): ${address} → (${lat}, ${lon})`);
+      jobLog(`🗺️  GEOCODE CACHED: ${address} → (${lat}, ${lon})`);
     } catch (error) {
       console.error(`❌ GEOCODE CACHE SET ERROR for "${address}":`, error);
       console.error(`   Error type: ${typeof error}`);
@@ -68,69 +66,28 @@ export class GeocodeCache {
   }
 
   /**
-   * Store geocode failure in cache (with TTL)
+   * Normalize address for cache key consistency
    */
-  async setFailure(address: string, error: string): Promise<void> {
-    try {
-      const key = this.KEY_PREFIX + this.normalizeAddress(address) + ':failure';
-      await redis.ensureConnected();
-
-      const failure: GeocodeFailure = {
-        error,
-        timestamp: Date.now(),
-      };
-
-      await redis.setJson(key, failure, this.NEGATIVE_CACHE_TTL_SECONDS);
-
-      console.log(`🗺️  GEOCODE FAILURE CACHED (TTL=${this.NEGATIVE_CACHE_TTL_SECONDS}s): ${address} → ${error}`);
-    } catch (err) {
-      console.error(`❌ GEOCODE FAILURE CACHE SET ERROR for "${address}":`, err);
-      // Continue even if caching fails
-    }
+  private normalizeAddress(address: string): string {
+    return address
+      .toLowerCase()
+      .trim()
+      // Remove punctuation except commas
+      .replace(/[^\w\s,]/g, '')
+      // Collapse whitespace
+      .replace(/\s+/g, ' ')
+      // Remove extra commas
+      .replace(/,+/g, ',')
+      .trim();
   }
 
   /**
-   * Batch get multiple geocode results
-   */
-  async mget(addresses: string[]): Promise<Map<string, GeoLocation>> {
-    if (addresses.length === 0) {
-      return new Map();
-    }
-
-    try {
-      await redis.ensureConnected();
-
-      const keys = addresses.map(addr => this.KEY_PREFIX + this.normalizeAddress(addr));
-      const results = await redis.mgetJson<{ lat: number; lon: number }>(keys);
-
-      const map = new Map<string, GeoLocation>();
-      for (const [key, value] of results.entries()) {
-        if (value) {
-          // Extract original address from key
-          const normalizedAddr = key.substring(this.KEY_PREFIX.length);
-          const originalAddr = addresses.find(a => this.normalizeAddress(a) === normalizedAddr);
-          if (originalAddr) {
-            map.set(originalAddr, { ...value, cached: true });
-          }
-        }
-      }
-
-      console.log(`🗺️  GEOCODE BATCH: ${map.size}/${addresses.length} cache hits`);
-      return map;
-    } catch (error) {
-      console.error(`❌ GEOCODE BATCH GET ERROR:`, error);
-      return new Map();
-    }
-  }
-
-
-  /**
-   * Get cache stats (uses SCAN for safe iteration)
+   * Get cache stats
    */
   async getStats(): Promise<{ totalKeys: number }> {
     try {
-      await redis.ensureConnected();
-      const keys = await redis.scan(`${this.KEY_PREFIX}*`);
+      await this.redis.ensureConnected();
+      const keys = await this.redis.keys(`${this.KEY_PREFIX}*`);
       return { totalKeys: keys.length };
     } catch (error) {
       console.error(`❌ GEOCODE CACHE STATS ERROR:`, error);
@@ -140,20 +97,19 @@ export class GeocodeCache {
 
   /**
    * Clear all cached geocodes (for testing/maintenance)
-   * Uses SCAN for safe iteration
    */
   async clear(): Promise<number> {
     try {
-      await redis.ensureConnected();
-      const keys = await redis.scan(`${this.KEY_PREFIX}*`);
+      await this.redis.ensureConnected();
+      const keys = await this.redis.keys(`${this.KEY_PREFIX}*`);
 
       if (keys.length === 0) {
-        console.log(`🧹 GEOCODE CACHE: No keys to clear`);
+        jobLog(`🧹 GEOCODE CACHE: No keys to clear`);
         return 0;
       }
 
-      await redis.del(...keys);
-      console.log(`🧹 GEOCODE CACHE: Cleared ${keys.length} entries`);
+      await this.redis.del(...keys);
+      jobLog(`🧹 GEOCODE CACHE: Cleared ${keys.length} entries`);
       return keys.length;
     } catch (error) {
       console.error(`❌ GEOCODE CACHE CLEAR ERROR:`, error);

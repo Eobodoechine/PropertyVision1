@@ -1,19 +1,21 @@
 // Complete ARV Calculator - Implements the full valuation methodology
 // Combines your original description with the strict CentralUpperChain algorithm
 
+import { jobLog } from './utils/jobQueue.js';
+
 export class ARVCalculator {
 
   /**
    * Main ARV calculation entry point
    */
   calculateARV(subject, comparables) {
-    console.log(`🧮 CALCULATING ARV FOR ${subject.sqft} SQFT PROPERTY`);
-    console.log(`📊 Input: ${comparables.length} comparables`);
+    jobLog(`🧮 CALCULATING ARV FOR ${subject.sqft} SQFT PROPERTY`);
+    jobLog(`📊 Input: ${comparables.length} comparables`);
 
     try {
       // Step 0: Clean & prepare
       const cleaned = this.cleanAndPrepare(comparables);
-      console.log(`📊 After cleaning: ${cleaned.length} comparables`);
+      jobLog(`📊 After cleaning: ${cleaned.length} comparables`);
 
       if (cleaned.length < 2) {
         return this.insufficientDataResult(cleaned, "Less than 2 valid comparables");
@@ -26,7 +28,7 @@ export class ARVCalculator {
 
       // Step 1: Remove isolated lows using largest gap analysis
       const afterLowFilter = this.removeObviousLows(cleaned);
-      console.log(`📊 After low filter: ${afterLowFilter.length} comparables`);
+      jobLog(`📊 After low filter: ${afterLowFilter.length} comparables`);
 
       if (afterLowFilter.length < 2) {
         return this.insufficientDataResult(afterLowFilter, "Less than 2 comps after filtering lows");
@@ -36,12 +38,12 @@ export class ARVCalculator {
       const highClusterResult = this.tryHighCluster(afterLowFilter);
 
       if (highClusterResult.success) {
-        console.log(`📊 HighCluster found: ${highClusterResult.kept.length} comps`);
+        jobLog(`📊 HighCluster found: ${highClusterResult.kept.length} comps`);
         return this.formatResult('HighCluster', highClusterResult, subject.sqft);
       }
 
       // Step 3: Build CentralUpperChain (fallback)
-      console.log(`📊 No HighCluster found, using CentralUpperChain`);
+      jobLog(`📊 No HighCluster found, using CentralUpperChain`);
       const chainResult = this.buildCentralUpperChain(afterLowFilter);
 
       if (chainResult.kept.length < 2) {
@@ -63,7 +65,7 @@ export class ARVCalculator {
    * Step 0: Clean and prepare data
    */
   cleanAndPrepare(comparables) {
-    console.log('\n🧹 STEP 0: CLEAN & PREPARE');
+    jobLog('\n🧹 STEP 0: CLEAN & PREPARE');
 
     // Filter valid comps (price > 0, sqft > 0)
     let cleaned = comparables.filter(comp => {
@@ -72,7 +74,7 @@ export class ARVCalculator {
       return price > 0 && sqft > 0;
     });
 
-    console.log(`   Valid comps: ${cleaned.length}`);
+    jobLog(`   Valid comps: ${cleaned.length}`);
 
     // Calculate PPSF and normalize data
     cleaned = cleaned.map((comp, index) => ({
@@ -97,20 +99,20 @@ export class ARVCalculator {
       if (comp.lat && comp.lng) {
         // Round to 6 decimal places (~1 meter precision) for coordinate matching
         key = `${Math.round(comp.lat * 1000000)},${Math.round(comp.lng * 1000000)}`;
-        console.log(`   Comp ${comp.id}: coordinates key = ${key}`);
+        jobLog(`   Comp ${comp.id}: coordinates key = ${key}`);
       } else {
         key = comp.address.toLowerCase().trim();
-        console.log(`   Comp ${comp.id}: address key = ${key}`);
+        jobLog(`   Comp ${comp.id}: address key = ${key}`);
       }
 
       if (!addressMap.has(key)) {
         addressMap.set(key, comp);
         deduped.push(comp);
-        console.log(`   Added ${comp.id} with key ${key}`);
+        jobLog(`   Added ${comp.id} with key ${key}`);
       } else {
         // Keep more recent sale
         const existing = addressMap.get(key);
-        console.log(`   Found duplicate: ${comp.id} matches existing ${existing.id} (key: ${key})`);
+        jobLog(`   Found duplicate: ${comp.id} matches existing ${existing.id} (key: ${key})`);
         if (new Date(comp.saleDate) > new Date(existing.saleDate)) {
           const index = deduped.findIndex(c => {
             let cKey;
@@ -124,18 +126,18 @@ export class ARVCalculator {
           if (index !== -1) {
             deduped[index] = comp;
             addressMap.set(key, comp);
-            console.log(`   Replaced ${existing.id} with ${comp.id} (newer date)`);
+            jobLog(`   Replaced ${existing.id} with ${comp.id} (newer date)`);
           }
         }
-        console.log(`   Duplicate removed: ${comp.address} (same coordinates: ${key})`);
+        jobLog(`   Duplicate removed: ${comp.address} (same coordinates: ${key})`);
       }
     }
 
-    console.log(`   After dedup: ${deduped.length} comps`);
+    jobLog(`   After dedup: ${deduped.length} comps`);
 
     // Show cleaned data
     deduped.forEach((comp, i) => {
-      console.log(`   ${i+1}. ${comp.address} - $${comp.ppsf.toFixed(2)}/sqft`);
+      jobLog(`   ${i+1}. ${comp.address} - $${comp.ppsf.toFixed(2)}/sqft`);
     });
 
     return deduped;
@@ -152,18 +154,18 @@ export class ARVCalculator {
    * Step 1: Remove obvious lows using largest gap analysis
    */
   removeObviousLows(comps) {
-    console.log('\n📉 STEP 1: REMOVE OBVIOUS LOWS');
+    jobLog('\n📉 STEP 1: REMOVE OBVIOUS LOWS');
 
     if (comps.length < 4) {
-      console.log('   Insufficient comps for low removal (need ≥4)');
+      jobLog('   Insufficient comps for low removal (need ≥4)');
       return comps;
     }
 
     // Sort by PPSF
     const sorted = [...comps].sort((a, b) => a.ppsf - b.ppsf);
-    console.log('   Sorted by PPSF:');
+    jobLog('   Sorted by PPSF:');
     sorted.forEach((comp, i) => {
-      console.log(`   ${i}: ${comp.address} - $${comp.ppsf.toFixed(2)}/sqft`);
+      jobLog(`   ${i}: ${comp.address} - $${comp.ppsf.toFixed(2)}/sqft`);
     });
 
     // Calculate adjacent gaps
@@ -171,16 +173,16 @@ export class ARVCalculator {
     for (let i = 0; i < sorted.length - 1; i++) {
       gaps.push(sorted[i + 1].ppsf - sorted[i].ppsf);
     }
-    console.log(`   Gaps: [${gaps.map(g => g.toFixed(2)).join(', ')}]`);
+    jobLog(`   Gaps: [${gaps.map(g => g.toFixed(2)).join(', ')}]`);
 
     // Find largest gap
     const maxGapValue = Math.max(...gaps);
     const maxGapIndex = gaps.indexOf(maxGapValue);
-    console.log(`   Largest gap: ${maxGapValue.toFixed(2)} at index ${maxGapIndex}`);
+    jobLog(`   Largest gap: ${maxGapValue.toFixed(2)} at index ${maxGapIndex}`);
 
     // If first gap is largest, remove lowest
     if (maxGapIndex === 0) {
-      console.log(`   Removing isolated low: ${sorted[0].address}`);
+      jobLog(`   Removing isolated low: ${sorted[0].address}`);
       const filtered = sorted.slice(1);
 
       // Check again after removal
@@ -197,19 +199,19 @@ export class ARVCalculator {
    * Special handling for 3-comp case
    */
   handleThreeComps(comps, subjectSqft) {
-    console.log('\n🔥 SPECIAL: 3-COMP MODE');
+    jobLog('\n🔥 SPECIAL: 3-COMP MODE');
 
     const sorted = [...comps].sort((a, b) => a.ppsf - b.ppsf);
     const [c1, c2, c3] = sorted;
     const g1 = c2.ppsf - c1.ppsf;
     const g2 = c3.ppsf - c2.ppsf;
 
-    console.log(`   Sorted: ${c1.id}($${c1.ppsf.toFixed(2)}), ${c2.id}($${c2.ppsf.toFixed(2)}), ${c3.id}($${c3.ppsf.toFixed(2)})`);
-    console.log(`   Gaps: g1=${g1.toFixed(2)}, g2=${g2.toFixed(2)}`);
+    jobLog(`   Sorted: ${c1.id}($${c1.ppsf.toFixed(2)}), ${c2.id}($${c2.ppsf.toFixed(2)}), ${c3.id}($${c3.ppsf.toFixed(2)})`);
+    jobLog(`   Gaps: g1=${g1.toFixed(2)}, g2=${g2.toFixed(2)}`);
 
     // Step 1: obvious low drop
     if (g1 > g2) {
-      console.log(`   First gap (${g1.toFixed(2)}) > second gap (${g2.toFixed(2)}) → drop lowest`);
+      jobLog(`   First gap (${g1.toFixed(2)}) > second gap (${g2.toFixed(2)}) → drop lowest`);
       const pair = [c2, c3];
       pair.forEach(comp => comp.reason = 'tight_pair');
       const dropped = [{ ...c1, reason_codes: ['obvious_low'] }];
@@ -220,7 +222,7 @@ export class ARVCalculator {
     const pair = (g2 <= g1) ? [c2, c3] : [c1, c2];
     const droppedComp = (g2 <= g1) ? c1 : c3;
 
-    console.log(`   Using tighter pair: ${pair.map(c => c.id).join(', ')}`);
+    jobLog(`   Using tighter pair: ${pair.map(c => c.id).join(', ')}`);
     pair.forEach(comp => comp.reason = 'tight_pair');
     const dropped = [{ ...droppedComp, reason_codes: ['outside_tight_pair'] }];
 
@@ -231,10 +233,10 @@ export class ARVCalculator {
    * Step 2: Try to form a supported high cluster with improved guardrails
    */
   tryHighCluster(comps) {
-    console.log('\n📈 STEP 2: TRY HIGHCLUSTER (IMPROVED)');
+    jobLog('\n📈 STEP 2: TRY HIGHCLUSTER (IMPROVED)');
 
     if (comps.length < 3) {
-      console.log('   Insufficient comps for HighCluster');
+      jobLog('   Insufficient comps for HighCluster');
       return { success: false };
     }
 
@@ -245,37 +247,37 @@ export class ARVCalculator {
     // (A) Top-half floor: upper-middle PPSF
     const floorIdx = this.upperMiddleIndex(n);
     const ppsfFloor = sortedAsc[floorIdx].ppsf;
-    console.log(`   (A) Top-half floor: index ${floorIdx}, PPSF >= $${ppsfFloor.toFixed(2)}`);
+    jobLog(`   (A) Top-half floor: index ${floorIdx}, PPSF >= $${ppsfFloor.toFixed(2)}`);
 
     // Calculate all gaps
     const gaps = Array.from({length: n-1}, (_, i) => sortedAsc[i+1].ppsf - sortedAsc[i].ppsf);
     const globalLargestGap = Math.max(...gaps);
-    console.log(`   All gaps: [${gaps.map(g => g.toFixed(2)).join(', ')}]`);
-    console.log(`   (B) Global largest gap: ${globalLargestGap.toFixed(2)}`);
+    jobLog(`   All gaps: [${gaps.map(g => g.toFixed(2)).join(', ')}]`);
+    jobLog(`   (B) Global largest gap: ${globalLargestGap.toFixed(2)}`);
 
     // Build top block from highest PPSF downward
     const block = [];
     for (let i = n - 1; i >= 0; i--) {
       if (sortedAsc[i].ppsf < ppsfFloor) {
-        console.log(`   Stopped at top-half floor: ${sortedAsc[i].id} ($${sortedAsc[i].ppsf.toFixed(2)}) < floor ($${ppsfFloor.toFixed(2)})`);
+        jobLog(`   Stopped at top-half floor: ${sortedAsc[i].id} ($${sortedAsc[i].ppsf.toFixed(2)}) < floor ($${ppsfFloor.toFixed(2)})`);
         break;
       }
 
       block.push(i);
-      console.log(`   Added to block: ${sortedAsc[i].id} ($${sortedAsc[i].ppsf.toFixed(2)})`);
+      jobLog(`   Added to block: ${sortedAsc[i].id} ($${sortedAsc[i].ppsf.toFixed(2)})`);
 
       // (B) Stop at global largest gap
       if (i - 1 >= 0 && gaps[i - 1] >= globalLargestGap) {
-        console.log(`   Stopped at largest gap: gaps[${i-1}]=${gaps[i-1].toFixed(2)} >= ${globalLargestGap.toFixed(2)}`);
+        jobLog(`   Stopped at largest gap: gaps[${i-1}]=${gaps[i-1].toFixed(2)} >= ${globalLargestGap.toFixed(2)}`);
         break;
       }
     }
 
     block.sort((a, b) => a - b); // ascending indices
-    console.log(`   Block indices: [${block.join(', ')}], size: ${block.length}`);
+    jobLog(`   Block indices: [${block.join(', ')}], size: ${block.length}`);
 
     if (block.length < 3) {
-      console.log(`   Block too small: ${block.length} comps`);
+      jobLog(`   Block too small: ${block.length} comps`);
       return { success: false };
     }
 
@@ -291,14 +293,14 @@ export class ARVCalculator {
       const b = others[1]?.j;
 
       const confirmed = a != null && b != null && inBlock.has(a) && inBlock.has(b);
-      console.log(`   ${comp.id}: closest prices at indices [${a}, ${b}], both in block: ${confirmed}`);
+      jobLog(`   ${comp.id}: closest prices at indices [${a}, ${b}], both in block: ${confirmed}`);
       return confirmed;
     });
 
-    console.log(`   Confirmed: ${confirmed.length} of ${block.length} comps`);
+    jobLog(`   Confirmed: ${confirmed.length} of ${block.length} comps`);
 
     if (confirmed.length >= 3) {
-      console.log(`   ✅ HighCluster formed: ${confirmed.length} confirmed comps`);
+      jobLog(`   ✅ HighCluster formed: ${confirmed.length} confirmed comps`);
 
       const kept = confirmed.map(i => ({ ...sortedAsc[i], reason: 'high_cluster_supported' }));
       const dropped = comps.filter(comp => !kept.some(k => k.id === comp.id))
@@ -312,7 +314,7 @@ export class ARVCalculator {
       };
     }
 
-    console.log(`   ❌ HighCluster failed: only ${confirmed.length} confirmed`);
+    jobLog(`   ❌ HighCluster failed: only ${confirmed.length} confirmed`);
     return { success: false };
   }
 
@@ -320,14 +322,14 @@ export class ARVCalculator {
    * Step 3: Build CentralUpperChain - EXACT ALGORITHM FROM YOUR SPEC
    */
   buildCentralUpperChain(comps) {
-    console.log('\n⚡ STEP 3: CENTRALUPPERCHAIN ALGORITHM');
+    jobLog('\n⚡ STEP 3: CENTRALUPPERCHAIN ALGORITHM');
 
     // Sort by PPSF ascending
     const sorted = [...comps].sort((a, b) => a.ppsf - b.ppsf);
     const n = sorted.length;
 
-    console.log(`   Sorted PPSF: ${sorted.map(c => `${c.id} ${c.ppsf.toFixed(2)}`).join(', ')}`);
-    console.log(`   Step A: n = ${n} comps, indices [${Array.from({length: n}, (_, i) => i).join(',')}]`);
+    jobLog(`   Sorted PPSF: ${sorted.map(c => `${c.id} ${c.ppsf.toFixed(2)}`).join(', ')}`);
+    jobLog(`   Step A: n = ${n} comps, indices [${Array.from({length: n}, (_, i) => i).join(',')}]`);
 
     if (n < 2) {
       return { kept: [], dropped: comps.map(c => ({id: c.id, reason_codes: ['insufficient']})), thin: true };
@@ -335,35 +337,35 @@ export class ARVCalculator {
 
     // Step B: Find upper middle starting point
     const mid = (n % 2 === 0) ? (n / 2) : Math.floor(n / 2);
-    console.log(`   Step B: n=${n} is ${n % 2 === 1 ? 'odd' : 'even'}, so mid = ${mid}`);
-    console.log(`   Starting comp: index ${mid} = ${sorted[mid].id} ($${sorted[mid].ppsf.toFixed(2)}/sqft)`);
+    jobLog(`   Step B: n=${n} is ${n % 2 === 1 ? 'odd' : 'even'}, so mid = ${mid}`);
+    jobLog(`   Starting comp: index ${mid} = ${sorted[mid].id} ($${sorted[mid].ppsf.toFixed(2)}/sqft)`);
 
     // Step C: Calculate adjacent gaps
     const gaps = Array.from({length: n-1}, (_, i) => sorted[i+1].ppsf - sorted[i].ppsf);
-    console.log(`   Step C: All gaps = [${gaps.map(g => g.toFixed(2)).join(', ')}]`);
+    jobLog(`   Step C: All gaps = [${gaps.map(g => g.toFixed(2)).join(', ')}]`);
 
     // Max gap in the lower side (strictly below mid)
     const lowerMaxGap = (mid >= 1) ? Math.max(...gaps.slice(0, mid)) : -Infinity;
-    console.log(`   Lower gaps (before mid=${mid}): [${gaps.slice(0, mid).map(g => g.toFixed(2)).join(', ')}]`);
-    console.log(`   lowerMaxGap = ${lowerMaxGap === -Infinity ? '-Infinity' : lowerMaxGap.toFixed(2)}`);
+    jobLog(`   Lower gaps (before mid=${mid}): [${gaps.slice(0, mid).map(g => g.toFixed(2)).join(', ')}]`);
+    jobLog(`   lowerMaxGap = ${lowerMaxGap === -Infinity ? '-Infinity' : lowerMaxGap.toFixed(2)}`);
 
     // Step D: Build contiguous upward chain from mid
-    console.log(`   Step D: Building chain from mid=${mid}`);
+    jobLog(`   Step D: Building chain from mid=${mid}`);
     const keptIdx = [mid];
-    console.log(`   - chain = [${mid}] (${sorted[mid].id})`);
+    jobLog(`   - chain = [${mid}] (${sorted[mid].id})`);
 
     for (let i = mid; i < n - 1; i++) {
       const g = gaps[i];
-      console.log(`   - i=${i}: check gaps[${i}]=${g.toFixed(2)} vs lowerMaxGap=${lowerMaxGap === -Infinity ? '-Infinity' : lowerMaxGap.toFixed(2)}`);
+      jobLog(`   - i=${i}: check gaps[${i}]=${g.toFixed(2)} vs lowerMaxGap=${lowerMaxGap === -Infinity ? '-Infinity' : lowerMaxGap.toFixed(2)}`);
 
       if (g >= lowerMaxGap) {
-        console.log(`     Since ${g.toFixed(2)} >= ${lowerMaxGap === -Infinity ? '-Infinity' : lowerMaxGap.toFixed(2)}, STOP (large jump)`);
+        jobLog(`     Since ${g.toFixed(2)} >= ${lowerMaxGap === -Infinity ? '-Infinity' : lowerMaxGap.toFixed(2)}, STOP (large jump)`);
         break;
       }
 
       keptIdx.push(i + 1);
-      console.log(`     Since ${g.toFixed(2)} < ${lowerMaxGap.toFixed(2)}, ADD index ${i + 1}`);
-      console.log(`   - chain = [${keptIdx.join(',')}] (${keptIdx.map(idx => sorted[idx].id).join(', ')})`);
+      jobLog(`     Since ${g.toFixed(2)} < ${lowerMaxGap.toFixed(2)}, ADD index ${i + 1}`);
+      jobLog(`   - chain = [${keptIdx.join(',')}] (${keptIdx.map(idx => sorted[idx].id).join(', ')})`);
     }
 
     // Step E: Format results
@@ -375,9 +377,9 @@ export class ARVCalculator {
 
     const thin = kept.length < 3;
 
-    console.log(`   Final chain indices: [${keptIdx.join(',')}]`);
-    console.log(`   Final chain comps: ${kept.map(c => `${c.id}($${c.ppsf.toFixed(2)})`).join(', ')}`);
-    console.log(`   Thin market: ${thin}`);
+    jobLog(`   Final chain indices: [${keptIdx.join(',')}]`);
+    jobLog(`   Final chain comps: ${kept.map(c => `${c.id}($${c.ppsf.toFixed(2)})`).join(', ')}`);
+    jobLog(`   Thin market: ${thin}`);
 
     return { kept, dropped, thin };
   }
@@ -386,12 +388,12 @@ export class ARVCalculator {
    * Step 4: Price isolation guard
    */
   applyPriceIsolationGuard(chainResult) {
-    console.log('\n🛡️ STEP 4: PRICE ISOLATION GUARD');
+    jobLog('\n🛡️ STEP 4: PRICE ISOLATION GUARD');
 
     const { kept, dropped } = chainResult;
 
     if (kept.length <= 2) {
-      console.log('   Skipping isolation guard (≤2 comps, thin market protection)');
+      jobLog('   Skipping isolation guard (≤2 comps, thin market protection)');
       return chainResult;
     }
 
@@ -405,7 +407,7 @@ export class ARVCalculator {
       if (otherKeptPrices.length === 0) {
         // Only 1 comp in kept set, keep it
         finalKept.push(comp);
-        console.log(`   ${comp.id} kept (only comp in chain)`);
+        jobLog(`   ${comp.id} kept (only comp in chain)`);
         continue;
       }
 
@@ -423,17 +425,17 @@ export class ARVCalculator {
       if (percentDiff < 15) {
         // Not isolated - closest neighbor is within 15%
         finalKept.push(comp);
-        console.log(`   ${comp.id} kept (closest neighbor ${percentDiff.toFixed(1)}% away)`);
+        jobLog(`   ${comp.id} kept (closest neighbor ${percentDiff.toFixed(1)}% away)`);
       } else {
         // Isolated - closest neighbor is >15% away
         // Only drop if we'd still have ≥2 comps after dropping this one
         const wouldHaveAfterDrop = kept.length - additionalDropped.length - 1;
         if (wouldHaveAfterDrop >= 2) {
           additionalDropped.push({ id: comp.id, reason_codes: ['high_price_isolated'] });
-          console.log(`   ${comp.id} dropped (price isolated - ${percentDiff.toFixed(1)}% from closest)`);
+          jobLog(`   ${comp.id} dropped (price isolated - ${percentDiff.toFixed(1)}% from closest)`);
         } else {
           finalKept.push(comp);
-          console.log(`   ${comp.id} kept despite isolation (thin market protection)`);
+          jobLog(`   ${comp.id} kept despite isolation (thin market protection)`);
         }
       }
     }
@@ -449,7 +451,7 @@ export class ARVCalculator {
    * Format final result
    */
   formatResult(method, chainResult, subjectSqft) {
-    console.log('\n💰 CALCULATING FINAL ARV');
+    jobLog('\n💰 CALCULATING FINAL ARV');
 
     if (!chainResult || !chainResult.kept) {
       console.error('Invalid chainResult:', chainResult);
@@ -460,21 +462,21 @@ export class ARVCalculator {
 
     // Calculate median PPSF
     const ppsfValues = kept.map(comp => comp.ppsf).sort((a, b) => a - b);
-    console.log(`   PPSF values: [${ppsfValues.map(p => p.toFixed(2)).join(', ')}]`);
+    jobLog(`   PPSF values: [${ppsfValues.map(p => p.toFixed(2)).join(', ')}]`);
 
     let medianPpsf;
     if (ppsfValues.length % 2 === 1) {
       medianPpsf = ppsfValues[Math.floor(ppsfValues.length / 2)];
-      console.log(`   Median (odd count): $${medianPpsf.toFixed(2)}/sqft`);
+      jobLog(`   Median (odd count): $${medianPpsf.toFixed(2)}/sqft`);
     } else {
       const mid1 = ppsfValues[ppsfValues.length / 2 - 1];
       const mid2 = ppsfValues[ppsfValues.length / 2];
       medianPpsf = (mid1 + mid2) / 2;
-      console.log(`   Median (even count): ($${mid1.toFixed(2)} + $${mid2.toFixed(2)}) / 2 = $${medianPpsf.toFixed(2)}/sqft`);
+      jobLog(`   Median (even count): ($${mid1.toFixed(2)} + $${mid2.toFixed(2)}) / 2 = $${medianPpsf.toFixed(2)}/sqft`);
     }
 
     const arvPrice = Math.round(medianPpsf * subjectSqft);
-    console.log(`   ARV = $${medianPpsf.toFixed(2)}/sqft × ${subjectSqft} sqft = $${arvPrice.toLocaleString()}`);
+    jobLog(`   ARV = $${medianPpsf.toFixed(2)}/sqft × ${subjectSqft} sqft = $${arvPrice.toLocaleString()}`);
 
     const conservativeResult = {
       arv_ppsf: medianPpsf,

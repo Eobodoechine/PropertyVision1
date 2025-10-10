@@ -309,7 +309,7 @@ export class SmartDeduplicator {
       lowConfidenceGroups: number;
     };
   } {
-    console.log(`🔗 Starting smart deduplication of ${properties.length} properties...`);
+    jobLog(`🔗 Starting smart deduplication of ${properties.length} properties...`);
 
     // Reset state
     this.duplicateGroups.clear();
@@ -335,19 +335,19 @@ export class SmartDeduplicator {
       lowConfidenceGroups: duplicateGroups.filter(g => g.confidence === 'low').length
     };
 
-    console.log(`✅ Deduplication complete:`);
-    console.log(`   📊 ${summary.originalCount} → ${summary.finalCount} properties`);
-    console.log(`   🔗 ${summary.duplicatesRemoved} duplicates removed`);
-    console.log(`   ⚠️  ${summary.conflictsResolved} conflicts resolved`);
-    console.log(`   📈 Confidence: ${summary.highConfidenceGroups}H/${summary.mediumConfidenceGroups}M/${summary.lowConfidenceGroups}L`);
+    jobLog(`✅ Deduplication complete:`);
+    jobLog(`   📊 ${summary.originalCount} → ${summary.finalCount} properties`);
+    jobLog(`   🔗 ${summary.duplicatesRemoved} duplicates removed`);
+    jobLog(`   ⚠️  ${summary.conflictsResolved} conflicts resolved`);
+    jobLog(`   📈 Confidence: ${summary.highConfidenceGroups}H/${summary.mediumConfidenceGroups}M/${summary.lowConfidenceGroups}L`);
 
     // Log groups with conflicts for debugging
     duplicateGroups.forEach(group => {
       if (group.properties.length > 1) {
-        console.log(`   🔗 Merged ${group.properties.length} instances of ${group.merged.address}`);
+        jobLog(`   🔗 Merged ${group.properties.length} instances of ${group.merged.address}`);
         if (group.conflicts.length > 0) {
           group.conflicts.forEach(conflict => {
-            console.log(`      ${conflict.field}: [${conflict.values.join(', ')}] → ${conflict.resolution} (${conflict.method})`);
+            jobLog(`      ${conflict.field}: [${conflict.values.join(', ')}] → ${conflict.resolution} (${conflict.method})`);
           });
         }
       }

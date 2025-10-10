@@ -155,7 +155,7 @@ export function topK<T>(
       }
     }
 
-    console.log(`📊 TOP K: Processed ${processedCount} items, returning top ${Math.min(k, processedCount)}`);
+    jobLog(`📊 TOP K: Processed ${processedCount} items, returning top ${Math.min(k, processedCount)}`);
     return heap.getSorted();
   } catch (error) {
     console.error(`❌ TOP K ERROR:`);

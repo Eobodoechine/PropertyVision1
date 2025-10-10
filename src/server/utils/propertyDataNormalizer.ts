@@ -225,7 +225,7 @@ export class PropertyDataNormalizer {
       lowConfidence: number;
     };
   } {
-    console.log(`🔍 Processing ${properties.length} properties for normalization...`);
+    jobLog(`🔍 Processing ${properties.length} properties for normalization...`);
 
     // Group properties by address
     const addressGroups = new Map<string, RawPropertyData[]>();
@@ -251,7 +251,7 @@ export class PropertyDataNormalizer {
         normalized.push(normalizedProp);
       } else {
         // Handle duplicates and conflicts
-        console.log(`   🔗 Found ${groupProperties.length} instances of ${address}`);
+        jobLog(`   🔗 Found ${groupProperties.length} instances of ${address}`);
 
         const conflictResolution = this.resolveConflicts(address, groupProperties);
         conflicts.push(conflictResolution);
@@ -259,9 +259,9 @@ export class PropertyDataNormalizer {
 
         // Log conflicts
         if (conflictResolution.conflicts.length > 0) {
-          console.log(`   ⚠️  Resolved ${conflictResolution.conflicts.length} conflicts for ${address}:`);
+          jobLog(`   ⚠️  Resolved ${conflictResolution.conflicts.length} conflicts for ${address}:`);
           conflictResolution.conflicts.forEach(conflict => {
-            console.log(`      ${conflict.field}: [${conflict.values.join(', ')}] → ${conflict.resolution} (${conflict.reason})`);
+            jobLog(`      ${conflict.field}: [${conflict.values.join(', ')}] → ${conflict.resolution} (${conflict.reason})`);
           });
         }
       }
@@ -278,11 +278,11 @@ export class PropertyDataNormalizer {
       lowConfidence: normalized.filter(p => p.confidence === 'low').length
     };
 
-    console.log(`✅ Normalization complete:`);
-    console.log(`   📊 ${summary.originalCount} → ${summary.finalCount} properties`);
-    console.log(`   🔗 ${summary.duplicatesFound} duplicates merged`);
-    console.log(`   ⚠️  ${summary.conflictsResolved} conflicts resolved`);
-    console.log(`   📈 Confidence: ${summary.highConfidence}H/${summary.mediumConfidence}M/${summary.lowConfidence}L`);
+    jobLog(`✅ Normalization complete:`);
+    jobLog(`   📊 ${summary.originalCount} → ${summary.finalCount} properties`);
+    jobLog(`   🔗 ${summary.duplicatesFound} duplicates merged`);
+    jobLog(`   ⚠️  ${summary.conflictsResolved} conflicts resolved`);
+    jobLog(`   📈 Confidence: ${summary.highConfidence}H/${summary.mediumConfidence}M/${summary.lowConfidence}L`);
 
     return {
       normalized,
