@@ -40,3 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 logs/*.log
+
+# local & runtime logs
+src/logs/*.log
+logs/
