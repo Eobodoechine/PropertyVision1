@@ -1,0 +1,197 @@
+[
+  {
+    "insertId": ".........052sWWS8UdDXfeB03w7Yh3s",
+    "jsonPayload": {
+      "message": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad created for address: 1100 Water Shine Way, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.992882485Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.918999910Z"
+  },
+  {
+    "insertId": "..........y2sWWS8UdDXfeB03w7Yh3s",
+    "jsonPayload": {
+      "message": "📋 Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad enqueued for address: 1100 Water Shine Way, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.992882485Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.918999910Z"
+  },
+  {
+    "insertId": "..........q2sWWS8UdDXfeB03w7Yh3s",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (234 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.992882485Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.918999910Z"
+  },
+  {
+    "insertId": "68e7dc17000afc63860966a0",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad created for address: 1100 Water Shine Way, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.720Z\"}",
+    "timestamp": "2025-10-09T16:00:23.719971Z"
+  },
+  {
+    "insertId": "68e7dc17000afad1db66abce",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad created for address: 1100 Water Shine Way, Snellville, GA 30078",
+    "timestamp": "2025-10-09T16:00:23.719569Z"
+  },
+  {
+    "insertId": "68e7dc17000afa4271e6c0e2",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📋 Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad enqueued for address: 1100 Water Shine Way, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.719Z\"}",
+    "timestamp": "2025-10-09T16:00:23.719426Z"
+  },
+  {
+    "insertId": "68e7dc17000af8c8308d4434",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📋 Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad enqueued for address: 1100 Water Shine Way, Snellville, GA 30078",
+    "timestamp": "2025-10-09T16:00:23.719048Z"
+  },
+  {
+    "insertId": "68e7dc17000aef5461e71506",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (234 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.716Z\"}",
+    "timestamp": "2025-10-09T16:00:23.716628Z"
+  },
+  {
+    "insertId": "68e7dc17000aed5d355cc504",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (234 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:00:23.716125Z"
+  }
+]

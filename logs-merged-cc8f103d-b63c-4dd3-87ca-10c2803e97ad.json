@@ -1,0 +1,2342 @@
+[
+  {
+    "insertId": "68e7dc17000aed5d355cc504",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (234 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:00:23.716125Z"
+  },
+  {
+    "insertId": "68e7dc17000aef5461e71506",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (234 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.716Z\"}",
+    "timestamp": "2025-10-09T16:00:23.716628Z"
+  },
+  {
+    "insertId": "68e7dc17000af8c8308d4434",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📋 Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad enqueued for address: 1100 Water Shine Way, Snellville, GA 30078",
+    "timestamp": "2025-10-09T16:00:23.719048Z"
+  },
+  {
+    "insertId": "68e7dc17000afa4271e6c0e2",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📋 Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad enqueued for address: 1100 Water Shine Way, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.719Z\"}",
+    "timestamp": "2025-10-09T16:00:23.719426Z"
+  },
+  {
+    "insertId": "68e7dc17000afad1db66abce",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad created for address: 1100 Water Shine Way, Snellville, GA 30078",
+    "timestamp": "2025-10-09T16:00:23.719569Z"
+  },
+  {
+    "insertId": "68e7dc17000afc63860966a0",
+    "labels": {
+      "instanceId": "0069c7a98836f9ea553c88776d9fbda613c82900366eb0d22469dd2bd7d26ef68fe040cdca8e7ebd36b4b8bda60ded437386ff07b4efa6fbb4b9353222cb033620f0c0154b930486b2b3e8462828"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:24.050921470Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad created for address: 1100 Water Shine Way, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.720Z\"}",
+    "timestamp": "2025-10-09T16:00:23.719971Z"
+  },
+  {
+    "insertId": "68e7dc17000affafb8cf12c0",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "⚙️  [1760025623717-0] Processing job cc8f103d-b63c-4dd3-87ca-10c2803e97ad: 1100 Water Shine Way, Snellville, GA 30078",
+    "timestamp": "2025-10-09T16:00:23.720815Z"
+  },
+  {
+    "insertId": "68e7dc17000affb831bb2839",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ⚙️  [1760025623717-0] Processing job cc8f103d-b63c-4dd3-87ca-10c2803e97ad: 1100 Water Shine Way, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.721Z\"}",
+    "timestamp": "2025-10-09T16:00:23.720824Z"
+  },
+  {
+    "insertId": "68e7dc17000b072b7449a023",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "🔍 [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad not currently processing (status: queued)",
+    "timestamp": "2025-10-09T16:00:23.722731Z"
+  },
+  {
+    "insertId": "68e7dc17000b07a84323d80e",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 🔍 [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad not currently processing (status: queued) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.723Z\"}",
+    "timestamp": "2025-10-09T16:00:23.722856Z"
+  },
+  {
+    "insertId": "68e7dc17000b07badb79ea04",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 [1760025623717-0] Claiming ownership of job cc8f103d-b63c-4dd3-87ca-10c2803e97ad",
+    "timestamp": "2025-10-09T16:00:23.722874Z"
+  },
+  {
+    "insertId": "68e7dc17000b07beb8faa2a4",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 [1760025623717-0] Claiming ownership of job cc8f103d-b63c-4dd3-87ca-10c2803e97ad {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.723Z\"}",
+    "timestamp": "2025-10-09T16:00:23.722878Z"
+  },
+  {
+    "insertId": "68e7dc17000b0943b843b9e0",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "💾 Updating job cc8f103d-b63c-4dd3-87ca-10c2803e97ad with: {\"status\":\"processing\",\"phase\":\"Getting subject details\",\"progress\":10,\"processingBy\":\"localhost:23\",\"processingMessageId\":\"1760025623717-0\"}",
+    "timestamp": "2025-10-09T16:00:23.723267Z"
+  },
+  {
+    "insertId": "68e7dc17000b096c1fe45b6b",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 💾 Updating job cc8f103d-b63c-4dd3-87ca-10c2803e97ad with: {\"status\":\"processing\",\"phase\":\"Getting subject details\",\"progress\":10,\"processingBy\":\"localhost:23\",\"processingMessageId\":\"1760025623717-0\"} {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.724Z\"}",
+    "timestamp": "2025-10-09T16:00:23.723308Z"
+  },
+  {
+    "insertId": "68e7dc17000b169f4cf4fb02",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:00:23.726687Z"
+  },
+  {
+    "insertId": "68e7dc17000b17cd1ae59019",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.727Z\"}",
+    "timestamp": "2025-10-09T16:00:23.726989Z"
+  },
+  {
+    "insertId": "68e7dc17000b17d712b494f2",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad saved to Redis: status=processing, progress=10",
+    "timestamp": "2025-10-09T16:00:23.726999Z"
+  },
+  {
+    "insertId": "68e7dc17000b17dc7749ff29",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:23.985735603Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad saved to Redis: status=processing, progress=10 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:23.727Z\"}",
+    "timestamp": "2025-10-09T16:00:23.727004Z"
+  },
+  {
+    "insertId": "........6BUqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad saved to Redis: status=processing, progress=10",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.917671380Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.842999935Z"
+  },
+  {
+    "insertId": "........6BMqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.917671380Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.842999935Z"
+  },
+  {
+    "insertId": "........6BEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "💾 Updating job cc8f103d-b63c-4dd3-87ca-10c2803e97ad with: {\"status\":\"processing\",\"phase\":\"Getting subject details\",\"progress\":10,\"processingBy\":\"localhost:23\",\"processingMessageId\":\"1760025623717-0\"}",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.917671380Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.842999935Z"
+  },
+  {
+    "insertId": "........6B6qike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 [1760025623717-0] Claiming ownership of job cc8f103d-b63c-4dd3-87ca-10c2803e97ad",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.917671380Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.842999935Z"
+  },
+  {
+    "insertId": "........6Azqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "🔍 [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad not currently processing (status: queued)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.917671380Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.842999935Z"
+  },
+  {
+    "insertId": "........6Arqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "⚙️  [1760025623717-0] Processing job cc8f103d-b63c-4dd3-87ca-10c2803e97ad: 1100 Water Shine Way, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.917671380Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.842999935Z"
+  },
+  {
+    "insertId": ".........052sWWS8UdDXfeB03w7Yh3s",
+    "jsonPayload": {
+      "message": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad created for address: 1100 Water Shine Way, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.992882485Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.918999910Z"
+  },
+  {
+    "insertId": "..........y2sWWS8UdDXfeB03w7Yh3s",
+    "jsonPayload": {
+      "message": "📋 Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad enqueued for address: 1100 Water Shine Way, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.992882485Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.918999910Z"
+  },
+  {
+    "insertId": "..........q2sWWS8UdDXfeB03w7Yh3s",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (234 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:23.992882485Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-frontend",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-frontend-00041-xg5",
+        "service_name": "propertyvision-frontend"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:23.918999910Z"
+  },
+  {
+    "insertId": "68e7dc21000b2ae4500961b1",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:33.975501405Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:00:33.731876Z"
+  },
+  {
+    "insertId": "........6C6qike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:33.800425101Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:33.732000112Z"
+  },
+  {
+    "insertId": "68e7dc21000b2b8f2578fbad",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:33.975501405Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:33.732Z\"}",
+    "timestamp": "2025-10-09T16:00:33.732047Z"
+  },
+  {
+    "insertId": "68e7dc2b000b33fa01238035",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:43.966643426Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:00:43.734202Z"
+  },
+  {
+    "insertId": "68e7dc2b000b345f3c9f4054",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:43.966643426Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:43.734Z\"}",
+    "timestamp": "2025-10-09T16:00:43.734303Z"
+  },
+  {
+    "insertId": "........6CEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:43.805506239Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:43.734999895Z"
+  },
+  {
+    "insertId": "68e7dc35000b31357d1abb77",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:53.959017757Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:00:53.733493Z"
+  },
+  {
+    "insertId": "68e7dc35000b31fc3ae44175",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:00:53.959017757Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:00:53.734Z\"}",
+    "timestamp": "2025-10-09T16:00:53.733692Z"
+  },
+  {
+    "insertId": "........6CMqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:00:53.806219461Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:00:53.734999895Z"
+  },
+  {
+    "insertId": "68e7dc3d0000f688747edab7",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:01.284085278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "⚙️  [1760025623717-0] Processing job cc8f103d-b63c-4dd3-87ca-10c2803e97ad: 1100 Water Shine Way, Snellville, GA 30078",
+    "timestamp": "2025-10-09T16:01:01.063112Z"
+  },
+  {
+    "insertId": "68e7dc3d0000f7f520ae04d9",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:01.284085278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ⚙️  [1760025623717-0] Processing job cc8f103d-b63c-4dd3-87ca-10c2803e97ad: 1100 Water Shine Way, Snellville, GA 30078 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:01.064Z\"}",
+    "timestamp": "2025-10-09T16:01:01.063477Z"
+  },
+  {
+    "insertId": "68e7dc3d0000fe8f769736c0",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:01.284085278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "🔍 [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad status=processing, messageId=1760025623717-0",
+    "timestamp": "2025-10-09T16:01:01.065167Z"
+  },
+  {
+    "insertId": "68e7dc3d0000fee38a66b6e7",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:01.284085278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 🔍 [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad status=processing, messageId=1760025623717-0 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:01.066Z\"}",
+    "timestamp": "2025-10-09T16:01:01.065251Z"
+  },
+  {
+    "insertId": "68e7dc3d00010159cb90d12d",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2025-10-09T16:01:01.069344268Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "⚠️  [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad still active (heartbeat 7s ago), skipping XAUTOCLAIM reclaim",
+    "timestamp": "2025-10-09T16:01:01.065881Z"
+  },
+  {
+    "insertId": "68e7dc3d00010246ee2112b0",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:01.284085278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[33mwarn\u001b[39m: ⚠️  [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad still active (heartbeat 7s ago), skipping XAUTOCLAIM reclaim {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.warn\",\"timestamp\":\"2025-10-09T16:01:01.067Z\"}",
+    "timestamp": "2025-10-09T16:01:01.066118Z"
+  },
+  {
+    "insertId": "........6DUqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "⚠️  [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad still active (heartbeat 7s ago), skipping XAUTOCLAIM reclaim",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.warn"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:01.271171381Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "timestamp": "2025-10-09T16:01:01.197000026Z"
+  },
+  {
+    "insertId": "........6DEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "🔍 [1760025623717-0] Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad status=processing, messageId=1760025623717-0",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:01.271171381Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:01.197000026Z"
+  },
+  {
+    "insertId": "........6D6qike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "⚙️  [1760025623717-0] Processing job cc8f103d-b63c-4dd3-87ca-10c2803e97ad: 1100 Water Shine Way, Snellville, GA 30078",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:01.271171381Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:01.197000026Z"
+  },
+  {
+    "insertId": "68e7dc3f000b2b8e933f5853",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:03.951968502Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:01:03.732046Z"
+  },
+  {
+    "insertId": "68e7dc3f000b2c489b06130d",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:03.951968502Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:03.733Z\"}",
+    "timestamp": "2025-10-09T16:01:03.732232Z"
+  },
+  {
+    "insertId": "........6Djqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:03.805275296Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:03.733000040Z"
+  },
+  {
+    "insertId": "68e7dc49000b32e8e3875bc1",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:13.941173238Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:01:13.733928Z"
+  },
+  {
+    "insertId": "68e7dc49000b33913dfb9f6e",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:13.941173238Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:13.735Z\"}",
+    "timestamp": "2025-10-09T16:01:13.734097Z"
+  },
+  {
+    "insertId": "........6FEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:13.804763990Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:13.734999895Z"
+  },
+  {
+    "insertId": "68e7dc53000b3d2609582a27",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:23.932732513Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:01:23.736550Z"
+  },
+  {
+    "insertId": "68e7dc53000b3dbea1087be2",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:23.932732513Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:23.737Z\"}",
+    "timestamp": "2025-10-09T16:01:23.736702Z"
+  },
+  {
+    "insertId": "........6Fbqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:23.809464268Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:23.736999988Z"
+  },
+  {
+    "insertId": "68e7dc5d000b356b8598af43",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:33.922479888Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:01:33.734571Z"
+  },
+  {
+    "insertId": "68e7dc5d000b3620438fcc69",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:33.922479888Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:33.735Z\"}",
+    "timestamp": "2025-10-09T16:01:33.734752Z"
+  },
+  {
+    "insertId": "........6GEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:33.810678763Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:33.734999895Z"
+  },
+  {
+    "insertId": "68e7dc67000b4773f4305087",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:43.917771574Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:01:43.739187Z"
+  },
+  {
+    "insertId": "68e7dc67000b47fe12feef33",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:43.917771574Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:43.739Z\"}",
+    "timestamp": "2025-10-09T16:01:43.739326Z"
+  },
+  {
+    "insertId": "........6Gjqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:43.811046052Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:43.740000009Z"
+  },
+  {
+    "insertId": "68e7dc71000b4b26f6b78b26",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:53.905590579Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:01:53.740134Z"
+  },
+  {
+    "insertId": "68e7dc71000b4bd36b02ae83",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:01:53.905590579Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:01:53.741Z\"}",
+    "timestamp": "2025-10-09T16:01:53.740307Z"
+  },
+  {
+    "insertId": "........6ijqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:01:53.809352921Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:01:53.740999937Z"
+  },
+  {
+    "insertId": "68e7dc7b000b3a10ee1d7f04",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:03.896530826Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:02:03.735760Z"
+  },
+  {
+    "insertId": "68e7dc7b000b3a8ae3300a94",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:03.896530826Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:02:03.736Z\"}",
+    "timestamp": "2025-10-09T16:02:03.735882Z"
+  },
+  {
+    "insertId": "........6qjqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:02:03.840799122Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:02:03.772000074Z"
+  },
+  {
+    "insertId": "68e7dc85000b41f24b644352",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:13.888390679Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:02:13.737778Z"
+  },
+  {
+    "insertId": "68e7dc85000b42a5ecf68dd0",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:13.888390679Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:02:13.738Z\"}",
+    "timestamp": "2025-10-09T16:02:13.737957Z"
+  },
+  {
+    "insertId": "........6rEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:02:13.810705392Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:02:13.739000082Z"
+  },
+  {
+    "insertId": "68e7dc8f000b457ae0b9bd6f",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:23.879450005Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:02:23.738682Z"
+  },
+  {
+    "insertId": "68e7dc8f000b4847270cc3f6",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:23.879450005Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:02:23.739Z\"}",
+    "timestamp": "2025-10-09T16:02:23.739399Z"
+  },
+  {
+    "insertId": "........6rMqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:02:23.808023808Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:02:23.740000009Z"
+  },
+  {
+    "insertId": "68e7dc99000b41588890886d",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:33.874413152Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:02:33.737624Z"
+  },
+  {
+    "insertId": "68e7dc99000b41ea50fa4ace",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:33.874413152Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:02:33.738Z\"}",
+    "timestamp": "2025-10-09T16:02:33.737770Z"
+  },
+  {
+    "insertId": "........7Cbqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:02:33.804128809Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:02:33.737999916Z"
+  },
+  {
+    "insertId": "68e7dca3000b47292b300df6",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:43.867942671Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:02:43.739113Z"
+  },
+  {
+    "insertId": "68e7dca3000b47aab9d54361",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:43.867942671Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:02:43.740Z\"}",
+    "timestamp": "2025-10-09T16:02:43.739242Z"
+  },
+  {
+    "insertId": "........7fzqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:02:43.808486707Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:02:43.740000009Z"
+  },
+  {
+    "insertId": "68e7dcad000b555cf5bbbe13",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:53.852960278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:02:53.742748Z"
+  },
+  {
+    "insertId": "68e7dcad000b5609be643f7e",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:02:53.852960278Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:02:53.743Z\"}",
+    "timestamp": "2025-10-09T16:02:53.742921Z"
+  },
+  {
+    "insertId": "........7g6qike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:02:53.807806845Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:02:53.743999958Z"
+  },
+  {
+    "insertId": "68e7dcb7000b4b89b81afb54",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:03.843259653Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:03:03.740233Z"
+  },
+  {
+    "insertId": "68e7dcb7000b4bfafbef9b9d",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:03.843259653Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:03.741Z\"}",
+    "timestamp": "2025-10-09T16:03:03.740346Z"
+  },
+  {
+    "insertId": "........7hzqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:03.931782765Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:03.861999988Z"
+  },
+  {
+    "insertId": "68e7dcc1000b4f856fdc3059",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:13.833565206Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:03:13.741253Z"
+  },
+  {
+    "insertId": "68e7dcc1000b5049bf522a07",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:13.833565206Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:13.742Z\"}",
+    "timestamp": "2025-10-09T16:03:13.741449Z"
+  },
+  {
+    "insertId": "........7ibqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:13.809449891Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:13.742000102Z"
+  },
+  {
+    "insertId": "68e7dccb000b590ede2ca789",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:23.828966604Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:03:23.743694Z"
+  },
+  {
+    "insertId": "68e7dccb000b5991dc10148f",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:23.828966604Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:23.744Z\"}",
+    "timestamp": "2025-10-09T16:03:23.743825Z"
+  },
+  {
+    "insertId": "........7jMqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:23.816939254Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:23.743999958Z"
+  },
+  {
+    "insertId": "68e7dcd5000b5021114e7627",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:33.817597331Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:03:33.741409Z"
+  },
+  {
+    "insertId": "68e7dcd5000b5122e83219e0",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:33.817597331Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:33.742Z\"}",
+    "timestamp": "2025-10-09T16:03:33.741666Z"
+  },
+  {
+    "insertId": "........82Eqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:33.811011865Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:33.742000102Z"
+  },
+  {
+    "insertId": "68e7dcdf000b5a340db463f6",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:43.806923259Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:03:43.743988Z"
+  },
+  {
+    "insertId": "68e7dcdf000b5aba960215df",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:43.806923259Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:43.745Z\"}",
+    "timestamp": "2025-10-09T16:03:43.744122Z"
+  },
+  {
+    "insertId": "........82Mqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (326 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:43.813261989Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:43.744999885Z"
+  },
+  {
+    "insertId": "68e7dce80006190fc4c1aa38",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:52.471766182Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "💾 Updating job cc8f103d-b63c-4dd3-87ca-10c2803e97ad with: {\"status\":\"completed\",\"progress\":100,\"phase\":\"Complete\",\"result\":{\"subject\":{\"address\":\"1100 Water Shine Way, Snellville, GA 30078\",\"sqft\":3936,\"beds\":5,\"baths\":4,\"yearBuilt\":2000,\"lotSize\":0,\"subdivi",
+    "timestamp": "2025-10-09T16:03:52.399631Z"
+  },
+  {
+    "insertId": "68e7dce80006376254bee864",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:52.471766182Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (5336 bytes, TTL=3600s)",
+    "timestamp": "2025-10-09T16:03:52.407394Z"
+  },
+  {
+    "insertId": "68e7dce800063772bd6f680d",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:52.471766182Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad saved to Redis: status=completed, progress=100",
+    "timestamp": "2025-10-09T16:03:52.407410Z"
+  },
+  {
+    "insertId": "68e7dce800063f48e031f8fd",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:52.471766182Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad completed",
+    "timestamp": "2025-10-09T16:03:52.409416Z"
+  },
+  {
+    "insertId": "68e7dce9000663b2b00ad149",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:53.466594586Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 💾 Updating job cc8f103d-b63c-4dd3-87ca-10c2803e97ad with: {\"status\":\"completed\",\"progress\":100,\"phase\":\"Complete\",\"result\":{\"subject\":{\"address\":\"1100 Water Shine Way, Snellville, GA 30078\",\"sqft\":3936,\"beds\":5,\"baths\":4,\"yearBuilt\":2000,\"lotSize\":0,\"subdivi {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:53.321Z\"}",
+    "timestamp": "2025-10-09T16:03:53.418738Z"
+  },
+  {
+    "insertId": "68e7dce9000663b8850c652f",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:53.466594586Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: 📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (5336 bytes, TTL=3600s) {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:53.321Z\"}",
+    "timestamp": "2025-10-09T16:03:53.418744Z"
+  },
+  {
+    "insertId": "68e7dce9000663bc3a3b3afc",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:53.466594586Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad saved to Redis: status=completed, progress=100 {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:53.321Z\"}",
+    "timestamp": "2025-10-09T16:03:53.418748Z"
+  },
+  {
+    "insertId": "68e7dce9000663cf68b57ab5",
+    "labels": {
+      "instanceId": "0069c7a988b036e6be98114111563d241dd1ac9e67f79e49f909e58ae299a6aa3c8bf10c4fa41d01ec94f4ae753aba2100cba3531a15e89461df3cacd9d1b5bda46513f6f419d5472547db721d"
+    },
+    "logName": "projects/agile-device-472202-i8/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2025-10-09T16:03:53.466594586Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "\u001b[32minfo\u001b[39m: ✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad completed {\"environment\":\"production\",\"service\":\"propertyvision-backend\",\"source\":\"console.log\",\"timestamp\":\"2025-10-09T16:03:53.321Z\"}",
+    "timestamp": "2025-10-09T16:03:53.418767Z"
+  },
+  {
+    "insertId": "........8IEqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad completed",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:53.654471768Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:53.588000059Z"
+  },
+  {
+    "insertId": "........8Hzqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "✅ Job cc8f103d-b63c-4dd3-87ca-10c2803e97ad saved to Redis: status=completed, progress=100",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:53.654471768Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:53.588000059Z"
+  },
+  {
+    "insertId": "........8Hrqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "📝 Redis SET job:cc8f103d-b63c-4dd3-87ca-10c2803e97ad (5336 bytes, TTL=3600s)",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:53.654471768Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:53.588000059Z"
+  },
+  {
+    "insertId": "........8Hjqike4wv47jsJLgvRBkPVM",
+    "jsonPayload": {
+      "message": "💾 Updating job cc8f103d-b63c-4dd3-87ca-10c2803e97ad with: {\"status\":\"completed\",\"progress\":100,\"phase\":\"Complete\",\"result\":{\"subject\":{\"address\":\"1100 Water Shine Way, Snellville, GA 30078\",\"sqft\":3936,\"beds\":5,\"baths\":4,\"yearBuilt\":2000,\"lotSize\":0,\"subdivi",
+      "metadata": {
+        "environment": "production",
+        "service": "propertyvision-backend",
+        "source": "console.log"
+      }
+    },
+    "logName": "projects/agile-device-472202-i8/logs/propertyvision-api",
+    "receiveTimestamp": "2025-10-09T16:03:53.654471768Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "propertyvision-worker",
+        "location": "us-central1",
+        "project_id": "agile-device-472202-i8",
+        "revision_name": "propertyvision-worker-00073-x29",
+        "service_name": "propertyvision-worker"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "timestamp": "2025-10-09T16:03:53.588000059Z"
+  }
+]

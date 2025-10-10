@@ -1,0 +1,93 @@
+2025-10-10T08:27:56.720000028Z | 💾 Updating job 878c8ea8-9802-4a3b-a564-6659383da27f with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"1100 Water Shine Way, Snellville, GA 30078","sqft":3936,"beds":5,"baths":4,"yearBuilt":2000,"lotSize":0,"subdivi
+2025-10-10T08:27:56.720000028Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (5718 bytes, TTL=3600s)
+2025-10-10T08:27:56.720000028Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f saved to Redis: status=completed, progress=100
+2025-10-10T08:27:56.720000028Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f completed
+2025-10-10T08:27:56.609800Z | [32minfo[39m: ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f completed {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:56.492Z"}
+2025-10-10T08:27:56.609774Z | [32minfo[39m: ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f saved to Redis: status=completed, progress=100 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:56.492Z"}
+2025-10-10T08:27:56.609766Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (5718 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:56.492Z"}
+2025-10-10T08:27:56.609739Z | [32minfo[39m: 💾 Updating job 878c8ea8-9802-4a3b-a564-6659383da27f with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"1100 Water Shine Way, Snellville, GA 30078","sqft":3936,"beds":5,"baths":4,"yearBuilt":2000,"lotSize":0,"subdivi {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:56.492Z"}
+2025-10-10T08:27:55.723641Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f completed
+2025-10-10T08:27:55.721309Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f saved to Redis: status=completed, progress=100
+2025-10-10T08:27:55.721288Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (5718 bytes, TTL=3600s)
+2025-10-10T08:27:55.714951Z | 💾 Updating job 878c8ea8-9802-4a3b-a564-6659383da27f with: {"status":"completed","progress":100,"phase":"Complete","result":{"subject":{"address":"1100 Water Shine Way, Snellville, GA 30078","sqft":3936,"beds":5,"baths":4,"yearBuilt":2000,"lotSize":0,"subdivi
+2025-10-10T08:27:51.278000116Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:51.277459Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:51.276Z"}
+2025-10-10T08:27:51.275419Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:41.273999929Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:41.273481Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:41.274Z"}
+2025-10-10T08:27:41.273269Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:31.273639Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:31.273Z"}
+2025-10-10T08:27:31.273537Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:31.273000001Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:21.273000001Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:21.272925Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:21.273Z"}
+2025-10-10T08:27:21.272806Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:11.272000074Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:11.271703Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:11.272Z"}
+2025-10-10T08:27:11.271511Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:01.269999980Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:27:01.269425Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:27:01.269Z"}
+2025-10-10T08:27:01.269340Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:51.266000032Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:51.265680Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:51.266Z"}
+2025-10-10T08:26:51.265501Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:41.266999959Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:41.266434Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:41.267Z"}
+2025-10-10T08:26:41.266307Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:31.265361Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:31.265Z"}
+2025-10-10T08:26:31.265218Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:31.265000104Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:21.262000083Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:21.261817Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:21.262Z"}
+2025-10-10T08:26:21.261671Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:11.264257Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:11.264Z"}
+2025-10-10T08:26:11.264142Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:11.263999938Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:04.256999969Z | ⚙️  [1760084721241-0] Processing job 878c8ea8-9802-4a3b-a564-6659383da27f: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:26:04.256999969Z | 🔍 [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f status=processing, messageId=1760084721241-0
+2025-10-10T08:26:04.256999969Z | ⚠️  [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f still active (heartbeat 3s ago), skipping XAUTOCLAIM reclaim
+2025-10-10T08:26:04.131782Z | [33mwarn[39m: ⚠️  [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f still active (heartbeat 3s ago), skipping XAUTOCLAIM reclaim {"environment":"production","service":"propertyvision-backend","source":"console.warn","timestamp":"2025-10-10T08:26:04.132Z"}
+2025-10-10T08:26:04.131621Z | ⚠️  [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f still active (heartbeat 3s ago), skipping XAUTOCLAIM reclaim
+2025-10-10T08:26:04.130179Z | [32minfo[39m: 🔍 [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f status=processing, messageId=1760084721241-0 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:04.130Z"}
+2025-10-10T08:26:04.130010Z | 🔍 [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f status=processing, messageId=1760084721241-0
+2025-10-10T08:26:04.127366Z | [32minfo[39m: ⚙️  [1760084721241-0] Processing job 878c8ea8-9802-4a3b-a564-6659383da27f: 1100 Water Shine Way, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:04.127Z"}
+2025-10-10T08:26:04.127212Z | ⚙️  [1760084721241-0] Processing job 878c8ea8-9802-4a3b-a564-6659383da27f: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:26:01.263000011Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:26:01.262459Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:26:01.263Z"}
+2025-10-10T08:26:01.262318Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:51.259537Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:51.259Z"}
+2025-10-10T08:25:51.259412Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:51.259000062Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:41.260027Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:41.260Z"}
+2025-10-10T08:25:41.260016Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:41.259999990Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:31.259999990Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:31.259372Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:31.260Z"}
+2025-10-10T08:25:31.259338Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:21.447000026Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (234 bytes, TTL=3600s)
+2025-10-10T08:25:21.447000026Z | 📋 Job 878c8ea8-9802-4a3b-a564-6659383da27f enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:25:21.447000026Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:25:21.381000041Z | ⚙️  [1760084721241-0] Processing job 878c8ea8-9802-4a3b-a564-6659383da27f: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:25:21.381000041Z | 🔍 [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f not currently processing (status: queued)
+2025-10-10T08:25:21.381000041Z | 📝 [1760084721241-0] Claiming ownership of job 878c8ea8-9802-4a3b-a564-6659383da27f
+2025-10-10T08:25:21.381000041Z | 💾 Updating job 878c8ea8-9802-4a3b-a564-6659383da27f with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:23","processingMessageId":"1760084721241-0"}
+2025-10-10T08:25:21.381000041Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:21.381000041Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f saved to Redis: status=processing, progress=10
+2025-10-10T08:25:21.250409Z | [32minfo[39m: ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f saved to Redis: status=processing, progress=10 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.251Z"}
+2025-10-10T08:25:21.250402Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f saved to Redis: status=processing, progress=10
+2025-10-10T08:25:21.250359Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.251Z"}
+2025-10-10T08:25:21.250230Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (326 bytes, TTL=3600s)
+2025-10-10T08:25:21.245928Z | [32minfo[39m: 💾 Updating job 878c8ea8-9802-4a3b-a564-6659383da27f with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:23","processingMessageId":"1760084721241-0"} {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.246Z"}
+2025-10-10T08:25:21.245907Z | 💾 Updating job 878c8ea8-9802-4a3b-a564-6659383da27f with: {"status":"processing","phase":"Getting subject details","progress":10,"processingBy":"localhost:23","processingMessageId":"1760084721241-0"}
+2025-10-10T08:25:21.245856Z | [32minfo[39m: 📝 [1760084721241-0] Claiming ownership of job 878c8ea8-9802-4a3b-a564-6659383da27f {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.246Z"}
+2025-10-10T08:25:21.245817Z | 📝 [1760084721241-0] Claiming ownership of job 878c8ea8-9802-4a3b-a564-6659383da27f
+2025-10-10T08:25:21.245811Z | [32minfo[39m: 🔍 [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f not currently processing (status: queued) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.246Z"}
+2025-10-10T08:25:21.245714Z | 🔍 [1760084721241-0] Job 878c8ea8-9802-4a3b-a564-6659383da27f not currently processing (status: queued)
+2025-10-10T08:25:21.243980Z | [32minfo[39m: ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f created for address: 1100 Water Shine Way, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.243Z"}
+2025-10-10T08:25:21.243710Z | [32minfo[39m: ⚙️  [1760084721241-0] Processing job 878c8ea8-9802-4a3b-a564-6659383da27f: 1100 Water Shine Way, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.244Z"}
+2025-10-10T08:25:21.243672Z | ⚙️  [1760084721241-0] Processing job 878c8ea8-9802-4a3b-a564-6659383da27f: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:25:21.243615Z | ✅ Job 878c8ea8-9802-4a3b-a564-6659383da27f created for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:25:21.243483Z | [32minfo[39m: 📋 Job 878c8ea8-9802-4a3b-a564-6659383da27f enqueued for address: 1100 Water Shine Way, Snellville, GA 30078 {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.243Z"}
+2025-10-10T08:25:21.243144Z | 📋 Job 878c8ea8-9802-4a3b-a564-6659383da27f enqueued for address: 1100 Water Shine Way, Snellville, GA 30078
+2025-10-10T08:25:21.240634Z | [32minfo[39m: 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (234 bytes, TTL=3600s) {"environment":"production","service":"propertyvision-backend","source":"console.log","timestamp":"2025-10-10T08:25:21.240Z"}
+2025-10-10T08:25:21.240383Z | 📝 Redis SET job:878c8ea8-9802-4a3b-a564-6659383da27f (234 bytes, TTL=3600s)
