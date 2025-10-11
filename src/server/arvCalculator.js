@@ -1,7 +1,7 @@
 // Complete ARV Calculator - Implements the full valuation methodology
 // Combines your original description with the strict CentralUpperChain algorithm
 
-import { jobLog } from './utils/jobQueue';
+import { jobLog } from './utils/jobLogger';
 
 export class ARVCalculator {
 

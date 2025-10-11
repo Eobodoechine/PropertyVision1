@@ -7,7 +7,7 @@ import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-detai
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
 import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
-import { jobLog } from './utils/logger';
+import { jobLog } from './utils/jobLogger';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;

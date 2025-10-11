@@ -1,5 +1,5 @@
 import { getJobQueue } from './utils/jobQueue';
-import { jobLog } from './utils/logger';
+import { jobLog } from './utils/jobLogger';
 import http from 'http';
 
 async function startWorker() {

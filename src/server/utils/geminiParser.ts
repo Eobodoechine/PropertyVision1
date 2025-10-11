@@ -1,6 +1,6 @@
 // Vertex AI Gemini property data parser
 import { vertexGenerate } from '../vertex-freeform.js';
-import { jobLog } from '../utils/logger';
+import { jobLog } from '../utils/jobLogger';
 
 interface PropertyData {
   address: string;

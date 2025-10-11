@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { jobLog } from './logger';
+import { jobLog } from './jobLogger';
 
 // Email configuration
 const NOTIFICATION_EMAIL = 'nnamdi@enohomebuyers.com';

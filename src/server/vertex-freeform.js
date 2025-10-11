@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import https from 'https';
-import { jobLog } from './utils/logger';
+import { jobLog } from './utils/jobLogger';
 async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import https from 'https';
 import crypto from 'crypto';
-import { jobLog } from './utils/logger';
+import { jobLog } from './utils/jobLogger';
 
 export type BasicDetails = {
   address: string;

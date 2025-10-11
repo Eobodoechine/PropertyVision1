@@ -1,5 +1,5 @@
 import { ComparableProperty } from './step3-find-comparables';
-import { jobLog } from '../utils/logger';
+import { jobLog } from '../utils/jobLogger';
 
 interface ARVResult {
   arv: number;

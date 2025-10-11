@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { jobLog } from '../utils/logger';
+import { jobLog } from '../utils/jobLogger';
 
 /**
  * Redis Singleton Client

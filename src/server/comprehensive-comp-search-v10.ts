@@ -7,8 +7,8 @@ import { fetchPropertyDetailsViaVertex, type BasicDetails } from './vertex-detai
 import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
 import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ARVCalculator } from './arvCalculator';
-import { updateJobProgress, isJobCancelled } from './utils/jobQueue';
-import { jobLog } from './utils/logger';
+import { updateJobProgress, isJobCancelled } from './utils/jobProgress';
+import { jobLog } from './utils/jobLogger';
 import { ParallelSearchOrchestrator } from './utils/parallelSearchOrchestrator';
 import { parallelSearchConfig } from './utils/parallelSearchConfig';
 

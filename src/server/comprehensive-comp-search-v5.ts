@@ -12,8 +12,8 @@ import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
 import { ARVCalculator } from './arvCalculator';
 import { GoogleMapsGeocoder } from './utils/googleMapsGeocoder';
-import { updateJobProgress, isJobCancelled } from './utils/jobQueue';
-import { jobLog } from './utils/logger';
+import { updateJobProgress, isJobCancelled } from './utils/jobProgress';
+import { jobLog } from './utils/jobLogger';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
