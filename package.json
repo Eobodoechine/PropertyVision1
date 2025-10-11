@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "npm run start-worker-with-healthcheck",
+    "start": "next start",
     "lint": "eslint",
     "worker": "tsx src/server/worker.ts",
     "healthcheck": "node healthcheck.js",
