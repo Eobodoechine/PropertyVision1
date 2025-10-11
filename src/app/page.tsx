@@ -346,7 +346,6 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 
 function AnalysisSummary({ data }: { data: PropertyAnalysisResponse }) {
   const subjectSqft = data.subject.sqft ?? undefined;
-  const confidence = data.arv?.confidence && confidenceStyles[data.arv.confidence];
 
   const perSqft = data.arv?.estimate && subjectSqft ? `$${Math.round(data.arv.estimate / subjectSqft)}/sq ft` : '—';
 
@@ -359,7 +358,6 @@ function AnalysisSummary({ data }: { data: PropertyAnalysisResponse }) {
             {data.subject.address}
           </CardDescription>
         </div>
-        {confidence ? <Badge className={cn('px-3 py-1 text-sm font-medium', confidence.className)}>{confidence.label}</Badge> : null}
       </CardHeader>
       <CardContent className="space-y-2">
         <p className="text-sm uppercase tracking-wide text-slate-500">After Repair Value</p>
