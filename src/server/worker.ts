@@ -1,4 +1,5 @@
-import { getJobQueue, jobLog } from './utils/jobQueue';
+import { getJobQueue } from './utils/jobQueue';
+import { jobLog } from './utils/logger';
 import http from 'http';
 
 async function startWorker() {

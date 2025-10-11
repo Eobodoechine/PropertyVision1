@@ -7,7 +7,7 @@ import { GoogleAuth } from 'google-auth-library';
 // import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
-import { jobLog } from './utils/jobQueue';
+import { jobLog } from './utils/logger';
 
 // Force IPv4-first DNS resolution to avoid IPv6 timeout delays in VPC
 dns.setDefaultResultOrder('ipv4first');
