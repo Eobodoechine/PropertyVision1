@@ -3,7 +3,7 @@
 
 import { getRedisCache } from './redisCache';
 import { jobLog } from './jobLogger';
-import { updateJobProgress, isJobCancelled } from './jobProgress';
+import { updateJobProgress, isJobCancelled, PHASES } from './jobProgress';
 
 interface SearchLevel {
   level: number;
@@ -422,7 +422,7 @@ export class ProgressiveSearchStrategy {
 
     for (const level of searchLevels) {
       // Update progress based on level
-      const progressKey = `COMPARABLE_SEARCH_L${level.level}` as keyof typeof import('./jobQueue').PHASES;
+      const progressKey = `COMPARABLE_SEARCH_L${level.level}` as keyof typeof PHASES;
       await updateJobProgress(progressKey);
 
       // Check if job was cancelled
