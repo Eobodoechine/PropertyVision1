@@ -96,7 +96,7 @@ export async function vertexGenerate(opts) {
         generationConfig: {
             temperature: 0, // Maximum determinism
             seed: 12345, // Fixed seed for reproducibility
-            maxOutputTokens: 8192, // Maximum tokens for Gemini 2.0 Flash on Vertex AI (reduced from 65535)
+            maxOutputTokens: opts.maxOutputTokens || 8192, // Allow override, default 8192
             ...(opts.json ? { responseMimeType: 'application/json' } : {})
         },
     };
@@ -104,8 +104,13 @@ export async function vertexGenerate(opts) {
     // Use legacy grounding tool name expected by this project
     if (opts.grounded)
         payload.tools = [{ google_search: {} }];
-    if (opts.responseSchema)
+
+    // Function calling takes precedence over responseSchema
+    if (opts.functionDeclaration) {
+        payload.tools = [{ function_declarations: [opts.functionDeclaration] }];
+    } else if (opts.responseSchema) {
         payload.generationConfig.responseSchema = opts.responseSchema;
+    }
 
     jobLog(`🔍 VERTEX DEBUG 8: Payload created, contents length=${payload.contents.length}`);
     jobLog(`🔍 VERTEX DEBUG 9: Payload generationConfig:`, JSON.stringify(payload.generationConfig));
@@ -165,6 +170,17 @@ export async function vertexGenerate(opts) {
         jobLog(`🔍 VERTEX DEBUG 23.${i}: Part ${i}:`, JSON.stringify(parts[i], null, 2));
     }
 
+    // Check for function call response first
+    const functionCallPart = parts.find(p => p.functionCall);
+    if (functionCallPart) {
+        const functionCall = functionCallPart.functionCall;
+        jobLog(`🔍 VERTEX DEBUG 24: Function call detected: ${functionCall.name}`);
+        jobLog(`🔍 VERTEX DEBUG 25: Function call args:`, JSON.stringify(functionCall.args));
+        // Return the args as JSON string
+        return JSON.stringify(functionCall.args);
+    }
+
+    // Otherwise extract text as before
     const text = res?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('') || '';
     jobLog(`🔍 VERTEX DEBUG 24: Final extracted text: "${text}"`);
     jobLog(`🔍 VERTEX DEBUG 25: Final text length: ${text.length}`);

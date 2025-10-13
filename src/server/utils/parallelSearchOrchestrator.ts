@@ -12,7 +12,8 @@ import {
   SubjectProperty,
   dedupeKey,
   scoreComparable,
-  mergeComparables
+  mergeComparables,
+  detectPotentialDuplicates
 } from './compScoring';
 import { parallelSearchConfig } from './parallelSearchConfig';
 import { VertexComparableSearchService } from '../step3-find-comparables';
@@ -28,6 +29,7 @@ export interface SearchLevelResult {
 
 export interface ParallelSearchResult {
   qualifiedComps: ComparableProperty[];
+  passLevel?: number; // Which pass succeeded (1-4), undefined if using fallback
   searchMetadata: {
     totalSearchTime: number;
     levelsRun: number[];
@@ -46,8 +48,7 @@ export class ParallelSearchOrchestrator {
   private geocoder: GoogleMapsGeocoder;
   private compService: VertexComparableSearchService;
   private abortController: AbortController;
-  private dataVersion = 0; // Incremented when new level results land
-  private lastTriedVersion: Record<number, number> = { 1: -1, 2: -1, 3: -1, 4: -1 };
+  private totalCacheHits: number = 0;
 
   constructor() {
     const config = parallelSearchConfig;
@@ -78,6 +79,9 @@ export class ParallelSearchOrchestrator {
       jobLog(`   Subject: ${subject.beds}BR/${subject.baths}BA, ${subject.sqft}sqft`);
       jobLog(`   Subdivision: ${subject.subdivision || 'N/A'}`);
       jobLog(`   Running levels: ${config.levels.join(', ')}`);
+
+      // Reset cache hit counter for this search
+      this.totalCacheHits = 0;
 
       // Global state
       const pools = new Map<number, ComparableProperty[]>(); // Raw results per level
@@ -123,11 +127,11 @@ export class ParallelSearchOrchestrator {
         }
       });
 
-      // Final pass if no early exit occurred
-      jobLog(`\n🔍 FINAL PASS - Clean ordered pass 1→2→3→4 on all accumulated comps`);
-      let finalComps;
+      // Apply progressive pass filters on complete dataset
+      jobLog(`\n🔍 APPLYING PASS FILTERS - All searches complete, trying passes 1→2→3→4`);
+      let finalResult;
       try {
-        finalComps = await this.tryProgressivePasses(pools, seenComps, subject, config.levels, true);
+        finalResult = await this.tryProgressivePasses(pools, seenComps, subject, config.levels);
       } catch (error) {
         console.error(`❌ [FINAL_PASS] ERROR in tryProgressivePasses:`);
         console.error(`   Error type: ${typeof error}`);
@@ -140,12 +144,13 @@ export class ParallelSearchOrchestrator {
       const totalTime = Date.now() - startTime;
 
       return {
-        qualifiedComps: finalComps,
+        qualifiedComps: finalResult.comps,
+        passLevel: finalResult.passLevel,
         searchMetadata: {
           totalSearchTime: totalTime,
           levelsRun: config.levels,
           totalRawComps: seenComps.size,
-          cacheHits: 0, // TODO: track cache hits
+          cacheHits: this.totalCacheHits,
           metrics: {
             vertexQueueStats: this.vertexQueue.getStats(),
             geocodeQueueStats: this.geocodeQueue.getStats(),
@@ -200,20 +205,8 @@ export class ParallelSearchOrchestrator {
 
       jobLog(`   📦 Total unique comps accumulated: ${seenComps.size}`);
 
-      // Bump data version since new data landed
-      this.dataVersion++;
-      jobLog(`   📊 Data version: ${this.dataVersion}`);
-
-      // Try progressive passes based on what we have
-      const availableLevels = Array.from(pools.keys()).sort();
-      jobLog(`   🔍 Attempting progressive passes with levels: ${availableLevels.join(',')}`);
-
-      const qualified = await this.tryProgressivePasses(pools, seenComps, subject, availableLevels, false);
-
-      // Note: No early exit - we always wait for all levels and run final pass
-      if (qualified.length >= parallelSearchConfig.targetComps) {
-        jobLog(`   ℹ️  Found ${qualified.length} qualified comps (target: ${parallelSearchConfig.targetComps}), but continuing to gather all level data`);
-      }
+      // Just accumulate comps - pass filters will run once after all searches complete
+      jobLog(`   ℹ️  Waiting for remaining search levels... (${seenComps.size} comps so far)`)
 
     } catch (error) {
       console.error(`❌ ON_LEVEL_READY ERROR for level ${result.level}:`, error);
@@ -226,40 +219,22 @@ export class ParallelSearchOrchestrator {
 
   /**
    * Try progressive qualification passes
+   * Only called once after all search levels complete
    */
   private async tryProgressivePasses(
     pools: Map<number, ComparableProperty[]>,
     seenComps: Map<string, ComparableProperty>,
     subject: SubjectProperty,
-    availableLevels: number[],
-    finalRun: boolean = false
-  ): Promise<ComparableProperty[]> {
+    availableLevels: number[]
+  ): Promise<{ comps: ComparableProperty[]; passLevel?: number }> {
     const config = parallelSearchConfig;
     let bestResult: ComparableProperty[] = [];
 
-    jobLog(`\n   🔄 ${finalRun ? '🏁 FINAL' : '⚡ EARLY'} Progressive Pass - dataVersion=${this.dataVersion}, seenComps=${seenComps.size}, availableLevels=[${availableLevels.join(',')}]`);
+    jobLog(`\n   🔄 🏁 Progressive Pass Filtering - seenComps=${seenComps.size}, levels=[${availableLevels.join(',')}]`);
 
     // Try each pass in order (1 → 2 → 3 → 4)
     for (const passLevel of [1, 2, 3, 4]) {
-      // Skip if we've already attempted this pass at the CURRENT dataVersion (unless final run)
-      if (!finalRun && this.lastTriedVersion[passLevel] === this.dataVersion) {
-        jobLog(`   ⏭️  Pass ${passLevel}: Skipping (already tried for dataVersion ${this.dataVersion})`);
-        continue;
-      }
-
-      // Check if we have enough data for this pass
-      if (!availableLevels.includes(passLevel)) {
-        jobLog(`   ⏭️  Pass ${passLevel}: Skipping (level not available yet)`);
-        continue;
-      }
-
-      // Mark this pass as tried for the current dataVersion (only in early runs)
-      if (!finalRun) {
-        this.lastTriedVersion[passLevel] = this.dataVersion;
-        jobLog(`   🔍 Trying Pass ${passLevel} (dataVersion ${this.dataVersion})...`);
-      } else {
-        jobLog(`   🔍 Trying Pass ${passLevel} (FINAL RUN - ignoring history)...`);
-      }
+      jobLog(`   🔍 Trying Pass ${passLevel}...`);
 
       jobLog(`\n🎯 TRYING PASS ${passLevel}:`);
 
@@ -272,15 +247,34 @@ export class ParallelSearchOrchestrator {
         continue;
       }
 
-      // Top-K selection
+      // Adaptive Top-K selection with duplicate detection
       let topCandidates;
       try {
+        // First, detect potential duplicates in a larger candidate set
+        // We scan more candidates to understand duplicate density
+        const scanSize = Math.min(compsForPass.length, config.topKPerPass * 2);
+        const scanCandidates = compsForPass.slice(0, scanSize);
+
+        // Detect how many potential duplicates exist in the scan window
+        const potentialDuplicates = detectPotentialDuplicates(scanCandidates);
+
+        // Expand selection by duplicate count, capped at 50% expansion
+        const maxExpansion = Math.ceil(config.topKPerPass * 0.5);
+        const expansion = Math.min(potentialDuplicates, maxExpansion);
+        const adaptiveTopK = config.topKPerPass + expansion;
+
+        if (expansion > 0) {
+          jobLog(`   🔍 Detected ${potentialDuplicates} potential duplicates in scan window, expanding selection by ${expansion}`);
+          jobLog(`   📊 Adaptive top-K: ${config.topKPerPass} → ${adaptiveTopK}`);
+        }
+
+        // Select top K with adaptive expansion
         topCandidates = topK(
           compsForPass,
-          config.topKPerPass,
+          adaptiveTopK,
           comp => scoreComparable(comp, subject)
         );
-        jobLog(`   🔝 Selected top ${topCandidates.length} candidates for geocoding`);
+        jobLog(`   🔝 Selected top ${topCandidates.length} candidates for geocoding (target: ${config.targetComps}, buffer: +${expansion})`);
       } catch (error) {
         console.error(`❌ [TOP_K_SELECTION] ERROR selecting top candidates:`);
         console.error(`   Error type: ${typeof error}`);
@@ -320,16 +314,28 @@ export class ParallelSearchOrchestrator {
 
       jobLog(`   ✅ Pass ${passLevel}: ${qualified.length} qualified comps`);
 
-      // Track best result
-      if (qualified.length > bestResult.length) {
-        bestResult = qualified;
+      // Adaptive minimum per pass level: L1/L2:4, L3:3, L4:2
+      const minCompsByLevel: Record<number, number> = {
+        1: 4,
+        2: 4,
+        3: 3,
+        4: 2
+      };
+      const minComps = minCompsByLevel[passLevel] || 2;
+
+      // Check minimum FIRST - return immediately for quality (strictest pass wins)
+      if (qualified.length >= minComps) {
+        // Return ALL qualified comps - no buffer, no artificial caps
+        // Limits applied only at final ARV selection after deduplication
+        jobLog(`   🎯 Pass ${passLevel} meets minimum (${qualified.length} ≥ ${minComps})`);
+        jobLog(`   ✅ Returning ${qualified.length} comps from Pass ${passLevel} (strictest criteria)`);
+        jobLog(`   📍 Comps: ${qualified.slice(0, 6).map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}${qualified.length > 6 ? ` + ${qualified.length - 6} more` : ''}`);
+        return { comps: qualified, passLevel };
       }
 
-      if (qualified.length >= config.targetComps) {
-        jobLog(`   🎯 Target met! Returning ${qualified.length} comps from Pass ${passLevel}`);
-        const result = qualified.slice(0, config.targetComps);
-        jobLog(`   📍 Returning comps: ${result.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
-        return result;
+      // Track best result only as fallback (if no pass meets minimum)
+      if (qualified.length > bestResult.length) {
+        bestResult = qualified;
       }
     }
 
@@ -337,14 +343,14 @@ export class ParallelSearchOrchestrator {
     if (bestResult.length > 0) {
       jobLog(`   📋 No pass met target (${config.targetComps}), returning best pass result: ${bestResult.length} comps`);
       jobLog(`   📍 Best result comps: ${bestResult.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
-      return bestResult;
+      return { comps: bestResult, passLevel: undefined };
     }
 
     // Last resort: return all comps if no passes produced any results
     const final = this.getCompsUpToLevel(seenComps, 4);
     jobLog(`   ⚠️  All passes failed, returning all ${final.length} comps as fallback`);
     jobLog(`   📍 Fallback comps: ${final.slice(0, 10).map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}${final.length > 10 ? '...' : ''}`);
-    return final;
+    return { comps: final, passLevel: undefined };
   }
 
   /**
@@ -387,6 +393,9 @@ export class ParallelSearchOrchestrator {
           .filter((comp): comp is any => comp !== null);
 
         jobLog(`   💾 Loaded ${cachedComps.length}/${cachedRefs.length} cached comps from Redis`);
+
+        // Track cache hits
+        this.totalCacheHits += cachedComps.length;
       }
 
       // Acquire semaphore tokens (if multi-worker)

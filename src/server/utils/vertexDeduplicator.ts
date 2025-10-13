@@ -151,66 +151,37 @@ G) SAFETY & STRICTNESS
 - If uncertain between DUPLICATE vs NOT_DUPLICATE for multi-unit without UNIT, use AMBIGUOUS_SAME_BUILDING and lower confidence.
 - Never merge records with different UNIT values for multi-unit properties.
 
+F) OUTPUT — Call report_duplicate_groups function with duplicate_groups only.
+DO NOT include kept_records, dropped_record_ids, or changes_log - those will be computed separately.
+
 Input data to analyze:
 ${JSON.stringify(propertyList, null, 2)}`;
 
-      const responseSchema = {
-        type: 'OBJECT',
-        properties: {
-          duplicate_groups: {
-            type: 'ARRAY',
-            items: {
-              type: 'OBJECT',
-              properties: {
-                group_id: { type: 'STRING' },
-                canonical_record_id: { type: 'STRING' },
-                record_ids: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
+      // Function calling mode - model returns structured duplicate_groups only
+      const deduplicationFunction = {
+        name: 'report_duplicate_groups',
+        description: 'Report groups of duplicate property records',
+        parameters: {
+          type: 'OBJECT',
+          properties: {
+            duplicate_groups: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  group_id: { type: 'STRING' },
+                  canonical_record_id: { type: 'STRING' },
+                  record_ids: { type: 'ARRAY', items: { type: 'STRING' } },
+                  match_reason: { type: 'ARRAY', items: { type: 'STRING' } },
+                  confidence: { type: 'NUMBER' }
                 },
-                match_reason: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                },
-                confidence: { type: 'NUMBER' },
-                notes: { type: 'STRING' }
-              },
-              required: ['group_id', 'canonical_record_id', 'record_ids', 'match_reason', 'confidence']
-            }
-          },
-          kept_records: {
-            type: 'ARRAY',
-            items: { type: 'OBJECT' }
-          },
-          dropped_record_ids: {
-            type: 'ARRAY',
-            items: { type: 'STRING' }
-          },
-          ambiguous_record_ids: {
-            type: 'ARRAY',
-            items: { type: 'STRING' }
-          },
-          changes_log: {
-            type: 'ARRAY',
-            items: {
-              type: 'OBJECT',
-              properties: {
-                canonical_record_id: { type: 'STRING' },
-                merged_from: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                },
-                fields_merged: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                }
+                required: ['group_id', 'canonical_record_id', 'record_ids', 'match_reason', 'confidence']
               }
             }
-          }
-        },
-        required: ['duplicate_groups', 'kept_records', 'dropped_record_ids']
+          },
+          required: ['duplicate_groups']
+        }
       };
-
       jobLog('🔍 DEDUP LINE 8: About to call vertexGenerate');
       jobLog('🔍 DEDUP LINE 8.1: serviceAccount type:', typeof serviceAccount);
       jobLog('🔍 DEDUP LINE 8.2: serviceAccount keys:', serviceAccount ? Object.keys(serviceAccount) : 'null');
@@ -227,33 +198,62 @@ ${JSON.stringify(propertyList, null, 2)}`;
         model,
         prompt,
         grounded: false, // Use AI reasoning, not web search
-        json: true,
-        responseSchema,
+        functionDeclaration: deduplicationFunction,
+        maxOutputTokens: 1024, // Just need indices, much smaller than full records
         timeoutMs: 120000
       });
 
       jobLog('🔍 DEDUP LINE 9: vertexGenerate completed successfully');
 
+      // Parse function call response (response is the args object directly)
       const result = JSON.parse(response);
-      jobLog(`🤖 Vertex identified ${result.duplicate_groups.length} duplicate groups`);
+      const duplicate_groups = result.duplicate_groups || [];
+      jobLog(`🤖 Vertex identified ${duplicate_groups.length} duplicate groups`);
+
+      // Build kept_records, dropped_record_ids, and changes_log locally
+      const kept_records: any[] = [];
+      const dropped_record_ids: string[] = [];
+      const changes_log: any[] = [];
+
+      for (const group of duplicate_groups) {
+        const canonicalIdx = parseInt(group.canonical_record_id, 10);
+        const canonicalProp = properties[canonicalIdx];
+
+        if (!canonicalProp) {
+          jobLog(`⚠️  Warning: canonical_record_id ${group.canonical_record_id} not found`);
+          continue;
+        }
+
+        // Build kept record with source IDs
+        kept_records.push({
+          ...canonicalProp,
+          source_record_ids: group.record_ids
+        });
+
+        // Track dropped records (all except canonical)
+        const droppedIds = group.record_ids.filter(id => id !== group.canonical_record_id);
+        dropped_record_ids.push(...droppedIds);
+
+        // Build changes log entry
+        if (droppedIds.length > 0) {
+          changes_log.push({
+            canonical_record_id: group.canonical_record_id,
+            merged_from: droppedIds,
+            fields_merged: ['address', 'price', 'beds', 'baths', 'sqft'] // Standard merge fields
+          });
+        }
+      }
+
+      jobLog(`📊 Built locally: ${kept_records.length} kept, ${dropped_record_ids.length} dropped`);
 
       // Build final result
       const uniqueProperties: PropertyData[] = [];
       const mergedGroups: DeduplicationResult['mergedGroups'] = [];
       let duplicatesRemoved = 0;
 
-      // Create a map of kept records by their original index
-      const keptRecordMap = new Map<string, any>();
-      for (const record of result.kept_records || []) {
-        if (record.source_record_ids && record.source_record_ids.length > 0) {
-          // Use the first source record ID as the canonical ID
-          keptRecordMap.set(record.source_record_ids[0], record);
-        }
-      }
-
       // Add unique properties (not in any duplicate group)
       const allGroupedIds = new Set<string>();
-      for (const group of result.duplicate_groups || []) {
+      for (const group of duplicate_groups) {
         for (const id of group.record_ids) {
           allGroupedIds.add(id);
         }
@@ -268,7 +268,7 @@ ${JSON.stringify(propertyList, null, 2)}`;
       });
 
       // Process duplicate groups and add canonical records
-      for (const group of result.duplicate_groups || []) {
+      for (const group of duplicate_groups) {
         const canonicalId = group.canonical_record_id;
         const canonicalProperty = properties[parseInt(canonicalId)];
         const duplicates = group.record_ids
@@ -277,20 +277,16 @@ ${JSON.stringify(propertyList, null, 2)}`;
           .filter(Boolean);
 
         if (canonicalProperty) {
-          // Use the enhanced canonical record if available, otherwise use original
-          const enhancedRecord = keptRecordMap.get(canonicalId);
-          const finalProperty = enhancedRecord ? this.mapBackToPropertyData(enhancedRecord, canonicalProperty) : canonicalProperty;
-
-          uniqueProperties.push(finalProperty);
+          uniqueProperties.push(canonicalProperty);
           mergedGroups.push({
-            masterProperty: finalProperty,
+            masterProperty: canonicalProperty,
             duplicates,
             reason: group.match_reason.join(', '),
             confidence: group.confidence
           });
           duplicatesRemoved += duplicates.length;
 
-          jobLog(`   🔗 Merged ${duplicates.length} duplicates (confidence: ${group.confidence.toFixed(2)}): ${group.notes || group.match_reason.join(', ')}`);
+          jobLog(`   🔗 Merged ${duplicates.length} duplicates (confidence: ${group.confidence.toFixed(2)}): ${group.match_reason.join(', ')}`);
           jobLog(`      Master: ${canonicalProperty.address}`);
           duplicates.forEach(dup => jobLog(`      Duplicate: ${dup.address}`));
         }
@@ -386,7 +382,7 @@ ${JSON.stringify(propertyList, null, 2)}`;
 
     jobLog('🔍 CONFIG DEBUG 14: About to get location and model');
     const location = process.env.VERTEX_LOCATION || 'us-central1';
-    const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+    const model = 'gemini-2.5-flash'; // Use Flash for deduplication (faster, more reliable with structured output)
     jobLog('🔍 CONFIG DEBUG 15: Location:', location, 'Model:', model);
 
     jobLog('🔍 CONFIG DEBUG 16: About to return config object');
