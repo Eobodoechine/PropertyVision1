@@ -1,5 +1,5 @@
 // Vertex AI Gemini property data parser
-import { vertexGenerate } from '../vertex-freeform.js';
+import { vertexGenerate, resolveProjectId, resolveLocation, getAccessTokenViaAuth } from '../vertex-freeform.js';
 import { jobLog } from '../utils/jobLogger';
 
 interface PropertyData {
@@ -14,9 +14,7 @@ interface PropertyData {
 }
 
 export class GeminiParser {
-  private projectId = 'agile-device-472202-i8';
-  private location = 'us-central1';
-  private model = 'gemini-2.0-flash-001';
+  private model = process.env.VERTEX_PARSE_MODEL || 'gemini-2.5-flash';
 
   /**
    * Parse property data using Gemini API
@@ -68,30 +66,17 @@ Return JSON in exactly this format (no other text):
     jobLog('🔄 GeminiParser: Calling Vertex AI Gemini...');
 
     try {
-      // Load service account from environment (supports both local and Cloud Run)
-      let serviceAccount: any;
-
-      if (process.env.GCP_SA_JSON_B64) {
-        // Production: base64 encoded JSON
-        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-        serviceAccount = JSON.parse(saJson);
-      } else if (process.env.GCP_SA_JSON) {
-        // Local: file path
-        const fs = await import('fs');
-        serviceAccount = JSON.parse(fs.readFileSync(process.env.GCP_SA_JSON, 'utf8'));
-      } else if (process.env.SERVICE_ACCOUNT_JSON) {
-        // Alternative: direct JSON string
-        serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_JSON);
-      } else {
-        throw new Error('No service account found. Set GCP_SA_JSON_B64, GCP_SA_JSON, or SERVICE_ACCOUNT_JSON');
-      }
+      // Use ADC-first authentication (keyless on Cloud Run)
+      const projectId = await resolveProjectId();
+      const location = resolveLocation();
+      const token = await getAccessTokenViaAuth();
 
       const result = await vertexGenerate({
-        projectId: this.projectId,
-        location: this.location,
+        projectId,
+        location,
         model: this.model,
         prompt: prompt,
-        sa: serviceAccount,
+        token,
         json: true,
         timeoutMs: 30000
       });

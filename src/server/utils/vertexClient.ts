@@ -19,21 +19,14 @@ interface VertexGenerateOptions {
   json?: boolean;
   responseSchema?: any;
   timeoutMs?: number;
-  sa: any; // Service account credentials
-}
-
-interface TokenCache {
-  token: string;
-  expiresAt: number; // Unix timestamp in ms
+  token: string; // OAuth token from ADC
 }
 
 class VertexClient {
   private agent: https.Agent;
-  private tokenCache: Map<string, TokenCache> = new Map();
   private limiter: ReturnType<typeof pLimit>;
   private readonly MAX_RETRIES = 3;
   private readonly RETRY_BASE_DELAY_MS = 1000;
-  private readonly TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000; // Refresh 5 min before expiry
   private readonly DEFAULT_TIMEOUT_MS = 90000; // 90 seconds
 
   constructor(concurrency: number = 10) {
@@ -50,122 +43,6 @@ class VertexClient {
     this.limiter = pLimit(concurrency);
 
     jobLog(`✅ VertexClient initialized: concurrency=${concurrency}, keepAlive=true`);
-  }
-
-  /**
-   * Get or refresh OAuth token for service account
-   */
-  private async getToken(sa: any, scope: string): Promise<string> {
-    const cacheKey = `${sa.client_email}:${scope}`;
-    const cached = this.tokenCache.get(cacheKey);
-
-    // Return cached token if still valid
-    if (cached && cached.expiresAt > Date.now() + this.TOKEN_REFRESH_BUFFER_MS) {
-      return cached.token;
-    }
-
-    // Generate new token
-    jobLog(`🔑 Generating new OAuth token for ${sa.client_email}`);
-    const token = await this.generateServiceAccountToken(sa, scope);
-
-    // Cache token (expires in 3600s, refresh 5 min early)
-    this.tokenCache.set(cacheKey, {
-      token,
-      expiresAt: Date.now() + 3600 * 1000,
-    });
-
-    return token;
-  }
-
-  /**
-   * Generate service account OAuth token
-   */
-  private async generateServiceAccountToken(sa: any, scope: string): Promise<string> {
-    const iat = Math.floor(Date.now() / 1000);
-    const exp = iat + 3600;
-    const header = { alg: 'RS256', typ: 'JWT' };
-    const claims = { iss: sa.client_email, scope, aud: sa.token_uri, exp, iat };
-
-    const base64url = (obj: any) =>
-      Buffer.from(JSON.stringify(obj))
-        .toString('base64')
-        .replace(/=+$/, '')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_');
-
-    const unsigned = `${base64url(header)}.${base64url(claims)}`;
-
-    // Fix private key format
-    const formattedPrivateKey = sa.private_key.replace(/\\n/g, '\n');
-
-    // Sign JWT
-    const { createSign } = await import('node:crypto');
-    const sign = createSign('RSA-SHA256');
-    sign.update(unsigned);
-    const signature = sign
-      .sign(formattedPrivateKey)
-      .toString('base64')
-      .replace(/=+$/, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-
-    const assertion = `${unsigned}.${signature}`;
-
-    // Exchange JWT for OAuth token
-    const body = new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion,
-    });
-
-    const resp = await this.httpsPostForm(sa.token_uri, body.toString(), {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
-
-    if (!resp?.access_token) {
-      throw new Error('Failed to get service account token');
-    }
-
-    return resp.access_token;
-  }
-
-  /**
-   * HTTPS POST with form data
-   */
-  private async httpsPostForm(
-    url: string,
-    body: string,
-    headers: Record<string, string>
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const u = new URL(url);
-      const req = https.request(
-        {
-          method: 'POST',
-          hostname: u.hostname,
-          path: u.pathname + u.search,
-          headers: {
-            ...headers,
-            'Content-Length': Buffer.byteLength(body).toString(),
-          },
-          agent: this.agent,
-        },
-        (res) => {
-          let data = '';
-          res.on('data', (chunk) => (data += chunk));
-          res.on('end', () => {
-            try {
-              resolve(JSON.parse(data));
-            } catch {
-              resolve(null);
-            }
-          });
-        }
-      );
-
-      req.on('error', reject);
-      req.write(body);
-      req.end();
-    });
   }
 
   /**
@@ -247,11 +124,8 @@ class VertexClient {
             `📊 VERTEX_CALL_START: attempt=${attempt + 1}, type=${callType}, timeout=${timeoutMs}ms`
           );
 
-          // Get OAuth token (cached)
-          const token = await this.getToken(
-            opts.sa,
-            'https://www.googleapis.com/auth/cloud-platform'
-          );
+          // Use token from ADC (passed in opts)
+          const token = opts.token;
 
           const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
 

@@ -132,7 +132,13 @@ function formatSoldDate(date?: string) {
 }
 
 export default function HomePage() {
-  const { user, loading: authLoading } = useAuth();
+  // Aggressive auth bypass for staging - skip all auth checks
+  const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+
+  const { user, loading: authLoading } = disableAuth
+    ? { user: { email: 'staging@test.com' }, loading: false }
+    : useAuth();
+
   const [formState, setFormState] = React.useState<FormState>({ address: DEFAULT_ADDRESS });
   const [progress, setProgress] = React.useState(0);
   const [selectedResult, setSelectedResult] = React.useState<PropertyAnalysisResponse | null>(null);
@@ -177,16 +183,19 @@ export default function HomePage() {
   const loading = mutation.isPending;
   const error = mutation.isError ? (mutation.error as Error) : null;
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
+  // Skip auth checks entirely if DISABLE_AUTH is true
+  if (!disableAuth) {
+    if (authLoading) {
+      return (
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      );
+    }
 
-  if (!user) {
-    return <Auth />;
+    if (!user) {
+      return <Auth />;
+    }
   }
 
   return (
@@ -251,6 +260,24 @@ export default function HomePage() {
 }
 
 function Header() {
+  const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
+
+  if (disableAuth) {
+    return (
+      <header className="flex flex-col justify-between gap-4 rounded-3xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm shadow-slate-200/40 backdrop-blur md:flex-row md:items-center">
+        <div>
+          <p className="text-sm font-medium text-slate-500">PropertyAnalyzer</p>
+          <h1 className="text-2xl font-semibold text-slate-900">ARV &amp; Comps Dashboard</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm text-slate-600">
+            Test User
+          </span>
+        </div>
+      </header>
+    );
+  }
+
   const { user, userProfile, logout } = useAuth();
 
   return (

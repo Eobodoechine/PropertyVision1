@@ -998,24 +998,14 @@ export class ComprehensiveComparableSearchV3 {
     const coordinatesMap = new Map<number, { lat: number; lon: number }>();
 
     try {
-      // Import vertex generation function
-      const { vertexGenerate } = await import('./vertex-freeform');
+      // Import vertex generation function and ADC helpers
+      const { vertexGenerate, resolveProjectId, resolveLocation, getAccessTokenViaAuth } = await import('./vertex-freeform');
 
-      // Get service account configuration
-      let sa;
-      if (process.env.GCP_SA_JSON_B64) {
-        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-        sa = JSON.parse(saJson);
-      } else {
-        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-        if (!saPath) throw new Error('No service account configured');
-        const fs = await import('fs');
-        sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-      }
-
-      const projectId = sa.project_id;
-      const location = process.env.VERTEX_LOCATION || 'us-central1';
-      const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+      // Use ADC-first authentication (keyless on Cloud Run)
+      const projectId = await resolveProjectId();
+      const location = resolveLocation();
+      const model = process.env.VERTEX_GROUNDED_MODEL || 'gemini-2.5-pro';
+      const token = await getAccessTokenViaAuth();
 
       // Create batch prompt for coordinate extraction
       const addressList = properties.map((prop, index) => `${index + 1}. "${prop.address}"`).join('\n');
@@ -1059,7 +1049,7 @@ ADDRESS 2:
       jobLog(`   🤖 Requesting coordinates for ${properties.length} properties from Vertex AI...`);
 
       const response = await vertexGenerate({
-        sa,
+        token,
         projectId,
         location,
         model,

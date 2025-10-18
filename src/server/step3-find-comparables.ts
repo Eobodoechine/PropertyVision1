@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import fs from 'fs';
-import crypto from 'crypto';
+import { createHash } from 'node:crypto';
 import https from 'https';
 import dns from 'dns';
 import { GoogleAuth } from 'google-auth-library';
@@ -8,6 +8,7 @@ import { GoogleAuth } from 'google-auth-library';
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
 import { jobLog } from './utils/jobLogger';
+import { resolveProjectId, resolveLocation, getAccessTokenViaAuth } from './vertex-freeform.js';
 
 // Force IPv4-first DNS resolution to avoid IPv6 timeout delays in VPC
 dns.setDefaultResultOrder('ipv4first');
@@ -99,24 +100,11 @@ class VertexComparableSearchService {
         throw new Error('Failed to geocode subject property');
       }
 
-      // Check for service account
-      let sa;
-      if (process.env.GCP_SA_JSON_B64) {
-        // Production: base64 encoded JSON
-        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-        sa = JSON.parse(saJson);
-      } else {
-        // Local: file path
-        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-        if (!saPath) {
-          throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
-        }
-        sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-      }
-      const projectId = sa.project_id;
-      const location = process.env.VERTEX_LOCATION || 'us-central1';
-      const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-      const token = await this.getServiceAccountToken(sa, 'https://www.googleapis.com/auth/cloud-platform');
+      // Use ADC-first authentication (keyless on Cloud Run)
+      const projectId = await resolveProjectId();
+      const location = resolveLocation();
+      const model = process.env.VERTEX_GROUNDED_MODEL || 'gemini-2.5-pro';
+      const token = await getAccessTokenViaAuth();
 
       // Build subdivision filter from override or env
       const subdivision = (extra?.subdivision?.trim() || process.env.SUBDIVISION)?.trim();
@@ -181,7 +169,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         jobLog(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 60000ms`);
         const startVertex = Date.now();
         const r = await vertexGenerate({
-          sa: sa,
+          token,
           projectId,
           location,
           model,
@@ -419,7 +407,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // If subject is duplex or multi-family, verify each remaining comparable is actually a duplex/multi-family
       if ((subjectPropertyType === 'duplex' || subjectPropertyType === 'multi-family') && comps.length > 0) {
         jobLog(`   🏠 STARTING DUPLEX VERIFICATION for ${comps.length} properties...`);
-        comps = await this.verifyDuplexComparables(comps, sa, projectId, location, model);
+        comps = await this.verifyDuplexComparables(comps, token, projectId, location, model);
         jobLog(`   ✅ DUPLEX VERIFICATION COMPLETE: ${comps.length} confirmed duplex/multi-family properties`);
       } else {
         jobLog(`   ⏭️  SKIPPING DUPLEX VERIFICATION: propertyType="${subjectPropertyType}", comps=${comps.length}`);
@@ -608,7 +596,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
   private async verifyDuplexComparables(
     comps: ComparableProperty[],
-    sa: any,
+    token: string,
     projectId: string,
     location: string,
     model: string
@@ -637,7 +625,7 @@ Respond with only YES (if duplex/multi-family) or NO (if single-family/other).`;
 
         const { vertexGenerate } = await import('./vertex-freeform.js');
         const response = await vertexGenerate({
-          sa,
+          token,
           projectId,
           location,
           model,
@@ -668,27 +656,6 @@ Respond with only YES (if duplex/multi-family) or NO (if single-family/other).`;
     return verifiedComps;
   }
 
-  private getVertexConfig() {
-    let serviceAccount;
-    if (process.env.GCP_SA_JSON_B64) {
-      // Production: base64 encoded JSON
-      const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-      serviceAccount = JSON.parse(saJson);
-    } else {
-      // Local: file path
-      const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
-      if (!saPath) {
-        throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
-      }
-      serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-    }
-    const projectId = serviceAccount.project_id;
-    const location = process.env.VERTEX_LOCATION || 'us-central1';
-    const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-
-    return { serviceAccount, projectId, location, model };
-  }
-
   private async parsePropertyDataWithLLM(propertyLine: string): Promise<{
     address?: string;
     price?: number;
@@ -700,8 +667,13 @@ Respond with only YES (if duplex/multi-family) or NO (if single-family/other).`;
     source?: string;
   } | null> {
     try {
-      const { vertexGenerate } = await import('./vertex-freeform.js');
-      const { serviceAccount, projectId, location, model } = this.getVertexConfig();
+      const { vertexGenerate, resolveProjectId, resolveLocation, getAccessTokenViaAuth } = await import('./vertex-freeform.js');
+
+      // Use ADC-first authentication (keyless on Cloud Run)
+      const projectId = await resolveProjectId();
+      const location = resolveLocation();
+      const model = process.env.VERTEX_GROUNDED_MODEL || 'gemini-2.5-pro';
+      const token = await getAccessTokenViaAuth();
 
       // Single LLM call for all fields using JSON
       const allFieldsPrompt = `Extract all property data from this line and return ONLY valid JSON (no prose, no markdown fences):
@@ -736,7 +708,7 @@ Return exactly this JSON structure:
       } as any;
 
       const response = await vertexGenerate({
-        sa: serviceAccount,
+        token,
         projectId,
         location,
         model,
@@ -859,8 +831,13 @@ Return exactly this JSON structure:
     if (propertyLines.length === 0) return results;
 
     try {
-      const { vertexGenerate } = await import('./vertex-freeform.js');
-      const { serviceAccount, projectId, location, model } = this.getVertexConfig();
+      const { vertexGenerate, resolveProjectId, resolveLocation, getAccessTokenViaAuth } = await import('./vertex-freeform.js');
+
+      // Use ADC-first authentication (keyless on Cloud Run)
+      const projectId = await resolveProjectId();
+      const location = resolveLocation();
+      const model = process.env.VERTEX_GROUNDED_MODEL || 'gemini-2.5-pro';
+      const token = await getAccessTokenViaAuth();
 
       // Build a compact, deterministic prompt with IDs for mapping
       const header = `Parse each of the following real-estate comp lines into JSON. Return ONLY a JSON array (no prose). Each element MUST include the provided id and these fields: address, price (number), soldDate (YYYY-MM-DD or INVALID), beds (number), baths (number), sqft (number), yearBuilt (number), source (string).`;
@@ -887,7 +864,7 @@ Return exactly this JSON structure:
       } as any;
 
       const text = await vertexGenerate({
-        sa: serviceAccount,
+        token,
         projectId,
         location,
         model,
@@ -1406,23 +1383,6 @@ Return exactly this JSON structure:
     return enriched;
   }
 
-  private async getServiceAccountToken(sa: any, scope: string): Promise<string> {
-    const iat = Math.floor(Date.now() / 1000);
-    const exp = iat + 3600;
-    const header = { alg: 'RS256', typ: 'JWT' };
-    const claims = { iss: sa.client_email, scope, aud: sa.token_uri, exp, iat };
-    const base64url = (obj: any) => Buffer.from(JSON.stringify(obj)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
-    const unsigned = `${base64url(header)}.${base64url(claims)}`;
-    const sign = crypto.createSign('RSA-SHA256');
-    sign.update(unsigned);
-    const signature = sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
-    const assertion = `${unsigned}.${signature}`;
-    const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion });
-    const resp = await this.httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' }, 20000);
-    if (!resp?.access_token) throw new Error('sa-token-failed');
-    return resp.access_token as string;
-  }
-
   private async httpsPostForm(url: string, body: string, headers: Record<string,string>, timeoutMs: number): Promise<any> {
     return await new Promise((resolve, reject) => {
       const u = new URL(url);
@@ -1488,7 +1448,7 @@ Return exactly this JSON structure:
 
   private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
     const normalizedAddress = this.normalizeAddress(address);
-    const addressHash = crypto.createHash('md5').update(normalizedAddress).digest('hex').slice(0, 8);
+    const addressHash = createHash('md5').update(normalizedAddress).digest('hex').slice(0, 8);
 
     // Cache bypass for testing (respects GEOCODE_BYPASS_CACHE env var)
     if (!GEOCODE_BYPASS_CACHE && this.geocodeCache.has(normalizedAddress)) {

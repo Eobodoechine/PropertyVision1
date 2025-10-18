@@ -5,9 +5,10 @@ import { ComprehensiveComparableSearchV10 } from '../comprehensive-comp-search-v
 import { parallelSearchConfig } from './parallelSearchConfig';
 import { sendErrorNotification, sendSuccessNotification } from './emailNotification';
 import { GoogleMapsGeocoder } from './googleMapsGeocoder';
+import { publishJob } from './pubsubPublisher';
 import { randomUUID } from 'crypto';
 import os from 'os';
-import { jobLog, setJobContext } from './jobLogger';
+import { jobLog, setJobContext, runWithJobContext } from './jobLogger';
 import { setCurrentJobContext, PHASES as JOB_PHASES } from './jobProgress';
 
 // Global job context - allows comprehensive-comp-search to update progress
@@ -27,6 +28,8 @@ interface JobData {
   jobId: string;
   address: string;
   userId?: string;
+  userEmail?: string; // User's email for tracking and notifications
+  source?: 'chatgpt' | 'website'; // Source of the analysis
   status: 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';
   progress: number;
   phase: string;
@@ -89,14 +92,24 @@ export class JobQueue {
   /**
    * Enqueue a new job
    */
-  async enqueueJob(address: string, userId?: string): Promise<string> {
+  async enqueueJob(
+    address: string,
+    userId?: string,
+    userEmail?: string,
+    source?: 'chatgpt' | 'website'
+  ): Promise<string> {
     const jobId = randomUUID();
     const now = Date.now();
+
+    // Determine userEmail: use explicit param, or extract from userId if it's an email
+    const finalUserEmail = userEmail || (userId && userId.includes('@') ? userId : undefined);
 
     const jobData: JobData = {
       jobId,
       address,
       userId,
+      userEmail: finalUserEmail,
+      source: source || 'website',
       status: 'queued',
       progress: 0,
       phase: 'Queued',
@@ -108,19 +121,24 @@ export class JobQueue {
     // Store job status in Redis hash
     await this.redis.setJob(jobId, jobData, JOB_TTL);
 
-    // Add to stream
-    const streamId = await this.redis.xadd(STREAM, {
-      jobId,
-      address,
-      userId: userId || '',
-      createdAt: now.toString()
-    });
+    jobLog(`📋 Job ${jobId} created for address: ${address} (email: ${finalUserEmail || 'none'}, source: ${source || 'website'})`);
 
-    if (!streamId) {
-      throw new Error('Failed to enqueue job');
+    // Publish to Pub/Sub (primary queue mechanism)
+    try {
+      await publishJob({
+        jobId,
+        address,
+        userId,
+        userEmail: finalUserEmail,
+        source: source || 'website',
+        createdAt: now
+      });
+      jobLog(`📢 Job ${jobId} published to Pub/Sub`);
+    } catch (error) {
+      console.error(`❌ Failed to publish job ${jobId} to Pub/Sub:`, error);
+      throw new Error(`Failed to enqueue job to Pub/Sub: ${error instanceof Error ? error.message : String(error)}`);
     }
 
-    jobLog(`📋 Job ${jobId} enqueued for address: ${address}`);
     return jobId;
   }
 
@@ -291,7 +309,7 @@ export class JobQueue {
   /**
    * Parse stream message to job data
    */
-  private parseStreamMessage(fields: any): { jobId: string; address: string; userId?: string } | null {
+  private parseStreamMessage(fields: any): { jobId: string; address: string; userId?: string; userEmail?: string; source?: 'chatgpt' | 'website' } | null {
     if (Array.isArray(fields)) {
       const obj: any = {};
       for (let i = 0; i < fields.length; i += 2) {
@@ -438,7 +456,9 @@ export class JobQueue {
           phase: 'ARV Calculation',
           attempts: 1,
           timestamp: completedAt,
-          userId: existingJob?.userId
+          userId: existingJob?.userId,
+          userEmail: existingJob?.userEmail,
+          source: existingJob?.source
         });
 
         // Mark job as failed
@@ -464,7 +484,9 @@ export class JobQueue {
         compsCount,
         duration,
         timestamp: completedAt,
-        userId: existingJob?.userId
+        userId: existingJob?.userId,
+        userEmail: existingJob?.userEmail,
+        source: existingJob?.source
       });
 
     } catch (error: any) {
@@ -473,6 +495,197 @@ export class JobQueue {
       setJobContext(null); // Clear logger context too
       throw error;
     }
+  }
+
+  /**
+   * Process a job from Pub/Sub (HTTP-triggered, no Redis Stream acknowledgment)
+   * This is called from the /api/worker/process endpoint when receiving Pub/Sub push messages
+   */
+  async processJobFromPubSub(jobData: {jobId: string; address: string; userId?: string; userEmail?: string; source?: 'chatgpt' | 'website'}, pubsubMessageId: string): Promise<void> {
+    const { jobId, address } = jobData;
+
+    // Wrap entire execution in job context for automatic log prefixing
+    return runWithJobContext(jobId, async () => {
+      jobLog(`📢 [PubSub:${pubsubMessageId}] Processing job ${jobId}: ${address}`);
+
+    // Check if job is already being processed or completed
+    const existingJob = await this.getJobStatus(jobId);
+
+    // Skip jobs that are already completed or failed
+    if (existingJob && (existingJob.status === 'completed' || existingJob.status === 'failed')) {
+      jobLog(`✅ [PubSub:${pubsubMessageId}] Job ${jobId} already ${existingJob.status}, skipping`);
+      return;
+    }
+
+    if (existingJob && existingJob.status === 'processing') {
+      // Check heartbeat to see if job is still actively processing
+      const timeSinceHeartbeat = Date.now() - (existingJob.lastHeartbeat || 0);
+      jobLog(`🔍 [PubSub:${pubsubMessageId}] Job ${jobId} status=processing, heartbeat age: ${Math.round(timeSinceHeartbeat / 1000)}s`);
+
+      if (timeSinceHeartbeat < 60000) { // If heartbeat within last 60 seconds, job is still active
+        console.warn(`⚠️  [PubSub:${pubsubMessageId}] Job ${jobId} still active (heartbeat ${Math.round(timeSinceHeartbeat / 1000)}s ago), skipping duplicate`);
+        return; // Don't process duplicate - job is already being handled
+      }
+      jobLog(`⏰ [PubSub:${pubsubMessageId}] Job ${jobId} heartbeat stale, taking over`);
+    }
+
+    // Update status to processing and claim ownership
+    jobLog(`📝 [PubSub:${pubsubMessageId}] Claiming ownership of job ${jobId}`);
+    await this.updateJob(jobId, {
+      status: 'processing',
+      phase: 'Getting subject details',
+      progress: 10,
+      processingBy: `pubsub:${pubsubMessageId}`,
+      processingMessageId: pubsubMessageId
+    });
+
+    // Set global job context for progress updates
+    setCurrentJobContext({ jobId, jobQueue: this });
+
+    // Start heartbeat
+    const heartbeat = setInterval(async () => {
+      await this.updateJob(jobId, { lastHeartbeat: Date.now() });
+    }, HEARTBEAT_MS);
+
+    try {
+      // **FAST-FAIL: Early geocode validation**
+      jobLog(`🗺️  [PubSub:${pubsubMessageId}] Validating address via geocoding: ${address}`);
+      const geocodeStart = Date.now();
+
+      try {
+        const geocoder = new GoogleMapsGeocoder();
+        const result = await geocoder.geocodeAddress(address);
+        const geocodeDuration = Date.now() - geocodeStart;
+
+        if (!result || !result.lat || !result.lng) {
+          console.error(`❌ [PubSub:${pubsubMessageId}] Address geocoding failed in ${geocodeDuration}ms - invalid address`);
+          throw new Error(`Invalid address: could not geocode "${address}"`);
+        }
+
+        jobLog(`✅ [PubSub:${pubsubMessageId}] Address validated via geocoding in ${geocodeDuration}ms: ${result.lat}, ${result.lng}`);
+      } catch (error) {
+        const geocodeDuration = Date.now() - geocodeStart;
+        console.error(`❌ [PubSub:${pubsubMessageId}] Geocoder initialization or geocoding failed in ${geocodeDuration}ms:`, error);
+        throw new Error(`Invalid address: could not geocode "${address}"${error instanceof Error ? ` - ${error.message}` : ''}`);
+      }
+
+      // Run analysis
+      const result = await this.analysisService.findComparables(address);
+
+      // Mark complete
+      await this.updateJob(jobId, {
+        status: 'completed',
+        progress: 100,
+        phase: 'Complete',
+        result: {
+          subject: result.subject,
+          arv: result.arv,
+          twoBathArv: result.twoBathARV,
+          bathroomAnalysis: result.bathroomAnalysis,
+          renovationAnalysis: result.renovation_analysis,
+          compsUsed: result.qualified_comps,
+          allComps: result.all_comps,
+          confidenceScores: Object.fromEntries(result.consistency_scores.entries()),
+          searchMetadata: result.searchMetadata
+        },
+        completedAt: Date.now()
+      });
+
+      clearInterval(heartbeat);
+      setCurrentJobContext(null);
+      setJobContext(null);
+      jobLog(`✅ Job ${jobId} completed`);
+
+      // Validate ARV before sending success notification
+      const completedAt = Date.now();
+      const duration = completedAt - (existingJob?.createdAt || Date.now());
+
+      // Handle both V10 (result.arv?.estimate) and V5 (result.arv?.conservative?.arv_price) structures
+      const arvValue = result.arv?.estimate || (result.arv as any)?.conservative?.arv_price;
+      const compsCount = result.qualified_comps?.length || 0;
+
+      // ARV=$0 or 0 comps is a failed run, not a success
+      if (!arvValue || arvValue === 0 || compsCount === 0) {
+        const errorMessage = !arvValue || arvValue === 0
+          ? `ARV unavailable (ARV=$${arvValue || 0}, comps=${compsCount})`
+          : `No comparable properties found (comps=${compsCount})`;
+
+        console.error(`❌ Job ${jobId} completed but failed validation: ${errorMessage}`);
+
+        // Send error notification instead of success
+        await sendErrorNotification({
+          jobId,
+          address,
+          error: errorMessage,
+          phase: 'ARV Calculation',
+          attempts: 1,
+          timestamp: completedAt,
+          userId: existingJob?.userId,
+          userEmail: existingJob?.userEmail,
+          source: existingJob?.source
+        });
+
+        // Mark job as failed
+        await this.updateJob(jobId, {
+          status: 'failed',
+          error: errorMessage,
+          completedAt
+        });
+
+        clearInterval(heartbeat);
+        setCurrentJobContext(null);
+        setJobContext(null);
+
+        // Throw error to trigger Pub/Sub retry
+        throw new Error(errorMessage);
+      }
+
+      // Send success notification email
+      await sendSuccessNotification({
+        jobId,
+        address,
+        arv: arvValue,
+        compsCount,
+        duration,
+        timestamp: completedAt,
+        userId: existingJob?.userId,
+        userEmail: existingJob?.userEmail,
+        source: existingJob?.source
+      });
+
+    } catch (error: any) {
+      clearInterval(heartbeat);
+      setCurrentJobContext(null);
+      setJobContext(null);
+
+      // Log error and rethrow to trigger Pub/Sub retry
+      const errorMessage = error?.message || String(error);
+      console.error(`❌ Job ${jobId} failed (Pub/Sub):`, errorMessage);
+
+      // Update job status to failed
+      await this.updateJob(jobId, {
+        status: 'failed',
+        error: errorMessage,
+        completedAt: Date.now()
+      });
+
+      // Send error notification
+      await sendErrorNotification({
+        jobId,
+        address,
+        error: errorMessage,
+        phase: existingJob?.phase || 'Unknown',
+        attempts: 1,
+        timestamp: Date.now(),
+        userId: jobData.userId,
+        userEmail: jobData.userEmail,
+        source: jobData.source
+      });
+
+      // Rethrow to trigger HTTP 500 → Pub/Sub retry
+      throw error;
+    }
+    }); // End of runWithJobContext
   }
 
   /**
@@ -516,7 +729,9 @@ export class JobQueue {
         phase: job.phase,
         attempts,
         timestamp: Date.now(),
-        userId: job.userId
+        userId: job.userId,
+        userEmail: job.userEmail,
+        source: job.source
       });
 
       // Acknowledge to remove from processing

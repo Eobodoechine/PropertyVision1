@@ -23,7 +23,7 @@
 set -e  # Exit on error
 
 # Configuration
-PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-agile-device-472202-i8}"
+PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-durable-ring-475417-g0}"
 BATCH_SIZE=10000
 MAX_BATCHES=100  # Safety limit to prevent infinite loops (100 batches = 1M logs max)
 

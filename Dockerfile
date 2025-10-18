@@ -30,8 +30,8 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOST=0.0.0.0
-ENV GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json
-ENV GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8
+# ENV GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json
+# ENV GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8
 
 # Start the application based on RUN_WORKER env var
 CMD ["/bin/sh", "-c", "if [ \"$RUN_WORKER\" = \"true\" ]; then npm run worker; else npm start; fi"]

@@ -33,10 +33,12 @@ interface ErrorNotificationParams {
   attempts?: number;
   timestamp?: number;
   userId?: string;
+  userEmail?: string; // User's email for tracking
+  source?: 'chatgpt' | 'website'; // Source of the analysis
 }
 
 export async function sendErrorNotification(params: ErrorNotificationParams): Promise<boolean> {
-  const { jobId, address, error, phase, attempts, timestamp, userId } = params;
+  const { jobId, address, error, phase, attempts, timestamp, userId, userEmail, source } = params;
 
   // Skip if email not configured
   const transport = getTransporter();
@@ -47,16 +49,32 @@ export async function sendErrorNotification(params: ErrorNotificationParams): Pr
 
   const date = timestamp ? new Date(timestamp).toLocaleString() : new Date().toLocaleString();
 
+  // Determine email display text
+  const emailDisplay = userEmail || (userId && userId.includes('@') ? userId : null);
+  const emailText = emailDisplay
+    ? `<span style="color: #059669; font-weight: bold;">${emailDisplay}</span>`
+    : '<span style="color: #dc2626; font-weight: bold;">Not provided (Anonymous)</span>';
+
+  const sourceText = source === 'chatgpt' ? '🤖 ChatGPT' : (source === 'website' ? '🌐 Website' : 'Unknown');
+
   const mailOptions = {
     from: EMAIL_FROM,
     to: NOTIFICATION_EMAIL,
-    subject: `PropertyVision Error: ${address}`,
+    subject: `❌ PropertyVision Error: ${address}${emailDisplay ? ` (${emailDisplay})` : ''}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #dc2626;">❌ PropertyVision Analysis Error</h2>
 
         <div style="background-color: #fee; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0;">
           <p style="margin: 0;"><strong>Address:</strong> ${address}</p>
+        </div>
+
+        <!-- USER EMAIL - PROMINENTLY DISPLAYED -->
+        <div style="background-color: #fef3c7; border: 2px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+          <p style="margin: 0; font-size: 16px;">
+            <strong>📧 User Email:</strong> ${emailText}
+          </p>
+          ${source ? `<p style="margin: 5px 0 0 0; font-size: 14px; color: #6b7280;"><strong>Source:</strong> ${sourceText}</p>` : ''}
         </div>
 
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -94,7 +112,7 @@ export async function sendErrorNotification(params: ErrorNotificationParams): Pr
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-          <p>View logs: <a href="https://console.cloud.google.com/logs/query?project=agile-device-472202-i8" style="color: #2563eb;">Cloud Console</a></p>
+          <p>View logs: <a href="https://console.cloud.google.com/logs/query?project=durable-ring-475417-g0" style="color: #2563eb;">Cloud Console</a></p>
           <p>This is an automated notification from PropertyVision.</p>
         </div>
       </div>
@@ -119,10 +137,12 @@ interface SuccessNotificationParams {
   duration?: number;
   timestamp?: number;
   userId?: string;
+  userEmail?: string; // User's email for tracking
+  source?: 'chatgpt' | 'website'; // Source of the analysis
 }
 
 export async function sendSuccessNotification(params: SuccessNotificationParams): Promise<boolean> {
-  const { jobId, address, arv, compsCount, duration, timestamp, userId } = params;
+  const { jobId, address, arv, compsCount, duration, timestamp, userId, userEmail, source } = params;
 
   // Skip if email not configured
   const transport = getTransporter();
@@ -134,16 +154,32 @@ export async function sendSuccessNotification(params: SuccessNotificationParams)
   const date = timestamp ? new Date(timestamp).toLocaleString() : new Date().toLocaleString();
   const durationText = duration ? `${Math.round(duration / 1000)}s` : 'N/A';
 
+  // Determine email display text
+  const emailDisplay = userEmail || (userId && userId.includes('@') ? userId : null);
+  const emailText = emailDisplay
+    ? `<span style="color: #059669; font-weight: bold;">${emailDisplay}</span>`
+    : '<span style="color: #dc2626; font-weight: bold;">Not provided (Anonymous)</span>';
+
+  const sourceText = source === 'chatgpt' ? '🤖 ChatGPT' : (source === 'website' ? '🌐 Website' : 'Unknown');
+
   const mailOptions = {
     from: EMAIL_FROM,
     to: NOTIFICATION_EMAIL,
-    subject: `✅ PropertyVision Analysis Complete: ${address}`,
+    subject: `✅ PropertyVision Complete: ${address}${emailDisplay ? ` (${emailDisplay})` : ''}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #059669;">✅ PropertyVision Analysis Complete</h2>
 
         <div style="background-color: #d1fae5; border-left: 4px solid #059669; padding: 15px; margin: 20px 0;">
           <p style="margin: 0;"><strong>Address:</strong> ${address}</p>
+        </div>
+
+        <!-- USER EMAIL - PROMINENTLY DISPLAYED -->
+        <div style="background-color: #fef3c7; border: 2px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px;">
+          <p style="margin: 0; font-size: 16px;">
+            <strong>📧 User Email:</strong> ${emailText}
+          </p>
+          ${source ? `<p style="margin: 5px 0 0 0; font-size: 14px; color: #6b7280;"><strong>Source:</strong> ${sourceText}</p>` : ''}
         </div>
 
         <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">

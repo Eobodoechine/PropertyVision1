@@ -14,6 +14,7 @@
   "dependencies": {
     "@google-cloud/logging": "^11.2.1",
     "@google-cloud/logging-winston": "^6.0.1",
+    "@google-cloud/pubsub": "^4.10.0",
     "@radix-ui/react-slot": "^1.2.3",
     "@tanstack/react-query": "^5.90.2",
     "class-variance-authority": "^0.7.1",
@@ -22,6 +23,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "firebase": "^12.3.0",
+    "google-auth-library": "^10.4.1",
     "ioredis": "^5.8.0",
     "lucide-react": "^0.544.0",
     "next": "15.5.4",
