@@ -237,6 +237,132 @@ export class RedisCache {
   }
 
   /**
+   * Atomic update with WATCH/MULTI and exponential backoff + jitter
+   * Prevents race conditions between concurrent updates
+   */
+  async atomicUpdate<T>(
+    key: string,
+    mergeFn: (current: T | null) => T | null,
+    getTtl: (result: T | null) => number,
+    maxRetries: number = 8
+  ): Promise<{ success: boolean; conflicts: number }> {
+    if (!this.client || !this.isConnected) {
+      console.error(`❌ Redis not connected for atomicUpdate ${key}`);
+      return { success: false, conflicts: 0 };
+    }
+
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+    const rand = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    let conflicts = 0;
+
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        await this.client.watch(key);
+
+        const curStr = await this.client.get(key);
+        let current: T | null = null;
+
+        // Safe JSON parsing
+        if (curStr) {
+          try {
+            current = JSON.parse(curStr) as T;
+          } catch (parseErr) {
+            await this.client.unwatch();
+            jobLog(`❌ Corrupt JSON at ${key}:`, parseErr);
+            console.error(`❌ CORRUPT DATA at ${key}, raw:`, curStr?.substring(0, 200));
+            return { success: false, conflicts };
+          }
+        }
+
+        const next = mergeFn(current);
+
+        if (next === null) {
+          await this.client.unwatch();
+          return { success: true, conflicts };
+        }
+
+        const ttl = getTtl(next);
+        const nextStr = JSON.stringify(next);
+
+        const multi = this.client.multi();
+        multi.set(key, nextStr, 'EX', ttl);
+
+        const res = await multi.exec();
+
+        // Check for conflict (null) or command error
+        if (res === null) {
+          // Conflict - retry
+          conflicts++;
+          const baseDelay = Math.min(50 * Math.pow(2, attempt), 1000);
+          const jitter = rand(0, 50);
+
+          if (attempt > 3) {
+            jobLog(`⚠️  WATCH conflict #${conflicts} on ${key}, retry in ${baseDelay + jitter}ms`);
+          }
+
+          await sleep(baseDelay + jitter);
+          continue;
+        }
+
+        // Check for internal Redis command error
+        if (Array.isArray(res) && res[0] && res[0][0]) {
+          console.error(`❌ Redis SET error in exec for ${key}:`, res[0][0]);
+          await this.client.unwatch();
+          return { success: false, conflicts };
+        }
+
+        // Success
+        jobLog(`📝 Redis ATOMIC SET ${key} (${nextStr.length} bytes, TTL=${ttl}s, attempts=${attempt + 1}, conflicts=${conflicts})`);
+        return { success: true, conflicts };
+
+      } catch (err) {
+        await this.client.unwatch().catch(() => {});
+        console.error(`❌ atomicUpdate error for ${key}:`, err);
+        return { success: false, conflicts };
+      }
+    }
+
+    jobLog(`⚠️  atomicUpdate: max retries (${maxRetries}) exceeded for ${key}, conflicts=${conflicts}`);
+    return { success: false, conflicts };
+  }
+
+  /**
+   * Job-specific atomic update with lifecycle-aware TTL
+   */
+  async atomicUpdateJob(
+    jobId: string,
+    mergeFn: (current: any | null) => any | null
+  ): Promise<{ success: boolean; conflicts: number }> {
+    const JOB_TTL = 3600; // 1 hour (processing)
+    const JOB_TTL_TERMINAL = 86400; // 24 hours (completed/cancelled)
+    const JOB_TTL_FAILED_SHORT = 21600; // 6 hours (failed)
+
+    const isTerminalStatus = (status: string) =>
+      status === 'completed' || status === 'failed' || status === 'cancelled';
+
+    const getTtl = (job: any | null) => {
+      if (!job) return JOB_TTL;
+      if (job.status === 'completed') return JOB_TTL_TERMINAL;
+      if (job.status === 'failed') return JOB_TTL_FAILED_SHORT;
+      if (job.status === 'cancelled') return JOB_TTL_TERMINAL;
+      return JOB_TTL;
+    };
+
+    const result = await this.atomicUpdate<any>(
+      `job:${jobId}`,
+      mergeFn,
+      getTtl
+    );
+
+    if (result.conflicts > 2) {
+      jobLog(`⚠️  High contention for job ${jobId}: ${result.conflicts} WATCH conflicts`);
+    }
+
+    return result;
+  }
+
+  /**
    * Store job status in Redis
    */
   async setJob(jobId: string, jobData: any, ttlSeconds: number = 3600): Promise<void> {

@@ -40,7 +40,13 @@ export async function GET(
       serverNow: Date.now(), // For clock-skew correction
       cancelRequested: job.cancelRequested,
       result: job.result,
-      error: job.error
+      error: job.error,
+      // Heartbeat race condition fix (v4): staleness detection fields
+      updatedAt: job.updatedAt,
+      version: job.version,
+      lastProgressAt: job.lastProgressAt,
+      finalized: job.finalized,
+      completedAt: job.completedAt
     });
   } catch (error: any) {
     return NextResponse.json(

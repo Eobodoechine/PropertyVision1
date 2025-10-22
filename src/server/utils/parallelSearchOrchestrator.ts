@@ -80,6 +80,22 @@ export class ParallelSearchOrchestrator {
       jobLog(`   Subdivision: ${subject.subdivision || 'N/A'}`);
       jobLog(`   Running levels: ${config.levels.join(', ')}`);
 
+      // 🔍 DEBUG: Log all input parameters
+      jobLog(`🔍 DEBUG PARALLEL SEARCH INPUT:`);
+      jobLog(`   subject keys: ${Object.keys(subject).join(', ')}`);
+      jobLog(`   subject.address: ${subject.address}`);
+      jobLog(`   subject.sqft: ${subject.sqft}`);
+      jobLog(`   subject.beds: ${subject.beds}`);
+      jobLog(`   subject.baths: ${subject.baths}`);
+      jobLog(`   subject.yearBuilt: ${subject.yearBuilt}`);
+      jobLog(`   subject.subdivision: ${subject.subdivision}`);
+      jobLog(`   subject.propertyType: ${subject.propertyType}`);
+      jobLog(`   subjectPropertyType param: ${subjectPropertyType}`);
+      jobLog(`   config.enabled: ${config.enabled}`);
+      jobLog(`   config.levels: ${JSON.stringify(config.levels)}`);
+      jobLog(`   config.vertexLocalConcurrency: ${config.vertexLocalConcurrency}`);
+      jobLog(`   config.vertexGlobalConcurrency: ${config.vertexGlobalConcurrency}`);
+
       // Reset cache hit counter for this search
       this.totalCacheHits = 0;
 

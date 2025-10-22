@@ -285,7 +285,27 @@ export class ComprehensiveComparableSearchV10 {
           baths: subjectDetails.baths || 0
         };
 
+        // Probe: Log ARV input
+        jobLog(JSON.stringify({
+          probe: "ARV_INPUT",
+          compsIn: finalComps?.length ?? 0,
+          addr: subjectDetails.address,
+          rev: process.env.K_REVISION
+        }));
+
         const rawResult = this.arvCalculator.calculateARV(subject, finalComps);
+
+        // Probe: Log ARV output
+        jobLog(JSON.stringify({
+          probe: "ARV_OUTPUT",
+          method: rawResult.method_used,
+          conservativePrice: rawResult.conservative?.arv_price,
+          aggressivePrice: rawResult.aggressive?.arv_price,
+          keptComps: rawResult.kept_comps?.length,
+          droppedComps: rawResult.dropped_comps?.length,
+          flags: rawResult.flags || {},
+          rev: process.env.K_REVISION
+        }));
 
         // Transform ARVCalculator result to V10 expected format
         const confidence: 'high' | 'medium' | 'low' =

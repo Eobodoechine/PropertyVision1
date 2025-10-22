@@ -1,7 +1,11 @@
 // Vertex AI-Powered Intelligent Deduplication
 // Replaces rule-based deduplication with AI that understands real estate data nuances
 import fs from 'fs';
-import { jobLog } from '../utils/jobLogger';
+import { jobLog, getCurrentJobId } from '../utils/jobLogger';
+import { audit, writeCloud } from './cloudLogging';
+import { ensureClosed, record429 } from './vertexCircuitBreaker';
+import { probe } from './probe';
+import { buildCacheKey, getCachedResult, setCachedResult } from './vertexResultCache';
 
 interface PropertyData {
   address: string;
@@ -27,6 +31,21 @@ interface DeduplicationResult {
     reason: string;
     confidence: number;
   }>;
+}
+
+// Helper to detect truncated JSON (unbalanced brackets/braces or odd quotes)
+function looksLikePartialJSON(str: string): boolean {
+  if (!str || str.trim() === '') return false;
+  const openBraces = (str.match(/\{/g) || []).length;
+  const closeBraces = (str.match(/\}/g) || []).length;
+  const openBrackets = (str.match(/\[/g) || []).length;
+  const closeBrackets = (str.match(/\]/g) || []).length;
+  const quotes = (str.match(/"/g) || []).length;
+
+  // Unbalanced brackets/braces or odd number of quotes = truncated
+  return openBraces !== closeBraces ||
+         openBrackets !== closeBrackets ||
+         quotes % 2 !== 0;
 }
 
 export class VertexDeduplicator {
@@ -56,35 +75,38 @@ export class VertexDeduplicator {
     jobLog('🔍 DEDUP LINE 3: About to enter try block');
 
     try {
-      jobLog('🔍 DEDUP LINE 4: About to import vertex-freeform.js');
+      await jobLog('🔍 DEDUP LINE 4: About to import vertex-freeform.js', { loc: 'dedup4' });
       const { vertexGenerate, resolveProjectId, resolveLocation, getAccessTokenViaAuth } = await import('../vertex-freeform.js');
-      jobLog('🔍 DEDUP LINE 5: vertex-freeform.js imported successfully');
+      await jobLog('🔍 DEDUP LINE 5: vertex-freeform.js imported successfully', { loc: 'dedup5' });
 
-      jobLog('🔍 DEDUP LINE 6: About to get ADC credentials');
+      const currentJobId = getCurrentJobId();
+      const shortId = currentJobId ? currentJobId.slice(0, 8) : '--------';
+
+      await jobLog('🔍 DEDUP LINE 6: About to get ADC credentials', { loc: 'dedup6' }, { awaitCloud: true });
+
+      // Audit sentinel: must appear if Cloud Logging pipeline is alive up to this point
+      await audit('after-dedup6', { shortId });
+
       // Use ADC-first authentication (keyless on Cloud Run)
       const projectId = await resolveProjectId();
       const location = resolveLocation();
-      const model = process.env.VERTEX_PARSE_MODEL || 'gemini-2.5-flash'; // Use Flash for deduplication (faster, more reliable with structured output)
+      const model = process.env.VERTEX_GROUNDED_MODEL || 'gemini-2.5-pro'; // Use Pro for deduplication (better structured output reliability)
       const token = await getAccessTokenViaAuth();
-      jobLog('🔍 DEDUP LINE 7: ADC credentials obtained successfully');
 
-      // Prepare property data for AI analysis with required fields
+      await jobLog('🔍 DEDUP LINE 7: ADC credentials obtained successfully', { loc: 'dedup7' }, { awaitCloud: true });
+
+      // Immediate post-ADC probe: proves creds/project/resource are still valid
+      await writeCloud('DEBUG', 'creds-ok', { loc: 'post-adc-probe', shortId });
+
+      // Audit sentinel: must appear if nothing broke during ADC specifically
+      await audit('after-dedup7', { shortId });
+
+      // Prepare property data - ONLY essentials for deduplication (minimizes token usage)
       const propertyList = properties.map((prop, index) => ({
         record_id: index.toString(),
-        address: prop.address,
-        price: prop.price || null,
-        sqft: prop.sqft || null,
-        gla: prop.sqft || null, // Gross living area
-        beds: prop.beds || null,
-        baths: prop.baths || null,
-        year_built: prop.yearBuilt || null,
-        sale_date: prop.soldDate || null,
-        source: prop.source || null,
-        property_type: "single_family", // Default assumption, could be enhanced
-        latitude: null, // We don't have coordinates in current data
-        longitude: null,
-        apn: null, // Assessor's Parcel Number - not available
-        mls_id: null
+        address: prop.address, // Primary field for deduplication
+        sale_date: prop.soldDate || null, // For tie-breaking (most recent wins)
+        price: prop.price || null // For secondary tie-breaking (higher price wins)
       }));
 
       const prompt = `You are deduplicating real estate property comparables. Identify duplicate properties based on normalized addresses.
@@ -106,68 +128,220 @@ TIE-BREAKING (when duplicates found):
 3. Use the kept record's record_id as canonical_record_id
 
 OUTPUT FORMAT:
-Call report_duplicate_groups function with duplicate_groups array.
+Return a JSON object with a duplicate_groups array.
 Each group must include:
 - group_id: unique identifier like "dup-001"
 - canonical_record_id: the record_id to keep
 - record_ids: all duplicate record_ids including canonical
-- match_reason: ["ADDRESS_MATCH"]
-- confidence: 1.0 for exact address match
+- match_reason: ["ADDRESS_MATCH"] (optional)
+- confidence: 1.0 for exact address match (optional)
 
 Input data to analyze:
 ${JSON.stringify(propertyList, null, 2)}`;
 
-      // Function calling mode - model returns structured duplicate_groups only
-      const deduplicationFunction = {
-        name: 'report_duplicate_groups',
-        description: 'Report groups of duplicate property records',
-        parameters: {
-          type: 'OBJECT',
-          properties: {
-            duplicate_groups: {
-              type: 'ARRAY',
-              items: {
-                type: 'OBJECT',
-                properties: {
-                  group_id: { type: 'STRING' },
-                  canonical_record_id: { type: 'STRING' },
-                  record_ids: { type: 'ARRAY', items: { type: 'STRING' } },
-                  match_reason: { type: 'ARRAY', items: { type: 'STRING' } },
-                  confidence: { type: 'NUMBER' }
-                },
-                required: ['group_id', 'canonical_record_id', 'record_ids', 'match_reason', 'confidence']
-              }
+      // Response Schema mode (Controlled Generation) - lowercase types for JSON Schema
+      // More reliable than function calling - bypasses MALFORMED_FUNCTION_CALL errors
+      const responseSchema = {
+        type: 'object',
+        properties: {
+          duplicate_groups: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                group_id: { type: 'string' },
+                canonical_record_id: { type: 'string' },
+                record_ids: { type: 'array', items: { type: 'string' } },
+                match_reason: { type: 'array', items: { type: 'string' } },
+                confidence: { type: 'number' }
+              },
+              required: ['group_id', 'canonical_record_id', 'record_ids']
             }
-          },
-          required: ['duplicate_groups']
-        }
+          }
+        },
+        required: ['duplicate_groups']
       };
-      jobLog('🔍 DEDUP LINE 8: About to call vertexGenerate');
-      jobLog('🔍 DEDUP LINE 8.1: token exists:', !!token);
-      jobLog('🔍 DEDUP LINE 8.2: token length:', token?.length || 'NO LENGTH');
-      jobLog('🔍 DEDUP LINE 8.3: projectId:', projectId);
-      jobLog('🔍 DEDUP LINE 8.4: location:', location);
-      jobLog('🔍 DEDUP LINE 8.5: model:', model);
+      // Check circuit breaker before making Vertex call
+      ensureClosed();
 
-      jobLog('🚨🚨🚨 DEDUPLICATOR CALLING VERTEXGENERATE 🚨🚨🚨');
+      // Probe: Log dedup call parameters
+      const maxOutputTokens = Number(process.env.PV_DEDUP_MAXTOKENS ?? 4096);
+      const t0 = Date.now();
 
-      const response = await vertexGenerate({
-        token,
-        projectId,
-        location,
-        model,
+      // Build cache key
+      const cacheKey = buildCacheKey({
         prompt,
-        grounded: false, // Use AI reasoning, not web search
-        functionDeclaration: deduplicationFunction,
-        maxOutputTokens: 1024, // Just need indices, much smaller than full records
-        timeoutMs: 120000
+        model,
+        grounded: false,
+        temperature: 0,
+        seed: 12345,
+        maxOutputTokens,
+        responseMimeType: 'application/json',
+        responseSchema
       });
 
-      jobLog('🔍 DEDUP LINE 9: vertexGenerate completed successfully');
+      probe({
+        probe: 'DEDUP_CALL',
+        phase: 'Deduplication',
+        cacheKey,
+        model,
+        maxOutputTokens,
+        promptLength: prompt.length,
+        propertiesCount: properties.length
+      });
+
+      let response: string;
+      let rawVertexResult: any;
+      let cacheHit = false;
+
+      // Check cache first
+      const cached = await getCachedResult(cacheKey);
+      if (cached && typeof cached === 'string') {
+        response = cached;
+        cacheHit = true;
+        probe({
+          probe: 'DEDUP_RESULT',
+          source: 'cache',
+          durMs: Date.now() - t0,
+          responseLength: response.length
+        });
+      } else {
+        // Cache miss - call Vertex API
+        try {
+          response = await vertexGenerate({
+            token,
+            projectId,
+            location,
+            model,
+            prompt,
+            grounded: false, // Use AI reasoning, not web search
+            json: true, // Enable JSON response mode
+            responseSchema, // Use response schema instead of function calling
+            maxOutputTokens,
+            timeoutMs: 120000
+          });
+
+          // Store raw result for probing (vertexGenerate returns string, not full response)
+          rawVertexResult = { success: true, responseLength: response.length };
+
+          // Cache successful response
+          await setCachedResult(cacheKey, response);
+
+          probe({
+            probe: 'DEDUP_RESULT',
+            source: 'vertex',
+            durMs: Date.now() - t0,
+            responseLength: response.length
+          });
+
+        } catch (error: any) {
+          // Record 429 errors for circuit breaker (check httpStatus from new structured errors)
+          if (error?.httpStatus === 429 || error?.code === 429 || error?.statusCode === 429) {
+            record429();
+          }
+
+          // Probe: Log dedup error with structured error fields and stack trace
+          probe({
+            probe: 'DEDUP_ERROR',
+            level: 'ERROR',
+            phase: 'Deduplication',
+            httpStatus: error?.httpStatus,
+            retryable: error?.retryable,
+            code: error?.code,
+            msg: String(error?.message || error),
+            errorName: error?.name,
+            durMs: Date.now() - t0
+          });
+
+          throw error;
+        }
+      }
+
+      // Auto-retry if response appears truncated (only for cache misses)
+      if (!cacheHit && looksLikePartialJSON(response)) {
+        jobLog('⚠️  Response appears truncated (unbalanced brackets/quotes), retrying with 8192 tokens');
+
+        // Build separate cache key for retry with larger maxOutputTokens
+        const retryCacheKey = buildCacheKey({
+          prompt,
+          model,
+          grounded: false,
+          temperature: 0,
+          seed: 12345,
+          maxOutputTokens: 8192,
+          responseMimeType: 'application/json',
+          responseSchema
+        });
+
+        const retryT0 = Date.now();
+        const retryCached = await getCachedResult(retryCacheKey);
+
+        if (retryCached && typeof retryCached === 'string') {
+          response = retryCached;
+          probe({
+            probe: 'DEDUP_RETRY_RESULT',
+            source: 'cache',
+            durMs: Date.now() - retryT0,
+            responseLength: response.length
+          });
+        } else {
+          try {
+            response = await vertexGenerate({
+              token,
+              projectId,
+              location,
+              model,
+              prompt,
+              grounded: false,
+              json: true,
+              responseSchema,
+              maxOutputTokens: 8192, // Max for Gemini 2.5 Pro
+              timeoutMs: 120000
+            });
+            rawVertexResult = { success: true, responseLength: response.length, retried: true };
+
+            // Cache retry result
+            await setCachedResult(retryCacheKey, response);
+
+            probe({
+              probe: 'DEDUP_RETRY_RESULT',
+              source: 'vertex',
+              durMs: Date.now() - retryT0,
+              responseLength: response.length
+            });
+          } catch (error: any) {
+            if (error?.httpStatus === 429 || error?.code === 429 || error?.statusCode === 429) {
+              record429();
+            }
+            probe({
+              probe: 'DEDUP_RETRY_ERROR',
+              level: 'ERROR',
+              phase: 'Deduplication',
+              httpStatus: error?.httpStatus,
+              retryable: error?.retryable,
+              code: error?.code,
+              msg: String(error?.message || error),
+              errorName: error?.name,
+              durMs: Date.now() - retryT0
+            });
+            throw error;
+          }
+        }
+      }
 
       // Parse function call response (response is the args object directly)
       const result = JSON.parse(response);
       const duplicate_groups = result.duplicate_groups || [];
+
+      // Probe: Log successful dedup result
+      jobLog(JSON.stringify({
+        probe: "DEDUP_RESULT",
+        finishReason: "COMPLETE", // vertex-freeform.js doesn't expose finishReason
+        jsonBytes: response.length,
+        duplicateGroups: duplicate_groups.length,
+        rev: process.env.K_REVISION
+      }));
+
       jobLog(`🤖 Vertex identified ${duplicate_groups.length} duplicate groups`);
 
       // Build kept_records, dropped_record_ids, and changes_log locally

@@ -10,8 +10,9 @@
 #   ./scripts/download-job-logs.sh <JOB_ID> [OUTPUT_FILE]
 #
 # Examples:
-#   ./scripts/download-job-logs.sh d0a6e4a0-8e29-4ca2-99de-d927f5e5530e
-#   ./scripts/download-job-logs.sh d0a6e4a0-8e29-4ca2-99de-d927f5e5530e my-logs.json
+#   ./scripts/download-job-logs.sh d0a6e4a0                          # Short format (8 chars)
+#   ./scripts/download-job-logs.sh d0a6e4a0-8e29-4ca2-99de-d927f5e5530e  # Full UUID
+#   ./scripts/download-job-logs.sh d0a6e4a0 my-logs.json             # Custom output file
 #
 # The script will:
 # - Download logs in batches of 10,000 entries
@@ -75,9 +76,9 @@ fi
 JOB_ID="$1"
 OUTPUT_FILE="${2:-logs/job-${JOB_ID}.json}"
 
-# Validate JOB_ID format (UUID)
-if ! [[ "$JOB_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]; then
-  log_error "Invalid JOB_ID format. Expected UUID format (e.g., d0a6e4a0-8e29-4ca2-99de-d927f5e5530e)"
+# Validate JOB_ID format (UUID or short 8-char format)
+if ! [[ "$JOB_ID" =~ ^[0-9a-f]{8}(-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$ ]]; then
+  log_error "Invalid JOB_ID format. Expected UUID (e.g., d0a6e4a0-8e29-4ca2-99de-d927f5e5530e) or short format (e.g., d0a6e4a0)"
   exit 1
 fi
 
@@ -110,19 +111,30 @@ echo ""
 
 # Build the query filter
 # Try multiple query patterns to catch logs from different sources
-TRACE_PATH="projects/${PROJECT_ID}/traces/${JOB_ID}"
 
-# Query 1: By trace field (for structured logs with trace context)
-QUERY_TRACE="trace=\"${TRACE_PATH}\""
+# Detect if short ID (8 chars) or full UUID
+if [[ "$JOB_ID" =~ ^[0-9a-f]{8}$ ]]; then
+  # Short ID format - search for job ID in text (matches [shortid] format logs)
+  log_info "Detected short job ID format, searching for ${JOB_ID}"
+  QUERY_TEXT="textPayload=~\"${JOB_ID}\""
+  # Skip trace and jsonPayload queries for short IDs (they won't match)
+  FILTER="${QUERY_TEXT}"
+else
+  # Full UUID format - use all query types
+  TRACE_PATH="projects/${PROJECT_ID}/traces/${JOB_ID}"
 
-# Query 2: By jsonPayload.jobId (for logs with jobId in payload)
-QUERY_JOB_ID="jsonPayload.jobId=\"${JOB_ID}\""
+  # Query 1: By trace field (for structured logs with trace context)
+  QUERY_TRACE="trace=\"${TRACE_PATH}\""
 
-# Query 3: By text containing jobId (for unstructured logs)
-QUERY_TEXT="textPayload=~\"${JOB_ID}\""
+  # Query 2: By jsonPayload.jobId (for logs with jobId in payload)
+  QUERY_JOB_ID="jsonPayload.jobId=\"${JOB_ID}\""
 
-# Combine queries with OR
-FILTER="(${QUERY_TRACE}) OR (${QUERY_JOB_ID}) OR (${QUERY_TEXT})"
+  # Query 3: By text containing jobId (for unstructured logs)
+  QUERY_TEXT="textPayload=~\"${JOB_ID}\""
+
+  # Combine queries with OR
+  FILTER="(${QUERY_TRACE}) OR (${QUERY_JOB_ID}) OR (${QUERY_TEXT})"
+fi
 
 log_info "Using filter: $FILTER"
 echo ""

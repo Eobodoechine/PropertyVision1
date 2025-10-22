@@ -3,6 +3,8 @@ import fs from 'fs';
 import https from 'https';
 import { jobLog } from './utils/jobLogger';
 import { GoogleAuth } from 'google-auth-library';
+import { probe } from './utils/probe';
+import { buildCacheKey, getCachedResult, setCachedResult } from './utils/vertexResultCache';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
@@ -500,7 +502,45 @@ TYPE: [property type or UNKNOWN]`;
     let subdivision: string | null = null;
     try {
       const subPrompt = `From this text, what is the subdivision or neighborhood name of the property? If not present, answer UNKNOWN.\n\n"${text}"\n\nRespond with only the name or UNKNOWN.`;
-      const subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: true, json: false, timeoutMs: 600000 });
+
+      const t0 = Date.now();
+      const cacheKey = buildCacheKey({
+        prompt: subPrompt,
+        model,
+        grounded: true,
+        temperature: 0,
+        seed: 12345,
+        maxOutputTokens: 8192
+      });
+
+      probe({
+        probe: 'SUBJECT_SUBDIVISION_CALL',
+        phase: 'SubjectPropertyDetails',
+        cacheKey
+      });
+
+      let subResp: string;
+      const cached = await getCachedResult(cacheKey);
+      if (cached && typeof cached === 'string') {
+        subResp = cached;
+        probe({
+          probe: 'SUBJECT_SUBDIVISION_RESULT',
+          source: 'cache',
+          durMs: Date.now() - t0
+        });
+      } else {
+        subResp = await vertexGenerate({ sa, projectId, location, model, prompt: subPrompt, grounded: true, json: false, timeoutMs: SPD_PRIMARY_TIMEOUT_MS });
+
+        // Cache successful response
+        await setCachedResult(cacheKey, subResp);
+
+        probe({
+          probe: 'SUBJECT_SUBDIVISION_RESULT',
+          source: 'vertex',
+          durMs: Date.now() - t0
+        });
+      }
+
       const cleaned = (subResp || '').trim();
       if (cleaned && !/^unknown$/i.test(cleaned)) {
         subdivision = cleaned.replace(/^[-\s:]+/, '').trim();
@@ -512,7 +552,45 @@ TYPE: [property type or UNKNOWN]`;
     try {
       jobLog(`   🏠 Extracting property type from text...`);
       const typePrompt = `From this text, what is the property type? Answer with one of: single-family detached, townhome, condo, duplex, multi-family, or UNKNOWN.\n\n"${text}"\n\nRespond with only one of those exact terms.`;
-      const typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: true, json: false, timeoutMs: 600000 });
+
+      const t0 = Date.now();
+      const cacheKey = buildCacheKey({
+        prompt: typePrompt,
+        model,
+        grounded: true,
+        temperature: 0,
+        seed: 12345,
+        maxOutputTokens: 8192
+      });
+
+      probe({
+        probe: 'SUBJECT_PROPERTYTYPE_CALL',
+        phase: 'SubjectPropertyDetails',
+        cacheKey
+      });
+
+      let typeResp: string;
+      const cached = await getCachedResult(cacheKey);
+      if (cached && typeof cached === 'string') {
+        typeResp = cached;
+        probe({
+          probe: 'SUBJECT_PROPERTYTYPE_RESULT',
+          source: 'cache',
+          durMs: Date.now() - t0
+        });
+      } else {
+        typeResp = await vertexGenerate({ sa, projectId, location, model, prompt: typePrompt, grounded: true, json: false, timeoutMs: SPD_PRIMARY_TIMEOUT_MS });
+
+        // Cache successful response
+        await setCachedResult(cacheKey, typeResp);
+
+        probe({
+          probe: 'SUBJECT_PROPERTYTYPE_RESULT',
+          source: 'vertex',
+          durMs: Date.now() - t0
+        });
+      }
+
       jobLog(`   🏠 Raw property type response: "${typeResp}"`);
       const cleaned = (typeResp || '').trim().toLowerCase();
       if (cleaned && !/^unknown$/i.test(cleaned)) {

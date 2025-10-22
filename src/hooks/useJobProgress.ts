@@ -8,6 +8,12 @@ interface JobStatus {
   estimatedTimeRemaining?: number;
   phaseStartTime?: number;
   serverNow?: number;
+  // Heartbeat race condition fix (v4): staleness detection fields
+  updatedAt?: number;
+  version?: number;
+  lastProgressAt?: number;
+  finalized?: boolean;
+  completedAt?: number;
 }
 
 // Phase progression map for smooth interpolation (V10 parallel search)

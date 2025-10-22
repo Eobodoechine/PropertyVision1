@@ -224,6 +224,13 @@ class RedisClient {
   }
 
   /**
+   * SETEX: Store value with TTL (alias for set with TTL)
+   */
+  async setEx(key: string, ttlSeconds: number, value: string): Promise<void> {
+    return this.set(key, value, ttlSeconds);
+  }
+
+  /**
    * MGET: Retrieve multiple keys at once
    */
   async mget(...keys: string[]): Promise<(string | null)[]> {

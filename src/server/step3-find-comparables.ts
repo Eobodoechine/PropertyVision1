@@ -9,6 +9,8 @@ import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
 import { jobLog } from './utils/jobLogger';
 import { resolveProjectId, resolveLocation, getAccessTokenViaAuth } from './vertex-freeform.js';
+import { probe } from './utils/probe';
+import { buildCacheKey, getCachedResult, setCachedResult } from './utils/vertexResultCache';
 
 // Force IPv4-first DNS resolution to avoid IPv6 timeout delays in VPC
 dns.setDefaultResultOrder('ipv4first');
@@ -162,23 +164,57 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         jobLog(`🔍 SCOPE DEBUG: Checking searchRadius availability: "${typeof searchRadius}" = "${searchRadius}"`);
         jobLog(`🔍 SCOPE DEBUG: Checking timeWindowMonths availability: "${typeof timeWindowMonths}" = "${timeWindowMonths}"`);
 
-        jobLog(`🔍 FETCH DEBUG: About to import vertex-freeform.js`);
         const { vertexGenerate } = await import('./vertex-freeform.js');
-        jobLog(`🔍 FETCH DEBUG: vertex-freeform.js imported successfully`);
 
-        jobLog(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 60000ms`);
-        const startVertex = Date.now();
-        const r = await vertexGenerate({
-          token,
-          projectId,
-          location,
-          model,
+        const t0 = Date.now();
+        const cacheKey = buildCacheKey({
           prompt: p,
+          model,
           grounded: true,
-          timeoutMs: 60000
+          temperature: 0,
+          seed: 12345,
+          maxOutputTokens: 8192
         });
-        const vertexTime = Date.now() - startVertex;
-        jobLog(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
+
+        probe({
+          probe: 'COMPARABLE_SEARCH_CALL',
+          phase: 'ComparableSearch',
+          cacheKey,
+          model,
+          promptLength: p.length
+        });
+
+        let r: string;
+        const cached = await getCachedResult(cacheKey);
+        if (cached && typeof cached === 'string') {
+          r = cached;
+          probe({
+            probe: 'COMPARABLE_SEARCH_RESULT',
+            source: 'cache',
+            durMs: Date.now() - t0,
+            responseLength: r.length
+          });
+        } else {
+          r = await vertexGenerate({
+            token,
+            projectId,
+            location,
+            model,
+            prompt: p,
+            grounded: true,
+            timeoutMs: 60000
+          });
+
+          // Cache successful response
+          await setCachedResult(cacheKey, r);
+
+          probe({
+            probe: 'COMPARABLE_SEARCH_RESULT',
+            source: 'vertex',
+            durMs: Date.now() - t0,
+            responseLength: r.length
+          });
+        }
 
         jobLog(`🔍 FETCH DEBUG: About to parse with Gemini`);
         jobLog(`🔍 RAW RESPONSE: Raw Vertex AI response: "${r}"`);
@@ -357,15 +393,12 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       });
       jobLog(`   📊 Filter results: ${comps.length}/${beforeFiltering} passed bedroom, size, and time filters (rejected ${beforeFiltering - comps.length})`);
 
-      // Deduplicate by address (remove duplicate addresses)
-      jobLog(`\n🔍 Step 3b: Deduplication`);
-      jobLog(`🔍 EXACT DEBUG: About to call deduplicateComparables with ${comps.length} comps`);
-      comps = this.deduplicateComparables(comps);
-      jobLog(`🔍 EXACT DEBUG: deduplicateComparables completed, now have ${comps.length} comps`);
+      // NOTE: Local deduplication removed - Vertex AI handles all deduplication with proper tie-breaking
+      // (most recent soldDate, then higher price)
 
       // PPSF outlier filtering now handled by enhanced ARV calculation with 7.5% threshold
 
-      // Step 3c: Distance Filtering (after deduplication)
+      // Step 3c: Distance Filtering
       // Note: Distance already calculated in convertGeminiToComparable via Google Maps API
       jobLog(`\n📏 Step 3c: Distance Filtering`);
       const beforeDistanceFilter = comps.length;
@@ -624,15 +657,55 @@ Look for indicators like:
 Respond with only YES (if duplex/multi-family) or NO (if single-family/other).`;
 
         const { vertexGenerate } = await import('./vertex-freeform.js');
-        const response = await vertexGenerate({
-          token,
-          projectId,
-          location,
-          model,
+
+        const t0 = Date.now();
+        const cacheKey = buildCacheKey({
           prompt: verificationPrompt,
+          model,
           grounded: true,
-          timeoutMs: 30000
+          temperature: 0,
+          seed: 12345,
+          maxOutputTokens: 8192
         });
+
+        probe({
+          probe: 'DUPLEX_VERIFY_CALL',
+          phase: 'DuplexVerification',
+          cacheKey,
+          address: comp.address
+        });
+
+        let response: string;
+        const cached = await getCachedResult(cacheKey);
+        if (cached && typeof cached === 'string') {
+          response = cached;
+          probe({
+            probe: 'DUPLEX_VERIFY_RESULT',
+            source: 'cache',
+            durMs: Date.now() - t0,
+            address: comp.address
+          });
+        } else {
+          response = await vertexGenerate({
+            token,
+            projectId,
+            location,
+            model,
+            prompt: verificationPrompt,
+            grounded: true,
+            timeoutMs: 30000
+          });
+
+          // Cache successful response
+          await setCachedResult(cacheKey, response);
+
+          probe({
+            probe: 'DUPLEX_VERIFY_RESULT',
+            source: 'vertex',
+            durMs: Date.now() - t0,
+            address: comp.address
+          });
+        }
 
         const isDuplex = response.trim().toUpperCase().includes('YES');
 
@@ -707,17 +780,56 @@ Return exactly this JSON structure:
         }
       } as any;
 
-      const response = await vertexGenerate({
-        token,
-        projectId,
-        location,
-        model,
+      const t0 = Date.now();
+      const cacheKey = buildCacheKey({
         prompt: allFieldsPrompt,
+        model,
         grounded: false,
-        json: true,
-        timeoutMs: 600000,
+        temperature: 0,
+        seed: 12345,
+        maxOutputTokens: 8192,
+        responseMimeType: 'application/json',
         responseSchema
       });
+
+      probe({
+        probe: 'PARSE_PROPERTY_CALL',
+        phase: 'PropertyLineParse',
+        cacheKey,
+        model
+      });
+
+      let response: string;
+      const cached = await getCachedResult(cacheKey);
+      if (cached && typeof cached === 'string') {
+        response = cached;
+        probe({
+          probe: 'PARSE_PROPERTY_RESULT',
+          source: 'cache',
+          durMs: Date.now() - t0
+        });
+      } else {
+        response = await vertexGenerate({
+          token,
+          projectId,
+          location,
+          model,
+          prompt: allFieldsPrompt,
+          grounded: false,
+          json: true,
+          timeoutMs: 120000,
+          responseSchema
+        });
+
+        // Cache successful response
+        await setCachedResult(cacheKey, response);
+
+        probe({
+          probe: 'PARSE_PROPERTY_RESULT',
+          source: 'vertex',
+          durMs: Date.now() - t0
+        });
+      }
 
       // Be robust to code fences or stray prose
       const extractJsonBlock = (text: string): string | null => {
@@ -863,17 +975,59 @@ Return exactly this JSON structure:
         }
       } as any;
 
-      const text = await vertexGenerate({
-        token,
-        projectId,
-        location,
-        model,
+      const t0 = Date.now();
+      const cacheKey = buildCacheKey({
         prompt,
+        model,
         grounded: false,
-        json: true,
-        timeoutMs: 600000,
+        temperature: 0,
+        seed: 12345,
+        maxOutputTokens: 8192,
+        responseMimeType: 'application/json',
         responseSchema
       });
+
+      probe({
+        probe: 'BATCH_PARSE_CALL',
+        phase: 'BatchPropertyParse',
+        cacheKey,
+        model,
+        batchSize: propertyLines.length
+      });
+
+      let text: string;
+      const cached = await getCachedResult(cacheKey);
+      if (cached && typeof cached === 'string') {
+        text = cached;
+        probe({
+          probe: 'BATCH_PARSE_RESULT',
+          source: 'cache',
+          durMs: Date.now() - t0,
+          batchSize: propertyLines.length
+        });
+      } else {
+        text = await vertexGenerate({
+          token,
+          projectId,
+          location,
+          model,
+          prompt,
+          grounded: false,
+          json: true,
+          timeoutMs: 120000,
+          responseSchema
+        });
+
+        // Cache successful response
+        await setCachedResult(cacheKey, text);
+
+        probe({
+          probe: 'BATCH_PARSE_RESULT',
+          source: 'vertex',
+          durMs: Date.now() - t0,
+          batchSize: propertyLines.length
+        });
+      }
 
       // Extract JSON robustly
       const extractJsonBlock = (t: string): string | null => {
@@ -1280,37 +1434,8 @@ Return exactly this JSON structure:
     return Math.abs(index1 - index2) <= 1; // Same group or adjacent
   }
 
-  private deduplicateComparables(comps: ComparableProperty[]): ComparableProperty[] {
-    const seen = new Set<string>();
-    const deduplicated: ComparableProperty[] = [];
-
-    jobLog(`   🔍 DEDUPLICATION ANALYSIS: Starting with ${comps.length} properties`);
-
-    for (const comp of comps) {
-      // Normalize address for comparison (lowercase, remove extra spaces)
-      const normalizedAddress = comp.address.toLowerCase().trim().replace(/\s+/g, ' ');
-
-      jobLog(`   🔍 CHECKING: "${comp.address}" → normalized: "${normalizedAddress}"`);
-      jobLog(`   📊 Property details: $${comp.price?.toLocaleString()} | ${comp.sqft}sqft | ${comp.soldDate} | ${comp.source}`);
-
-      if (!seen.has(normalizedAddress)) {
-        seen.add(normalizedAddress);
-        deduplicated.push(comp);
-        jobLog(`   ✅ KEPT: ${comp.address} (first occurrence)`);
-      } else {
-        jobLog(`   ❌ DUPLICATE REMOVED: ${comp.address} (already seen as "${normalizedAddress}")`);
-        // Show which property was kept vs removed
-        const existing = deduplicated.find(d => d.address.toLowerCase().trim().replace(/\s+/g, ' ') === normalizedAddress);
-        if (existing) {
-          jobLog(`   📊 KEPT: ${existing.address} | $${existing.price?.toLocaleString()} | ${existing.soldDate}`);
-          jobLog(`   📊 REMOVED: ${comp.address} | $${comp.price?.toLocaleString()} | ${comp.soldDate}`);
-        }
-      }
-    }
-
-    jobLog(`   📊 Deduplication: ${comps.length} → ${deduplicated.length} unique properties`);
-    return deduplicated;
-  }
+  // Removed deduplicateComparables() method - all deduplication now handled by Vertex AI
+  // with proper tie-breaking (most recent soldDate, then higher price)
 
   // Removed filterByPPSFVariance method - using consistent 7.5% threshold in ARV calculation instead
 

@@ -19,10 +19,35 @@ const GROUP = 'workers';
 const HEARTBEAT_MS = 7_000; // 7 seconds
 const MIN_IDLE_MS = 12_000; // 12 seconds (for crash recovery)
 const MAX_ATTEMPTS = 1; // Fast failure detection - maximizes speed + error handling
-const JOB_TTL = 3600; // 1 hour
+const JOB_TTL = 3600; // 1 hour (processing)
+const JOB_TTL_TERMINAL = 86400; // 24 hours (completed/cancelled)
+const JOB_TTL_FAILED_SHORT = 21600; // 6 hours (failed)
+const MAX_REDIS_RETRIES = 8;
+const MAX_HEARTBEAT_FAILURES = 3;
+const HEARTBEAT_STALE_MS = HEARTBEAT_MS * 3; // 21 seconds
+const PROGRESS_STALE_MS = HEARTBEAT_MS * 5; // 35 seconds
+const MAX_RESULT_BYTES = 2_000_000; // 2MB cap
 
 // Get unique consumer ID per container
 const CONSUMER = `${os.hostname()}:${process.pid}`;
+
+// Helper functions
+const clamp = (n: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, n));
+
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+const isTerminalStatus = (status: string) =>
+  status === 'completed' || status === 'failed' || status === 'cancelled';
+
+// State machine transitions
+const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+  'queued': ['processing', 'cancelled'],
+  'processing': ['processing', 'completed', 'failed', 'cancelled'],
+  'completed': [], // Terminal
+  'failed': [],    // Terminal
+  'cancelled': []  // Terminal
+};
 
 interface JobData {
   jobId: string;
@@ -41,6 +66,11 @@ interface JobData {
   attempts: number;
   createdAt: number;
   lastHeartbeat: number;
+  lastProgressAt?: number;        // Track actual work progress
+  updatedAt?: number;              // Last modification time
+  version?: number;                // Monotonic version counter
+  finalized?: boolean;             // One-way completion flag
+  finishedBy?: string;             // Which worker finalized
   completedAt?: number;
   processingBy?: string; // Track which worker is processing this job
   processingMessageId?: string; // Track which stream message is being processed (prevents same consumer re-processing)
@@ -209,32 +239,308 @@ export class JobQueue {
   }
 
   /**
-   * Update job data
+   * updateHeartbeatOnly - Field-level heartbeat update
+   *
+   * ONLY touches lastHeartbeat, updatedAt, version.
+   * Does NOT modify status, progress, phase, result, error.
    */
-  private async updateJob(jobId: string, updates: Partial<JobData>): Promise<void> {
-    // Only log if it's more than just a heartbeat update
-    const isHeartbeatOnly = Object.keys(updates).length === 1 && 'lastHeartbeat' in updates;
-    if (!isHeartbeatOnly) {
-      jobLog(`💾 Updating job ${jobId} with:`, JSON.stringify(updates).substring(0, 200));
+  private async updateHeartbeatOnly(
+    jobId: string,
+    leaseOwner: string
+  ): Promise<boolean> {
+    const result = await this.redis.atomicUpdateJob(jobId, (cur) => {
+      if (!cur) return null; // Job doesn't exist
+
+      // Terminal state protection - don't touch completed/failed/cancelled jobs
+      if (isTerminalStatus(cur.status)) {
+        return null;
+      }
+
+      // Finalized guard - don't touch finalized jobs (hardening)
+      if (cur.finalized) {
+        return null;
+      }
+
+      // Cancellation respect - no-op if user cancelled (diagnostic logging)
+      if (cur.cancelRequested) {
+        jobLog(`📋 Heartbeat skipped for cancelled job ${jobId}`);
+        return null;
+      }
+
+      // Ownership check - reject if wrong owner
+      if (cur.processingBy && cur.processingBy !== leaseOwner) {
+        return null;
+      }
+
+      const now = Date.now();
+
+      // Field-level update - ONLY heartbeat fields
+      return {
+        ...cur,
+        lastHeartbeat: now,
+        updatedAt: now,
+        version: (cur.version || 0) + 1
+      };
+    });
+
+    return result.success;
+  }
+
+  /**
+   * startHeartbeat - Self-scheduling heartbeat loop
+   *
+   * Prevents reentrancy using async while loop instead of setInterval.
+   * Returns a stop function to call BEFORE writing completion status.
+   */
+  private startHeartbeat(jobId: string, leaseOwner: string): () => void {
+    let running = true;
+    let consecutiveFailures = 0;
+
+    // Self-scheduling async loop (prevents reentrancy)
+    (async () => {
+      // Fire first heartbeat immediately
+      try {
+        await this.updateHeartbeatOnly(jobId, leaseOwner);
+      } catch (error) {
+        jobLog(`⚠️  Initial heartbeat failed for ${jobId}:`, (error as any)?.message);
+      }
+
+      // Then start periodic heartbeat loop
+      while (running) {
+        await new Promise(resolve => setTimeout(resolve, HEARTBEAT_MS));
+
+        if (!running) break; // Exit if stopped
+
+        try {
+          const success = await this.updateHeartbeatOnly(jobId, leaseOwner);
+
+          if (success) {
+            consecutiveFailures = 0; // Reset on success
+          } else {
+            consecutiveFailures++;
+            jobLog(`⚠️  Heartbeat failed for ${jobId} (${consecutiveFailures}/${MAX_HEARTBEAT_FAILURES})`);
+
+            // Stop after max failures
+            if (consecutiveFailures >= MAX_HEARTBEAT_FAILURES) {
+              jobLog(`🛑 Heartbeat stopped for ${jobId} after ${MAX_HEARTBEAT_FAILURES} failures`);
+              running = false;
+
+              // Best-effort diagnostic breadcrumb for ops
+              try {
+                await this.updateJob(jobId, {
+                  phaseMessage: '⚠️ Heartbeat stopped (worker errors)'
+                }, leaseOwner);
+              } catch {
+                // Best effort - don't throw if this fails
+              }
+            }
+          }
+        } catch (error) {
+          consecutiveFailures++;
+          jobLog(`❌ Heartbeat error for ${jobId}:`, (error as any)?.message);
+
+          if (consecutiveFailures >= MAX_HEARTBEAT_FAILURES) {
+            jobLog(`🛑 Heartbeat stopped for ${jobId} after ${MAX_HEARTBEAT_FAILURES} errors`);
+            running = false;
+
+            // Best-effort diagnostic breadcrumb
+            try {
+              await this.updateJob(jobId, {
+                phaseMessage: '⚠️ Heartbeat stopped (worker errors)'
+              }, leaseOwner);
+            } catch {
+              // Best effort
+            }
+          }
+        }
+      }
+    })();
+
+    // Return stop function
+    return () => {
+      running = false;
+    };
+  }
+
+  /**
+   * Update job data with atomic WATCH/MULTI and all guards
+   */
+  private async updateJob(jobId: string, updates: Partial<JobData>, leaseOwner?: string): Promise<void> {
+    // Strip undefined to prevent field deletion (v4 bug fix #11)
+    const stripUndefined = <T extends object>(obj: T): Partial<T> => {
+      return Object.fromEntries(
+        Object.entries(obj as Record<string, unknown>)
+          .filter(([, v]) => v !== undefined)
+      ) as Partial<T>;
+    };
+
+    const cleanedUpdates = stripUndefined(updates);
+
+    const result = await this.redis.atomicUpdateJob(jobId, (cur) => {
+      if (!cur) {
+        // Job creation path - require address
+        if (!cleanedUpdates.address) {
+          jobLog(`❌ Cannot create job ${jobId} without address`);
+          return null;
+        }
+
+        const now = Date.now();
+        return {
+          jobId,
+          address: cleanedUpdates.address,
+          status: cleanedUpdates.status ?? 'queued',
+          progress: clamp(cleanedUpdates.progress ?? 0, 0, 100),
+          phase: cleanedUpdates.phase ?? 'Initializing',
+          phaseStartTime: cleanedUpdates.phaseStartTime ?? now,
+          lastProgressAt: now,
+          createdAt: cleanedUpdates.createdAt ?? now,
+          lastHeartbeat: now,
+          updatedAt: now,
+          version: 1,
+          attempts: cleanedUpdates.attempts ?? 0,
+          userId: cleanedUpdates.userId,
+          userEmail: cleanedUpdates.userEmail,
+          source: cleanedUpdates.source,
+          processingBy: cleanedUpdates.processingBy,
+          processingMessageId: cleanedUpdates.processingMessageId,
+          cancelRequested: cleanedUpdates.cancelRequested ?? false,
+          result: cleanedUpdates.result,
+          error: cleanedUpdates.error,
+          finalized: false,
+          completedAt: cleanedUpdates.completedAt
+        };
+      }
+
+      // Terminal state protection (except finalization)
+      if (isTerminalStatus(cur.status)) {
+        const isFinalization = cleanedUpdates.finalized === true && !cur.finalized;
+        if (!isFinalization) {
+          return null;
+        }
+      }
+
+      const now = Date.now();
+
+      // Ownership enforcement with dual staleness reclaim
+      let ownershipPatch: Partial<JobData> = {};
+
+      if (leaseOwner && cur.processingBy && cur.processingBy !== leaseOwner) {
+        const heartbeatAge = now - (cur.lastHeartbeat || 0);
+        const progressAge = now - (cur.lastProgressAt || cur.updatedAt || 0);
+        const heartbeatStale = heartbeatAge > HEARTBEAT_STALE_MS;
+        const progressStale = progressAge > PROGRESS_STALE_MS;
+
+        if (!heartbeatStale || !progressStale) {
+          return null; // Current owner still active
+        }
+
+        jobLog(`🔄 Reclaiming stale job ${jobId} from ${cur.processingBy} to ${leaseOwner}`);
+        ownershipPatch = {
+          processingBy: leaseOwner,
+          processingMessageId: leaseOwner.replace(/^pubsub:/, '')
+        };
+      } else if (leaseOwner && !cur.processingBy) {
+        ownershipPatch = {
+          processingBy: leaseOwner,
+          processingMessageId: leaseOwner.replace(/^pubsub:/, '')
+        };
+      }
+
+      // Authoritative status (v4 bug fix #8)
+      let nextStatus = cur.status;
+      if (cleanedUpdates.status !== undefined) {
+        const allowedNext = ALLOWED_TRANSITIONS[cur.status] || [];
+        nextStatus = allowedNext.includes(cleanedUpdates.status) ? cleanedUpdates.status : cur.status;
+        if (nextStatus !== cleanedUpdates.status) {
+          jobLog(`⚠️  Rejected invalid transition: ${cur.status} → ${cleanedUpdates.status}`);
+        }
+      }
+      const isCompleting = nextStatus === 'completed' || nextStatus === 'failed' || nextStatus === 'cancelled';
+
+      // Authoritative progress with monotonicity (v4 bug fix #9)
+      const incomingProgress =
+        typeof cleanedUpdates.progress === 'number' ? clamp(cleanedUpdates.progress, 0, 100) : (cur.progress ?? 0);
+      const nextProgress = Math.max(cur.progress ?? 0, incomingProgress);
+      if (typeof cleanedUpdates.progress === 'number' && incomingProgress < (cur.progress ?? 0)) {
+        jobLog(`⚠️  Rejected non-monotonic progress: ${(cur.progress ?? 0)} → ${incomingProgress}`);
+      }
+      const progressIncreased = nextProgress > (cur.progress ?? 0);
+
+      // Progress normalization (v4 bug fix #10)
+      const normalizedProgress =
+        nextStatus === 'completed' ? 100 :
+        nextStatus === 'failed' || nextStatus === 'cancelled' ? Math.min(nextProgress, 99) :
+        nextProgress;
+
+      // Phase tracking
+      const phaseChanged = cleanedUpdates.phase !== undefined && cleanedUpdates.phase !== cur.phase;
+      const phasePatch: Partial<JobData> = phaseChanged
+        ? {
+            phase: cleanedUpdates.phase,
+            phaseStartTime: now,
+            lastProgressAt: now
+          }
+        : cleanedUpdates.phase !== undefined
+        ? { phase: cleanedUpdates.phase }
+        : {};
+
+      const progressTimePatch: Partial<JobData> = progressIncreased
+        ? { lastProgressAt: now }
+        : {};
+
+      // Idempotent finalization
+      const finalizationPatch: Partial<JobData> = (!cur.finalized && isCompleting)
+        ? { finalized: true, finishedBy: leaseOwner || cur.processingBy || cur.finishedBy || 'unknown' }
+        : (cleanedUpdates.finalized && !cur.finalized ? { finalized: true, finishedBy: leaseOwner || cur.processingBy || 'unknown' } : {});
+
+      // Auto-set completedAt
+      const completionPatch: Partial<JobData> =
+        (nextStatus === 'completed' && !cur.completedAt) ? { completedAt: now } : {};
+
+      // Result size guardrails
+      if (cleanedUpdates.result) {
+        const resultSize = JSON.stringify(cleanedUpdates.result).length;
+        if (resultSize > 100000) {
+          jobLog(`⚠️  Large result for job ${jobId}: ${(resultSize / 1024).toFixed(1)}KB`);
+        }
+      }
+
+      // Result/state consistency validation (v4)
+      if (cleanedUpdates.result && nextStatus !== 'completed') {
+        jobLog(`⚠️  Result attached while status=${nextStatus} (job ${jobId})`);
+      }
+
+      // Conditional heartbeat update (v4 bug fix #3)
+      const shouldTouchHeartbeat =
+        !!leaseOwner || progressIncreased || phaseChanged || isCompleting;
+
+      // Merge all patches with authoritative values
+      const next: JobData = {
+        ...cur,
+        ...cleanedUpdates,
+        ...ownershipPatch,
+        ...phasePatch,
+        ...progressTimePatch,
+        ...finalizationPatch,
+        ...completionPatch,
+        ...(shouldTouchHeartbeat ? { lastHeartbeat: now } : {}),
+        status: nextStatus,       // Authoritative
+        progress: normalizedProgress,  // Authoritative + normalized
+        updatedAt: now,
+        version: (cur.version || 0) + 1
+      };
+
+      return next;
+    });
+
+    if (result.conflicts > 0) {
+      jobLog(`⚙️  Job ${jobId} update had ${result.conflicts} conflicts (resolved via retry)`);
     }
 
-    const job = await this.getJobStatus(jobId);
-    if (job) {
-      const updated = { ...job, ...updates, lastHeartbeat: Date.now() };
-      await this.redis.setJob(jobId, updated, JOB_TTL);
-      if (!isHeartbeatOnly) {
-        jobLog(`✅ Job ${jobId} saved to Redis: status=${updated.status}, progress=${updated.progress}`);
-      }
-    } else {
-      console.error(`❌ CRITICAL: Job ${jobId} not found in Redis during updateJob! Creating new entry.`);
-      const newJob = {
-        jobId,
-        ...updates,
-        lastHeartbeat: Date.now(),
-        createdAt: updates.createdAt || Date.now()
-      };
-      await this.redis.setJob(jobId, newJob, JOB_TTL);
-      jobLog(`✅ Job ${jobId} created in Redis: status=${newJob.status}, progress=${newJob.progress}`);
+    // Keep existing logging for non-heartbeat updates
+    const isHeartbeatOnly = Object.keys(cleanedUpdates).length === 1 && 'lastHeartbeat' in cleanedUpdates;
+    if (!isHeartbeatOnly && result.success) {
+      jobLog(`✅ Job ${jobId} updated: status=${updates.status || 'unchanged'}, progress=${updates.progress ?? 'unchanged'}`);
     }
   }
 
@@ -529,23 +835,25 @@ export class JobQueue {
       jobLog(`⏰ [PubSub:${pubsubMessageId}] Job ${jobId} heartbeat stale, taking over`);
     }
 
-    // Update status to processing and claim ownership
+    // Update status to processing and claim ownership (v4: CRITICAL - claim BEFORE starting heartbeat)
     jobLog(`📝 [PubSub:${pubsubMessageId}] Claiming ownership of job ${jobId}`);
+    const leaseOwner = `pubsub:${pubsubMessageId}`;
     await this.updateJob(jobId, {
       status: 'processing',
       phase: 'Getting subject details',
       progress: 10,
-      processingBy: `pubsub:${pubsubMessageId}`,
+      phaseMessage: 'Validating address and preparing analysis...',
+      phaseStartTime: Date.now(),
+      estimatedTimeRemaining: 295, // 300 total - 5 for QUEUED phase
+      processingBy: leaseOwner,
       processingMessageId: pubsubMessageId
-    });
+    }, leaseOwner);
 
     // Set global job context for progress updates
     setCurrentJobContext({ jobId, jobQueue: this });
 
-    // Start heartbeat
-    const heartbeat = setInterval(async () => {
-      await this.updateJob(jobId, { lastHeartbeat: Date.now() });
-    }, HEARTBEAT_MS);
+    // Start heartbeat (v4: self-scheduling loop, returns stop function)
+    const stopHeartbeat = this.startHeartbeat(jobId, leaseOwner);
 
     try {
       // **FAST-FAIL: Early geocode validation**
@@ -563,6 +871,9 @@ export class JobQueue {
         }
 
         jobLog(`✅ [PubSub:${pubsubMessageId}] Address validated via geocoding in ${geocodeDuration}ms: ${result.lat}, ${result.lng}`);
+
+        // Update progress to show geocoding complete and start countdown timer
+        await this.updateProgress(jobId, 'SUBJECT_PROPERTY');
       } catch (error) {
         const geocodeDuration = Date.now() - geocodeStart;
         console.error(`❌ [PubSub:${pubsubMessageId}] Geocoder initialization or geocoding failed in ${geocodeDuration}ms:`, error);
@@ -572,7 +883,11 @@ export class JobQueue {
       // Run analysis
       const result = await this.analysisService.findComparables(address);
 
-      // Mark complete
+      // CRITICAL (v4): Stop heartbeat BEFORE writing completion to prevent race condition
+      // If heartbeat fires after completion write, it will overwrite the result with just { lastHeartbeat }
+      stopHeartbeat();
+
+      // Mark complete (v4: pass leaseOwner, add finalized flag, explicit completedAt)
       await this.updateJob(jobId, {
         status: 'completed',
         progress: 100,
@@ -588,10 +903,9 @@ export class JobQueue {
           confidenceScores: Object.fromEntries(result.consistency_scores.entries()),
           searchMetadata: result.searchMetadata
         },
+        finalized: true,
         completedAt: Date.now()
-      });
-
-      clearInterval(heartbeat);
+      }, leaseOwner);
       setCurrentJobContext(null);
       setJobContext(null);
       jobLog(`✅ Job ${jobId} completed`);
@@ -632,7 +946,7 @@ export class JobQueue {
           completedAt
         });
 
-        clearInterval(heartbeat);
+        // heartbeat already cleared above before completion write
         setCurrentJobContext(null);
         setJobContext(null);
 
@@ -654,7 +968,8 @@ export class JobQueue {
       });
 
     } catch (error: any) {
-      clearInterval(heartbeat);
+      // Stop heartbeat in case error happened before completion (v4)
+      stopHeartbeat();
       setCurrentJobContext(null);
       setJobContext(null);
 
@@ -662,12 +977,13 @@ export class JobQueue {
       const errorMessage = error?.message || String(error);
       console.error(`❌ Job ${jobId} failed (Pub/Sub):`, errorMessage);
 
-      // Update job status to failed
+      // Update job status to failed (v4: pass leaseOwner, add finalized flag)
       await this.updateJob(jobId, {
         status: 'failed',
         error: errorMessage,
+        finalized: true,
         completedAt: Date.now()
-      });
+      }, leaseOwner);
 
       // Send error notification
       await sendErrorNotification({

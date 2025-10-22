@@ -1,5 +1,6 @@
 import { getJobQueue } from './utils/jobQueue';
 import { jobLog } from './utils/jobLogger';
+import { isOpen, getRemainingMs } from './utils/vertexCircuitBreaker';
 import http from 'http';
 
 async function startWorker() {
@@ -45,7 +46,24 @@ async function startWorker() {
           jobLog(`📬 Received Pub/Sub message ${pubsubMessageId} for job ${jobData.jobId}`);
           jobLog(`   Address: ${jobData.address}`);
 
-          // Process job
+          // Check if circuit breaker is open
+          if (isOpen()) {
+            const remainingSec = Math.ceil(getRemainingMs() / 1000);
+            jobLog(`🔴 Circuit breaker open - deferring job ${jobData.jobId} (retry after ${remainingSec}s)`);
+
+            // Return 200 OK to ACK Pub/Sub message (prevent retry storm)
+            // Pub/Sub retry policy will redeliver after 30-600s
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({
+              status: 'deferred',
+              reason: 'circuit_breaker_open',
+              retryAfterSeconds: remainingSec,
+              message: 'Job will be retried automatically by Pub/Sub backoff policy'
+            }));
+            return;
+          }
+
+          // Process job normally
           await jobQueue.processJobFromPubSub(jobData, pubsubMessageId);
 
           // Acknowledge message with 204 No Content (standard for Pub/Sub ack)
