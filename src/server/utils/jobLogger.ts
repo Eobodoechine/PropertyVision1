@@ -1,5 +1,6 @@
-// Lightweight logger with optional job context.
-// No imports to avoid cycles.
+// Job-aware logger that sends to both console and Cloud Logging
+import logger from './logger';
+
 let currentJobId: string | null = null;
 
 export function setJobContext(jobId: string | null) {
@@ -7,10 +8,19 @@ export function setJobContext(jobId: string | null) {
 }
 
 export function jobLog(...args: any[]): void {
+  // Format message for Winston
+  const message = args.map(arg =>
+    typeof arg === 'string' ? arg : JSON.stringify(arg)
+  ).join(' ');
+
   if (currentJobId) {
     const shortId = currentJobId.slice(0, 8);
-    console.log(`[${shortId}]`, ...args);
+    const prefixedMessage = `[${shortId}] ${message}`;
+    // Send to both console (for terminal) and Winston (for Cloud Logging)
+    console.log(prefixedMessage);
+    logger.info(prefixedMessage, { jobId: currentJobId, source: 'jobLog' });
   } else {
-    console.log(...args);
+    console.log(message);
+    logger.info(message, { source: 'jobLog' });
   }
 }

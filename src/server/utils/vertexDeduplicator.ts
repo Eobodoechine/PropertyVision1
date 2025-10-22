@@ -360,11 +360,11 @@ ${JSON.stringify(propertyList, null, 2)}`;
     } else {
       jobLog('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON from file');
       jobLog('🔍 CONFIG DEBUG 6: About to get file path');
-      const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+      const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS;
       jobLog('🔍 CONFIG DEBUG 7: File path:', saPath);
       if (!saPath) {
         jobLog('🔍 CONFIG DEBUG 8: No file path found, throwing error');
-        throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
+        throw new Error('GCP_SA_JSON, GCP_SA_JSON_B64, SERVICE_ACCOUNT_JSON, or GOOGLE_APPLICATION_CREDENTIALS environment variable is required for Vertex AI');
       }
       jobLog('🔍 CONFIG DEBUG 9: About to read file');
       serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));

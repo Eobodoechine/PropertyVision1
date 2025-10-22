@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { ComprehensiveComparableSearchV5 } from './comprehensive-comp-search-v5.js';
-import logger, { logSearchRequest, logSearchResult, logSearchError } from './utils/logger.js';
+import logger, { logSearchRequest, logSearchResult, logSearchError } from './utils/logger';
 
 const app = express();
 const port = Number(process.env.PORT) || 3001;

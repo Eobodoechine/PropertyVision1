@@ -13,8 +13,7 @@ RUN npm ci
 # Copy source code
 COPY . .
 
-# Copy service account JSON
-# COPY agile-device-472202-i8-319f002d9438.json /app/agile-device-472202-i8-319f002d9438.json
+# Service account credentials will be injected at runtime via Cloud Run
 
 # Copy start script
 COPY start-server.sh /app/start-server.sh
@@ -30,8 +29,7 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 ENV HOST=0.0.0.0
-ENV GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json
-ENV GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8
+ENV GOOGLE_CLOUD_PROJECT_ID=durable-ring-475417-g0
 
 # Start the application based on RUN_WORKER env var
 CMD ["/bin/sh", "-c", "if [ \"$RUN_WORKER\" = \"true\" ]; then npm run worker; else npm start; fi"]

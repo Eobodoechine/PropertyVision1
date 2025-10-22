@@ -23,7 +23,7 @@
 set -e  # Exit on error
 
 # Configuration
-PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-agile-device-472202-i8}"
+PROJECT_ID="${GOOGLE_CLOUD_PROJECT:-durable-ring-475417-g0}"
 BATCH_SIZE=10000
 MAX_BATCHES=100  # Safety limit to prevent infinite loops (100 batches = 1M logs max)
 
@@ -75,9 +75,9 @@ fi
 JOB_ID="$1"
 OUTPUT_FILE="${2:-logs/job-${JOB_ID}.json}"
 
-# Validate JOB_ID format (UUID)
-if ! [[ "$JOB_ID" =~ ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$ ]]; then
-  log_error "Invalid JOB_ID format. Expected UUID format (e.g., d0a6e4a0-8e29-4ca2-99de-d927f5e5530e)"
+# Validate JOB_ID format (UUID or short 8-char prefix)
+if ! [[ "$JOB_ID" =~ ^[0-9a-f]{8}(-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?$ ]]; then
+  log_error "Invalid JOB_ID format. Expected UUID or 8-char prefix (e.g., d0a6e4a0 or d0a6e4a0-8e29-4ca2-99de-d927f5e5530e)"
   exit 1
 fi
 
@@ -118,11 +118,21 @@ QUERY_TRACE="trace=\"${TRACE_PATH}\""
 # Query 2: By jsonPayload.jobId (for logs with jobId in payload)
 QUERY_JOB_ID="jsonPayload.jobId=\"${JOB_ID}\""
 
-# Query 3: By text containing jobId (for unstructured logs)
+# Query 3: By jsonPayload.metadata.jobId (for newer logs with metadata)
+# If short ID (8 chars), search for pattern matching; if full UUID, exact match
+if [[ "$JOB_ID" =~ ^[0-9a-f]{8}$ ]]; then
+  # Short ID - search for UUIDs starting with this prefix
+  QUERY_METADATA_JOB_ID="jsonPayload.metadata.jobId=~\"^${JOB_ID}\""
+else
+  # Full UUID - exact match
+  QUERY_METADATA_JOB_ID="jsonPayload.metadata.jobId=\"${JOB_ID}\""
+fi
+
+# Query 4: By text containing jobId (for unstructured logs)
 QUERY_TEXT="textPayload=~\"${JOB_ID}\""
 
 # Combine queries with OR
-FILTER="(${QUERY_TRACE}) OR (${QUERY_JOB_ID}) OR (${QUERY_TEXT})"
+FILTER="(${QUERY_TRACE}) OR (${QUERY_JOB_ID}) OR (${QUERY_METADATA_JOB_ID}) OR (${QUERY_TEXT})"
 
 log_info "Using filter: $FILTER"
 echo ""

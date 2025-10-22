@@ -14,7 +14,6 @@ interface PropertyData {
 }
 
 export class GeminiParser {
-  private projectId = 'agile-device-472202-i8';
   private location = 'us-central1';
   private model = 'gemini-2.0-flash-001';
 
@@ -82,12 +81,22 @@ Return JSON in exactly this format (no other text):
       } else if (process.env.SERVICE_ACCOUNT_JSON) {
         // Alternative: direct JSON string
         serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_JSON);
+      } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+        // Google default credentials file path
+        const fs = await import('fs');
+        serviceAccount = JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'));
       } else {
-        throw new Error('No service account found. Set GCP_SA_JSON_B64, GCP_SA_JSON, or SERVICE_ACCOUNT_JSON');
+        throw new Error('No service account found. Set GCP_SA_JSON_B64, GCP_SA_JSON, SERVICE_ACCOUNT_JSON, or GOOGLE_APPLICATION_CREDENTIALS');
+      }
+
+      // Get projectId from service account
+      const projectId = serviceAccount.project_id;
+      if (!projectId) {
+        throw new Error('Service account does not contain project_id');
       }
 
       const result = await vertexGenerate({
-        projectId: this.projectId,
+        projectId: projectId,
         location: this.location,
         model: this.model,
         prompt: prompt,

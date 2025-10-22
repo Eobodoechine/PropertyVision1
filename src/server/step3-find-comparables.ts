@@ -106,10 +106,10 @@ class VertexComparableSearchService {
         const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
         sa = JSON.parse(saJson);
       } else {
-        // Local: file path
-        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+        // Local: file path (supports GOOGLE_APPLICATION_CREDENTIALS for ADC)
+        const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS;
         if (!saPath) {
-          throw new Error('GCP_SA_JSON or GCP_SA_JSON_B64 environment variable is required for Vertex AI');
+          throw new Error('GCP_SA_JSON, SERVICE_ACCOUNT_JSON, or GOOGLE_APPLICATION_CREDENTIALS environment variable is required for Vertex AI');
         }
         sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
       }

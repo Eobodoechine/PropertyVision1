@@ -54,12 +54,15 @@ function hasServiceAccount(): boolean {
   const gcpSaJson = process.env.GCP_SA_JSON;
   const serviceAccountJson = process.env.SERVICE_ACCOUNT_JSON;
   const gcpSaJsonB64 = process.env.GCP_SA_JSON_B64;
+  const googleAppCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
   jobLog(`🔍 ENV CHECK: GCP_SA_JSON=${gcpSaJson ? 'SET' : 'NOT_SET'}`);
   jobLog(`🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=${serviceAccountJson ? 'SET' : 'NOT_SET'}`);
   jobLog(`🔍 ENV CHECK: GCP_SA_JSON_B64=${gcpSaJsonB64 ? 'SET' : 'NOT_SET'}`);
+  jobLog(`🔍 ENV CHECK: GOOGLE_APPLICATION_CREDENTIALS=${googleAppCreds ? 'SET' : 'NOT_SET'}`);
 
-  const p = gcpSaJson || serviceAccountJson || gcpSaJsonB64;
+  // Support both old env vars and ADC
+  const p = gcpSaJson || serviceAccountJson || gcpSaJsonB64 || googleAppCreds;
   const result = Boolean(p && p.trim().length > 0);
   jobLog(`🔍 hasServiceAccount() returning: ${result}`);
   return result;
@@ -766,8 +769,8 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
     const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
     sa = JSON.parse(saJson);
   } else {
-    // Local: file path
-    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON as string;
+    // Local: file path (supports GOOGLE_APPLICATION_CREDENTIALS for ADC)
+    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS as string;
     sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
   }
   const projectId = sa.project_id;

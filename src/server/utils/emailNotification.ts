@@ -94,7 +94,7 @@ export async function sendErrorNotification(params: ErrorNotificationParams): Pr
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-          <p>View logs: <a href="https://console.cloud.google.com/logs/query?project=agile-device-472202-i8" style="color: #2563eb;">Cloud Console</a></p>
+          <p>View logs: <a href="https://console.cloud.google.com/logs/query?project=durable-ring-475417-g0" style="color: #2563eb;">Cloud Console</a></p>
           <p>This is an automated notification from PropertyVision.</p>
         </div>
       </div>
