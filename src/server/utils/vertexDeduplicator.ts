@@ -1,6 +1,5 @@
 // Vertex AI-Powered Intelligent Deduplication
 // Replaces rule-based deduplication with AI that understands real estate data nuances
-import fs from 'fs';
 import { jobLog } from '../utils/jobLogger';
 
 interface PropertyData {
@@ -57,178 +56,90 @@ export class VertexDeduplicator {
 
     try {
       jobLog('🔍 DEDUP LINE 4: About to import vertex-freeform.js');
-      const { vertexGenerate } = await import('../vertex-freeform.js');
+      const { vertexGenerate, resolveProjectId, resolveLocation, getAccessTokenViaAuth } = await import('../vertex-freeform.js');
       jobLog('🔍 DEDUP LINE 5: vertex-freeform.js imported successfully');
 
-      jobLog('🔍 DEDUP LINE 6: About to call this.getVertexConfig()');
-      const { serviceAccount, projectId, location, model } = this.getVertexConfig();
-      jobLog('🔍 DEDUP LINE 7: getVertexConfig() completed successfully');
+      jobLog('🔍 DEDUP LINE 6: About to get ADC credentials');
+      const projectId = await resolveProjectId();
+      const location = resolveLocation();
+      const model = 'gemini-2.5-pro'; // Use Pro model for better structured output
+      const token = await getAccessTokenViaAuth();
+      jobLog('🔍 DEDUP LINE 7: ADC credentials obtained successfully');
 
-      // Prepare property data for AI analysis with required fields
+      // Prepare property data - ONLY essentials for deduplication (minimizes token usage)
       const propertyList = properties.map((prop, index) => ({
         record_id: index.toString(),
-        address: prop.address,
-        price: prop.price || null,
-        sqft: prop.sqft || null,
-        gla: prop.sqft || null, // Gross living area
-        beds: prop.beds || null,
-        baths: prop.baths || null,
-        year_built: prop.yearBuilt || null,
-        sale_date: prop.soldDate || null,
-        source: prop.source || null,
-        property_type: "single_family", // Default assumption, could be enhanced
-        latitude: null, // We don't have coordinates in current data
-        longitude: null,
-        apn: null, // Assessor's Parcel Number - not available
-        mls_id: null
+        address: prop.address, // Primary field for deduplication
+        sale_date: prop.soldDate || null, // For tie-breaking (most recent wins)
+        price: prop.price || null // For secondary tie-breaking (higher price wins)
       }));
 
-      const prompt = `You are a data-quality assistant for U.S. real estate. Given a JSON array of property records, your job is to:
-(1) detect and group duplicates, and
-(2) output a de-duplicated dataset keeping a single canonical record per duplicate group, with safe field merges.
+      const prompt = `You are deduplicating real estate property comparables. Identify duplicate properties based on normalized addresses.
 
-Follow these rules:
+NORMALIZATION RULES:
+1. Convert to lowercase
+2. Remove all punctuation (periods, commas, hashes)
+3. Standardize street types: St→Street, Ave→Avenue, Rd→Road, Dr→Drive, Ln→Lane, Ct→Court, Blvd→Boulevard, Cir→Circle
+4. Collapse multiple spaces to single space
+5. Ignore city and ZIP code differences - only compare street addresses
 
-A) NORMALIZATION (USPS-style, case-insensitive)
-- Strip punctuation; collapse whitespace.
-- Normalize common street types: Rd→Road, St→Street, Ave→Avenue, Blvd→Boulevard, Pkwy→Parkway, Ter→Terrace, Hwy→Highway, Ln→Lane, Ct→Court, Pl→Place, Dr→Drive, Cir→Circle.
-- Normalize directionals (N/S/E/W/NE/NW/SE/SW) whether prefix or suffix.
-- Normalize ordinals & variants (e.g., "1st"↔"First").
-- Normalize unit tokens: Apt, Unit, #, Suite, Ste, No. → "UNIT" (keep the value).
-- Fuzzy match street name using Levenshtein or token-set ratio; consider ≥90/100 as a positive signal (never override APN/UNIT rules).
+DUPLICATE DETECTION:
+- Properties with the same normalized street address are duplicates
+- Example: "2194 Ivydale St, Atlanta, GA 30344" and "2194 Ivydale St, Atlanta, GA" are duplicates
 
-B) UNIT / PROPERTY-TYPE LOGIC
-- If property_type ∈ {condo, townhome, apartment}: records are duplicates ONLY if UNIT matches (after normalization).
-  - If one record lacks UNIT but APN/parcel_id + street + ZIP + geo point to the same building: mark AMBIGUOUS_SAME_BUILDING (not duplicate).
-  - Different UNIT values ⇒ NOT_DUPLICATE.
-- If property_type ∈ {single_family, duplex, triplex, fourplex}:
-  - Different UNIT values may indicate separate legal dwellings. Treat as NOT_DUPLICATE unless APN and entrances clearly indicate a single dwelling (then POTENTIAL_DUPLICATE).
-- Fee-simple townhomes: typically distinct APNs; different APNs ⇒ NOT_DUPLICATE even if very close.
+TIE-BREAKING (when duplicates found):
+1. PRIMARY: Keep the record with the most recent sale_date
+2. SECONDARY: If sale_date is identical, keep the record with higher price
+3. Use the kept record's record_id as canonical_record_id
 
-C) GEOSPATIAL TOLERANCE (when both have lat/long)
-- condos/townhomes/apartments: ≤10 m ⇒ "same building" signal ONLY (never sufficient alone).
-- SFR/2–4 units: ≤20–30 m ⇒ supports duplicate if other signals also match.
-- If geocoder precision is "interpolated" or "parcel centroid", downgrade geo confidence.
-
-D) MATCHING SIGNAL PRIORITY (strongest → weakest)
-1) APN/parcel_id exact match (with UNIT match if multi-unit).
-2) Exact normalized full address (incl. UNIT where relevant).
-3) Same building (street + number + ZIP) + UNIT match (or both lack UNIT and are not multi-unit types).
-4) Fuzzy street ≥90 + same house number + ZIP + within geo tolerance.
-5) MLS/listing IDs help but are not definitive across portals.
-
-E) CANONICAL PICK & SAFE MERGE
-- For each duplicate group, choose canonical_record_id as: most complete key fields (APN, precise lat/long, beds/baths, GLA, closed sale date); tie-break by most recent update.
-- When merging into canonical, only fill NULL/empty fields from duplicates. Do NOT overwrite non-null fields unless the incoming value is clearly more specific/precise (e.g., rooftop lat/long vs parcel centroid). Never merge across different UNIT values.
-- Preserve provenance: add "source_record_ids" array to canonical listing all merged record_ids.
-
-F) OUTPUT — RETURN **JSON ONLY** IN THIS EXACT SHAPE:
-{
-  "duplicate_groups": [
-    {
-      "group_id": "dup-001",
-      "canonical_record_id": "string",
-      "record_ids": ["id1","id2","id3"],
-      "match_reason": ["APN_MATCH","UNIT_MATCH","GEO_NEAR","FUZZY_STREET_>=90","DIRECTIONAL_EQUIVALENT","AMBIGUOUS_SAME_BUILDING","INTERPOLATED_DOWNGRADED"],
-      "confidence": 0.0,
-      "notes": "string"
-    }
-  ],
-  "kept_records": [ { /* merged canonical records with source_record_ids */ } ],
-  "dropped_record_ids": ["id2","id3"],
-  "ambiguous_record_ids": ["idA","idB"],
-  "changes_log": [
-    {
-      "canonical_record_id": "string",
-      "merged_from": ["id2","id3"],
-      "fields_merged": ["apn","latitude","longitude","gla","sale_date"]
-    }
-  ]
-}
-
-G) SAFETY & STRICTNESS
-- Do not hallucinate fields; only use what's provided.
-- If uncertain between DUPLICATE vs NOT_DUPLICATE for multi-unit without UNIT, use AMBIGUOUS_SAME_BUILDING and lower confidence.
-- Never merge records with different UNIT values for multi-unit properties.
+OUTPUT FORMAT:
+Return a JSON object with a duplicate_groups array.
+Each group must include:
+- group_id: unique identifier like "dup-001"
+- canonical_record_id: the record_id to keep
+- record_ids: all duplicate record_ids including canonical
+- match_reason: ["ADDRESS_MATCH"] (optional)
+- confidence: 1.0 for exact address match (optional)
 
 Input data to analyze:
 ${JSON.stringify(propertyList, null, 2)}`;
 
+      // Response Schema mode (Controlled Generation) - lowercase types for JSON Schema
+      // More reliable than function calling - bypasses MALFORMED_FUNCTION_CALL errors
       const responseSchema = {
-        type: 'OBJECT',
+        type: 'object',
         properties: {
           duplicate_groups: {
-            type: 'ARRAY',
+            type: 'array',
             items: {
-              type: 'OBJECT',
+              type: 'object',
               properties: {
-                group_id: { type: 'STRING' },
-                canonical_record_id: { type: 'STRING' },
-                record_ids: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                },
-                match_reason: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                },
-                confidence: { type: 'NUMBER' },
-                notes: { type: 'STRING' }
+                group_id: { type: 'string' },
+                canonical_record_id: { type: 'string' },
+                record_ids: { type: 'array', items: { type: 'string' } },
+                match_reason: { type: 'array', items: { type: 'string' } },
+                confidence: { type: 'number' }
               },
-              required: ['group_id', 'canonical_record_id', 'record_ids', 'match_reason', 'confidence']
-            }
-          },
-          kept_records: {
-            type: 'ARRAY',
-            items: { type: 'OBJECT' }
-          },
-          dropped_record_ids: {
-            type: 'ARRAY',
-            items: { type: 'STRING' }
-          },
-          ambiguous_record_ids: {
-            type: 'ARRAY',
-            items: { type: 'STRING' }
-          },
-          changes_log: {
-            type: 'ARRAY',
-            items: {
-              type: 'OBJECT',
-              properties: {
-                canonical_record_id: { type: 'STRING' },
-                merged_from: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                },
-                fields_merged: {
-                  type: 'ARRAY',
-                  items: { type: 'STRING' }
-                }
-              }
+              required: ['group_id', 'canonical_record_id', 'record_ids']
             }
           }
         },
-        required: ['duplicate_groups', 'kept_records', 'dropped_record_ids']
+        required: ['duplicate_groups']
       };
 
       jobLog('🔍 DEDUP LINE 8: About to call vertexGenerate');
-      jobLog('🔍 DEDUP LINE 8.1: serviceAccount type:', typeof serviceAccount);
-      jobLog('🔍 DEDUP LINE 8.2: serviceAccount keys:', serviceAccount ? Object.keys(serviceAccount) : 'null');
-      jobLog('🔍 DEDUP LINE 8.3: serviceAccount.private_key exists:', !!serviceAccount?.private_key);
-      jobLog('🔍 DEDUP LINE 8.4: serviceAccount.private_key length:', serviceAccount?.private_key?.length || 'NO LENGTH');
-      jobLog('🔍 DEDUP LINE 8.5: serviceAccount.client_email:', serviceAccount?.client_email || 'NO EMAIL');
-
       jobLog('🚨🚨🚨 DEDUPLICATOR CALLING VERTEXGENERATE 🚨🚨🚨');
 
       const response = await vertexGenerate({
-        sa: serviceAccount,
+        token,
         projectId,
         location,
         model,
         prompt,
         grounded: false, // Use AI reasoning, not web search
-        json: true,
-        responseSchema,
+        json: true, // Enable JSON response mode
+        responseSchema, // Use response schema instead of function calling
+        maxOutputTokens: 4096,
         timeoutMs: 120000
       });
 
@@ -337,67 +248,5 @@ ${JSON.stringify(propertyList, null, 2)}`;
       soldDate: enhancedRecord.sale_date ?? originalProperty.soldDate,
       source: enhancedRecord.source ?? originalProperty.source
     };
-  }
-
-  private getVertexConfig() {
-    // Use EXACT same pattern as step3-find-comparables.ts
-    jobLog('🚨🚨🚨 GETVERTEXCONFIG START 🚨🚨🚨');
-    jobLog('🔍 DEDUPLICATOR DEBUG: getVertexConfig() called');
-    jobLog('🔍 CONFIG DEBUG 1: Checking environment variables');
-    jobLog('🔍 CONFIG DEBUG 1.1: GCP_SA_JSON_B64 exists:', !!process.env.GCP_SA_JSON_B64);
-    jobLog('🔍 CONFIG DEBUG 1.2: GCP_SA_JSON exists:', !!process.env.GCP_SA_JSON);
-    jobLog('🔍 CONFIG DEBUG 1.3: SERVICE_ACCOUNT_JSON exists:', !!process.env.SERVICE_ACCOUNT_JSON);
-
-    let serviceAccount;
-    jobLog('🔍 CONFIG DEBUG 2: About to check GCP_SA_JSON_B64 branch');
-    if (process.env.GCP_SA_JSON_B64) {
-      jobLog('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON_B64');
-      jobLog('🔍 CONFIG DEBUG 3: About to decode base64');
-      const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-      jobLog('🔍 CONFIG DEBUG 4: Base64 decoded, about to parse JSON');
-      serviceAccount = JSON.parse(saJson);
-      jobLog('🔍 CONFIG DEBUG 5: JSON parsed successfully from base64');
-    } else {
-      jobLog('🔍 DEDUPLICATOR DEBUG: Using GCP_SA_JSON from file');
-      jobLog('🔍 CONFIG DEBUG 6: About to get file path');
-      const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS;
-      jobLog('🔍 CONFIG DEBUG 7: File path:', saPath);
-      if (!saPath) {
-        jobLog('🔍 CONFIG DEBUG 8: No file path found, throwing error');
-        throw new Error('GCP_SA_JSON, GCP_SA_JSON_B64, SERVICE_ACCOUNT_JSON, or GOOGLE_APPLICATION_CREDENTIALS environment variable is required for Vertex AI');
-      }
-      jobLog('🔍 CONFIG DEBUG 9: About to read file');
-      serviceAccount = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-      jobLog('🔍 CONFIG DEBUG 10: File read and parsed successfully');
-    }
-
-    // Debug the service account object
-    jobLog('🔍 CONFIG DEBUG 11: About to debug service account');
-    jobLog('🔍 SERVICE ACCOUNT DEBUG: Keys available:', Object.keys(serviceAccount));
-    jobLog('🔍 SERVICE ACCOUNT DEBUG: Has private_key:', !!serviceAccount.private_key);
-    jobLog('🔍 SERVICE ACCOUNT DEBUG: Private key starts with:', serviceAccount.private_key?.substring(0, 50));
-    jobLog('🔍 SERVICE ACCOUNT DEBUG: Private key type:', typeof serviceAccount.private_key);
-    jobLog('🔍 SERVICE ACCOUNT DEBUG: Private key length:', serviceAccount.private_key?.length);
-    jobLog('🔍 SERVICE ACCOUNT DEBUG: Client email:', serviceAccount.client_email);
-
-    jobLog('🔍 CONFIG DEBUG 12: About to extract project_id');
-    const projectId = serviceAccount.project_id;
-    jobLog('🔍 CONFIG DEBUG 13: Project ID:', projectId);
-
-    jobLog('🔍 CONFIG DEBUG 14: About to get location and model');
-    const location = process.env.VERTEX_LOCATION || 'us-central1';
-    const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
-    jobLog('🔍 CONFIG DEBUG 15: Location:', location, 'Model:', model);
-
-    jobLog('🔍 CONFIG DEBUG 16: About to return config object');
-    const config = {
-      serviceAccount,
-      projectId,
-      location,
-      model
-    };
-    jobLog('🔍 CONFIG DEBUG 17: Config object created, returning');
-    jobLog('🚨🚨🚨 GETVERTEXCONFIG END 🚨🚨🚨');
-    return config;
   }
 }

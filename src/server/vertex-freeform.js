@@ -1,6 +1,10 @@
 import 'dotenv/config';
 import https from 'https';
+import fs from 'fs';
+import { GoogleAuth } from 'google-auth-library';
 import { jobLog } from './utils/jobLogger';
+
+const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
@@ -17,6 +21,15 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
                 }
             });
         });
+
+        // Implement timeout to prevent indefinite hangs
+        req.setTimeout(timeoutMs, () => {
+            req.destroy();
+            const error = new Error(`Request timeout after ${timeoutMs}ms`);
+            error.code = 'ETIMEDOUT';
+            reject(error);
+        });
+
         req.on('error', reject);
         req.write(body);
         req.end();
@@ -72,6 +85,15 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
                 resolve(null);
             } });
         });
+
+        // Implement timeout to prevent indefinite hangs
+        req.setTimeout(timeoutMs, () => {
+            req.destroy();
+            const error = new Error(`Request timeout after ${timeoutMs}ms`);
+            error.code = 'ETIMEDOUT';
+            reject(error);
+        });
+
         req.on('error', reject);
         req.write(body);
         req.end();
@@ -85,7 +107,8 @@ export async function vertexGenerate(opts) {
     jobLog(`🔍 VERTEX DEBUG 4: timeoutMs=${opts.timeoutMs}`);
 
     jobLog(`🔍 VERTEX DEBUG 5: Getting service account token`);
-    const token = await getServiceAccountToken(opts.sa, 'https://www.googleapis.com/auth/cloud-platform');
+    // Accept either opts.token (v13.3 style) or opts.sa (legacy style)
+    const token = opts.token || await getServiceAccountToken(opts.sa, 'https://www.googleapis.com/auth/cloud-platform');
     jobLog(`🔍 VERTEX DEBUG 6: Token obtained, length=${token?.length}`);
 
     const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
@@ -170,4 +193,53 @@ export async function vertexGenerate(opts) {
     jobLog(`🔍 VERTEX DEBUG 25: Final text length: ${text.length}`);
 
     return text;
+}
+
+// Authentication helper functions for vertexDeduplicator
+export async function getCloudAuthClient() {
+    const b64 = process.env.GCP_SA_JSON_B64;
+    const jsonPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+
+    if (b64 || jsonPath) {
+        let json;
+        if (b64) {
+            // Base64-encoded JSON credentials
+            json = Buffer.from(b64, 'base64').toString('utf8');
+        } else if (jsonPath) {
+            // File path to JSON credentials
+            json = fs.readFileSync(jsonPath, 'utf-8');
+        }
+        const credentials = JSON.parse(json);
+        const auth = new GoogleAuth({ credentials, scopes: VERTEX_SCOPES });
+        return auth.getClient();
+    }
+
+    // Default: keyless ADC on Cloud Run
+    const auth = new GoogleAuth({ scopes: VERTEX_SCOPES });
+    return auth.getClient();
+}
+
+export async function resolveProjectId(auth) {
+    const explicit =
+        process.env.VERTEX_AI_PROJECT_ID ||
+        process.env.GOOGLE_CLOUD_PROJECT ||
+        process.env.GCLOUD_PROJECT;
+    if (explicit) return explicit;
+    const a = auth ?? new GoogleAuth();
+    const pid = await a.getProjectId();
+    return typeof pid === 'string' ? pid : String(pid);
+}
+
+export function resolveLocation() {
+    return process.env.VERTEX_AI_LOCATION || 'us-central1';
+}
+
+export async function getAccessTokenViaAuth() {
+    const authClient = await getCloudAuthClient();
+    const tokenObj = await authClient.getAccessToken();
+    const token = typeof tokenObj === 'string'
+        ? tokenObj
+        : (tokenObj?.token || tokenObj?.access_token);
+    if (!token) throw new Error('Failed to obtain access token via ADC');
+    return token;
 }

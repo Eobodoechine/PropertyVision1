@@ -1,8 +1,9 @@
 import 'dotenv/config';
-import fs from 'fs';
 import https from 'https';
-import crypto from 'crypto';
 import { jobLog } from './utils/jobLogger';
+import { GoogleAuth } from 'google-auth-library';
+
+const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
 export type BasicDetails = {
   address: string;
@@ -51,59 +52,51 @@ const SPD_PARSE_TIMEOUT_MS = Number(process.env.SPD_PARSE_TIMEOUT_MS ?? 30000); 
 const SPD_GRACE_WINDOW_MS = Number(process.env.SPD_GRACE_WINDOW_MS ?? 10000);        // 10s grace for reconciliation
 
 function hasServiceAccount(): boolean {
-  const gcpSaJson = process.env.GCP_SA_JSON;
-  const serviceAccountJson = process.env.SERVICE_ACCOUNT_JSON;
-  const gcpSaJsonB64 = process.env.GCP_SA_JSON_B64;
-  const googleAppCreds = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-  jobLog(`🔍 ENV CHECK: GCP_SA_JSON=${gcpSaJson ? 'SET' : 'NOT_SET'}`);
-  jobLog(`🔍 ENV CHECK: SERVICE_ACCOUNT_JSON=${serviceAccountJson ? 'SET' : 'NOT_SET'}`);
-  jobLog(`🔍 ENV CHECK: GCP_SA_JSON_B64=${gcpSaJsonB64 ? 'SET' : 'NOT_SET'}`);
-  jobLog(`🔍 ENV CHECK: GOOGLE_APPLICATION_CREDENTIALS=${googleAppCreds ? 'SET' : 'NOT_SET'}`);
-
-  // Support both old env vars and ADC
-  const p = gcpSaJson || serviceAccountJson || gcpSaJsonB64 || googleAppCreds;
-  const result = Boolean(p && p.trim().length > 0);
-  jobLog(`🔍 hasServiceAccount() returning: ${result}`);
-  return result;
+  // On Cloud Run we always have ADC from the attached service account.
+  // Still allow JSON creds when explicitly provided (local dev).
+  return true;
 }
 
-async function getServiceAccountToken(sa: any, scope: string): Promise<string> {
-  const iat = Math.floor(Date.now() / 1000);
-  const exp = iat + 3600;
-  const header = { alg: 'RS256', typ: 'JWT' };
-  const claims = { iss: sa.client_email, scope, aud: sa.token_uri, exp, iat };
-  const base64url = (obj: any) => Buffer.from(JSON.stringify(obj)).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
-  const unsigned = `${base64url(header)}.${base64url(claims)}`;
-  const sign = crypto.createSign('RSA-SHA256');
-  sign.update(unsigned);
-  const signature = sign.sign(sa.private_key).toString('base64').replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
-  const assertion = `${unsigned}.${signature}`;
-  const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion });
-  const resp = await httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' }, 20000);
-  if (!resp?.access_token) throw new Error('sa-token-failed');
-  return resp.access_token as string;
+async function getCloudAuthClient() {
+  const b64 = process.env.GCP_SA_JSON_B64;
+  const jsonUtf8 = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON;
+
+  if (b64 || jsonUtf8) {
+    // Explicit SA JSON provided
+    const json = b64 ? Buffer.from(b64, 'base64').toString('utf8') : jsonUtf8!;
+    const credentials = JSON.parse(json);
+    const auth = new GoogleAuth({ credentials, scopes: VERTEX_SCOPES });
+    return auth.getClient();
+  }
+
+  // Fallback: ADC (uses GOOGLE_APPLICATION_CREDENTIALS automatically)
+  const auth = new GoogleAuth({ scopes: VERTEX_SCOPES });
+  return auth.getClient();
 }
 
-async function httpsPostForm(url: string, body: string, headers: Record<string,string>, timeoutMs: number): Promise<any> {
-  return await new Promise((resolve, reject) => {
-    const u = new URL(url);
-    const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { ...headers, 'Content-Length': Buffer.byteLength(body).toString() } }, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
-    });
-    req.on('error', reject);
+async function resolveProjectId(auth?: GoogleAuth) {
+  const explicit =
+    process.env.VERTEX_AI_PROJECT_ID ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    process.env.GCLOUD_PROJECT;
+  if (explicit) return explicit;
+  const a = auth ?? new GoogleAuth();
+  const pid = await a.getProjectId();
+  return typeof pid === 'string' ? pid : String(pid);
+}
 
-    // Set socket timeout to prevent hanging requests
-    req.setTimeout(timeoutMs, () => {
-      req.destroy();
-      reject(new Error(`socket hang up`));
-    });
+function resolveLocation() {
+  return process.env.VERTEX_AI_LOCATION || 'us-central1';
+}
 
-    req.write(body);
-    req.end();
-  });
+async function getAccessTokenViaAuth(): Promise<string> {
+  const authClient = await getCloudAuthClient();
+  const tokenObj = await authClient.getAccessToken();
+  const token = typeof tokenObj === 'string'
+    ? tokenObj
+    : tokenObj?.token;
+  if (!token) throw new Error('Failed to obtain access token via ADC');
+  return token;
 }
 
 async function httpsPostJson(url: string, payload: any, headers: Record<string,string>, timeoutMs: number): Promise<any> {
@@ -129,7 +122,7 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
 }
 
 async function vertexGenerate(opts: {
-  sa: any;
+  token: string;
   projectId: string;
   location: string;
   model: string;
@@ -139,7 +132,7 @@ async function vertexGenerate(opts: {
   timeoutMs: number;
   responseSchema?: any;
 }): Promise<string> {
-  const token = await getServiceAccountToken(opts.sa, 'https://www.googleapis.com/auth/cloud-platform');
+  const token = opts.token;
   const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
   const payload: any = {
     contents: [ { role: 'user', parts: [ { text: opts.prompt } ] } ],
@@ -164,7 +157,7 @@ async function vertexGenerate(opts: {
  */
 async function parseTextToJSON(
   text: string,
-  ctx: { sa: any; projectId: string; location: string; model: string }
+  ctx: { token: string; projectId: string; location: string; model: string }
 ): Promise<Partial<BasicDetails>> {
   const startTime = Date.now();
 
@@ -763,21 +756,13 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
     return null;
   }
 
-  let sa;
-  if (process.env.GCP_SA_JSON_B64) {
-    // Production: base64 encoded JSON
-    const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-    sa = JSON.parse(saJson);
-  } else {
-    // Local: file path (supports GOOGLE_APPLICATION_CREDENTIALS for ADC)
-    const saPath = process.env.GCP_SA_JSON || process.env.SERVICE_ACCOUNT_JSON || process.env.GOOGLE_APPLICATION_CREDENTIALS as string;
-    sa = JSON.parse(fs.readFileSync(saPath, 'utf-8'));
-  }
-  const projectId = sa.project_id;
-  const location = process.env.VERTEX_LOCATION || 'us-central1';
+  // Use ADC-first authentication (keyless on Cloud Run)
+  const projectId = await resolveProjectId();
+  const location = resolveLocation();
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+  const token = await getAccessTokenViaAuth();
 
-  const ctx = { sa, projectId, location, model };
+  const ctx = { token, projectId, location, model };
 
   jobLog(`\n🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: ${address}`);
 
@@ -825,7 +810,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
     })
     .catch(err => {
       const duration = Date.now() - primaryStart;
-      console.error(`   ❌ Primary grounded search failed after ${duration}ms:`, err.message || err);
+      jobLog(`   ❌ Primary grounded search failed after ${duration}ms: ${err.message || err}`);
       return { text: null, source: 'primary' as const, duration, error: err };
     });
 
@@ -838,7 +823,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
     })
     .catch(err => {
       const duration = Date.now() - countyStart;
-      console.error(`   ❌ County grounded search failed after ${duration}ms:`, err.message || err);
+      jobLog(`   ❌ County grounded search failed after ${duration}ms: ${err.message || err}`);
       return { text: null, source: 'county' as const, duration, error: err };
     });
 
@@ -847,15 +832,15 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   jobLog(`   🏆 Winner: ${winnerResult.source} (${winnerResult.duration}ms)`);
 
   if (!winnerResult.text) {
-    console.error(`   ❌ Winner ${winnerResult.source} failed after ${winnerResult.duration}ms:`, winnerResult.error?.message || winnerResult.error);
+    jobLog(`   ❌ Winner ${winnerResult.source} failed after ${winnerResult.duration}ms: ${winnerResult.error?.message || winnerResult.error}`);
     // Wait for the other one
     jobLog(`   🔄 Waiting for ${winnerResult.source === 'primary' ? 'county' : 'primary'} to complete...`);
     const [p, c] = await Promise.all([primaryPromise, countyPromise]);
     const loserResult = winnerResult.source === 'primary' ? c : p;
 
     if (!loserResult.text) {
-      console.error(`   ❌ Loser ${loserResult.source} also failed after ${loserResult.duration}ms:`, loserResult.error?.message || loserResult.error);
-      console.error(`   🛑 FATAL: Both primary and county searches failed - cannot retrieve SPD`);
+      jobLog(`   ❌ Loser ${loserResult.source} also failed after ${loserResult.duration}ms: ${loserResult.error?.message || loserResult.error}`);
+      jobLog(`   🛑 FATAL: Both primary and county searches failed - cannot retrieve SPD`);
       return null;
     }
 

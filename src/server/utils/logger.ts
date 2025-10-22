@@ -7,6 +7,11 @@ const loggingWinston = new LoggingWinston({
   logName: 'propertyvision-api',
 });
 
+// Handle transport errors to prevent crashes
+loggingWinston.on('error', (error) => {
+  console.error('[LoggingWinston Transport Error - Non-Fatal]:', error.message);
+});
+
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: winston.format.combine(
@@ -27,6 +32,13 @@ const logger = winston.createLogger({
     }),
     loggingWinston,
   ],
+  // Prevent transport errors from crashing the process
+  exitOnError: false,
+});
+
+// Handle transport errors gracefully
+logger.on('error', (error) => {
+  console.error('Winston transport error (non-fatal):', error.message);
 });
 
 // API-layer structured logs

@@ -24,3 +24,12 @@ export function jobLog(...args: any[]): void {
     logger.info(message, { source: 'jobLog' });
   }
 }
+
+// Gracefully close Winston logger and wait for all transports to flush
+export async function closeLogger(): Promise<void> {
+  return new Promise((resolve) => {
+    logger.close(() => {
+      resolve();
+    });
+  });
+}

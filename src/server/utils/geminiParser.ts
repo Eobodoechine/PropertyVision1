@@ -89,10 +89,13 @@ Return JSON in exactly this format (no other text):
         throw new Error('No service account found. Set GCP_SA_JSON_B64, GCP_SA_JSON, SERVICE_ACCOUNT_JSON, or GOOGLE_APPLICATION_CREDENTIALS');
       }
 
-      // Get projectId from service account
-      const projectId = serviceAccount.project_id;
+      // Get projectId from service account or environment
+      const projectId = serviceAccount.project_id ||
+                        process.env.VERTEX_AI_PROJECT_ID ||
+                        process.env.GOOGLE_CLOUD_PROJECT_ID ||
+                        process.env.GCLOUD_PROJECT;
       if (!projectId) {
-        throw new Error('Service account does not contain project_id');
+        throw new Error('No project_id found in service account or environment (GOOGLE_CLOUD_PROJECT_ID)');
       }
 
       const result = await vertexGenerate({

@@ -7,7 +7,7 @@
 import * as readline from 'readline';
 import { randomUUID } from 'crypto';
 import { ComprehensiveComparableSearchV10 } from '../src/server/comprehensive-comp-search-v10';
-import { setJobContext } from '../src/server/utils/jobLogger';
+import { setJobContext, closeLogger } from '../src/server/utils/jobLogger';
 import logger, { logSearchResult, logSearchError } from '../src/server/utils/logger.js';
 
 // Set up environment for local testing with caching
@@ -249,10 +249,12 @@ async function main() {
     console.log(`✅ Done! To download logs, run:`);
     console.log(`   ./scripts/download-job-logs.sh ${jobId}`);
     console.log('═══════════════════════════════════════════════════════════\n');
+    await closeLogger(); // Wait for Winston to flush all logs
     process.exit(0);
   } catch (error) {
     console.error('\n❌ Analysis failed');
     console.error(`To view logs: ./scripts/download-job-logs.sh ${jobId}\n`);
+    await closeLogger(); // Wait for Winston to flush all logs
     process.exit(1);
   }
 }

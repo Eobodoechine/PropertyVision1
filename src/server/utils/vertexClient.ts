@@ -134,7 +134,8 @@ class VertexClient {
   private async httpsPostForm(
     url: string,
     body: string,
-    headers: Record<string, string>
+    headers: Record<string, string>,
+    timeoutMs: number = 20000
   ): Promise<any> {
     return new Promise((resolve, reject) => {
       const u = new URL(url);
@@ -161,6 +162,14 @@ class VertexClient {
           });
         }
       );
+
+      // Implement timeout to prevent indefinite hangs
+      req.setTimeout(timeoutMs, () => {
+        req.destroy();
+        const error = new Error(`Request timeout after ${timeoutMs}ms`);
+        (error as any).code = 'ETIMEDOUT';
+        reject(error);
+      });
 
       req.on('error', reject);
       req.write(body);

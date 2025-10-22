@@ -1431,6 +1431,15 @@ Return exactly this JSON structure:
         res.on('data', chunk => data += chunk);
         res.on('end', () => { try { resolve(JSON.parse(data)); } catch { resolve(null); } });
       });
+
+      // Implement timeout to prevent indefinite hangs
+      req.setTimeout(timeoutMs, () => {
+        req.destroy();
+        const error = new Error(`Request timeout after ${timeoutMs}ms`);
+        (error as any).code = 'ETIMEDOUT';
+        reject(error);
+      });
+
       req.on('error', reject);
       req.write(body);
       req.end();
