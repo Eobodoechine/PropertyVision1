@@ -44,3 +44,8 @@ logs/*.log
 # local & runtime logs
 src/logs/*.log
 logs/
+
+# credentials and secrets
+.credentials/
+*.json.key
+service-account*.json
