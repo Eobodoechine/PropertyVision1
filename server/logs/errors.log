@@ -1,0 +1,27 @@
+[2025-09-12T18:08:42.518Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at __node_internal_captureLargerStackTrace (node:internal/errors:490:5)
+    at __node_internal_uvExceptionWithHostPort (node:internal/errors:589:12)
+    at Server.setupListenHandle [as _listen2] (node:net:1740:16)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-12T18:24:44.036Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at __node_internal_captureLargerStackTrace (node:internal/errors:490:5)
+    at __node_internal_uvExceptionWithHostPort (node:internal/errors:589:12)
+    at Server.setupListenHandle [as _listen2] (node:net:1740:16)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}
+[2025-09-12T18:31:51.251Z] ERROR listen EADDRINUSE: address already in use 0.0.0.0:5000 
+STACK Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at __node_internal_captureLargerStackTrace (node:internal/errors:490:5)
+    at __node_internal_uvExceptionWithHostPort (node:internal/errors:589:12)
+    at Server.setupListenHandle [as _listen2] (node:net:1740:16)
+    at listenInCluster (node:net:1788:12)
+    at doListen (node:net:1937:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21) 
+CTX {"type":"uncaughtException"}

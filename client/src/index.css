@@ -1,0 +1,231 @@
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"); */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(210 25% 7.8431%);
+  --card: hsl(180 6.6667% 97.0588%);
+  --card-foreground: hsl(210 25% 7.8431%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(210 25% 7.8431%);
+  --primary: hsl(220 100% 61%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(210 25% 7.8431%);
+  --secondary-foreground: hsl(0 0% 100%);
+  --muted: hsl(240 1.9608% 90%);
+  --muted-foreground: hsl(210 25% 7.8431%);
+  --accent: hsl(211.5789 51.3514% 92.7451%);
+  --accent-foreground: hsl(203.8863 88.2845% 53.1373%);
+  --destructive: hsl(356.3033 90.5579% 54.3137%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(201.4286 30.4348% 90.9804%);
+  --input: hsl(200 23.0769% 97.4510%);
+  --ring: hsl(220 100% 61%);
+  --chart-1: hsl(203.8863 88.2845% 53.1373%);
+  --chart-2: hsl(159.7826 100% 36.0784%);
+  --chart-3: hsl(42.0290 92.8251% 56.2745%);
+  --chart-4: hsl(147.1429 78.5047% 41.9608%);
+  --chart-5: hsl(341.4894 75.2000% 50.9804%);
+  --sidebar: hsl(180 6.6667% 97.0588%);
+  --sidebar-foreground: hsl(210 25% 7.8431%);
+  --sidebar-primary: hsl(203.8863 88.2845% 53.1373%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(211.5789 51.3514% 92.7451%);
+  --sidebar-accent-foreground: hsl(203.8863 88.2845% 53.1373%);
+  --sidebar-border: hsl(205.0000 25.0000% 90.5882%);
+  --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
+  --font-sans: "Inter", "Open Sans", sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  /* Design-specific blue colors for primary actions */
+  --blue-600: hsl(220 100% 61%);
+  --blue-700: hsl(220 100% 56%);
+  --blue-50: hsl(220 100% 97%);
+}
+
+.dark {
+  --background: hsl(0 0% 0%);
+  --foreground: hsl(200 6.6667% 91.1765%);
+  --card: hsl(228 9.8039% 10%);
+  --card-foreground: hsl(0 0% 85.0980%);
+  --popover: hsl(0 0% 0%);
+  --popover-foreground: hsl(200 6.6667% 91.1765%);
+  --primary: hsl(220 100% 61%);
+  --primary-foreground: hsl(0 0% 100%);
+  --secondary: hsl(195.0000 15.3846% 94.9020%);
+  --secondary-foreground: hsl(210 25% 7.8431%);
+  --muted: hsl(0 0% 9.4118%);
+  --muted-foreground: hsl(210 3.3898% 46.2745%);
+  --accent: hsl(205.7143 70% 7.8431%);
+  --accent-foreground: hsl(203.7736 87.6033% 52.5490%);
+  --destructive: hsl(356.3033 90.5579% 54.3137%);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: hsl(210 5.2632% 14.9020%);
+  --input: hsl(207.6923 27.6596% 18.4314%);
+  --ring: hsl(220 100% 61%);
+  --chart-1: hsl(203.8863 88.2845% 53.1373%);
+  --chart-2: hsl(159.7826 100% 36.0784%);
+  --chart-3: hsl(42.0290 92.8251% 56.2745%);
+  --chart-4: hsl(147.1429 78.5047% 41.9608%);
+  --chart-5: hsl(341.4894 75.2000% 50.9804%);
+  --sidebar: hsl(228 9.8039% 10%);
+  --sidebar-foreground: hsl(0 0% 85.0980%);
+  --sidebar-primary: hsl(202.8169 89.1213% 53.1373%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(205.7143 70% 7.8431%);
+  --sidebar-accent-foreground: hsl(203.7736 87.6033% 52.5490%);
+  --sidebar-border: hsl(205.7143 15.7895% 26.0784%);
+  --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
+  --font-sans: "Inter", "Open Sans", sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 0.5rem;
+  --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-sm: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 1px 2px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-md: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 2px 4px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-lg: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 4px 6px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00), 0px 8px 10px -1px hsl(202.8169 89.1213% 53.1373% / 0.00);
+  --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* Custom classes to ensure they're available */
+  .text-6xl { font-size: 3.75rem; line-height: 1.1; }
+  .text-7xl { font-size: 4.5rem; line-height: 1.1; }
+  .text-5xl { font-size: 3rem; line-height: 1.1; }
+  .rounded-2xl { border-radius: 1rem; }
+  .rounded-3xl { border-radius: 1.5rem; }
+  .rounded-xl { border-radius: 0.75rem; }
+  .shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+  .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+  .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+  .backdrop-blur-sm { backdrop-filter: blur(4px); }
+  .blur-3xl { filter: blur(64px); }
+  .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  .animate-spin { animation: spin 1s linear infinite; }
+  .leading-tight { line-height: 1.25; }
+  .leading-relaxed { line-height: 1.625; }
+  .tracking-tight { letter-spacing: -0.025em; }
+  .hover\:scale-105:hover { transform: scale(1.05); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  /* Color classes with enhanced vibrancy */
+  .text-blue-600 { color: rgb(37 99 235); }
+  .text-emerald-600 { color: rgb(5 150 105); }
+  .text-blue-500 { color: rgb(59 130 246); }
+  .text-emerald-500 { color: rgb(16 185 129); }
+  .text-green-500 { color: rgb(34 197 94); }
+  .text-gray-600 { color: rgb(75 85 99); }
+  .text-gray-700 { color: rgb(55 65 81); }
+  .text-gray-800 { color: rgb(31 41 55); }
+  .text-gray-500 { color: rgb(107 114 128); }
+  .text-gray-400 { color: rgb(156 163 175); }
+  .text-white { color: rgb(255 255 255); }
+  .text-red-600 { color: rgb(220 38 38); }
+
+  /* Enhanced gradient text support */
+  .gradient-text-primary {
+    background: linear-gradient(135deg, #2563EB 0%, #059669 50%, #2563EB 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-blue-600 { background-color: rgb(37 99 235); }
+  .bg-emerald-600 { background-color: rgb(5 150 105); }
+  .bg-blue-500 { background-color: rgb(59 130 246); }
+  .bg-emerald-500 { background-color: rgb(16 185 129); }
+  .bg-green-500 { background-color: rgb(34 197 94); }
+  .bg-green-100 { background-color: rgb(220 252 231); }
+  .bg-white { background-color: rgb(255 255 255); }
+  .bg-gray-50 { background-color: rgb(249 250 251); }
+  .bg-gray-100 { background-color: rgb(243 244 246); }
+  .bg-gray-200 { background-color: rgb(229 231 235); }
+  .bg-gray-800 { background-color: rgb(31 41 55); }
+  .bg-gray-900 { background-color: rgb(17 24 39); }
+  .bg-red-50 { background-color: rgb(254 242 242); }
+
+  .border-blue-200 { border-color: rgb(191 219 254); }
+  .border-emerald-200 { border-color: rgb(167 243 208); }
+  .border-purple-200 { border-color: rgb(221 214 254); }
+  .border-gray-100 { border-color: rgb(243 244 246); }
+  .border-gray-200 { border-color: rgb(229 231 235); }
+  .border-white { border-color: rgb(255 255 255); }
+  .border-red-200 { border-color: rgb(254 202 202); }
+
+  /* Gradient backgrounds */
+  .from-blue-50 { --tw-gradient-from: rgb(239 246 255); }
+  .from-blue-400 { --tw-gradient-from: rgb(96 165 250); }
+  .from-blue-600 { --tw-gradient-from: rgb(37 99 235); }
+  .from-blue-700 { --tw-gradient-from: rgb(29 78 216); }
+  .from-emerald-400 { --tw-gradient-from: rgb(52 211 153); }
+  .from-emerald-600 { --tw-gradient-from: rgb(5 150 105); }
+  .from-emerald-700 { --tw-gradient-from: rgb(4 120 87); }
+  .from-emerald-50 { --tw-gradient-from: rgb(236 253 245); }
+  .from-blue-50 { --tw-gradient-from: rgb(239 246 255); }
+  .from-purple-50 { --tw-gradient-from: rgb(250 245 255); }
+  .from-gray-50 { --tw-gradient-from: rgb(249 250 251); }
+  .from-gray-900 { --tw-gradient-from: rgb(17 24 39); }
+
+  .via-white { --tw-gradient-via: rgb(255 255 255); }
+  .via-emerald-600 { --tw-gradient-via: rgb(5 150 105); }
+
+  .to-emerald-50 { --tw-gradient-to: rgb(236 253 245); }
+  .to-emerald-400 { --tw-gradient-to: rgb(52 211 153); }
+  .to-emerald-600 { --tw-gradient-to: rgb(5 150 105); }
+  .to-emerald-700 { --tw-gradient-to: rgb(4 120 87); }
+  .to-blue-400 { --tw-gradient-to: rgb(96 165 250); }
+  .to-blue-600 { --tw-gradient-to: rgb(37 99 235); }
+  .to-blue-700 { --tw-gradient-to: rgb(29 78 216); }
+  .to-blue-100 { --tw-gradient-to: rgb(219 234 254); }
+  .to-emerald-100 { --tw-gradient-to: rgb(209 250 229); }
+  .to-purple-100 { --tw-gradient-to: rgb(243 232 255); }
+  .to-gray-100 { --tw-gradient-to: rgb(243 244 246); }
+  .to-gray-800 { --tw-gradient-to: rgb(31 41 55); }
+}

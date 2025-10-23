@@ -1,0 +1,5 @@
+---
+description:Do not use fake data
+globs:
+alwaysApply: true
+---

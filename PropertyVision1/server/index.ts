@@ -132,9 +132,10 @@ if (!mounted) {
 
 // Setup Vite development server or serve static files
 if (process.env.NODE_ENV === 'development') {
-  log('🚀 Setting up Vite development server...');
-  await setupVite(app, server);
-  log('✅ Vite development server ready');
+  log('🚀 Skipping Vite setup for now - running API only');
+  // TODO: Fix Vite integration later
+  // await setupVite(app, server);
+  // log('✅ Vite development server ready');
 } else {
   log('📦 Serving static files...');
   serveStatic(app);
@@ -153,7 +154,7 @@ app.use((err: any, _req: express.Request, res: express.Response, _next: express.
   res.status(status).json({ error: err?.message || 'Internal Server Error' });
 });
 
-const PORT = Number(process.env.PORT) || 5000;
+const PORT = Number(process.env.PORT) || 3001;
 const HOST = '0.0.0.0';
 
 server.listen(PORT, HOST, () => {
