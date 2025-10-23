@@ -1,11 +1,10 @@
 #!/bin/bash
 cd /Users/eobodoechine/PropertyVision1/frontend
 
-# Export env vars from .env.local manually
-export GCP_SA_JSON="/Users/eobodoechine/PropertyVision1/agile-device-472202-i8-319f002d9438.json"
-export GOOGLE_APPLICATION_CREDENTIALS="/Users/eobodoechine/PropertyVision1/agile-device-472202-i8-319f002d9438.json"
-export GOOGLE_CLOUD_PROJECT_ID="agile-device-472202-i8"
-export GOOGLE_MAPS_API_KEY="AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc"
+# Load environment variables from .env.local
+set -a
+source .env.local 2>/dev/null || true
+set +a
 export REDIS_URL="redis://localhost:6379"
 export EMAIL_USER="lopez.b.mikaela@gmail.com"
 export EMAIL_PASS="dudnzaafegqjzfci"
