@@ -7,7 +7,7 @@ if (!(globalThis as any).File) {
 }
 
 import 'dotenv/config';
-import { storage } from './storage-gemini-only.js';
+import { storage } from './comprehensive-comp-search.js';
 
 // Helper to compute baths similar to server logic
 function computeBathsCompat(desc: any): number | null {

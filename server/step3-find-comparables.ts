@@ -1142,7 +1142,7 @@ async function testFindComparables() {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   testFindComparables().catch(err => {
     console.error('❌ Error:', err.message);
     process.exit(1);

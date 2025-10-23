@@ -876,7 +876,7 @@ async function testARVCalculation() {
 }
 
 // Run if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   testARVCalculation().catch(console.error);
 }
 

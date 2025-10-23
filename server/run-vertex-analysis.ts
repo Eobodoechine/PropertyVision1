@@ -8,15 +8,15 @@ async function main() {
   const location = process.env.VERTEX_LOCATION || 'us-central1';
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
 
-  const mod = await import('../PropertyVision1-1/PropertyVision1/server/vertex-analyze.ts');
-  const { analyzeVertex } = mod as any;
-  const result = await analyzeVertex(address, { sameSubdivision: false, saPath, location, model });
+  const mod = await import('./comprehensive-comp-search.js');
+  const { ComprehensiveCompSearch } = mod as any;
+  const analyzer = new ComprehensiveCompSearch();
+  const result = await analyzer.runComprehensiveSearch(address, { sameSubdivision: false });
   console.log(JSON.stringify(result, null, 2));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.env.RUN_CLI === '1' && import.meta.url === `file://${process.argv[1]}`) {
   main().catch(err => { console.error('RUN ERROR:', err?.message || err); process.exit(1); });
 }
 
 export {};
-
