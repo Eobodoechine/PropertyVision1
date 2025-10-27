@@ -262,7 +262,7 @@ class VertexClient {
             'https://www.googleapis.com/auth/cloud-platform'
           );
 
-          const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
+          const endpoint = `https://aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
 
           const payload: any = {
             contents: [{ role: 'user', parts: [{ text: opts.prompt }] }],

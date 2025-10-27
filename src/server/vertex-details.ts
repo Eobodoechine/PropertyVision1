@@ -122,6 +122,7 @@ async function httpsPostJson(url: string, payload: any, headers: Record<string,s
 }
 
 async function vertexGenerate(opts: {
+  caller?: string;
   token: string;
   projectId: string;
   location: string;
@@ -132,8 +133,11 @@ async function vertexGenerate(opts: {
   timeoutMs: number;
   responseSchema?: any;
 }): Promise<string> {
+  const caller = opts.caller || 'vertex-details-unknown';
+  jobLog(`📞 SPD_VERTEX_CALL from ${caller}`);
+
   const token = opts.token;
-  const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
+  const endpoint = `https://aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
   const payload: any = {
     contents: [ { role: 'user', parts: [ { text: opts.prompt } ] } ],
     generationConfig: {
@@ -146,8 +150,34 @@ async function vertexGenerate(opts: {
   // Use legacy grounding tool name expected by this project
   if (opts.grounded) payload.tools = [ { google_search: {} } as any ];
   if (opts.responseSchema) (payload.generationConfig as any).responseSchema = opts.responseSchema;
+
   const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
+
+  // Add error checking and logging
+  if (!res) {
+    jobLog(`❌ SPD_VERTEX_EXIT_NULL_RESPONSE: caller=${caller}`);
+    return '';
+  }
+
+  if (!res.candidates) {
+    if (res.error) {
+      const errorCode = res.error.code || 'unknown';
+      const errorStatus = res.error.status || 'unknown';
+      jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, reason=${errorStatus}, httpCode=${errorCode}, error=${JSON.stringify(res.error)}`);
+    } else {
+      jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, reason=NO_ERROR_OBJECT`);
+    }
+    return '';
+  }
+
   const text = res?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || '').join('') || '';
+
+  if (!text || text.length === 0) {
+    jobLog(`❌ SPD_VERTEX_EXIT_EMPTY_TEXT: caller=${caller}`);
+  } else {
+    jobLog(`✅ SPD_VERTEX_SUCCESS: caller=${caller}, textLength=${text.length}`);
+  }
+
   return text;
 }
 
@@ -208,6 +238,7 @@ Return JSON with this exact structure:
     try {
       jobLog(`   🔍 Calling non-grounded Vertex AI for JSON parsing (attempt ${attempt}/${MAX_RETRIES}, timeout: ${SPD_PARSE_TIMEOUT_MS}ms)...`);
       const responseText = await vertexGenerate({
+        caller: 'subject_property_parse_json',
         ...ctx,
         prompt,
         grounded: false,  // CRITICAL: No web search, just parse the provided text
@@ -801,7 +832,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
   const primaryStart = Date.now();
   const countyStart = Date.now();
 
-  const primaryPromise = vertexGenerate({ ...ctx, prompt: primaryPrompt, grounded: true, json: false, timeoutMs: SPD_PRIMARY_TIMEOUT_MS })
+  const primaryPromise = vertexGenerate({ caller: 'subject_property_primary', ...ctx, prompt: primaryPrompt, grounded: true, json: false, timeoutMs: SPD_PRIMARY_TIMEOUT_MS })
     .then(text => {
       const duration = Date.now() - primaryStart;
       jobLog(`   ✅ Primary grounded search completed in ${duration}ms`);
@@ -814,7 +845,7 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
       return { text: null, source: 'primary' as const, duration, error: err };
     });
 
-  const countyPromise = vertexGenerate({ ...ctx, prompt: countyPrompt, grounded: true, json: false, timeoutMs: SPD_COUNTY_TIMEOUT_MS })
+  const countyPromise = vertexGenerate({ caller: 'subject_property_county', ...ctx, prompt: countyPrompt, grounded: true, json: false, timeoutMs: SPD_COUNTY_TIMEOUT_MS })
     .then(text => {
       const duration = Date.now() - countyStart;
       jobLog(`   ✅ County grounded search completed in ${duration}ms`);

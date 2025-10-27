@@ -67,7 +67,7 @@ async function getServiceAccountToken(sa, scope) {
     const signature = sign.sign(formattedPrivateKey).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const assertion = `${unsigned}.${signature}`;
     const body = new URLSearchParams({ grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer', assertion });
-    const resp = await httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' }, 20000);
+    const resp = await httpsPostForm(sa.token_uri, body.toString(), { 'Content-Type': 'application/x-www-form-urlencoded' }, 60000);
     if (!resp?.access_token)
         throw new Error('sa-token-failed');
     return resp.access_token;
@@ -101,6 +101,8 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
 }
 // Direct vertex generate function for LLM parsing
 export async function vertexGenerate(opts) {
+    const caller = opts.caller || 'unknown';
+    jobLog(`📞 VERTEX_CALL from ${caller}`);
     jobLog(`🔍 VERTEX DEBUG 1: vertexGenerate called with opts keys:`, Object.keys(opts));
     jobLog(`🔍 VERTEX DEBUG 2: projectId="${opts.projectId}", location="${opts.location}", model="${opts.model}"`);
     jobLog(`🔍 VERTEX DEBUG 3: prompt length=${opts.prompt?.length}, grounded=${opts.grounded}, json=${opts.json}`);
@@ -111,7 +113,7 @@ export async function vertexGenerate(opts) {
     const token = opts.token || await getServiceAccountToken(opts.sa, 'https://www.googleapis.com/auth/cloud-platform');
     jobLog(`🔍 VERTEX DEBUG 6: Token obtained, length=${token?.length}`);
 
-    const endpoint = `https://${opts.location}-aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
+    const endpoint = `https://aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
     jobLog(`🔍 VERTEX DEBUG 7: Endpoint=${endpoint}`);
 
     const payload = {
@@ -149,6 +151,7 @@ export async function vertexGenerate(opts) {
 
     if (!res) {
         jobLog(`🔍 VERTEX DEBUG 14: NULL RESPONSE - returning empty string`);
+        jobLog(`❌ VERTEX_EXIT_NULL_RESPONSE: caller=${caller}`);
         return '';
     }
 
@@ -156,6 +159,11 @@ export async function vertexGenerate(opts) {
         jobLog(`🔍 VERTEX DEBUG 15: NO CANDIDATES - response:`, res);
         if (res.error) {
             jobLog(`🔍 VERTEX DEBUG 15.1: ERROR DETAILS:`, JSON.stringify(res.error, null, 2));
+            const errorCode = res.error.code || 'unknown';
+            const errorStatus = res.error.status || 'unknown';
+            jobLog(`❌ VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, reason=${errorStatus}, httpCode=${errorCode}`);
+        } else {
+            jobLog(`❌ VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, reason=NO_ERROR_OBJECT`);
         }
         return '';
     }
@@ -164,6 +172,7 @@ export async function vertexGenerate(opts) {
 
     if (!res.candidates[0]) {
         jobLog(`🔍 VERTEX DEBUG 17: NO FIRST CANDIDATE`);
+        jobLog(`❌ VERTEX_EXIT_NO_FIRST_CANDIDATE: caller=${caller}`);
         return '';
     }
 
@@ -171,6 +180,7 @@ export async function vertexGenerate(opts) {
 
     if (!res.candidates[0].content) {
         jobLog(`🔍 VERTEX DEBUG 19: NO CONTENT in first candidate`);
+        jobLog(`❌ VERTEX_EXIT_NO_CONTENT: caller=${caller}`);
         return '';
     }
 
@@ -178,6 +188,7 @@ export async function vertexGenerate(opts) {
 
     if (!res.candidates[0].content.parts) {
         jobLog(`🔍 VERTEX DEBUG 21: NO PARTS in content`);
+        jobLog(`❌ VERTEX_EXIT_NO_PARTS: caller=${caller}`);
         return '';
     }
 
@@ -191,6 +202,7 @@ export async function vertexGenerate(opts) {
     const text = res?.candidates?.[0]?.content?.parts?.map((p) => p?.text || '').join('') || '';
     jobLog(`🔍 VERTEX DEBUG 24: Final extracted text: "${text}"`);
     jobLog(`🔍 VERTEX DEBUG 25: Final text length: ${text.length}`);
+    jobLog(`✅ VERTEX_SUCCESS: caller=${caller}, textLength=${text.length}`);
 
     return text;
 }

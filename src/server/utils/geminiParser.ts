@@ -67,43 +67,17 @@ Return JSON in exactly this format (no other text):
     jobLog('🔄 GeminiParser: Calling Vertex AI Gemini...');
 
     try {
-      // Load service account from environment (supports both local and Cloud Run)
-      let serviceAccount: any;
-
-      if (process.env.GCP_SA_JSON_B64) {
-        // Production: base64 encoded JSON
-        const saJson = Buffer.from(process.env.GCP_SA_JSON_B64, 'base64').toString('utf-8');
-        serviceAccount = JSON.parse(saJson);
-      } else if (process.env.GCP_SA_JSON) {
-        // Local: file path
-        const fs = await import('fs');
-        serviceAccount = JSON.parse(fs.readFileSync(process.env.GCP_SA_JSON, 'utf8'));
-      } else if (process.env.SERVICE_ACCOUNT_JSON) {
-        // Alternative: direct JSON string
-        serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_JSON);
-      } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-        // Google default credentials file path
-        const fs = await import('fs');
-        serviceAccount = JSON.parse(fs.readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8'));
-      } else {
-        throw new Error('No service account found. Set GCP_SA_JSON_B64, GCP_SA_JSON, SERVICE_ACCOUNT_JSON, or GOOGLE_APPLICATION_CREDENTIALS');
-      }
-
-      // Get projectId from service account or environment
-      const projectId = serviceAccount.project_id ||
-                        process.env.VERTEX_AI_PROJECT_ID ||
-                        process.env.GOOGLE_CLOUD_PROJECT_ID ||
-                        process.env.GCLOUD_PROJECT;
-      if (!projectId) {
-        throw new Error('No project_id found in service account or environment (GOOGLE_CLOUD_PROJECT_ID)');
-      }
+      // Use Application Default Credentials (ADC)
+      const { resolveProjectId, getAccessTokenViaAuth } = await import('../vertex-freeform.js');
+      const projectId = await resolveProjectId();
+      const token = await getAccessTokenViaAuth();
 
       const result = await vertexGenerate({
         projectId: projectId,
         location: this.location,
         model: this.model,
         prompt: prompt,
-        sa: serviceAccount,
+        token: token,
         json: true,
         timeoutMs: 30000
       });

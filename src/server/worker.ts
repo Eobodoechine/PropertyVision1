@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { getJobQueue } from './utils/jobQueue';
 import { jobLog } from './utils/jobLogger';
 import http from 'http';
