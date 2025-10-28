@@ -5,14 +5,46 @@ import { GoogleAuth } from 'google-auth-library';
 import { jobLog } from './utils/jobLogger';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
+
+// 🔍 DIAGNOSTIC: Track concurrent API calls and socket usage
+let activeVertexCalls = 0;
+let peakConcurrency = 0;
+
 async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
+    // 🔍 DIAGNOSTIC: Increment concurrent call counter
+    activeVertexCalls++;
+    if (activeVertexCalls > peakConcurrency) {
+        peakConcurrency = activeVertexCalls;
+    }
+
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
         const body = JSON.stringify(payload);
+
+        // 🔍 DIAGNOSTIC: Check HTTP agent state BEFORE making request
+        const globalAgent = https.globalAgent;
+        const hostname = u.hostname;
+        const socketKey = `${hostname}:443:`;
+
+        const activeSockets = globalAgent.sockets[socketKey] || [];
+        const freeSockets = globalAgent.freeSockets[socketKey] || [];
+        const queuedRequests = globalAgent.requests[socketKey] || [];
+
+        jobLog(`🔍 SOCKET DIAG [call ${activeVertexCalls}/${peakConcurrency} peak]:`);
+        jobLog(`   maxSockets: ${globalAgent.maxSockets}`);
+        jobLog(`   active sockets: ${activeSockets.length}`);
+        jobLog(`   free sockets: ${freeSockets.length}`);
+        jobLog(`   queued requests: ${queuedRequests.length}`);
+        jobLog(`   hostname: ${hostname}`);
+
         const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), ...headers } }, (res) => {
             let data = '';
             res.on('data', c => (data += c));
             res.on('end', () => {
+                // 🔍 DIAGNOSTIC: Decrement counter when complete
+                activeVertexCalls--;
+                jobLog(`🔍 SOCKET FREED: active calls now ${activeVertexCalls}`);
+
                 try {
                     resolve(JSON.parse(data));
                 }
@@ -22,15 +54,43 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
             });
         });
 
+        // 🔍 DIAGNOSTIC: Track socket lifecycle events
+        req.on('socket', (socket) => {
+            const isReused = socket._reusedSocket || false;
+            jobLog(`🔍 SOCKET ASSIGNED: reused=${isReused}, destroyed=${socket.destroyed}`);
+
+            socket.on('connect', () => {
+                jobLog(`🔍 SOCKET CONNECTED`);
+            });
+
+            socket.on('close', () => {
+                jobLog(`🔍 SOCKET CLOSED`);
+            });
+        });
+
         // Implement timeout to prevent indefinite hangs
         req.setTimeout(timeoutMs, () => {
             req.destroy();
+            activeVertexCalls--;
             const error = new Error(`Request timeout after ${timeoutMs}ms`);
             error.code = 'ETIMEDOUT';
             reject(error);
         });
 
-        req.on('error', reject);
+        req.on('error', (err) => {
+            // 🔍 DIAGNOSTIC: Enhanced error logging with socket state
+            activeVertexCalls--;
+            const socketReused = req.socket?._reusedSocket || false;
+            const socketDestroyed = req.socket?.destroyed || false;
+            jobLog(`🔍 REQUEST ERROR: ${err.message}`);
+            jobLog(`   error code: ${err.code}`);
+            jobLog(`   socket reused: ${socketReused}`);
+            jobLog(`   socket destroyed: ${socketDestroyed}`);
+            jobLog(`   active calls: ${activeVertexCalls}`);
+            jobLog(`   peak concurrency: ${peakConcurrency}`);
+            reject(err);
+        });
+
         req.write(body);
         req.end();
     });
@@ -141,7 +201,21 @@ export async function vertexGenerate(opts) {
     const startTime = Date.now();
     jobLog(`📊 VERTEX_CALL_START: type=${callType}, grounded=${opts.grounded}, json=${opts.json}, timeout=${opts.timeoutMs}ms`);
 
-    const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
+    let res;
+    try {
+        res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
+    } catch (error) {
+        const duration = Date.now() - startTime;
+        if (error.code === 'ETIMEDOUT') {
+            jobLog(`❌ VERTEX_TIMEOUT_ERROR: type=${callType}, duration=${duration}ms, timeout=${opts.timeoutMs}ms`);
+            jobLog(`❌ VERTEX_TIMEOUT_DETAILS: caller=${caller}, error=${error.message}`);
+        } else {
+            jobLog(`❌ VERTEX_HTTP_ERROR: type=${callType}, duration=${duration}ms, error=${error.code || 'unknown'}`);
+            jobLog(`❌ VERTEX_HTTP_ERROR_DETAILS: caller=${caller}, message=${error.message}`);
+        }
+        jobLog(`📊 VERTEX_CALL_FAILED: type=${callType}, duration=${duration}ms, error=${error.code}`);
+        return '';
+    }
 
     const duration = Date.now() - startTime;
     jobLog(`📊 VERTEX_CALL_COMPLETE: type=${callType}, duration=${duration}ms, success=${!!res}`);

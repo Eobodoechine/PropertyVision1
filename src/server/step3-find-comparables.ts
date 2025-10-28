@@ -166,7 +166,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         const { vertexGenerate } = await import('./vertex-freeform.js');
         jobLog(`🔍 FETCH DEBUG: vertex-freeform.js imported successfully`);
 
-        jobLog(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 60000ms`);
+        jobLog(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 120000ms`);
         const startVertex = Date.now();
         const r = await vertexGenerate({
           token: token,
@@ -175,7 +175,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           model,
           prompt: p,
           grounded: true,
-          timeoutMs: 60000
+          timeoutMs: 120000
         });
         const vertexTime = Date.now() - startVertex;
         jobLog(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
@@ -242,15 +242,38 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
       // Extract successful results and handle failures
       const batches: ComparableProperty[][] = [];
+      let timeoutCount = 0;
+      let errorCount = 0;
+
       results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           jobLog(`✅ VERTEX DEBUG: Search ${index + 1} fulfilled with ${result.value ? result.value.length : 0} results`);
           batches.push(result.value || []);
         } else {
-          console.error(`❌ VERTEX DEBUG: Search ${index + 1} rejected: ${result.reason?.message || result.reason}`);
+          const errorMessage = result.reason?.message || String(result.reason);
+          const errorCode = result.reason?.code || 'unknown';
+
+          if (errorCode === 'ETIMEDOUT' || errorMessage.includes('timeout')) {
+            timeoutCount++;
+            jobLog(`❌ SEARCH_TIMEOUT: Search ${index + 1}/${prompts.length} timed out - ${errorMessage}`);
+            jobLog(`⏱️  TIMEOUT_DETAILS: search=${index + 1}, error_code=${errorCode}, duration=${promiseAllTime}ms`);
+          } else {
+            errorCount++;
+            jobLog(`❌ SEARCH_ERROR: Search ${index + 1}/${prompts.length} failed - ${errorMessage}`);
+            jobLog(`🔍 ERROR_DETAILS: search=${index + 1}, error_code=${errorCode}, error_type=${typeof result.reason}`);
+          }
+
+          console.error(`❌ VERTEX DEBUG: Search ${index + 1} rejected: ${errorMessage}`, result.reason);
           batches.push([]); // Add empty array for failed searches
         }
       });
+
+      // Summary logging
+      const successCount = results.filter(r => r.status === 'fulfilled').length;
+      jobLog(`📊 SEARCH_SUMMARY: total=${prompts.length}, success=${successCount}, timeouts=${timeoutCount}, errors=${errorCount}`);
+      if (timeoutCount > 0) {
+        jobLog(`⚠️  WARNING: ${timeoutCount} search(es) timed out - consider increasing timeout or optimizing queries`);
+      }
 
       for (const list of batches) {
         if (list && list.length > 0) {
