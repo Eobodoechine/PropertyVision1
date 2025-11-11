@@ -12,12 +12,18 @@ async function startWorker() {
   jobLog('🚀 Starting job worker...');
   const jobQueue = getJobQueue();
 
-  // Start HTTP server for Cloud Run health checks (required for Cloud Run Services)
+  // Start HTTP server for Cloud Run health checks and wake-up endpoint
   const PORT = parseInt(process.env.PORT || '8080', 10);
   const server = http.createServer((req, res) => {
     if (req.url === '/health' || req.url === '/') {
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end('OK');
+    } else if (req.url === '/wake' && req.method === 'POST') {
+      // Wake-up endpoint to trigger Cloud Run scale-up from zero
+      // Worker will pick up jobs from Redis Stream in background
+      res.writeHead(202, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'Worker waking up' }));
+      jobLog('👋 Wake-up call received - worker is active');
     } else {
       res.writeHead(404);
       res.end('Not Found');

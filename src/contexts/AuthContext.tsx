@@ -1,18 +1,13 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import {
-  User,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile
-} from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
+
+// Mock User type (replacing Firebase User)
+interface User {
+  uid: string;
+  email: string | null;
+  displayName?: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -47,99 +42,58 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Bypass auth for local testing
-  const disableAuth = process.env.NEXT_PUBLIC_DISABLE_AUTH === 'true';
-
   useEffect(() => {
-    if (disableAuth) {
-      // Mock user for local testing
-      setUser({ uid: 'local-test-user', email: 'test@local.dev' } as User);
-      setUserProfile({
-        uid: 'local-test-user',
-        email: 'test@local.dev',
-        name: 'Local Test User',
-        phone: '',
-        createdAt: new Date()
-      });
-      setLoading(false);
-      return;
-    }
-
-    if (!auth) {
-      // Auth is null, skip Firebase setup
-      setLoading(false);
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setUser(user);
-
-      if (user) {
-        // Fetch user profile from Firestore
-        if (db) {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists()) {
-            const profileData = userDoc.data();
-            setUserProfile({
-              uid: user.uid,
-              email: user.email || '',
-              name: profileData.name || '',
-              phone: profileData.phone || '',
-              createdAt: profileData.createdAt?.toDate() || new Date()
-            });
-          }
-        }
-      } else {
-        setUserProfile(null);
-      }
-
-      setLoading(false);
+    // Always use mock user for local testing (Firebase disabled)
+    setUser({ uid: 'local-test-user', email: 'test@local.dev' });
+    setUserProfile({
+      uid: 'local-test-user',
+      email: 'test@local.dev',
+      name: 'Local Test User',
+      phone: '',
+      createdAt: new Date()
     });
-
-    return unsubscribe;
+    setLoading(false);
   }, []);
 
   const login = async (email: string, password: string) => {
-    if (!auth) throw new Error('Auth disabled');
-    await signInWithEmailAndPassword(auth, email, password);
+    // Mock login
+    setUser({ uid: 'mock-user', email });
+    setUserProfile({
+      uid: 'mock-user',
+      email,
+      name: 'Mock User',
+      phone: '',
+      createdAt: new Date()
+    });
   };
 
   const signup = async (email: string, password: string, name: string, phone: string) => {
-    if (!auth || !db) throw new Error('Auth disabled');
-    const { user } = await createUserWithEmailAndPassword(auth, email, password);
-
-    // Update display name
-    await updateProfile(user, { displayName: name });
-
-    // Store additional user data in Firestore
-    await setDoc(doc(db, 'users', user.uid), {
+    // Mock signup
+    setUser({ uid: 'mock-user', email });
+    setUserProfile({
+      uid: 'mock-user',
+      email,
       name,
       phone,
-      email,
       createdAt: new Date()
     });
   };
 
   const loginWithGoogle = async () => {
-    if (!auth || !db) throw new Error('Auth disabled');
-    const provider = new GoogleAuthProvider();
-    const { user } = await signInWithPopup(auth, provider);
-
-    // Check if user profile exists, if not create it
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
-    if (!userDoc.exists()) {
-      await setDoc(doc(db, 'users', user.uid), {
-        name: user.displayName || '',
-        phone: '', // Empty phone for Google users
-        email: user.email || '',
-        createdAt: new Date()
-      });
-    }
+    // Mock Google login
+    setUser({ uid: 'mock-google-user', email: 'google@test.com' });
+    setUserProfile({
+      uid: 'mock-google-user',
+      email: 'google@test.com',
+      name: 'Google Test User',
+      phone: '',
+      createdAt: new Date()
+    });
   };
 
   const logout = async () => {
-    if (!auth) throw new Error('Auth disabled');
-    await signOut(auth);
+    setUser(null);
+    setUserProfile(null);
   };
 
   const value = {

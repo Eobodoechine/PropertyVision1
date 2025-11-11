@@ -1,0 +1,63 @@
+[
+  {
+    "key": "job:0b0f81be-1783-422a-ae9c-d76836940eec",
+    "jobId": "0b0f81be-1783-422a-ae9c-d76836940eec",
+    "shortId": "0b0f81be",
+    "status": "completed",
+    "address": "1395 Athens Ave SW, Atlanta, GA 30310",
+    "createdAt": 1762880156275,
+    "completedAt": 1762880301942,
+    "lastHeartbeat": 1762880301942,
+    "progress": 100,
+    "phase": "Complete"
+  },
+  {
+    "key": "job:ab410fb3-39df-4385-adef-453a181fd034",
+    "jobId": "ab410fb3-39df-4385-adef-453a181fd034",
+    "shortId": "ab410fb3",
+    "status": "completed",
+    "address": "1395 Athens Ave SW, Atlanta, GA 30310",
+    "createdAt": 1762880161889,
+    "completedAt": 1762880429226,
+    "lastHeartbeat": 1762880429227,
+    "progress": 100,
+    "phase": "Complete"
+  },
+  {
+    "key": "job:752f3b95-5c7d-429f-a18d-fb535333d396",
+    "jobId": "752f3b95-5c7d-429f-a18d-fb535333d396",
+    "shortId": "752f3b95",
+    "status": "failed",
+    "address": "1395 Athens Ave SW, Atlanta, GA 30310",
+    "createdAt": 1762880166079,
+    "completedAt": 1762880336028,
+    "lastHeartbeat": 1762880336028,
+    "error": "Could not fetch subject property details",
+    "progress": 10,
+    "phase": "Subject Property Research"
+  },
+  {
+    "key": "job:685576b7-a9aa-4dec-8d6b-a1d86ce7cbef",
+    "jobId": "685576b7-a9aa-4dec-8d6b-a1d86ce7cbef",
+    "shortId": "685576b7",
+    "status": "processing",
+    "address": "1395 Athens Ave SW, Atlanta, GA 30310",
+    "createdAt": 1762880169951,
+    "lastHeartbeat": 1762880484760,
+    "progress": 30,
+    "phase": "Parallel Comparable Search"
+  },
+  {
+    "key": "job:c85ea054-6c48-4008-b640-65307edad171",
+    "jobId": "c85ea054-6c48-4008-b640-65307edad171",
+    "shortId": "c85ea054",
+    "status": "failed",
+    "address": "1395 Athens Ave SW, Atlanta, GA 30310",
+    "createdAt": 1762880173684,
+    "completedAt": 1762880499893,
+    "lastHeartbeat": 1762880504940,
+    "error": "Max reclaim attempts exceeded",
+    "progress": 75,
+    "phase": "ARV Calculation"
+  }
+]

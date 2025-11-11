@@ -1,0 +1,48 @@
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🚀 Starting job worker...
+[32minfo[39m: 🚀 Starting job worker... {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.735Z"}
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.737Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.737Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:49.738Z"}
+node:events:497
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: listen EADDRINUSE: address already in use 0.0.0.0:8080
+    at Server.setupListenHandle [as _listen2] (node:net:1940:16)
+    at listenInCluster (node:net:1997:12)
+    at node:net:2206:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1976:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 8080
+}
+
+Node.js v22.19.0

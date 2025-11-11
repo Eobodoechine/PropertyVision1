@@ -1,32 +1,23 @@
-import {
-  collection,
-  doc,
-  addDoc,
-  updateDoc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit as firestoreLimit,
-  Timestamp
-} from 'firebase/firestore';
-import { db } from '../lib/firebase';
 import type { SearchHistoryEntry, SearchHistoryFilters, PropertyAnalysisResponse } from '../types/property';
 
 const COLLECTION_NAME = 'property-searches';
 
+// Mock in-memory storage (replace with Redis or database later)
+const mockSearchHistory: Map<string, SearchHistoryEntry> = new Map();
+
 export class SearchHistoryService {
   static async createSearch(userId: string, address: string): Promise<string> {
-    const searchData = {
+    const searchId = `search-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const searchData: SearchHistoryEntry = {
+      id: searchId,
       userId,
       address,
       status: 'pending' as const,
-      createdAt: Timestamp.now()
+      createdAt: new Date()
     };
 
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), searchData);
-    return docRef.id;
+    mockSearchHistory.set(searchId, searchData);
+    return searchId;
   }
 
   static async updateSearchStatus(
@@ -35,75 +26,42 @@ export class SearchHistoryService {
     result?: PropertyAnalysisResponse,
     error?: string
   ): Promise<void> {
-    const updateData: any = {
+    const existingSearch = mockSearchHistory.get(searchId);
+    if (!existingSearch) {
+      throw new Error(`Search ${searchId} not found`);
+    }
+
+    const updatedSearch: SearchHistoryEntry = {
+      ...existingSearch,
       status,
-      completedAt: Timestamp.now()
+      completedAt: new Date(),
+      result,
+      error
     };
 
-    if (result) {
-      updateData.result = result;
-    }
-
-    if (error) {
-      updateData.error = error;
-    }
-
-    await updateDoc(doc(db, COLLECTION_NAME, searchId), updateData);
+    mockSearchHistory.set(searchId, updatedSearch);
   }
 
   static async getUserSearchHistory(
     userId: string,
     filters?: SearchHistoryFilters
   ): Promise<SearchHistoryEntry[]> {
-    let searchQuery = query(
-      collection(db, COLLECTION_NAME),
-      where('userId', '==', userId),
-      orderBy('createdAt', 'desc')
-    );
+    let searches = Array.from(mockSearchHistory.values())
+      .filter(search => search.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
     if (filters?.status && filters.status !== 'all') {
-      searchQuery = query(searchQuery, where('status', '==', filters.status));
+      searches = searches.filter(search => search.status === filters.status);
     }
 
     if (filters?.limit) {
-      searchQuery = query(searchQuery, firestoreLimit(filters.limit));
+      searches = searches.slice(0, filters.limit);
     }
 
-    const querySnapshot = await getDocs(searchQuery);
-
-    return querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        userId: data.userId,
-        address: data.address,
-        status: data.status,
-        createdAt: data.createdAt.toDate(),
-        completedAt: data.completedAt?.toDate(),
-        result: data.result,
-        error: data.error
-      };
-    });
+    return searches;
   }
 
   static async getSearchById(searchId: string): Promise<SearchHistoryEntry | null> {
-    const docRef = doc(db, COLLECTION_NAME, searchId);
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      return null;
-    }
-
-    const data = docSnap.data();
-    return {
-      id: docSnap.id,
-      userId: data.userId,
-      address: data.address,
-      status: data.status,
-      createdAt: data.createdAt.toDate(),
-      completedAt: data.completedAt?.toDate(),
-      result: data.result,
-      error: data.error
-    };
+    return mockSearchHistory.get(searchId) || null;
   }
 }

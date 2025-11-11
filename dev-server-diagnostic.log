@@ -1,0 +1,1435 @@
+
+> frontend@0.1.1 dev
+> next dev
+
+ ⚠ `experimental.instrumentationHook` is no longer needed, because `instrumentation.js` is available by default. You can remove it from next.config.ts.
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'instrumentationHook' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/eobodoechine/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/eobodoechine/PropertyVision1/package-lock.json
+
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.205:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ instrumentationHook
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling / ...
+ ✓ Compiled / in 2.5s (760 modules)
+ GET / 200 in 2912ms
+ ○ Compiling /api/analyze ...
+ ✓ Compiled /api/analyze in 2.7s (1086 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+[32minfo[39m: Search request received {"address":"430 Burgundy Drive, Madison, AL 35758","environment":"development","eventType":"SEARCH_REQUEST","ip":"::1","service":"propertyvision-backend","timestamp":"2025-11-10T22:37:52.753Z"}
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.773Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.780Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.780Z"}
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.781Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.781Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.781Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.781Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.781Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.782Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.782Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.782Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.782Z"}
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.783Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=false
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=false {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.784Z"}
+✅ Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 saved to Redis: status=queued, progress=0
+[32minfo[39m: ✅ Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 saved to Redis: status=queued, progress=0 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.789Z"}
+📋 Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 enqueued for address: 430 Burgundy Drive, Madison, AL 35758
+✅ Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 created for address: 430 Burgundy Drive, Madison, AL 35758
+ POST /api/analyze 200 in 3585ms
+[32minfo[39m: 📋 Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 enqueued for address: 430 Burgundy Drive, Madison, AL 35758 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:52.789Z"}
+ ○ Compiling /api/analyze/status/[jobId] ...
+ ✓ Compiled /api/analyze/status/[jobId] in 714ms (1074 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.075Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.078Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.078Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.078Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.079Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.079Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.079Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.079Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.079Z"}
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.080Z"}
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.074Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.090Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 3234ms
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.112Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:37:58.113Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:00.409Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:00.410Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:01.614Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:01.629Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:01.629Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:02.602Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:02.603Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 13ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:03.641Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:03.657Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:03.657Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:04.798Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:04.799Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:05.984Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:06.013Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:06.013Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:06.987Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:06.988Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 22ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:08.382Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:08.409Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:08.409Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:09.299Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:09.300Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 26ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:10.926Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:11.003Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:11.004Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:11.526Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:11.527Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:13.120Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:13.147Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:13.147Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:13.787Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:13.790Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 18ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:14.832Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:14.847Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:14.848Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:15.978Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:15.979Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 17ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:17.042Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:17.069Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:17.070Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:18.160Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:18.160Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:19.177Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:19.201Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:19.201Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:20.380Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:20.383Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 35ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:22.302Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:22.331Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:22.332Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:22.763Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:22.764Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:24.187Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:24.198Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:24.199Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:24.942Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:24.946Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 14ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:26.018Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:26.044Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:26.045Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:27.119Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:27.120Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:28.152Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:28.177Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:28.178Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:29.304Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:29.306Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:30.436Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:30.464Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:30.465Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:31.525Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:31.525Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:32.570Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:32.600Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:32.600Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:33.697Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:33.698Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:34.752Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:34.770Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:34.771Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:35.867Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:35.868Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:36.968Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:36.994Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:36.994Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:38.048Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:38.052Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 13ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:39.102Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:39.132Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:39.132Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:40.231Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:40.232Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:41.293Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:41.323Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:41.323Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:42.429Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:42.430Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:43.446Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:43.475Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:43.475Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:44.623Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:44.623Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:45.647Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:45.661Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:45.662Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:46.808Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:46.809Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:47.822Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:47.850Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:47.850Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:48.999Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:49.000Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:50.024Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:50.054Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:50.055Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:51.189Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:51.190Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 13ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:52.207Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:52.231Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:52.231Z"}
+🔍 STATUS: Looking for job 2c437650-1cde-4dbb-8c20-5d6beba20a70
+🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=2c437650-1cde-4dbb-8c20-5d6beba20a70, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:53.376Z"}
+🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:2c437650-1cde-4dbb-8c20-5d6beba20a70, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:53.377Z"}
+🔍 STATUS: Job 2c437650-1cde-4dbb-8c20-5d6beba20a70 result: FOUND
+ GET /api/analyze/status/2c437650-1cde-4dbb-8c20-5d6beba20a70 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:54.396Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:54.420Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:38:54.421Z"}
+ ✓ Compiled in 314ms (306 modules)
+ ✓ Compiled / in 405ms (455 modules)
+ GET / 200 in 680ms
+ ✓ Compiled /favicon.ico in 147ms (472 modules)
+ GET /favicon.ico 200 in 217ms
+ ✓ Compiled /api/analyze in 221ms (1103 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+[32minfo[39m: Search request received {"address":"2255 Meadowvale Dr NE, Atlanta, GA 30345","environment":"development","eventType":"SEARCH_REQUEST","ip":"::1","service":"propertyvision-backend","timestamp":"2025-11-10T22:53:53.028Z"}
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.031Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.032Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.032Z"}
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.032Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=false
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=false {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.041Z"}
+✅ Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d saved to Redis: status=queued, progress=0
+[32minfo[39m: ✅ Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d saved to Redis: status=queued, progress=0 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.062Z"}
+📋 Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d enqueued for address: 2255 Meadowvale Dr NE, Atlanta, GA 30345
+[32minfo[39m: 📋 Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d enqueued for address: 2255 Meadowvale Dr NE, Atlanta, GA 30345 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.063Z"}
+✅ Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d created for address: 2255 Meadowvale Dr NE, Atlanta, GA 30345
+ POST /api/analyze 200 in 793ms
+ ✓ Compiled /api/analyze/status/[jobId] in 267ms (1105 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.647Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.648Z"}
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.649Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:53.656Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 586ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:55.046Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:55.071Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:55.072Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:55.680Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:55.682Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 17ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:56.523Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:56.541Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:56.542Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:57.694Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:57.694Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 7ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:58.519Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:58.528Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:58.529Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:59.717Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:53:59.718Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:00.772Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:00.786Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:00.786Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:01.742Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:01.743Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 18ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:02.472Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:02.492Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:02.492Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:03.756Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:03.756Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:04.565Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:04.576Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:04.577Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:05.769Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:05.769Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 8ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:06.510Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:06.529Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:06.529Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:07.791Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:07.792Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 18ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:08.661Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:08.672Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:08.672Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:09.807Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:09.808Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:10.537Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:10.544Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:10.544Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:11.827Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:11.827Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 13ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:12.677Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:12.685Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:12.685Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:13.843Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:13.843Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 8ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:14.605Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:14.612Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:14.613Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:15.864Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:15.864Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:16.559Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:16.576Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:16.577Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:17.875Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:17.877Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:18.643Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:18.660Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:18.660Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:19.924Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:19.925Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 38ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:20.947Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:20.957Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:20.958Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:21.941Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:21.942Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:22.672Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:22.691Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:22.691Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:23.959Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:23.960Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 13ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:24.896Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:24.922Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:24.922Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:25.974Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:25.975Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:26.720Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:26.730Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:26.730Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:27.987Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:27.988Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:28.750Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:28.761Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:28.761Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:30.000Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:30.001Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:31.003Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:31.013Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:31.013Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:32.012Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:32.014Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 9ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:32.935Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:32.956Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:32.956Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:34.030Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:34.030Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:34.726Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:34.737Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:34.737Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:36.056Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:36.056Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 19ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:36.820Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:36.829Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:36.829Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:38.079Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:38.080Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 17ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:38.834Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:38.844Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:38.844Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:40.101Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:40.102Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 14ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:40.795Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:40.803Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:40.803Z"}
+🔍 STATUS: Looking for job 3c315a39-3b88-47a5-b01d-ec57f0e6259d
+🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3c315a39-3b88-47a5-b01d-ec57f0e6259d, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:42.123Z"}
+🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3c315a39-3b88-47a5-b01d-ec57f0e6259d, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:42.124Z"}
+🔍 STATUS: Job 3c315a39-3b88-47a5-b01d-ec57f0e6259d result: FOUND
+ GET /api/analyze/status/3c315a39-3b88-47a5-b01d-ec57f0e6259d 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:42.808Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:42.815Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T22:54:42.815Z"}
+[32minfo[39m: Search request received {"address":"4886 Valley View Ct, Atlanta, GA 30338","environment":"development","eventType":"SEARCH_REQUEST","ip":"::1","service":"propertyvision-backend","timestamp":"2025-11-10T23:07:47.188Z"}
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:47.190Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=false
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=false {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:47.194Z"}
+✅ Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f saved to Redis: status=queued, progress=0
+[32minfo[39m: ✅ Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f saved to Redis: status=queued, progress=0 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:47.194Z"}
+📋 Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f enqueued for address: 4886 Valley View Ct, Atlanta, GA 30338
+[32minfo[39m: 📋 Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f enqueued for address: 4886 Valley View Ct, Atlanta, GA 30338 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:47.195Z"}
+✅ Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f created for address: 4886 Valley View Ct, Atlanta, GA 30338
+ POST /api/analyze 200 in 81ms
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:47.215Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:47.215Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:48.163Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:48.187Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:48.187Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:49.231Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:49.231Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 7ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:49.924Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:49.934Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:49.934Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:51.252Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:51.252Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:51.961Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:51.970Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:51.970Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:53.291Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:53.291Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 31ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:53.988Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:53.999Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:53.999Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:55.322Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:55.323Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 25ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:56.020Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:56.030Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:56.030Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:57.345Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:57.345Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 14ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:58.039Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:58.048Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:58.049Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:59.368Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:07:59.368Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:00.076Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:00.085Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:00.085Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:01.390Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:01.391Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:02.091Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:02.101Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:02.102Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:03.413Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:03.414Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:04.113Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:04.130Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:04.130Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:05.435Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:05.437Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:06.138Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:06.148Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:06.148Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:07.458Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:07.459Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:08.156Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:08.164Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:08.165Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:09.479Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:09.480Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 14ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:10.226Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:10.233Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:10.233Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:11.503Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:11.503Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:12.279Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:12.286Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:12.286Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:13.527Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:13.528Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:14.230Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:14.237Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:14.237Z"}
+🔍 STATUS: Looking for job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f
+🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:15.547Z"}
+🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:15.548Z"}
+🔍 STATUS: Job cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f result: FOUND
+ GET /api/analyze/status/cf75efbf-62da-43f6-b27e-c9e1d4b8ae2f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:16.227Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:16.234Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-10T23:08:16.234Z"}

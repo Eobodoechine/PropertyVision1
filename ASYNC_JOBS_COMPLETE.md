@@ -76,8 +76,8 @@ This script will:
      --allow-unauthenticated \
      --vpc-connector redis-connector \
      --vpc-egress private-ranges-only \
-     --service-account 839845580521-compute@developer.gserviceaccount.com \
-     --set-env-vars "RUN_WORKER=false,NODE_ENV=production,USE_GEO_PROXY=true,GEO_PROXY_URL=https://geo-proxy-839845580521.us-central1.run.app,USE_VERTEX_PROXY=true,FORCE_VERTEX_PROXY=true,VERTEX_PROXY_URL=https://vertex-proxy-839845580521.us-central1.run.app,REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,NODE_OPTIONS=--dns-result-order=ipv4first,GOOGLE_API_USE_REST=1" \
+     --service-account pv-worker-staging-sa@agile-device-472202-i8.iam.gserviceaccount.com \
+     --set-env-vars "RUN_WORKER=false,NODE_ENV=production,USE_GEO_PROXY=true,GEO_PROXY_URL=https://geo-proxy-839845580521.us-central1.run.app,USE_VERTEX_PROXY=true,FORCE_VERTEX_PROXY=true,VERTEX_PROXY_URL=https://vertex-proxy-839845580521.us-central1.run.app,REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_CLOUD_PROJECT=agile-device-472202-i8,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,NODE_OPTIONS=--dns-result-order=ipv4first,GOOGLE_API_USE_REST=1" \
      --set-secrets "PROXY_SHARED_KEY=proxy-shared-key:latest" \
      --timeout 60 \
      --memory 2Gi \
@@ -86,20 +86,20 @@ This script will:
 
    **IMPORTANT:** Build image first with `gcloud builds submit --tag gcr.io/agile-device-472202-i8/propertyvision-frontend:vN` from `frontend/` directory. Do NOT use `--source .` as buildpack caching prevents code changes from being picked up.
 
-   **Critical Environment Variables Explained (14 total - MUST MATCH WORKER):**
+   **Critical Environment Variables Explained (12 total - MUST MATCH WORKER):**
    - `RUN_WORKER=false` - Frontend mode (not worker)
    - `NODE_ENV=production` - Production environment
    - `USE_VERTEX_PROXY=true` & `FORCE_VERTEX_PROXY=true` - Routes all Vertex calls through proxy
    - `VERTEX_PROXY_URL` - Required for Vertex AI proxy routing
    - `USE_GEO_PROXY=true` & `GEO_PROXY_URL` - Geo-proxy config (not used with private-ranges-only but kept for compatibility)
    - `REDIS_URL` - Redis connection (private IP)
-   - `GOOGLE_CLOUD_PROJECT_ID` - GCP project ID
-   - `GOOGLE_APPLICATION_CREDENTIALS` - **CRITICAL** Service account path for authentication
-   - `GCP_SA_JSON` - **CRITICAL** Service account path (also required)
+   - `GOOGLE_CLOUD_PROJECT_ID` & `GOOGLE_CLOUD_PROJECT` - GCP project ID (both for compatibility)
    - `GOOGLE_MAPS_API_KEY` - Maps API key
    - `NODE_OPTIONS=--dns-result-order=ipv4first` - Prefer IPv4 for DNS
    - `GOOGLE_API_USE_REST=1` - Force REST instead of gRPC for Google APIs
    - `PROXY_SHARED_KEY` - Secret for authenticating with proxy services
+
+   **Authentication:** Uses attached service account (`pv-worker-staging-sa`) via ADC. No credential files needed.
 
 5. **Deploy worker service** (VERIFIED WORKING - Last deployed: 2025-10-04):
    ```bash
@@ -110,8 +110,8 @@ This script will:
      --no-allow-unauthenticated \
      --vpc-connector redis-connector \
      --vpc-egress private-ranges-only \
-     --service-account 839845580521-compute@developer.gserviceaccount.com \
-     --set-env-vars "RUN_WORKER=true,NODE_ENV=production,USE_GEO_PROXY=true,GEO_PROXY_URL=https://geo-proxy-839845580521.us-central1.run.app,USE_VERTEX_PROXY=true,FORCE_VERTEX_PROXY=true,VERTEX_PROXY_URL=https://vertex-proxy-839845580521.us-central1.run.app,REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,NODE_OPTIONS=--dns-result-order=ipv4first,GOOGLE_API_USE_REST=1" \
+     --service-account pv-worker-staging-sa@agile-device-472202-i8.iam.gserviceaccount.com \
+     --set-env-vars "RUN_WORKER=true,NODE_ENV=production,USE_GEO_PROXY=true,GEO_PROXY_URL=https://geo-proxy-839845580521.us-central1.run.app,USE_VERTEX_PROXY=true,FORCE_VERTEX_PROXY=true,VERTEX_PROXY_URL=https://vertex-proxy-839845580521.us-central1.run.app,REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_CLOUD_PROJECT=agile-device-472202-i8,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,NODE_OPTIONS=--dns-result-order=ipv4first,GOOGLE_API_USE_REST=1" \
      --set-secrets "PROXY_SHARED_KEY=proxy-shared-key:latest" \
      --min-instances 1 \
      --max-instances 3 \
@@ -124,21 +124,21 @@ This script will:
 
    **IMPORTANT:** Build image first with `gcloud builds submit --tag gcr.io/agile-device-472202-i8/propertyvision-worker:vN` from `frontend/` directory. Do NOT use `--source .` as buildpack caching prevents code changes from being picked up.
 
-   **Critical Environment Variables Explained (14 total):**
+   **Critical Environment Variables Explained (12 total):**
    - `RUN_WORKER=true` - Enables worker mode
    - `NODE_ENV=production` - Production environment
    - `USE_VERTEX_PROXY=true` & `FORCE_VERTEX_PROXY=true` - Routes all Vertex calls through proxy
    - `VERTEX_PROXY_URL` - Required for Vertex AI proxy routing
    - `USE_GEO_PROXY=true` & `GEO_PROXY_URL` - Geo-proxy config (not used with private-ranges-only but kept for compatibility)
    - `REDIS_URL` - Redis connection (private IP)
-   - `GOOGLE_CLOUD_PROJECT_ID` - GCP project ID
-   - `GOOGLE_APPLICATION_CREDENTIALS` - **CRITICAL** Service account path for authentication
-   - `GCP_SA_JSON` - **CRITICAL** Service account path (also required)
+   - `GOOGLE_CLOUD_PROJECT_ID` & `GOOGLE_CLOUD_PROJECT` - GCP project ID (both for compatibility)
    - `GOOGLE_MAPS_API_KEY` - Maps API key
    - `NODE_OPTIONS=--dns-result-order=ipv4first` - Prefer IPv4 for DNS
    - `GOOGLE_API_USE_REST=1` - Force REST instead of gRPC for Google APIs
    - `PROXY_SHARED_KEY` - Secret for authenticating with proxy services
    - `--vpc-egress private-ranges-only` - Allows Redis (private IP) and Google APIs via Private Google Access
+
+   **Authentication:** Uses attached service account (`pv-worker-staging-sa`) via ADC. No credential files needed.
 
 ## 🧪 Testing
 

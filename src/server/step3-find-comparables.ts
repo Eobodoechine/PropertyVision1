@@ -4,6 +4,7 @@ import https from 'https';
 import dns from 'dns';
 import crypto from 'crypto';
 import { GoogleAuth } from 'google-auth-library';
+import pLimit from 'p-limit';
 // import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
@@ -92,6 +93,7 @@ class VertexComparableSearchService {
       jobLog(`🔍 SEARCHING COMPARABLES: ${subjectAddress}`);
       jobLog(`   • Radius: ${searchRadius} miles`);
       jobLog(`   • Max results: ${maxResults}`);
+      jobLog(`🔧 DIAG_SEARCH_STRATEGY: using legacy 6-prompt strategy (not progressive)`);
 
       // Get subject property coordinates
       const subjectCoords = await this.geocodeWithTimeout(subjectAddress, 30000);
@@ -104,10 +106,15 @@ class VertexComparableSearchService {
       const projectId = await resolveProjectId();
       const location = resolveLocation();
       const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+
+      const tokenStart = Date.now();
       const token = await getAccessTokenViaAuth();
+      const tokenDuration = Date.now() - tokenStart;
+      jobLog(`🎫 DIAG_TOKEN_FETCH: acquired in ${tokenDuration}ms, length=${token.length}, will_be_reused=true`);
 
       // Build subdivision filter from override or env
       const subdivision = (extra?.subdivision?.trim() || process.env.SUBDIVISION)?.trim();
+      jobLog(`🔧 DIAG_SUBDIVISION: ${subdivision ? `enabled="${subdivision}"` : 'disabled'}`);
 
       // Compose an analyst-style prompt but enforce pipe-separated output for parsing
       const composeAnalystPipePrompt = (
@@ -215,25 +222,38 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       }
 
       jobLog(`🔍 PROMPT DEBUG: All prompts generated successfully, total: ${prompts.length}`);
-      jobLog(`   🚀 Launching ${prompts.length} Vertex searches in parallel...`);
-      jobLog(`🔍 VERTEX DEBUG: About to execute Promise.allSettled with ${prompts.length} prompts`);
-      jobLog(`🔍 VERTEX DEBUG: Promise.allSettled execution starting...`);
+      // Rate limit concurrent Vertex API calls to prevent 429 errors
+      const VERTEX_CONCURRENCY_LIMIT = Number(process.env.VERTEX_CONCURRENCY_LIMIT || 16); // Sweet spot: 16 concurrent
+      jobLog(`   🚀 Launching ${prompts.length} Vertex searches with concurrency limit: ${VERTEX_CONCURRENCY_LIMIT}...`);
+      jobLog(`🔍 VERTEX DEBUG: Rate-limited execution starting...`);
+      jobLog(`📊 DIAG_BATCH_CONFIG: total_prompts=${prompts.length}, concurrency_limit=${VERTEX_CONCURRENCY_LIMIT}, subdivision_prompts=${subdivision ? 3 : 0}, regular_prompts=3`);
+      jobLog(`📊 DIAG_EXPECTED_WAVES: ${Math.ceil(prompts.length / VERTEX_CONCURRENCY_LIMIT)} waves of max ${VERTEX_CONCURRENCY_LIMIT} concurrent calls`);
       const startPromiseAll = Date.now();
 
+      const limit = pLimit(VERTEX_CONCURRENCY_LIMIT);
       const results = await Promise.allSettled(prompts.map((p, index) => {
-        jobLog(`🔍 VERTEX DEBUG: Starting search ${index + 1}/${prompts.length}`);
-        jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} - subjectAddress scope check: "${typeof subjectAddress}" = "${subjectAddress}"`);
-        return fetchAndParse(p).then(result => {
-          jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with ${result ? result.length : 0} results`);
-          return result;
-        }).catch(error => {
-          console.error(`❌ VERTEX DEBUG: Search ${index + 1} failed with error: ${error.message}`);
-          console.error(`❌ VERTEX DEBUG: Search ${index + 1} error stack: ${error.stack}`);
-          console.error(`❌ VERTEX DEBUG: Search ${index + 1} - subjectAddress at error: "${typeof subjectAddress}" = "${subjectAddress}"`);
-          if (error.message.includes('subjectAddress is not defined')) {
-            console.error(`❌ CRITICAL: Found the subjectAddress error in search ${index + 1}!`);
-          }
-          throw error;
+        return limit(() => {
+          const searchStart = Date.now();
+          jobLog(`🔍 VERTEX DEBUG: Starting search ${index + 1}/${prompts.length} (concurrency limit: ${VERTEX_CONCURRENCY_LIMIT})`);
+          jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} - subjectAddress scope check: "${typeof subjectAddress}" = "${subjectAddress}"`);
+          jobLog(`📊 DIAG_SEARCH_START: search_id=${index + 1}, timestamp=${searchStart}, prompt_type=${index < 3 && subdivision ? 'subdivision' : 'regular'}`);
+
+          return fetchAndParse(p).then(result => {
+            const searchDuration = Date.now() - searchStart;
+            jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with ${result ? result.length : 0} results`);
+            jobLog(`✅ DIAG_SEARCH_COMPLETE: search_id=${index + 1}, duration=${searchDuration}ms, results_count=${result.length}`);
+            return result;
+          }).catch(error => {
+            const searchDuration = Date.now() - searchStart;
+            console.error(`❌ VERTEX DEBUG: Search ${index + 1} failed with error: ${error.message}`);
+            console.error(`❌ VERTEX DEBUG: Search ${index + 1} error stack: ${error.stack}`);
+            console.error(`❌ VERTEX DEBUG: Search ${index + 1} - subjectAddress at error: "${typeof subjectAddress}" = "${subjectAddress}"`);
+            jobLog(`❌ DIAG_SEARCH_ERROR: search_id=${index + 1}, duration=${searchDuration}ms, error_code=${error.code}, error_msg=${error.message}`);
+            if (error.message.includes('subjectAddress is not defined')) {
+              console.error(`❌ CRITICAL: Found the subjectAddress error in search ${index + 1}!`);
+            }
+            throw error;
+          });
         });
       }));
 

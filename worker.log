@@ -1,0 +1,980 @@
+
+> frontend@0.1.1 dev
+> next dev
+
+ ⚠ `experimental.instrumentationHook` is no longer needed, because `instrumentation.js` is available by default. You can remove it from next.config.ts.
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'instrumentationHook' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/eobodoechine/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/eobodoechine/PropertyVision1/package-lock.json
+
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.205:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ instrumentationHook
+
+ ✓ Starting...
+ ✓ Ready in 1782ms
+ ○ Compiling / ...
+ ✓ Compiled / in 2.6s (760 modules)
+ GET / 200 in 3044ms
+ ○ Compiling /favicon.ico ...
+ ✓ Compiled /favicon.ico in 2.8s (472 modules)
+ GET /favicon.ico 200 in 3116ms
+ ○ Compiling /api/analyze ...
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:607:1]
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |       } // End of try block for lock
+ [2m607[0m |     }); // End of runInJobContext wrapper
+     : [35;1m    ^[0m
+ [2m608[0m |   }
+ [2m609[0m | 
+ [2m610[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:607:1]
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |       } // End of try block for lock
+ [2m607[0m |     }); // End of runInJobContext wrapper
+     : [35;1m    ^[0m
+ [2m608[0m |   }
+ [2m609[0m | 
+ [2m610[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:607:1]
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |       } // End of try block for lock
+ [2m607[0m |     }); // End of runInJobContext wrapper
+     : [35;1m    ^[0m
+ [2m608[0m |   }
+ [2m609[0m | 
+ [2m610[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ GET / 500 in 5767ms
+ POST /api/analyze 500 in 7272ms
+ GET / 500 in 27ms
+ GET / 500 in 19ms
+ GET / 500 in 16ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |     }); // End of runInJobContext wrapper
+     : [35;1m     ^[0m
+ [2m607[0m |   }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |     }); // End of runInJobContext wrapper
+     : [35;1m     ^[0m
+ [2m607[0m |   }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ GET / 200 in 262ms
+ GET / 500 in 26ms
+ GET /favicon.ico 500 in 12ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 67ms
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:607:1]
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |     } // End of try-catch-finally for lock
+ [2m607[0m |     }); // End of runInJobContext wrapper
+     : [35;1m    ^[0m
+ [2m608[0m |   }
+ [2m609[0m | 
+ [2m610[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:607:1]
+ [2m604[0m |       }
+ [2m605[0m |     }
+ [2m606[0m |     } // End of try-catch-finally for lock
+ [2m607[0m |     }); // End of runInJobContext wrapper
+     : [35;1m    ^[0m
+ [2m608[0m |   }
+ [2m609[0m | 
+ [2m610[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ GET / 500 in 314ms
+ GET /favicon.ico 500 in 6ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 52ms
+ ✓ Compiled /_error in 254ms (1119 modules)
+ GET / 200 in 522ms
+ GET /favicon.ico 200 in 28ms
+ GET / 200 in 86ms
+ ○ Compiling /api/analyze ...
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper
+     : [35;1m     ^[0m
+ [2m607[0m |   }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper
+     : [35;1m     ^[0m
+ [2m607[0m |   }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper
+     : [35;1m     ^[0m
+ [2m607[0m |   }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper
+     : [35;1m     ^[0m
+ [2m607[0m |   }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ POST /api/analyze 500 in 1368ms
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |   }); // End of runInJobContext wrapper
+     : [35;1m   ^[0m
+ [2m607[0m | }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |   }); // End of runInJobContext wrapper
+     : [35;1m   ^[0m
+ [2m607[0m | }
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ GET / 500 in 24ms
+ GET / 500 in 22ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 200 in 60ms
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ GET / 500 in 141ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ ⨯ ./src/server/utils/jobQueue.ts
+Error:   [31mx[0m Expected a semicolon
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+  [31mx[0m Expression expected
+     ,-[[36;1;4m/Users/eobodoechine/PropertyVision1/src/server/utils/jobQueue.ts[0m:606:1]
+ [2m603[0m |         console.log('   Lock may have already expired (TTL reached) or was never acquired');
+ [2m604[0m |       }
+ [2m605[0m |     } // End of finally block (completes try-catch-finally)
+ [2m606[0m |     }); // End of runInJobContext wrapper - closes async arrow function
+     : [35;1m     ^[0m
+ [2m607[0m |   } // End of processJob method
+ [2m608[0m | 
+ [2m609[0m |   /**
+     `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/server/utils/jobQueue.ts
+./src/app/api/analyze/route.ts
+ GET /favicon.ico 500 in 781ms
+ GET / 500 in 610ms
+ GET /favicon.ico 500 in 4ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET / 500 in 171ms
+ ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ ✓ Compiled /favicon.ico in 1117ms (1088 modules)
+ GET / 200 in 56ms
+ ✓ Compiled /favicon.ico in 92ms (661 modules)
+ GET /favicon.ico 200 in 214ms
+ ✓ Compiled in 138ms (458 modules)
+ GET / 200 in 109ms
+ ✓ Compiled in 131ms (458 modules)
+ GET / 200 in 32ms
+ ✓ Compiled in 133ms (458 modules)
+ GET / 200 in 32ms
+ GET / 200 in 219ms
+ ○ Compiling /api/analyze ...
+ ✓ Compiled /api/analyze in 1435ms (1288 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+[32minfo[39m: Search request received {"address":"556 Bolton Rd NW, Atlanta, GA 30331","environment":"development","eventType":"SEARCH_REQUEST","ip":"::1","service":"propertyvision-backend","timestamp":"2025-11-04T01:46:08.924Z"}
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.934Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.948Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.948Z"}
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.949Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.949Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.949Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.949Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.949Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.950Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.950Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.950Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.950Z"}
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.951Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=false
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=false {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.955Z"}
+✅ Job d21fccdf-76cc-4122-8999-2529c37b485f saved to Redis: status=queued, progress=0
+[32minfo[39m: ✅ Job d21fccdf-76cc-4122-8999-2529c37b485f saved to Redis: status=queued, progress=0 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.963Z"}
+📋 Job d21fccdf-76cc-4122-8999-2529c37b485f enqueued for address: 556 Bolton Rd NW, Atlanta, GA 30331
+✅ Job d21fccdf-76cc-4122-8999-2529c37b485f created for address: 556 Bolton Rd NW, Atlanta, GA 30331
+ POST /api/analyze 200 in 2246ms
+ ✓ Compiled /api/analyze/status/[jobId] in 320ms (1734 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+[32minfo[39m: 📋 Job d21fccdf-76cc-4122-8999-2529c37b485f enqueued for address: 556 Bolton Rd NW, Atlanta, GA 30331 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:08.964Z"}
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.072Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.074Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.074Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.076Z"}
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.075Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.083Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 2114ms
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.108Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:11.108Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:13.102Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:13.103Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 14ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:14.190Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:14.219Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:14.219Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:15.119Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:15.120Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 12ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:16.302Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:16.330Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:16.330Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:17.139Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:17.140Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:18.344Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:18.372Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:18.373Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:19.170Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:19.173Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 24ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:20.275Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:20.305Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:20.306Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:21.198Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:21.200Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 20ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:22.319Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:22.348Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:22.348Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:23.233Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:23.237Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 25ms
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:25.260Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:25.260Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:25.639Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:25.670Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:25.670Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:27.280Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:27.280Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 14ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:28.376Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:28.405Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:28.405Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:29.303Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:29.303Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:30.476Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:30.503Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:30.503Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:31.320Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:31.321Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 13ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:32.474Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:32.497Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:32.498Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:33.335Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:33.337Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:34.721Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:34.746Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:34.747Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:35.352Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:35.353Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 11ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:36.454Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:36.478Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:36.479Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:37.375Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:37.376Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 15ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:38.476Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:38.503Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:38.504Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:39.392Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:39.392Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:41.292Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:41.331Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:41.332Z"}
+🔍 STATUS: Looking for job d21fccdf-76cc-4122-8999-2529c37b485f
+🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=d21fccdf-76cc-4122-8999-2529c37b485f, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:41.408Z"}
+🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:d21fccdf-76cc-4122-8999-2529c37b485f, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:41.409Z"}
+🔍 STATUS: Job d21fccdf-76cc-4122-8999-2529c37b485f result: FOUND
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 200 in 10ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:42.721Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:42.753Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-11-04T01:46:42.754Z"}
+ ✓ Compiled /_not-found in 446ms (1739 modules)
+ GET /api/analyze/status/d21fccdf-76cc-4122-8999-2529c37b485f 404 in 838ms
+ ✓ Compiled in 674ms (1102 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET / 500 in 213ms
+ GET / 500 in 54ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET / 500 in 152ms
+ GET / 500 in 45ms
+ ✓ Compiled in 113ms (458 modules)
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET / 500 in 243ms
+ GET / 500 in 47ms
+ ⨯ [Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[Error: ENOENT: no such file or directory, open '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/eobodoechine/PropertyVision1/.next/server/app/page.js',
+  page: '/'
+}
+ ⨯ [Error: Cannot find module '/Users/eobodoechine/PropertyVision1/.next/server/pages/_document.js'
+Require stack:
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/require.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/load-components.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/utils.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/options.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/swc/index.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/build/next-config-ts/transpile-config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/config.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/next.js
+- /Users/eobodoechine/PropertyVision1/node_modules/next/dist/server/lib/start-server.js] {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [Array]
+}
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ ⨯ [TypeError: Cannot read properties of undefined (reading '/_app')]
+[TypeError: Cannot read properties of undefined (reading '/_app')]
+ GET / 500 in 143ms
+ GET / 500 in 44ms

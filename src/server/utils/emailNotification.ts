@@ -9,6 +9,9 @@ const EMAIL_USER = process.env.EMAIL_USER || '';
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const EMAIL_FROM = process.env.EMAIL_FROM || 'PropertyVision Alerts <alerts@propertyvision.app>';
 
+// App URL for email links (environment-aware)
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000';
+
 // Create reusable transporter
 let transporter: nodemailer.Transporter | null = null;
 
@@ -185,7 +188,7 @@ export async function sendSuccessNotification(params: SuccessNotificationParams)
         </table>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-          <p>View results: <a href="https://propertyvision-frontend-staging-839845580521.us-central1.run.app" style="color: #2563eb;">PropertyVision Dashboard</a></p>
+          <p>View results: <a href="${APP_URL}" style="color: #2563eb;">PropertyVision Dashboard</a></p>
           <p>This is an automated notification from PropertyVision.</p>
         </div>
       </div>

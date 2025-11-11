@@ -134,8 +134,6 @@ async function vertexGenerate(opts: {
   responseSchema?: any;
 }): Promise<string> {
   const caller = opts.caller || 'vertex-details-unknown';
-  jobLog(`📞 SPD_VERTEX_CALL from ${caller}`);
-
   const token = opts.token;
   const endpoint = `https://aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
   const payload: any = {
@@ -151,34 +149,80 @@ async function vertexGenerate(opts: {
   if (opts.grounded) payload.tools = [ { google_search: {} } as any ];
   if (opts.responseSchema) (payload.generationConfig as any).responseSchema = opts.responseSchema;
 
-  const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
+  // Retry logic for rate limiting (429) errors
+  const MAX_RETRIES = 3;
+  const RETRY_BASE_DELAY_MS = 1000;  // Exponential backoff: 1s, 2s, 4s
+  let lastError: any = null;
 
-  // Add error checking and logging
-  if (!res) {
-    jobLog(`❌ SPD_VERTEX_EXIT_NULL_RESPONSE: caller=${caller}`);
-    return '';
-  }
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const isRetry = attempt > 1;
 
-  if (!res.candidates) {
-    if (res.error) {
-      const errorCode = res.error.code || 'unknown';
-      const errorStatus = res.error.status || 'unknown';
-      jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, reason=${errorStatus}, httpCode=${errorCode}, error=${JSON.stringify(res.error)}`);
+    if (isRetry) {
+      jobLog(`🔄 SPD_VERTEX_RETRY: caller=${caller}, attempt=${attempt}/${MAX_RETRIES}`);
     } else {
-      jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, reason=NO_ERROR_OBJECT`);
+      jobLog(`📞 SPD_VERTEX_CALL from ${caller}`);
     }
-    return '';
+
+    try {
+      const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
+
+      // Add error checking and logging
+      if (!res) {
+        jobLog(`❌ SPD_VERTEX_EXIT_NULL_RESPONSE: caller=${caller}, attempt=${attempt}`);
+        return '';
+      }
+
+      if (!res.candidates) {
+        if (res.error) {
+          const errorCode = res.error.code || 'unknown';
+          const errorStatus = res.error.status || 'unknown';
+
+          // Check if this is a retryable error (429 rate limiting)
+          const isRateLimitError = errorCode === 429 || errorStatus === 'RESOURCE_EXHAUSTED';
+          const hasRetriesLeft = attempt < MAX_RETRIES;
+
+          jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, attempt=${attempt}/${MAX_RETRIES}, reason=${errorStatus}, httpCode=${errorCode}, error=${JSON.stringify(res.error)}`);
+
+          if (isRateLimitError && hasRetriesLeft) {
+            // Exponential backoff with jitter to prevent synchronized retry storms
+            const jitter = Math.random() * 1000; // 0-1000ms random jitter
+            const delay = (RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1)) + jitter;
+            jobLog(`⏳ SPD_VERTEX_RETRY_SCHEDULED: caller=${caller}, waiting ${Math.floor(delay)}ms (base + jitter) before retry ${attempt + 1}`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            lastError = res.error;
+            continue;  // Retry
+          }
+        } else {
+          jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, attempt=${attempt}, reason=NO_ERROR_OBJECT`);
+        }
+        return '';
+      }
+
+      const text = res?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || '').join('') || '';
+
+      if (!text || text.length === 0) {
+        jobLog(`❌ SPD_VERTEX_EXIT_EMPTY_TEXT: caller=${caller}, attempt=${attempt}`);
+      } else {
+        if (isRetry) {
+          jobLog(`✅ SPD_VERTEX_RETRY_SUCCESS: caller=${caller}, succeeded after ${attempt} attempts, textLength=${text.length}`);
+        } else {
+          jobLog(`✅ SPD_VERTEX_SUCCESS: caller=${caller}, textLength=${text.length}`);
+        }
+      }
+
+      return text;
+
+    } catch (error: any) {
+      lastError = error;
+      jobLog(`❌ SPD_VERTEX_HTTP_ERROR: caller=${caller}, attempt=${attempt}/${MAX_RETRIES}, error=${error.message}`);
+
+      // Don't retry network errors, only retry 429 from API
+      break;
+    }
   }
 
-  const text = res?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || '').join('') || '';
-
-  if (!text || text.length === 0) {
-    jobLog(`❌ SPD_VERTEX_EXIT_EMPTY_TEXT: caller=${caller}`);
-  } else {
-    jobLog(`✅ SPD_VERTEX_SUCCESS: caller=${caller}, textLength=${text.length}`);
-  }
-
-  return text;
+  jobLog(`🛑 SPD_VERTEX_EXHAUSTED: caller=${caller}, failed after ${MAX_RETRIES} attempts`);
+  return '';
 }
 
 /**
@@ -268,10 +312,11 @@ Return JSON with this exact structure:
           console.error(`   📄 Response text with missing fields (first 1000 chars): "${responseText.substring(0, 1000)}"`);
           lastError = new Error(`Missing critical fields: ${missingFields.join(', ')}`);
 
-          // If not last attempt, retry
+          // If not last attempt, retry with jitter
           if (attempt < MAX_RETRIES) {
-            const backoffMs = 1000 * Math.pow(2, attempt - 1);
-            jobLog(`   🔄 Retrying in ${backoffMs}ms due to missing fields...`);
+            const jitter = Math.random() * 500; // 0-500ms random jitter
+            const backoffMs = (1000 * Math.pow(2, attempt - 1)) + jitter;
+            jobLog(`   🔄 Retrying in ${Math.floor(backoffMs)}ms (with jitter) due to missing fields...`);
             await new Promise(resolve => setTimeout(resolve, backoffMs));
             continue; // Retry the loop
           }
@@ -296,10 +341,11 @@ Return JSON with this exact structure:
         console.error(`   📄 Response text that failed to parse (first 500 chars): "${responseText.substring(0, 500)}"`);
         lastError = jsonError;
 
-        // If not last attempt, wait before retrying with exponential backoff
+        // If not last attempt, wait before retrying with exponential backoff and jitter
         if (attempt < MAX_RETRIES) {
-          const backoffMs = 1000 * Math.pow(2, attempt - 1); // 1s, 2s, 4s
-          jobLog(`   🔄 Retrying in ${backoffMs}ms...`);
+          const jitter = Math.random() * 500; // 0-500ms random jitter
+          const backoffMs = (1000 * Math.pow(2, attempt - 1)) + jitter; // 1s, 2s, 4s + jitter
+          jobLog(`   🔄 Retrying in ${Math.floor(backoffMs)}ms (with jitter)...`);
           await new Promise(resolve => setTimeout(resolve, backoffMs));
         }
       }
@@ -312,10 +358,11 @@ Return JSON with this exact structure:
       }
       lastError = error;
 
-      // If not last attempt, wait before retrying
+      // If not last attempt, wait before retrying with jitter
       if (attempt < MAX_RETRIES) {
-        const backoffMs = 1000 * Math.pow(2, attempt - 1);
-        jobLog(`   🔄 Retrying in ${backoffMs}ms...`);
+        const jitter = Math.random() * 500; // 0-500ms random jitter
+        const backoffMs = (1000 * Math.pow(2, attempt - 1)) + jitter;
+        jobLog(`   🔄 Retrying in ${Math.floor(backoffMs)}ms (with jitter)...`);
         await new Promise(resolve => setTimeout(resolve, backoffMs));
       }
     }
@@ -791,11 +838,27 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
   const projectId = await resolveProjectId();
   const location = resolveLocation();
   const model = process.env.VERTEX_MODEL || 'gemini-2.5-pro';
+
+  const tokenStart = Date.now();
   const token = await getAccessTokenViaAuth();
+  const tokenDuration = Date.now() - tokenStart;
+  jobLog(`🎫 DIAG_SPD_TOKEN: acquired in ${tokenDuration}ms for SPD calls`);
 
   const ctx = { token, projectId, location, model };
 
   jobLog(`\n🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: ${address}`);
+
+  // 🔍 DIAGNOSTIC: Log HTTPS agent state before parallel requests
+  jobLog(`🔍 PARALLEL REQUEST DIAGNOSTIC:`);
+  jobLog(`   About to launch 2 parallel Vertex API calls (Primary + County)`);
+  jobLog(`   https.globalAgent.maxSockets = ${https.globalAgent.maxSockets}`);
+  const vertexHostname = 'aiplatform.googleapis.com:443:';
+  const activeSockets = https.globalAgent.sockets[vertexHostname] || [];
+  const freeSockets = https.globalAgent.freeSockets[vertexHostname] || [];
+  const queuedRequests = https.globalAgent.requests[vertexHostname] || [];
+  jobLog(`   Active sockets to Vertex API: ${activeSockets.length}`);
+  jobLog(`   Free sockets to Vertex API: ${freeSockets.length}`);
+  jobLog(`   Queued requests to Vertex API: ${queuedRequests.length}`);
 
   // ===== STEP 1: Parallel Grounded Fetch (Primary + County) =====
   const primaryPrompt = `Use Google Search grounding with authoritative real estate sources (Zillow, Redfin, Realtor.com, county records) to find COMPLETE property details for: ${address}
@@ -867,6 +930,12 @@ Focus on official county/tax data. Provide exact numbers and source URLs.`;
     // Wait for the other one
     jobLog(`   🔄 Waiting for ${winnerResult.source === 'primary' ? 'county' : 'primary'} to complete...`);
     const [p, c] = await Promise.all([primaryPromise, countyPromise]);
+
+    // 🔍 DIAGNOSTIC: Log parallel request results
+    jobLog(`🔍 PARALLEL REQUEST COMPLETE:`);
+    jobLog(`   Primary: ${p.text ? 'SUCCESS' : 'FAILED'} (${p.duration}ms)${p.error ? ', error: ' + p.error.message : ''}`);
+    jobLog(`   County: ${c.text ? 'SUCCESS' : 'FAILED'} (${c.duration}ms)${c.error ? ', error: ' + c.error.message : ''}`);
+
     const loserResult = winnerResult.source === 'primary' ? c : p;
 
     if (!loserResult.text) {

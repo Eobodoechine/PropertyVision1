@@ -180,7 +180,8 @@ gcloud run deploy propertyvision-frontend \
   --allow-unauthenticated \
   --vpc-connector redis-connector \
   --vpc-egress private-ranges-only \
-  --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,RUN_WORKER=false" \
+  --service-account pv-worker-staging-sa@agile-device-472202-i8.iam.gserviceaccount.com \
+  --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_CLOUD_PROJECT=agile-device-472202-i8,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,RUN_WORKER=false" \
   --timeout 60
 ```
 
@@ -192,7 +193,8 @@ gcloud run deploy propertyvision-worker \
   --no-allow-unauthenticated \
   --vpc-connector redis-connector \
   --vpc-egress private-ranges-only \
-  --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json,RUN_WORKER=true" \
+  --service-account pv-worker-staging-sa@agile-device-472202-i8.iam.gserviceaccount.com \
+  --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_CLOUD_PROJECT=agile-device-472202-i8,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,RUN_WORKER=true" \
   --cpu-always-allocated \
   --min-instances 1 \
   --max-instances 3 \

@@ -237,7 +237,7 @@ export class RedisCache {
   }
 
   /**
-   * Store job status in Redis
+   * Store job status in Redis with race condition prevention
    */
   async setJob(jobId: string, jobData: any, ttlSeconds: number = 3600): Promise<void> {
     if (!this.client || !this.isConnected) {
@@ -247,9 +247,46 @@ export class RedisCache {
 
     try {
       const key = `job:${jobId}`;
+
+      // Get current job to check for race conditions
+      const currentJob = await this.getJob(jobId);
+
+      if (currentJob) {
+        const currentStatus = currentJob.status;
+        const newStatus = jobData.status;
+
+        // RACE PREVENTION #1: Protect terminal states from being overwritten
+        if ((currentStatus === 'completed' || currentStatus === 'failed') && newStatus === 'processing') {
+          jobLog(`⚠️  RACE PREVENTED: Job ${jobId} is ${currentStatus}, blocking stale processing update`);
+          return;
+        }
+
+        // RACE PREVENTION #2: Prevent backwards progress updates
+        if (currentStatus === 'processing' && newStatus === 'processing') {
+          const currentProgress = currentJob.progress || 0;
+          const newProgress = jobData.progress || 0;
+
+          if (newProgress < currentProgress) {
+            jobLog(`⚠️  RACE PREVENTED: Job ${jobId} progress backwards ${currentProgress}% -> ${newProgress}%`);
+            return;
+          }
+        }
+
+        // RACE PREVENTION #3: Block stale updates using timestamp comparison
+        const currentTime = currentJob.lastHeartbeat || currentJob.createdAt || 0;
+        const newTime = jobData.lastHeartbeat || Date.now();
+
+        // Allow 10 second tolerance for clock skew and async operations
+        if (newTime < currentTime - 10000) {
+          const ageSeconds = Math.round((currentTime - newTime) / 1000);
+          jobLog(`⚠️  RACE PREVENTED: Job ${jobId} update is stale (${ageSeconds}s old)`);
+          return;
+        }
+      }
+
       const dataStr = JSON.stringify(jobData);
       await this.client.set(key, dataStr, 'EX', ttlSeconds);
-      jobLog(`📝 Redis SET job:${jobId} (${dataStr.length} bytes, TTL=${ttlSeconds}s)`);
+      jobLog(`✅ Job ${jobId} saved to Redis: status=${jobData.status}, progress=${jobData.progress}`);
     } catch (error) {
       console.error(`❌ Redis SET JOB error for ${jobId}:`, error);
       throw error; // Re-throw so caller knows it failed
@@ -392,6 +429,108 @@ export class RedisCache {
     } catch (error) {
       console.error('❌ Redis XAUTOCLAIM error:', error);
       return ['0-0', []];
+    }
+  }
+
+  // ==================== 🔧 PHASE 4: Distributed Locks ====================
+
+  /**
+   * Acquire a distributed lock using Redis SET NX EX pattern
+   * Returns true if lock was acquired, false if already locked
+   *
+   * IMPORTANT: Lock is automatically released after ttlSeconds
+   * Always call releaseLock() in a finally block to avoid holding locks unnecessarily
+   *
+   * Example:
+   *   const lockAcquired = await redis.acquireLock('lock:job:123', 'worker-1', 300);
+   *   if (lockAcquired) {
+   *     try {
+   *       // Process job
+   *     } finally {
+   *       await redis.releaseLock('lock:job:123', 'worker-1');
+   *     }
+   *   }
+   */
+  async acquireLock(lockKey: string, lockValue: string, ttlSeconds: number): Promise<boolean> {
+    console.log('🔒 LOCK ACQUISITION ATTEMPT');
+    console.log(`   Lock Key: ${lockKey}`);
+    console.log(`   Lock Value: ${lockValue}`);
+    console.log(`   TTL: ${ttlSeconds}s`);
+    console.log(`   Redis Connected: ${this.isConnected}`);
+
+    if (!this.client || !this.isConnected) {
+      console.error('❌ LOCK FAILED: Redis not connected');
+      return false;
+    }
+
+    try {
+      // SET NX (Not eXists) EX (EXpiry) - atomic check-and-set
+      // Only sets the key if it doesn't exist, prevents race conditions
+      const result = await this.client.set(lockKey, lockValue, 'NX', 'EX', ttlSeconds);
+
+      if (result === 'OK') {
+        console.log('✅ LOCK ACQUIRED');
+        console.log(`   ${lockKey} = ${lockValue}`);
+        console.log(`   Auto-expires in ${ttlSeconds}s`);
+        return true;
+      } else {
+        // Lock already held by another worker
+        const currentLockValue = await this.client.get(lockKey);
+        console.log('❌ LOCK ALREADY HELD');
+        console.log(`   ${lockKey} = ${currentLockValue || 'unknown'}`);
+        console.log(`   Cannot acquire - another worker is processing this job`);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ LOCK ACQUISITION ERROR:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Release a distributed lock using Lua script for atomic check-and-delete
+   * Only releases if lockValue matches (prevents releasing another worker's lock)
+   *
+   * Returns true if lock was released, false if lock didn't match or didn't exist
+   */
+  async releaseLock(lockKey: string, lockValue: string): Promise<boolean> {
+    console.log('🔓 LOCK RELEASE ATTEMPT');
+    console.log(`   Lock Key: ${lockKey}`);
+    console.log(`   Lock Value: ${lockValue}`);
+
+    if (!this.client || !this.isConnected) {
+      console.error('❌ LOCK RELEASE FAILED: Redis not connected');
+      return false;
+    }
+
+    try {
+      // Lua script for atomic check-and-delete
+      // IMPORTANT: Only delete if value matches (prevents releasing another worker's lock)
+      const luaScript = `
+        if redis.call("get", KEYS[1]) == ARGV[1] then
+          return redis.call("del", KEYS[1])
+        else
+          return 0
+        end
+      `;
+
+      const result = await this.client.eval(luaScript, 1, lockKey, lockValue) as number;
+
+      if (result === 1) {
+        console.log('✅ LOCK RELEASED');
+        console.log(`   ${lockKey} deleted successfully`);
+        return true;
+      } else {
+        const currentLockValue = await this.client.get(lockKey);
+        console.log('⚠️  LOCK NOT RELEASED');
+        console.log(`   Current value: ${currentLockValue || 'none (already expired?)'}`);
+        console.log(`   Expected value: ${lockValue}`);
+        console.log(`   Lock may have already expired or was held by another worker`);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ LOCK RELEASE ERROR:', error);
+      return false;
     }
   }
 

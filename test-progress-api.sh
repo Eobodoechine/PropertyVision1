@@ -5,7 +5,7 @@
 
 # Configuration
 API_BASE="${API_BASE:-http://localhost:3000}"
-ADDRESS="430 Burgundy Drive, Madison, AL 35758"
+ADDRESS="${ADDRESS:-2612 Clairmont Rd, Atlanta, GA, 30329}"
 EMAIL="test@example.com"
 
 echo "🧪 Testing Progress Tracking API"

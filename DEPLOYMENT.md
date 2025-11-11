@@ -27,6 +27,7 @@ docker push gcr.io/agile-device-472202-i8/frontend:latest
 #### Option 1: Deploy from Source (Recommended)
 ```bash
 # Deploy directly from source with automatic build
+# Uses service account attached to Cloud Run for authentication (ADC)
 gcloud run deploy propertyvision-frontend \
   --source . \
   --platform managed \
@@ -34,7 +35,8 @@ gcloud run deploy propertyvision-frontend \
   --allow-unauthenticated \
   --vpc-connector redis-connector \
   --vpc-egress private-ranges-only \
-  --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_APPLICATION_CREDENTIALS=/app/agile-device-472202-i8-319f002d9438.json,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc,GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json" \
+  --service-account pv-worker-staging-sa@agile-device-472202-i8.iam.gserviceaccount.com \
+  --set-env-vars "REDIS_URL=redis://10.85.154.187:6379,GOOGLE_CLOUD_PROJECT_ID=agile-device-472202-i8,GOOGLE_CLOUD_PROJECT=agile-device-472202-i8,GOOGLE_MAPS_API_KEY=AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc" \
   --timeout 300
 ```
 
@@ -110,9 +112,10 @@ gcloud compute networks vpc-access connectors create redis-connector \
 Required environment variables for Cloud Run:
 - `REDIS_URL`: `redis://10.85.154.187:6379`
 - `GOOGLE_CLOUD_PROJECT_ID`: `agile-device-472202-i8`
-- `GOOGLE_APPLICATION_CREDENTIALS`: `/app/agile-device-472202-i8-319f002d9438.json`
+- `GOOGLE_CLOUD_PROJECT`: `agile-device-472202-i8`
 - `GOOGLE_MAPS_API_KEY`: `AIzaSyC6NducOs7Esf4RG4omIO6OqleLq7Ww1pc`
-- `GCP_SA_JSON`: `/app/agile-device-472202-i8-319f002d9438.json`
+
+**Authentication**: Cloud Run uses the attached service account (`pv-worker-staging-sa`) via Application Default Credentials (ADC). No credential files or keys needed.
 
 ### Cache Features
 - **Dual-layer caching**: Redis (persistent) + in-memory (fast)
@@ -121,15 +124,19 @@ Required environment variables for Cloud Run:
 - **Purpose**: Stores raw comparable properties to speed up repeat searches
 
 ### Latest Deployment
-- **Revision**: propertyvision-frontend-00020-m4h
-- **Date**: 2025-10-02
+- **Date**: 2025-10-24
 - **Changes**:
-  - **MAJOR**: Deployed Redis cache integration to production
+  - **MAJOR**: Migrated to Application Default Credentials (ADC)
+  - Removed service account JSON file environment variables
+  - Added service account attachment to Cloud Run service
+  - Simplified authentication using Google Cloud's recommended approach
+  - Backward compatible with existing functionality
+
+- **Previous**: 2025-10-02
+  - Deployed Redis cache integration to production
   - Added Google Cloud Memorystore Redis instance for persistent caching
   - Configured VPC connector for Cloud Run → Memorystore communication
-  - Added all required environment variables (REDIS_URL, GCP_SA_JSON, etc.)
   - Implemented dual-layer caching (Redis + in-memory) with graceful fallback
-  - Redis successfully connected in production (verified in logs)
 
 ### Testing
 After deployment, test with address:
@@ -161,8 +168,9 @@ gcloud run services describe propertyvision-frontend \
 
 #### Common Issues
 1. **"Could not fetch subject property details"**
-   - Missing `GCP_SA_JSON` environment variable
-   - Solution: Ensure `GCP_SA_JSON=/app/agile-device-472202-i8-319f002d9438.json` is set
+   - Service account not attached to Cloud Run
+   - Solution: Verify `--service-account pv-worker-staging-sa@agile-device-472202-i8.iam.gserviceaccount.com` is set
+   - Check service account has required permissions (Vertex AI, Cloud Logging)
 
 2. **Redis connection timeout**
    - VPC connector not configured
@@ -170,7 +178,7 @@ gcloud run services describe propertyvision-frontend \
 
 3. **Analysis fails immediately**
    - Missing environment variables
-   - Check all required vars are set: `REDIS_URL`, `GOOGLE_MAPS_API_KEY`, `GCP_SA_JSON`, `GOOGLE_APPLICATION_CREDENTIALS`
+   - Check all required vars are set: `REDIS_URL`, `GOOGLE_MAPS_API_KEY`, `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_PROJECT_ID`
 
 #### View Cache Statistics
 

@@ -407,6 +407,8 @@ export class ProgressiveSearchStrategy {
     jobLog('===============================');
     jobLog(`📍 Subject: ${address}`);
     jobLog(`🚨 DEBUG PROGRESSIVE SEARCH: propertyType="${propertyType}" (type: ${typeof propertyType})`);
+    jobLog(`🔧 DIAG_PROGRESSIVE_ACTIVE: strategy=progressive_expansion, max_levels=4`);
+    jobLog(`🔧 DIAG_SEARCH_MODE: mode=progressive (NOT legacy 6-prompt mode)`);
     if (subjectDetails) {
       jobLog(`🏠 Subject: ${subjectDetails.sqft}sqft, ${subjectDetails.beds}BR/${subjectDetails.baths}BA, built ${subjectDetails.yearBuilt}`);
     }
