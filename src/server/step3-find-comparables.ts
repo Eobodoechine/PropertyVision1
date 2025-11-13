@@ -9,6 +9,7 @@ import pLimit from 'p-limit';
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
 import { jobLog } from './utils/jobLogger';
+import { withVertexLimiter, getLimiterCallCount } from './vertex-limiter';
 
 // Force IPv4-first DNS resolution to avoid IPv6 timeout delays in VPC
 dns.setDefaultResultOrder('ipv4first');
@@ -26,6 +27,23 @@ function diag(event: string, payload: Record<string, any>) {
     ...payload
   }));
 }
+
+// ---------- Phase A: Pacing & logging helpers ----------
+const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+const envInt = (k: string, d: number) => {
+  const v = Number(process.env[k]);
+  return Number.isFinite(v) && v >= 0 ? v : d;
+};
+const CONCURRENCY   = envInt('VERTEX_CONCURRENCY_LIMIT', 2);
+const BASE_DELAY_MS = envInt('VERTEX_PACING_MS', 300);
+const JITTER_MS     = envInt('VERTEX_PACING_JITTER_MS', 50);
+const PHASE_MAX_MS  = envInt('VERTEX_PHASE_OFFSET_MAX_MS', 350);
+const DIAG_FAIL_FAST = String(process.env.DIAG_FAIL_FAST || 'false').toLowerCase() === 'true';
+const jittered = (base: number, jitter: number) =>
+  base + Math.floor(Math.random() * (jitter * 2 + 1)) - jitter;
+const logJSON = (kind: string, extra: Record<string, any> = {}) => {
+  jobLog(JSON.stringify({ t: Date.now(), kind, ...extra }));
+};
 
 // Cache bypass flag for testing (no default change)
 const GEOCODE_BYPASS_CACHE = process.env.GEOCODE_BYPASS_CACHE === 'true';
@@ -67,6 +85,7 @@ class VertexComparableSearchService {
   private googleMapsApiKey: string;
   private geocodeCache: Map<string, { lat: number; lon: number }>;
   private geminiParser: GeminiParser;
+  private currentJobId: string = 'unknown'; // S0-v2: Track jobId for vertex limiter
 
   constructor() {
     this.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || '';
@@ -84,8 +103,12 @@ class VertexComparableSearchService {
     searchRadius: number = 3,
     timeWindowMonths: number = 18,
     subjectDetails?: { sqft: number; beds: number; baths: number; yearBuilt: number },
-    extra?: { subdivision?: string }
+    extra?: { subdivision?: string },
+    jobId?: string
   ): Promise<FindComparablesResult> {
+    // Use provided jobId or create one from address hash
+    const effectiveJobId = jobId || crypto.createHash('md5').update(subjectAddress).digest('hex').slice(0, 8);
+    this.currentJobId = effectiveJobId; // S0-v2: Store for use in private methods
     try {
       // Pre-warm proxy connection (fire-and-forget, non-blocking)
       if (USE_GEO_PROXY) prewarmProxy().catch(() => {});
@@ -175,15 +198,22 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
         jobLog(`🔍 FETCH DEBUG: About to call vertexGenerate with timeout 120000ms`);
         const startVertex = Date.now();
-        const r = await vertexGenerate({
-          token: token,
-          projectId,
-          location,
-          model,
-          prompt: p,
-          grounded: true,
-          timeoutMs: 120000
-        });
+
+        // S0-v2: Wrap Vertex call with global limiter
+        const r = await withVertexLimiter(
+          'step3-comparables',
+          effectiveJobId,
+          async () => vertexGenerate({
+            token: token,
+            projectId,
+            location,
+            model,
+            prompt: p,
+            grounded: true,
+            timeoutMs: 120000
+          })
+        );
+
         const vertexTime = Date.now() - startVertex;
         jobLog(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
 
@@ -222,28 +252,58 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       }
 
       jobLog(`🔍 PROMPT DEBUG: All prompts generated successfully, total: ${prompts.length}`);
+
+      // Calculate expected Vertex calls for integrity check
+      // Main searches + potential enrichment/verification calls (documented but not strictly enforced)
+      const expectedVertexCalls = prompts.length;
+
+      // Phase A: Add phase offset to desync simultaneous jobs
+      if (PHASE_MAX_MS > 0) {
+        const phaseOffset = Math.floor(Math.random() * PHASE_MAX_MS);
+        logJSON('PHASE_OFFSET', { phaseOffsetMs: phaseOffset, concurrency: CONCURRENCY, baseDelayMs: BASE_DELAY_MS, jitterMs: JITTER_MS });
+        await sleep(phaseOffset);
+      }
+
+      // S0-v2: Enhanced JOB_CONFIG with schema_version and expected calls
+      logJSON('JOB_CONFIG', {
+        schema_version: 'v2',
+        job_id: effectiveJobId,
+        run_label: process.env.RUN_LABEL || 'default',
+        concurrency: CONCURRENCY,
+        pacing_ms: BASE_DELAY_MS,
+        jitter_ms: JITTER_MS,
+        phase_offset_max_ms: PHASE_MAX_MS,
+        total_prompts: prompts.length,
+        subdivision_prompts: subdivision ? 3 : 0,
+        regular_prompts: 3,
+        expected_vertex_calls: expectedVertexCalls,
+        note: 'expected_vertex_calls includes main searches only; enrichment/verification calls are additional'
+      });
+
       // Rate limit concurrent Vertex API calls to prevent 429 errors
-      const VERTEX_CONCURRENCY_LIMIT = Number(process.env.VERTEX_CONCURRENCY_LIMIT || 16); // Sweet spot: 16 concurrent
-      jobLog(`   🚀 Launching ${prompts.length} Vertex searches with concurrency limit: ${VERTEX_CONCURRENCY_LIMIT}...`);
+      jobLog(`   🚀 Launching ${prompts.length} Vertex searches with concurrency limit: ${CONCURRENCY}...`);
       jobLog(`🔍 VERTEX DEBUG: Rate-limited execution starting...`);
-      jobLog(`📊 DIAG_BATCH_CONFIG: total_prompts=${prompts.length}, concurrency_limit=${VERTEX_CONCURRENCY_LIMIT}, subdivision_prompts=${subdivision ? 3 : 0}, regular_prompts=3`);
-      jobLog(`📊 DIAG_EXPECTED_WAVES: ${Math.ceil(prompts.length / VERTEX_CONCURRENCY_LIMIT)} waves of max ${VERTEX_CONCURRENCY_LIMIT} concurrent calls`);
+      jobLog(`📊 DIAG_BATCH_CONFIG: total_prompts=${prompts.length}, concurrency_limit=${CONCURRENCY}, subdivision_prompts=${subdivision ? 3 : 0}, regular_prompts=3`);
+      jobLog(`📊 DIAG_EXPECTED_WAVES: ${Math.ceil(prompts.length / CONCURRENCY)} waves of max ${CONCURRENCY} concurrent calls`);
       const startPromiseAll = Date.now();
 
-      const limit = pLimit(VERTEX_CONCURRENCY_LIMIT);
+      const limit = pLimit(CONCURRENCY);
       const results = await Promise.allSettled(prompts.map((p, index) => {
-        return limit(() => {
+        return limit(async () => {
+          // S0-v2: Pacing is now handled by withVertexLimiter (removed duplicate Phase A pacing)
+
           const searchStart = Date.now();
-          jobLog(`🔍 VERTEX DEBUG: Starting search ${index + 1}/${prompts.length} (concurrency limit: ${VERTEX_CONCURRENCY_LIMIT})`);
+          jobLog(`🔍 VERTEX DEBUG: Starting search ${index + 1}/${prompts.length} (concurrency limit: ${CONCURRENCY})`);
           jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} - subjectAddress scope check: "${typeof subjectAddress}" = "${subjectAddress}"`);
           jobLog(`📊 DIAG_SEARCH_START: search_id=${index + 1}, timestamp=${searchStart}, prompt_type=${index < 3 && subdivision ? 'subdivision' : 'regular'}`);
 
-          return fetchAndParse(p).then(result => {
+          try {
+            const result = await fetchAndParse(p);
             const searchDuration = Date.now() - searchStart;
             jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with ${result ? result.length : 0} results`);
             jobLog(`✅ DIAG_SEARCH_COMPLETE: search_id=${index + 1}, duration=${searchDuration}ms, results_count=${result.length}`);
             return result;
-          }).catch(error => {
+          } catch (error: any) {
             const searchDuration = Date.now() - searchStart;
             console.error(`❌ VERTEX DEBUG: Search ${index + 1} failed with error: ${error.message}`);
             console.error(`❌ VERTEX DEBUG: Search ${index + 1} error stack: ${error.stack}`);
@@ -253,7 +313,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
               console.error(`❌ CRITICAL: Found the subjectAddress error in search ${index + 1}!`);
             }
             throw error;
-          });
+          }
         });
       }));
 
@@ -265,13 +325,22 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       let timeoutCount = 0;
       let errorCount = 0;
 
+      let okCount = 0;
       results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
+          okCount++;
           jobLog(`✅ VERTEX DEBUG: Search ${index + 1} fulfilled with ${result.value ? result.value.length : 0} results`);
           batches.push(result.value || []);
         } else {
           const errorMessage = result.reason?.message || String(result.reason);
           const errorCode = result.reason?.code || 'unknown';
+
+          // Phase A: Log structured fan-out failures
+          logJSON('FANOUT_FAILURE', {
+            index,
+            reason: errorMessage.slice(0, 300),
+            code: errorCode
+          });
 
           if (errorCode === 'ETIMEDOUT' || errorMessage.includes('timeout')) {
             timeoutCount++;
@@ -287,6 +356,12 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           batches.push([]); // Add empty array for failed searches
         }
       });
+
+      // Phase A: Summary and optional fail-fast
+      logJSON('FANOUT_SUMMARY', { okCount, errorCount, totalPrompts: prompts.length });
+      if (DIAG_FAIL_FAST && errorCount > 0) {
+        throw new Error(`Fan-out had ${errorCount} failures (DIAG_FAIL_FAST=true)`);
+      }
 
       // Summary logging
       const successCount = results.filter(r => r.status === 'fulfilled').length;
@@ -538,6 +613,27 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         }
       } catch {}
 
+      // S0-v2: JOB_END integrity check
+      const actualVertexCalls = getLimiterCallCount();
+      const callDelta = actualVertexCalls - expectedVertexCalls;
+      logJSON('JOB_END', {
+        schema_version: 'v2',
+        job_id: effectiveJobId,
+        run_label: process.env.RUN_LABEL || 'default',
+        expected_vertex_calls: expectedVertexCalls,
+        actual_vertex_calls: actualVertexCalls,
+        call_delta: callDelta,
+        integrity_check: callDelta >= 0 ? 'PASS' : 'FAIL',
+        note: 'call_delta >= 0 is normal (enrichment/verification adds extra calls); call_delta < 0 means calls bypassed limiter'
+      });
+
+      // S0 strict mode: fail if calls bypassed limiter
+      if (process.env.RUN_LABEL?.startsWith('S0') && callDelta < 0) {
+        const violation = `S0 integrity violation: expected ${expectedVertexCalls} calls, got ${actualVertexCalls} (delta: ${callDelta})`;
+        console.error(JSON.stringify({ t: Date.now(), kind: 'S0_INTEGRITY_VIOLATION', message: violation }));
+        throw new Error(violation);
+      }
+
       return {
         comparables: finalComps,
         all_comps: rawCompsBeforeFiltering,
@@ -667,15 +763,21 @@ Look for indicators like:
 Respond with only YES (if duplex/multi-family) or NO (if single-family/other).`;
 
         const { vertexGenerate } = await import('./vertex-freeform.js');
-        const response = await vertexGenerate({
-          token,
-          projectId,
-          location,
-          model,
-          prompt: verificationPrompt,
-          grounded: true,
-          timeoutMs: 30000
-        });
+
+        // S0-v2: Wrap Vertex call with global limiter
+        const response = await withVertexLimiter(
+          'step3-verify-duplex',
+          this.currentJobId,
+          async () => vertexGenerate({
+            token,
+            projectId,
+            location,
+            model,
+            prompt: verificationPrompt,
+            grounded: true,
+            timeoutMs: 30000
+          })
+        );
 
         const isDuplex = response.trim().toUpperCase().includes('YES');
 
@@ -755,17 +857,22 @@ Return exactly this JSON structure:
         }
       } as any;
 
-      const response = await vertexGenerate({
-        token,
-        projectId,
-        location,
-        model,
-        prompt: allFieldsPrompt,
-        grounded: false,
-        json: true,
-        timeoutMs: 600000,
-        responseSchema
-      });
+      // S0-v2: Wrap Vertex call with global limiter
+      const response = await withVertexLimiter(
+        'step3-parse-llm',
+        this.currentJobId,
+        async () => vertexGenerate({
+          token,
+          projectId,
+          location,
+          model,
+          prompt: allFieldsPrompt,
+          grounded: false,
+          json: true,
+          timeoutMs: 600000,
+          responseSchema
+        })
+      );
 
       // Be robust to code fences or stray prose
       const extractJsonBlock = (text: string): string | null => {
@@ -907,17 +1014,22 @@ Return exactly this JSON structure:
         }
       } as any;
 
-      const text = await vertexGenerate({
-        token,
-        projectId,
-        location,
-        model,
-        prompt,
-        grounded: false,
-        json: true,
-        timeoutMs: 600000,
-        responseSchema
-      });
+      // S0-v2: Wrap Vertex call with global limiter
+      const text = await withVertexLimiter(
+        'step3-batch-parse-llm',
+        this.currentJobId,
+        async () => vertexGenerate({
+          token,
+          projectId,
+          location,
+          model,
+          prompt,
+          grounded: false,
+          json: true,
+          timeoutMs: 600000,
+          responseSchema
+        })
+      );
 
       // Extract JSON robustly
       const extractJsonBlock = (t: string): string | null => {

@@ -1,12 +1,59 @@
 import 'dotenv/config';
+import os from 'os';
 import { getJobQueue } from './utils/jobQueue';
 import { jobLog } from './utils/jobLogger';
+import { getRedisCache } from './utils/redisCache';
 import http from 'http';
 
 async function startWorker() {
   if (process.env.RUN_WORKER !== 'true') {
     jobLog('⏭️  Worker disabled (RUN_WORKER != true)');
     return;
+  }
+
+  // Emit WORKER_ANNOUNCE for diagnostics
+  console.log(JSON.stringify({
+    t: Date.now(),
+    kind: 'WORKER_ANNOUNCE',
+    pid: process.pid,
+    hostname: os.hostname(),
+    run_label: process.env.RUN_LABEL || 'default',
+    vertex_concurrency_limit: process.env.VERTEX_CONCURRENCY_LIMIT,
+    vertex_pacing_ms: process.env.VERTEX_PACING_MS
+  }));
+
+  // S0: Acquire exclusive Redis lock for cross-host isolation
+  if (process.env.RUN_LABEL?.startsWith('S0')) {
+    const redis = getRedisCache();
+
+    // Wait for Redis to connect before acquiring lock
+    await redis.ensureConnected();
+
+    const lockAcquired = await redis.acquireLock(
+      'pv:s0_lock',
+      process.pid.toString(),
+      15 * 60 // 15 minutes in seconds
+    );
+
+    if (!lockAcquired) {
+      console.error(JSON.stringify({
+        t: Date.now(),
+        kind: 'ISOLATION_WARNING',
+        message: 'S0 requires exclusive lock pv:s0_lock - ABORTING'
+      }));
+      process.exit(1);
+    }
+
+    // Release lock on exit
+    process.on('exit', () => {
+      redis.del('pv:s0_lock').catch(() => {});
+    });
+
+    console.log(JSON.stringify({
+      t: Date.now(),
+      kind: 'NO_OTHER_WORKERS',
+      message: 'S0 isolation verified (Redis lock acquired)'
+    }));
   }
 
   jobLog('🚀 Starting job worker...');

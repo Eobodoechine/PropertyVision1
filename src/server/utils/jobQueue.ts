@@ -65,6 +65,11 @@ export class JobQueue {
   private reclaimInterval: NodeJS.Timeout | null = null;
   private shouldRestart = false;
 
+  // 🔧 CONCURRENCY FIX v1.0: Semaphore pattern to limit concurrent job processing
+  private maxConcurrentJobs = Number(process.env.PV_MAX_CONCURRENT_JOBS || 3);
+  private activeJobs = 0;
+  private jobCompletedCallbacks: Array<() => void> = [];
+
   constructor() {
     // Use V10 if parallel search is enabled, otherwise V5
     const useV10 = parallelSearchConfig.enabled;
@@ -73,6 +78,7 @@ export class JobQueue {
       : new ComprehensiveComparableSearchV5();
 
     jobLog(`✅ JobQueue initialized with ${useV10 ? 'V10 (Parallel Search)' : 'V5 (Sequential Search)'}`);
+    jobLog(`🔧 [CONCURRENCY_CONFIG] Max concurrent jobs: ${this.maxConcurrentJobs} (env: PV_MAX_CONCURRENT_JOBS)`);
 
     // Register reconnect callback to restart worker
     this.redis.onReconnect(() => {
@@ -83,6 +89,61 @@ export class JobQueue {
         });
       }
     });
+  }
+
+  /**
+   * 🔧 CONCURRENCY FIX: Acquire slot for job processing (semaphore pattern)
+   * Waits if max concurrent jobs already running
+   */
+  private async acquireJobSlot(): Promise<void> {
+    jobLog(`🔧 [SEMAPHORE_ACQUIRE_START] Current: ${this.activeJobs}/${this.maxConcurrentJobs}, waiting: ${this.jobCompletedCallbacks.length}`);
+
+    if (this.activeJobs < this.maxConcurrentJobs) {
+      this.activeJobs++;
+      jobLog(`✅ [SEMAPHORE_ACQUIRED] Slot acquired immediately (${this.activeJobs}/${this.maxConcurrentJobs} active)`);
+      return;
+    }
+
+    // Wait for a job to complete
+    const waitStartTime = Date.now();
+    jobLog(`⏸️  [SEMAPHORE_WAITING] Max concurrency reached (${this.maxConcurrentJobs}), waiting for slot...`);
+
+    await new Promise<void>((resolve) => {
+      this.jobCompletedCallbacks.push(resolve);
+      jobLog(`🔧 [SEMAPHORE_QUEUED] Added to wait queue (position: ${this.jobCompletedCallbacks.length})`);
+    });
+
+    const waitDuration = Date.now() - waitStartTime;
+    this.activeJobs++;
+    jobLog(`✅ [SEMAPHORE_ACQUIRED_AFTER_WAIT] Slot acquired after ${waitDuration}ms wait (${this.activeJobs}/${this.maxConcurrentJobs} active)`);
+  }
+
+  /**
+   * 🔧 CONCURRENCY FIX: Release slot after job completion
+   */
+  private releaseJobSlot(): void {
+    const beforeCount = this.activeJobs;
+    this.activeJobs = Math.max(0, this.activeJobs - 1); // Guard against negative
+
+    jobLog(`🔧 [SEMAPHORE_RELEASE] Slot released (${beforeCount} -> ${this.activeJobs}/${this.maxConcurrentJobs})`);
+
+    if (beforeCount === this.activeJobs && this.activeJobs > 0) {
+      console.warn(`⚠️  [SEMAPHORE_RELEASE_WARNING] activeJobs didn't decrement (stuck at ${this.activeJobs})`);
+    }
+
+    // Wake up waiting job if any
+    const callback = this.jobCompletedCallbacks.shift();
+    if (callback) {
+      jobLog(`🔧 [SEMAPHORE_WAKE] Waking up waiting job (${this.jobCompletedCallbacks.length} still waiting)`);
+      try {
+        callback();
+        jobLog(`✅ [SEMAPHORE_WAKE_SUCCESS] Waiting job notified`);
+      } catch (error) {
+        console.error(`❌ [SEMAPHORE_WAKE_FAILED] Failed to notify waiting job:`, error);
+      }
+    } else {
+      jobLog(`🔧 [SEMAPHORE_WAKE] No waiting jobs in queue`);
+    }
   }
 
   /**
@@ -331,33 +392,47 @@ export class JobQueue {
     console.log(`   About to enter runInJobContext - all logs will be isolated`);
 
     return runInJobContext(jobId, async () => {
-      jobLog(`⚙️  [${messageId}] Processing job ${jobId}: ${address}`);
+      // 🔧 [CONCURRENCY_CONTROL] Acquire semaphore slot before processing
+      jobLog(`🔧 [PROCESS_JOB_START] Job ${jobId.substring(0, 8)} starting, acquiring slot...`);
 
-      // 🔧 PHASE 5 FIX: Acquire distributed lock to prevent concurrent processing
-      const lockKey = `lock:job:${jobId}`;
-      const lockValue = `${CONSUMER}:${randomUUID()}`;
-      const lockTTL = 300; // 5 minutes - auto-release if worker crashes
-
-      console.log('🔧 PHASE 5: Attempting distributed lock acquisition');
-      console.log(`   Lock prevents multiple workers from processing same job`);
-
-      const lockAcquired = await this.redis.acquireLock(lockKey, lockValue, lockTTL);
-
-      if (!lockAcquired) {
-        jobLog(`⚠️  [${messageId}] Job ${jobId} is locked by another worker, skipping`);
-        console.log('🔧 PHASE 5: Lock acquisition FAILED - another worker is processing this job');
-        console.log('   This is EXPECTED behavior - prevents duplicate processing');
-        return;
+      let slotAcquired = false;
+      try {
+        await this.acquireJobSlot();
+        slotAcquired = true;
+        jobLog(`✅ [PROCESS_JOB_SLOT_ACQUIRED] Job ${jobId.substring(0, 8)} has slot, proceeding...`);
+      } catch (error) {
+        console.error(`❌ [PROCESS_JOB_ACQUIRE_FAILED] Failed to acquire slot for job ${jobId}:`, error);
+        throw new Error(`[PROCESS_JOB_ACQUIRE_FAILED] Semaphore acquire failed: ${error instanceof Error ? error.message : String(error)}`);
       }
 
-      console.log('🔧 PHASE 5: Lock acquisition SUCCEEDED - we have exclusive access');
-      console.log(`   Lock will auto-expire in ${lockTTL}s if we crash`);
-
-      // Declare heartbeat before try block so it's accessible in catch/finally
-      let heartbeat: NodeJS.Timeout | null = null;
-
       try {
-        // ALL PROCESSING CODE INSIDE TRY BLOCK
+        jobLog(`⚙️  [${messageId}] Processing job ${jobId}: ${address}`);
+
+        // 🔧 PHASE 5 FIX: Acquire distributed lock to prevent concurrent processing
+        const lockKey = `lock:job:${jobId}`;
+        const lockValue = `${CONSUMER}:${randomUUID()}`;
+        const lockTTL = 300; // 5 minutes - auto-release if worker crashes
+
+        console.log('🔧 PHASE 5: Attempting distributed lock acquisition');
+        console.log(`   Lock prevents multiple workers from processing same job`);
+
+        const lockAcquired = await this.redis.acquireLock(lockKey, lockValue, lockTTL);
+
+        if (!lockAcquired) {
+          jobLog(`⚠️  [${messageId}] Job ${jobId} is locked by another worker, skipping`);
+          console.log('🔧 PHASE 5: Lock acquisition FAILED - another worker is processing this job');
+          console.log('   This is EXPECTED behavior - prevents duplicate processing');
+          return;
+        }
+
+        console.log('🔧 PHASE 5: Lock acquisition SUCCEEDED - we have exclusive access');
+        console.log(`   Lock will auto-expire in ${lockTTL}s if we crash`);
+
+        // Declare heartbeat before try block so it's accessible in catch/finally
+        let heartbeat: NodeJS.Timeout | null = null;
+
+        try {
+          // ALL PROCESSING CODE INSIDE TRY BLOCK
 
     // Check if job is already being processed (use message ID for same-consumer detection)
     console.log('📊 STEP 1: Checking existing job status in Redis');
@@ -584,27 +659,48 @@ export class JobQueue {
         userId: existingJob?.userId
       });
 
-    } catch (error: any) {
-      if (heartbeat) clearInterval(heartbeat);
-      setCurrentJobContext(null); // Clear job context
-      // 🔧 PHASE 3: No need to call setJobContext(null) - runInJobContext auto-cleans
-      throw error;
-    } finally {
-      // 🔧 PHASE 5: Always release the lock, even if job failed
-      console.log('🔧 PHASE 5: FINALLY block - releasing distributed lock');
-      console.log(`   Lock Key: ${lockKey}`);
-      console.log(`   Lock Value: ${lockValue}`);
+        } catch (error: any) {
+          if (heartbeat) clearInterval(heartbeat);
+          setCurrentJobContext(null); // Clear job context
+          // 🔧 PHASE 3: No need to call setJobContext(null) - runInJobContext auto-cleans
+          throw error;
+        } finally {
+          // 🔧 PHASE 5: Always release the lock, even if job failed
+          console.log('🔧 PHASE 5: FINALLY block - releasing distributed lock');
+          console.log(`   Lock Key: ${lockKey}`);
+          console.log(`   Lock Value: ${lockValue}`);
 
-      const lockReleased = await this.redis.releaseLock(lockKey, lockValue);
+          const lockReleased = await this.redis.releaseLock(lockKey, lockValue);
 
-      if (lockReleased) {
-        console.log('✅ PHASE 5: Lock released successfully');
-        console.log('   Other workers can now process this job if needed');
-      } else {
-        console.log('⚠️  PHASE 5: Lock release returned false');
-        console.log('   Lock may have already expired (TTL reached) or was never acquired');
-      }
-    } // End of finally block (completes try-catch-finally)
+          if (lockReleased) {
+            console.log('✅ PHASE 5: Lock released successfully');
+            console.log('   Other workers can now process this job if needed');
+          } else {
+            console.log('⚠️  PHASE 5: Lock release returned false');
+            console.log('   Lock may have already expired (TTL reached) or was never acquired');
+          }
+        } // End of inner finally block (lock release)
+      } catch (error: any) {
+        console.error(`❌ [PROCESS_JOB_FAILED] Job ${jobId.substring(0, 8)} failed:`, error);
+        console.error(`   Error type: ${error?.constructor?.name || 'unknown'}`);
+        console.error(`   Error message: ${error?.message || String(error)}`);
+        console.error(`   Slot acquired: ${slotAcquired}`);
+        throw error;
+      } finally {
+        // 🔧 [CONCURRENCY_CONTROL] Always release semaphore slot
+        if (slotAcquired) {
+          jobLog(`🔧 [PROCESS_JOB_FINALLY] Releasing slot for job ${jobId.substring(0, 8)}...`);
+          try {
+            this.releaseJobSlot();
+            jobLog(`✅ [PROCESS_JOB_SLOT_RELEASED] Slot released successfully`);
+          } catch (error) {
+            console.error(`❌ [PROCESS_JOB_RELEASE_FAILED] Failed to release slot:`, error);
+            // Don't throw - already in finally block
+          }
+        } else {
+          jobLog(`⚠️  [PROCESS_JOB_FINALLY] No slot to release (acquire failed or not reached)`);
+        }
+      } // End of outer finally block (semaphore release)
     }); // End of runInJobContext wrapper - closes async arrow function
   } // End of processJob method
 

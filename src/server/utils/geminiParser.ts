@@ -83,7 +83,21 @@ Return JSON in exactly this format (no other text):
       });
 
       if (!result) {
-        throw new Error('No content returned from Vertex AI Gemini');
+        // 🔧 [EMPTY_RESPONSE] Vertex AI returned empty response (likely rate limiting)
+        jobLog('❌ [GEMINI_EMPTY_RESPONSE] No content returned from Vertex AI');
+        jobLog('   This error is retryable - may be temporary quota exhaustion');
+
+        const error = new Error('No content returned from Vertex AI Gemini');
+        (error as any).code = 'VERTEX_EMPTY_RESPONSE'; // Mark as retryable
+
+        console.error('❌ [GEMINI_EMPTY_RESPONSE_DETAILS]', {
+          timestamp: new Date().toISOString(),
+          errorCode: 'VERTEX_EMPTY_RESPONSE',
+          retryable: true,
+          rawResult: result
+        });
+
+        throw error;
       }
 
       return result;

@@ -6,15 +6,41 @@ import { jobLog } from './utils/jobLogger';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
-// Configure Node.js v20 globalAgent with better timeout management
-// Close idle sockets after 4s (before Vertex AI server's ~5s timeout) to prevent ECONNRESET
-https.globalAgent.options = {
-    ...https.globalAgent.options,
-    freeSocketTimeout: 4000,  // Close idle sockets proactively
-    timeout: 60000,
-    keepAlive: true,  // Already true in v20, but being explicit
-    keepAliveMsecs: 30000
-};
+// 🔧 CONCURRENCY FIX v1.0: Custom HTTP agent with connection limits
+// Prevents TLS socket listener accumulation under concurrent load
+// Research: https://github.com/nodejs/node/issues/16716 (socket reuse memory leak)
+// Research: https://github.com/nodejs/node/issues/55330 (ECONNRESET with keepAlive)
+
+jobLog('🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent...');
+
+let vertexHttpAgent;
+try {
+    vertexHttpAgent = new https.Agent({
+        keepAlive: true,           // Enable connection reuse for performance
+        keepAliveMsecs: 30000,     // Keep sockets alive for 30s
+        maxSockets: 10,            // CRITICAL: Limit concurrent sockets per host (prevents listener leak)
+        maxFreeSockets: 5,         // Limit idle socket pool size
+        timeout: 60000,            // Socket timeout (60s)
+        freeSocketTimeout: 4000,   // Close idle sockets after 4s (before server timeout)
+    });
+
+    jobLog('✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created');
+    jobLog(`🔧 [AGENT_CONFIG] maxSockets=${vertexHttpAgent.maxSockets}, maxFreeSockets=${vertexHttpAgent.maxFreeSockets}, keepAlive=${vertexHttpAgent.keepAlive}`);
+
+    // Graceful shutdown: destroy agent on process exit
+    process.on('beforeExit', () => {
+        jobLog('🔧 [AGENT_CLEANUP] Destroying Vertex HTTP agent on process exit...');
+        vertexHttpAgent.destroy();
+        jobLog('✅ [AGENT_CLEANUP_DONE] Agent destroyed');
+    });
+
+} catch (error) {
+    console.error('❌ [AGENT_INIT_FAILED] Failed to create Vertex HTTP agent:', error);
+    console.error('   Error type:', error.constructor.name);
+    console.error('   Error message:', error.message);
+    console.error('   Error stack:', error.stack);
+    throw new Error(`[AGENT_INIT_FAILED] Cannot initialize custom HTTP agent: ${error.message}`);
+}
 
 // 🔍 DIAGNOSTIC: Track concurrent API calls and socket usage
 let activeVertexCalls = 0;
@@ -39,6 +65,98 @@ const RETRY_BASE_DELAY_MS = 1000;  // Exponential backoff: 1s, 2s, 4s
 // 🔧 DIAGNOSTIC: Track auth client instances and token caching
 let authClientInstanceCount = 0;
 const tokenCache = { token: null, fetchedAt: null };
+
+// 🔬 DIAGNOSTIC v2: Parse real 429 signals from Google (no hardcoded mechanisms)
+/**
+ * Parse 429 error signals from Google's error response
+ * Extracts RetryInfo and QuotaFailure from error.details[] WITHOUT hardcoding mechanism names
+ */
+function classifyQuota(res, body) {
+    const ct = (res.headers['content-type'] || '').toLowerCase();
+    let parsed;
+    if (ct.includes('application/json')) {
+        try { parsed = JSON.parse(body); } catch {}
+    }
+
+    const msg = parsed?.error?.message || '';
+    const details = parsed?.error?.details || [];
+
+    // Parse RetryInfo from error.details (contains retry delay recommendation)
+    const retryInfo = details.find(d => d['@type']?.includes('RetryInfo'));
+    let retryDelayMs = null;
+    if (retryInfo && retryInfo.retryDelay) {
+        const seconds = retryInfo.retryDelay.seconds || 0;
+        const nanos = retryInfo.retryDelay.nanos || 0;
+        retryDelayMs = (seconds * 1000) + Math.floor(nanos / 1000000);
+    }
+
+    // Parse QuotaFailure from error.details (contains quota ID and subject)
+    const quotaFailure = details.find(d => d['@type']?.includes('QuotaFailure'));
+    let quotaId = null;
+    let quotaSubject = null;
+    if (quotaFailure && quotaFailure.violations && quotaFailure.violations.length > 0) {
+        const violation = quotaFailure.violations[0];
+        quotaSubject = violation.subject || null;
+        // Quota ID can be in description or subject field
+        quotaId = violation.description || violation.subject || null;
+    }
+
+    // Determine mechanism_reported based on what Google actually tells us
+    // DO NOT hardcode mechanism names - report exactly what Google provides
+    let mechanismReported = null;
+    if (retryInfo) {
+        mechanismReported = `RetryInfo(delay=${retryDelayMs}ms)`;
+    } else if (quotaFailure) {
+        mechanismReported = `QuotaFailure(quota=${quotaId || 'unknown'})`;
+    }
+    // If neither RetryInfo nor QuotaFailure, mechanism_reported stays null (not "UNKNOWN")
+
+    return {
+        mechanism_reported: mechanismReported,
+        msg,
+        retry_delay_ms: retryDelayMs,
+        quota_id: quotaId,
+        quota_subject: quotaSubject,
+        has_retry_info: !!retryInfo,
+        has_quota_failure: !!quotaFailure
+    };
+}
+
+/**
+ * Parse Retry-After header (supports both seconds and HTTP-date format)
+ */
+function parseRetryAfter(headerValue) {
+    if (!headerValue) return null;
+    const n = Number(headerValue);
+    if (!Number.isNaN(n)) return n * 1000; // seconds → ms
+    const ts = Date.parse(headerValue);
+    return Number.isNaN(ts) ? null : Math.max(0, ts - Date.now());
+}
+
+// 🔬 DIAGNOSTIC v2: Precise in-flight tracking
+/**
+ * Record attempt start and capture in-flight count
+ */
+function startAttempt() {
+    activeVertexCalls++;
+    peakConcurrency = Math.max(peakConcurrency, activeVertexCalls);
+    return {
+        start: Date.now(),
+        inflightAtStart: activeVertexCalls
+    };
+}
+
+/**
+ * Record attempt end and capture final in-flight count
+ */
+function endAttempt(meta) {
+    activeVertexCalls = Math.max(0, activeVertexCalls - 1);
+    return {
+        ...meta,
+        inflightAtEnd: activeVertexCalls,
+        latencyMs: Date.now() - meta.start
+    };
+}
 
 /**
  * Log comprehensive statistics about Vertex API calls
@@ -114,10 +232,13 @@ async function httpsPostJsonWithRetry(url, payload, headers, timeoutMs = 60000, 
                         return result;  // Return the error response
                     }
 
-                    // Schedule retry with exponential backoff + jitter
-                    const jitter = Math.random() * 1000; // 0-1000ms random jitter
-                    const delay = (RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1)) + jitter;
-                    jobLog(`⏳ RETRY_SCHEDULED_429: waiting ${Math.floor(delay)}ms (base + jitter) before retry ${attempt + 1}`);
+                    // 🔧 [RETRY_BACKOFF_429] Calculate delay with exponential backoff + cap
+                    const baseDelay = Math.min(RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), 12000); // Cap at 12s
+                    const jitter = Math.random() * 500; // 0-500ms random jitter
+                    const delay = baseDelay + jitter;
+
+                    jobLog(`🔧 [RETRY_BACKOFF_429] Base: ${baseDelay}ms, jitter: ${Math.floor(jitter)}ms, final: ${Math.floor(delay)}ms`);
+                    jobLog(`⏳ RETRY_SCHEDULED_429: waiting ${Math.floor(delay)}ms before retry ${attempt + 1}`);
 
                     await new Promise(resolve => setTimeout(resolve, delay));
                     continue;  // Retry
@@ -155,14 +276,18 @@ async function httpsPostJsonWithRetry(url, payload, headers, timeoutMs = 60000, 
             const errorCode = error.code || 'UNKNOWN';
             vertexStats.errorCodes[errorCode] = (vertexStats.errorCodes[errorCode] || 0) + 1;
 
-            // Retry decision logic
+            // 🔧 [RETRY_DECISION] Checking if error is retryable
             const isRetryableError =
                 error.code === 'ETIMEDOUT' ||
                 error.code === 'ECONNRESET' ||
                 error.code === 'ENOTFOUND' ||
                 error.code === 'ECONNREFUSED' ||
                 error.code === 'EPIPE' ||
+                error.code === 'EAI_AGAIN' ||          // DNS temporary failure (reviewer suggestion)
+                error.code === 'VERTEX_EMPTY_RESPONSE' ||  // Empty Vertex response (rate limit)
                 error.message?.includes('socket hang up');
+
+            jobLog(`🔧 [RETRY_DECISION] Error code: ${error.code}, retryable: ${isRetryableError}`);
 
             const hasRetriesLeft = attempt < MAX_RETRIES;
             const shouldRetry = isRetryableError && hasRetriesLeft;
@@ -180,10 +305,13 @@ async function httpsPostJsonWithRetry(url, payload, headers, timeoutMs = 60000, 
                 throw error;  // Re-throw to be caught by caller
             }
 
-            // Exponential backoff delay + jitter
-            const jitter = Math.random() * 1000; // 0-1000ms random jitter
-            const delay = (RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1)) + jitter;
-            jobLog(`⏳ RETRY_SCHEDULED: waiting ${Math.floor(delay)}ms (base + jitter) before retry ${attempt + 1}`);
+            // 🔧 [RETRY_BACKOFF] Calculate delay with exponential backoff + cap
+            const baseDelay = Math.min(RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), 12000); // Cap at 12s
+            const jitter = Math.random() * 500; // 0-500ms random jitter
+            const delay = baseDelay + jitter;
+
+            jobLog(`🔧 [RETRY_BACKOFF] Base: ${baseDelay}ms, jitter: ${Math.floor(jitter)}ms, final: ${Math.floor(delay)}ms`);
+            jobLog(`⏳ RETRY_SCHEDULED: waiting ${Math.floor(delay)}ms before retry ${attempt + 1}`);
 
             await new Promise(resolve => setTimeout(resolve, delay));
         }
@@ -194,11 +322,8 @@ async function httpsPostJsonWithRetry(url, payload, headers, timeoutMs = 60000, 
 }
 
 async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
-    // 🔍 DIAGNOSTIC: Increment concurrent call counter
-    activeVertexCalls++;
-    if (activeVertexCalls > peakConcurrency) {
-        peakConcurrency = activeVertexCalls;
-    }
+    // 🔬 DIAGNOSTIC v2: Start attempt tracking with precise in-flight
+    const attemptMeta = startAttempt();
 
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
@@ -227,20 +352,72 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
         jobLog(`🔧 DIAG_SOCKET_AGES: avg=${Math.round(avgSocketAge)}ms, oldest=${Math.round(oldestSocket)}ms, free_sockets_detail=${freeSockets.length}`);
         jobLog(`🔧 DIAG_CONCURRENCY_SNAPSHOT: current=${activeVertexCalls}, peak=${peakConcurrency}, utilization=${((activeVertexCalls/Math.max(peakConcurrency,1))*100).toFixed(1)}%`);
 
+        // 🔧 [AGENT_USE_MAIN] Using custom agent for Vertex API request
+        jobLog(`🔧 [AGENT_USE_MAIN] Hostname: ${u.hostname}, using agent: ${!!vertexHttpAgent}`);
+
+        if (!vertexHttpAgent) {
+            const error = new Error('[AGENT_USE_MAIN_FAILED] vertexHttpAgent is not initialized');
+            jobLog('❌ [AGENT_USE_MAIN_FAILED] Custom agent not available, cannot proceed');
+            throw error;
+        }
+
         const requestStartTime = Date.now();
-        const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body).toString(), ...headers } }, (res) => {
+        const req = https.request({
+            method: 'POST',
+            hostname: u.hostname,
+            path: u.pathname + u.search,
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(body).toString(),
+                ...headers
+            },
+            agent: vertexHttpAgent  // ✅ Use custom agent instead of globalAgent
+        }, (res) => {
             let data = '';
             res.on('data', c => (data += c));
             res.on('end', () => {
-                // 🔍 DIAGNOSTIC: Decrement counter when complete
-                activeVertexCalls--;
+                // 🔬 DIAGNOSTIC v2: End attempt tracking
+                const done = endAttempt(attemptMeta);
                 const requestDuration = Date.now() - requestStartTime;
+
+                // 🔬 DIAGNOSTIC v2: Log all attempts with in-flight metrics
+                jobLog(JSON.stringify({
+                    t: Date.now(),
+                    kind: 'ATTEMPT_END',
+                    status: res.statusCode,
+                    inflightAtStart: done.inflightAtStart,
+                    inflightAtEnd: done.inflightAtEnd,
+                    latencyMs: done.latencyMs
+                }));
+
+                // 🔬 DIAGNOSTIC v2: 429 Classification and detailed logging
+                if (res.statusCode === 429) {
+                    const classification = classifyQuota(res, data);
+                    const retryAfterMs = parseRetryAfter(res.headers['retry-after']);
+
+                    jobLog(JSON.stringify({
+                        t: Date.now(),
+                        kind: '429_DIAG',
+                        endpoint: `${u.hostname}${u.pathname}`,
+                        model: 'gemini-2.5-pro',
+                        region: 'us-central1',
+                        status: res.statusCode,
+                        headers: res.headers,
+                        retryAfterMs,
+                        xGoogRequestId: res.headers['x-goog-request-id'] || null,
+                        classification,
+                        bodyPreview: data.slice(0, 500),
+                        inflightAtStart: done.inflightAtStart,
+                        inflightAtEnd: done.inflightAtEnd,
+                        durationMs: requestDuration
+                    }));
+                }
 
                 // Log successful completion with socket state
                 const socketReused = req.socket?._reusedSocket || false;
                 const socketAge = req.socket?._socketStart ? Date.now() - req.socket._socketStart : 'unknown';
 
-                jobLog(`🔍 SOCKET FREED: active calls now ${activeVertexCalls}`);
+                jobLog(`🔍 SOCKET FREED: active calls now ${done.inflightAtEnd}`);
                 jobLog(`✅ DIAG_REQUEST_SUCCESS: duration=${requestDuration}ms, socket_reused=${socketReused}, socket_age=${socketAge}ms, response_bytes=${data.length}`);
 
                 try {
@@ -298,15 +475,35 @@ async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
         // Implement timeout to prevent indefinite hangs
         req.setTimeout(timeoutMs, () => {
             req.destroy();
-            activeVertexCalls--;
+            const done = endAttempt(attemptMeta);
             const error = new Error(`Request timeout after ${timeoutMs}ms`);
             error.code = 'ETIMEDOUT';
+            jobLog(JSON.stringify({
+                t: Date.now(),
+                kind: 'ATTEMPT_END',
+                status: 'TIMEOUT',
+                inflightAtStart: done.inflightAtStart,
+                inflightAtEnd: done.inflightAtEnd,
+                latencyMs: done.latencyMs
+            }));
             reject(error);
         });
 
         req.on('error', (err) => {
+            // 🔬 DIAGNOSTIC v2: End attempt tracking on error
+            const done = endAttempt(attemptMeta);
+
+            jobLog(JSON.stringify({
+                t: Date.now(),
+                kind: 'ATTEMPT_END',
+                status: 'ERROR',
+                errorCode: err.code,
+                inflightAtStart: done.inflightAtStart,
+                inflightAtEnd: done.inflightAtEnd,
+                latencyMs: done.latencyMs
+            }));
+
             // 🔍 DIAGNOSTIC: Enhanced error logging with socket state
-            activeVertexCalls--;
             const socketReused = req.socket?._reusedSocket || false;
             const socketDestroyed = req.socket?.destroyed || false;
             const socketAge = req.socket?._socketStart ? Date.now() - req.socket._socketStart : 'unknown';
@@ -378,7 +575,27 @@ async function getServiceAccountToken(sa, scope) {
 async function httpsPostForm(url, body, headers, timeoutMs) {
     return await new Promise((resolve, reject) => {
         const u = new URL(url);
-        const req = https.request({ method: 'POST', hostname: u.hostname, path: u.pathname + u.search, headers: { ...headers, 'Content-Length': Buffer.byteLength(body).toString() } }, (res) => {
+
+        // 🔧 [AGENT_USE_OAUTH] Using custom agent for OAuth token request
+        jobLog(`🔧 [AGENT_USE_OAUTH] Hostname: ${u.hostname}, using agent: ${!!vertexHttpAgent}`);
+
+        if (!vertexHttpAgent) {
+            const error = new Error('[AGENT_USE_OAUTH_FAILED] vertexHttpAgent is not initialized');
+            jobLog('❌ [AGENT_USE_OAUTH_FAILED] Custom agent not available for OAuth');
+            reject(error);
+            return;
+        }
+
+        const req = https.request({
+            method: 'POST',
+            hostname: u.hostname,
+            path: u.pathname + u.search,
+            headers: {
+                ...headers,
+                'Content-Length': Buffer.byteLength(body).toString()
+            },
+            agent: vertexHttpAgent  // ✅ Use custom agent for OAuth too
+        }, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => { try {
@@ -404,6 +621,14 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
 }
 // Direct vertex generate function for LLM parsing
 export async function vertexGenerate(opts) {
+    // S0-v2: Prevent direct vertexGenerate calls during S0 runs
+    // All S0 Vertex calls MUST go through withVertexLimiter wrapper
+    if (process.env.RUN_LABEL?.startsWith('S0')) {
+        const violation = 'S0 runs must use withVertexLimiter wrapper - direct vertexGenerate() call is prohibited';
+        console.error(JSON.stringify({ t: Date.now(), kind: 'S0_BYPASS_VIOLATION', message: violation, caller: opts.caller }));
+        throw new Error(violation);
+    }
+
     const caller = opts.caller || 'unknown';
     const callId = `${caller}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     jobLog(`📞 VERTEX_CALL from ${caller}, call_id=${callId}`);
@@ -448,7 +673,7 @@ export async function vertexGenerate(opts) {
 
     jobLog(`📊 VERTEX_CALL_START: type=${callType}, grounded=${opts.grounded}, json=${opts.json}, timeout=${opts.timeoutMs}ms`);
     jobLog(`🔬 IMPLEMENTATION: Using retry logic v1.0 with exponential backoff`);
-    jobLog(`🔬 AGENT_CONFIG: freeSocketTimeout=${https.globalAgent.options.freeSocketTimeout}ms, maxSockets=${https.globalAgent.maxSockets}`);
+    jobLog(`🔬 AGENT_CONFIG: agent=CUSTOM keepAlive=${vertexHttpAgent.keepAlive} maxSockets=${vertexHttpAgent.maxSockets} maxFreeSockets=${vertexHttpAgent.maxFreeSockets} freeSocketTimeout=${vertexHttpAgent.freeSocketTimeout ?? vertexHttpAgent.options?.freeSocketTimeout ?? 'n/a'}`);
 
     let res;
     try {

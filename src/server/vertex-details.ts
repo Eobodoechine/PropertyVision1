@@ -5,6 +5,55 @@ import { GoogleAuth } from 'google-auth-library';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
+// Phase A: Structured logging helper for metrics collection
+const logJSON = (kind: string, extra: Record<string, any> = {}) => {
+  try {
+    jobLog(JSON.stringify({ t: Date.now(), kind, ...extra }));
+  } catch {}
+};
+
+// Phase B: Parse real 429 signals from Google error.details
+/**
+ * Robust parser for RetryInfo and QuotaFailure from error.details
+ * Handles multiple field name variations (camelCase, snake_case)
+ * Returns signals exactly as Google provides them (no hardcoded assumptions)
+ */
+function parse429Signals(details?: any[]): {
+  has_retry_info: boolean;
+  retry_delay_ms?: number;
+  has_quota_failure: boolean;
+  quota_id?: string;
+  mechanism_reported?: 'retry_info' | 'quota_failure';
+} {
+  const out: any = { has_retry_info: false, has_quota_failure: false };
+
+  if (Array.isArray(details)) {
+    for (const d of details) {
+      const t = d?.['@type'] || d?.type || '';
+
+      // Parse RetryInfo (with field name variations)
+      if (t.includes('RetryInfo')) {
+        out.has_retry_info = true;
+        const dur = d?.retryDelay || d?.retry_delay || {};
+        const sec = Number(dur.seconds || 0);
+        const ns = Number(dur.nanos || 0);
+        out.retry_delay_ms = sec * 1000 + Math.round(ns / 1e6);
+        out.mechanism_reported = 'retry_info';
+      }
+
+      // Parse QuotaFailure (with field name variations)
+      if (t.includes('QuotaFailure')) {
+        out.has_quota_failure = true;
+        const v = d?.violations?.[0] || {};
+        out.quota_id = v.subject || v.description || v.metric || null;
+        out.mechanism_reported ||= 'quota_failure';
+      }
+    }
+  }
+
+  return out;
+}
+
 export type BasicDetails = {
   address: string;
   sqft: number | null;
@@ -163,6 +212,10 @@ async function vertexGenerate(opts: {
       jobLog(`📞 SPD_VERTEX_CALL from ${caller}`);
     }
 
+    // Phase A: Log structured call start
+    const callStart = Date.now();
+    logJSON('VERTEX_CALL_START', { attempt, caller });
+
     try {
       const res = await httpsPostJson(endpoint, payload, { Authorization: `Bearer ${token}` }, opts.timeoutMs);
 
@@ -183,12 +236,70 @@ async function vertexGenerate(opts: {
 
           jobLog(`❌ SPD_VERTEX_EXIT_NO_CANDIDATES: caller=${caller}, attempt=${attempt}/${MAX_RETRIES}, reason=${errorStatus}, httpCode=${errorCode}, error=${JSON.stringify(res.error)}`);
 
+          // Phase B: Log 429 errors with real Google signals (no hardcoded assumptions)
+          if (isRateLimitError) {
+            const latencyMs = Date.now() - callStart;
+            const signals = parse429Signals(res.error.details);
+
+            // SDK path typically doesn't expose HTTP headers, only error.details
+            const headersAvailable = !!(res && (res as any).headers);
+
+            logJSON('429_DIAG', {
+              schema_version: 'v2',
+              job_id: address, // Using address as proxy for job_id (actual jobId not available in this scope)
+              run_label: process.env.RUN_LABEL,
+              attempt,
+              caller,
+              status: errorStatus,
+              code: errorCode,
+              msg: (res.error.message || '').slice(0, 240),
+              latencyMs,
+              // Headers (SDK path may not have these)
+              headers_available: headersAvailable,
+              x_goog_request_id: (res as any).headers?.['x-goog-request-id'] || null,
+              retry_after_header: (res as any).headers?.['retry-after'] || null,
+              // Config echo for self-contained analysis
+              concurrency: process.env.VERTEX_CONCURRENCY_LIMIT,
+              pacing_ms: process.env.VERTEX_PACING_MS,
+              // Real signals from Google (Phase B enhancement)
+              mechanism_reported: signals.mechanism_reported,
+              retry_delay_ms: signals.retry_delay_ms,
+              quota_id: signals.quota_id,
+              has_retry_info: signals.has_retry_info,
+              has_quota_failure: signals.has_quota_failure
+            });
+          }
+
           if (isRateLimitError && hasRetriesLeft) {
-            // Exponential backoff with jitter to prevent synchronized retry storms
-            const jitter = Math.random() * 1000; // 0-1000ms random jitter
-            const delay = (RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1)) + jitter;
-            jobLog(`⏳ SPD_VERTEX_RETRY_SCHEDULED: caller=${caller}, waiting ${Math.floor(delay)}ms (base + jitter) before retry ${attempt + 1}`);
-            await new Promise(resolve => setTimeout(resolve, delay));
+            // Enforce server-provided backoff if available
+            const signals = parse429Signals(res.error.details);
+            let delayMs: number;
+            let backoffSource: string;
+
+            // Priority: server signals > client exponential backoff
+            if (signals.retry_delay_ms && signals.retry_delay_ms > 0) {
+              delayMs = signals.retry_delay_ms;
+              backoffSource = 'server_retry_info';
+            } else if ((res as any).headers?.['retry-after']) {
+              const retryAfterSec = parseInt((res as any).headers['retry-after'], 10);
+              delayMs = retryAfterSec * 1000;
+              backoffSource = 'server_retry_after_header';
+            } else {
+              // Client exponential backoff with jitter
+              const jitter = Math.random() * 1000;
+              delayMs = (RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1)) + jitter;
+              backoffSource = 'client_exponential';
+            }
+
+            logJSON('BACKOFF_SCHEDULED', {
+              attempt,
+              caller,
+              delay_ms: delayMs,
+              backoff_source: backoffSource
+            });
+
+            jobLog(`⏳ SPD_VERTEX_RETRY_SCHEDULED: caller=${caller}, waiting ${Math.floor(delayMs)}ms (${backoffSource}) before retry ${attempt + 1}`);
+            await new Promise(resolve => setTimeout(resolve, delayMs));
             lastError = res.error;
             continue;  // Retry
           }
@@ -210,11 +321,25 @@ async function vertexGenerate(opts: {
         }
       }
 
+      // Phase A: Log successful call with latency
+      const latencyMs = Date.now() - callStart;
+      logJSON('DIAG_RESPONSE_RECEIVED', { attempt, caller, status: 'ok', latencyMs });
+
       return text;
 
     } catch (error: any) {
       lastError = error;
+      const latencyMs = Date.now() - callStart;
       jobLog(`❌ SPD_VERTEX_HTTP_ERROR: caller=${caller}, attempt=${attempt}/${MAX_RETRIES}, error=${error.message}`);
+
+      // Phase A: Log non-429 errors with structured format
+      logJSON('ERROR_NON429', {
+        attempt,
+        caller,
+        code: error?.code ?? 'ERR',
+        msg: (error?.message || '').slice(0, 240),
+        latencyMs
+      });
 
       // Don't retry network errors, only retry 429 from API
       break;
