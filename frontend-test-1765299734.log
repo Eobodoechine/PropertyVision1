@@ -1,0 +1,211 @@
+
+> frontend@0.1.1 dev
+> next dev
+
+ ⚠ `experimental.instrumentationHook` is no longer needed, because `instrumentation.js` is available by default. You can remove it from next.config.ts.
+ ⚠ Invalid next.config.ts options detected: 
+ ⚠     Unrecognized key(s) in object: 'instrumentationHook' at "experimental"
+ ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+ ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/eobodoechine/package-lock.json as the root directory.
+ To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+ Detected additional lockfiles: 
+   * /Users/eobodoechine/PropertyVision1/package-lock.json
+
+   ▲ Next.js 15.5.4
+   - Local:        http://localhost:3000
+   - Network:      http://192.168.1.205:3000
+   - Environments: .env.local, .env
+   - Experiments (use with caution):
+     ✓ instrumentationHook
+
+ ✓ Starting...
+ ✓ Ready in 1626ms
+ ○ Compiling / ...
+ ✓ Compiled / in 1173ms (746 modules)
+ GET / 200 in 1637ms
+ ○ Compiling /api/analyze ...
+ ✓ Compiled /api/analyze in 1151ms (1073 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent...
+[32minfo[39m: 🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent... {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.452Z"}
+✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created
+[32minfo[39m: ✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.454Z"}
+🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true
+[32minfo[39m: 🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.454Z"}
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+[32minfo[39m: Search request received {"address":"797 Kiowa Dr NE, Marietta, GA 30060","environment":"development","eventType":"SEARCH_REQUEST","ip":"::1","service":"propertyvision-backend","timestamp":"2025-12-09T17:05:12.517Z"}
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.521Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.527Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.527Z"}
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.528Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.528Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.528Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.528Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.528Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.529Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.529Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.529Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.529Z"}
+🔧 [CONCURRENCY_CONFIG] Max concurrent jobs: 3 (env: PV_MAX_CONCURRENT_JOBS)
+🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true
+🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=false
+✅ Job 3503ea88-2a37-4900-b610-6a8484180d94 saved to Redis: status=queued, progress=0
+📋 Job 3503ea88-2a37-4900-b610-6a8484180d94 enqueued for address: 797 Kiowa Dr NE, Marietta, GA 30060
+✅ Job 3503ea88-2a37-4900-b610-6a8484180d94 created for address: 797 Kiowa Dr NE, Marietta, GA 30060
+ POST /api/analyze 200 in 1929ms
+[32minfo[39m: 🔧 [CONCURRENCY_CONFIG] Max concurrent jobs: 3 (env: PV_MAX_CONCURRENT_JOBS) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.529Z"}
+[32minfo[39m: 🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.530Z"}
+[32minfo[39m: 🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=false {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.537Z"}
+[32minfo[39m: ✅ Job 3503ea88-2a37-4900-b610-6a8484180d94 saved to Redis: status=queued, progress=0 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.538Z"}
+[32minfo[39m: 📋 Job 3503ea88-2a37-4900-b610-6a8484180d94 enqueued for address: 797 Kiowa Dr NE, Marietta, GA 30060 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:05:12.538Z"}
+ ✓ Compiled /api/analyze/status/[jobId] in 421ms (1073 modules)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent...
+[32minfo[39m: 🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent... {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:23.493Z"}
+✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created
+[32minfo[39m: ✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:23.495Z"}
+🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true
+[32minfo[39m: 🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:23.495Z"}
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent...
+[32minfo[39m: 🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent... {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.642Z"}
+✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created
+[32minfo[39m: ✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.646Z"}
+🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true
+[32minfo[39m: 🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.647Z"}
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+🔍 STATUS: Looking for job 3503ea88-2a37-4900-b610-6a8484180d94
+🚀 PARALLEL SEARCH ORCHESTRATOR initialized:
+[32minfo[39m: 🚀 PARALLEL SEARCH ORCHESTRATOR initialized: {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.723Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.723Z"}
+   Geocode concurrency: 20
+[32minfo[39m:    Geocode concurrency: 20 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.723Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.723Z"}
+
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED
+[32minfo[39m: 
+🚀 COMPREHENSIVE COMPARABLE SEARCH V10 INITIALIZED {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.723Z"}
+   Parallel search enabled: true
+[32minfo[39m:    Parallel search enabled: true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.724Z"}
+   Vertex concurrency: 80
+[32minfo[39m:    Vertex concurrency: 80 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.724Z"}
+   Levels: 1,2,3,4
+[32minfo[39m:    Levels: 1,2,3,4 {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.724Z"}
+✅ JobQueue initialized with V10 (Parallel Search)
+[32minfo[39m: ✅ JobQueue initialized with V10 (Parallel Search) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.724Z"}
+🔧 [CONCURRENCY_CONFIG] Max concurrent jobs: 3 (env: PV_MAX_CONCURRENT_JOBS)
+[32minfo[39m: 🔧 [CONCURRENCY_CONFIG] Max concurrent jobs: 3 (env: PV_MAX_CONCURRENT_JOBS) {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.724Z"}
+🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.724Z"}
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.714Z"}
+🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.726Z"}
+🔍 STATUS: Job 3503ea88-2a37-4900-b610-6a8484180d94 result: FOUND
+ GET /api/analyze/status/3503ea88-2a37-4900-b610-6a8484180d94 200 in 2227ms
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.738Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:07:24.738Z"}
+🔍 STATUS: Looking for job 3503ea88-2a37-4900-b610-6a8484180d94
+🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:21.654Z"}
+🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:21.659Z"}
+🔍 STATUS: Job 3503ea88-2a37-4900-b610-6a8484180d94 result: FOUND
+ GET /api/analyze/status/3503ea88-2a37-4900-b610-6a8484180d94 200 in 37ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent...
+[32minfo[39m: 🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent... {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:22.874Z"}
+✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created
+[32minfo[39m: ✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:22.877Z"}
+🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true
+[32minfo[39m: 🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:22.878Z"}
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:22.945Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:22.966Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:14:22.966Z"}
+🔍 STATUS: Looking for job 3503ea88-2a37-4900-b610-6a8484180d94
+🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true
+[32minfo[39m: 🔍 REDIS getJob: jobId=3503ea88-2a37-4900-b610-6a8484180d94, connected=true, client=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:39.611Z"}
+🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=true
+[32minfo[39m: 🔍 REDIS getJob: key=job:3503ea88-2a37-4900-b610-6a8484180d94, found=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:39.612Z"}
+🔍 STATUS: Job 3503ea88-2a37-4900-b610-6a8484180d94 result: FOUND
+ GET /api/analyze/status/3503ea88-2a37-4900-b610-6a8484180d94 200 in 16ms
+🔧 PHASE 2: JobLogger initialized with AsyncLocalStorage
+   BEFORE: Global variable caused 85% log contamination in job 11e48fb1
+   AFTER: Each async operation has isolated job context
+🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent...
+[32minfo[39m: 🔧 [AGENT_INIT_START] Creating custom Vertex HTTP agent... {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:40.735Z"}
+✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created
+[32minfo[39m: ✅ [AGENT_INIT_SUCCESS] Vertex HTTP agent created {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:40.738Z"}
+🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true
+[32minfo[39m: 🔧 [AGENT_CONFIG] maxSockets=10, maxFreeSockets=5, keepAlive=true {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:40.739Z"}
+🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)
+   HEARTBEAT_MS: 7000ms
+   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)
+✅ Redis connected
+[32minfo[39m: ✅ Redis connected {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:40.808Z"}
+✅ Redis ready
+[32minfo[39m: ✅ Redis ready {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:40.828Z"}
+🔗 Redis connection established
+[32minfo[39m: 🔗 Redis connection established {"environment":"development","service":"propertyvision-backend","source":"jobLog","timestamp":"2025-12-09T17:15:40.829Z"}
+ ○ Compiling / ...
+ ✓ Compiled / in 530ms (455 modules)
+ GET / 200 in 835ms
+ GET / 200 in 70ms
+ GET / 200 in 68ms
+ GET / 200 in 64ms
+ GET / 200 in 60ms
+ ✓ Compiled /favicon.ico in 195ms (472 modules)
+ GET /favicon.ico 200 in 291ms
+ GET /favicon.ico 200 in 10ms
+ GET /favicon.ico 200 in 25ms
+ GET /favicon.ico 200 in 8ms
+ GET /favicon.ico 200 in 24ms
+ ✓ Compiled in 972ms (306 modules)
+ ✓ Compiled in 1255ms (306 modules)
+ ✓ Compiled in 240ms (306 modules)
+ ✓ Compiled in 171ms (306 modules)
+ ✓ Compiled in 159ms (306 modules)
+ ✓ Compiled in 107ms (306 modules)
+ ✓ Compiled in 104ms (306 modules)
+ ✓ Compiled in 544ms (306 modules)
