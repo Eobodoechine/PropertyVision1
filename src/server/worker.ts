@@ -25,14 +25,18 @@ async function startWorker() {
   // S0: Acquire exclusive Redis lock for cross-host isolation
   if (process.env.RUN_LABEL?.startsWith('S0')) {
     const redis = getRedisCache();
+    const LOCK_KEY = 'pv:s0_lock';
+    const LOCK_TTL_SECONDS = 15 * 60; // 15 minutes
+    const HEARTBEAT_MS = 60 * 1000;   // Renew every 60 seconds
+    const lockValue = `${os.hostname()}:${process.pid}`;
 
     // Wait for Redis to connect before acquiring lock
     await redis.ensureConnected();
 
     const lockAcquired = await redis.acquireLock(
-      'pv:s0_lock',
-      process.pid.toString(),
-      15 * 60 // 15 minutes in seconds
+      LOCK_KEY,
+      lockValue,
+      LOCK_TTL_SECONDS
     );
 
     if (!lockAcquired) {
@@ -44,15 +48,36 @@ async function startWorker() {
       process.exit(1);
     }
 
-    // Release lock on exit
-    process.on('exit', () => {
-      redis.del('pv:s0_lock').catch(() => {});
-    });
+    // Start heartbeat to renew lock TTL (prevents expiry during long jobs)
+    const heartbeatInterval = setInterval(() => {
+      redis.renewLock(LOCK_KEY, lockValue, LOCK_TTL_SECONDS).catch((err) => {
+        console.error(JSON.stringify({
+          t: Date.now(),
+          kind: 'LOCK_RENEW_FAILED',
+          error: err.message
+        }));
+      });
+    }, HEARTBEAT_MS);
+    // Prevent heartbeat from keeping node alive
+    heartbeatInterval.unref?.();
+
+    // Safe release function (clears heartbeat and releases lock)
+    const safeRelease = () => {
+      clearInterval(heartbeatInterval);
+      redis.releaseLock(LOCK_KEY, lockValue).catch(() => {});
+    };
+
+    // Register cleanup handlers
+    process.on('exit', safeRelease);
+    process.on('SIGINT', () => { safeRelease(); process.exit(0); });
+    process.on('SIGTERM', () => { safeRelease(); process.exit(0); });
 
     console.log(JSON.stringify({
       t: Date.now(),
       kind: 'NO_OTHER_WORKERS',
-      message: 'S0 isolation verified (Redis lock acquired)'
+      message: 'S0 isolation verified (Redis lock acquired)',
+      lock_value: lockValue,
+      heartbeat_ms: HEARTBEAT_MS
     }));
   }
 

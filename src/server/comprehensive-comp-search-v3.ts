@@ -8,6 +8,7 @@ import { PropertyDataNormalizer } from './utils/propertyDataNormalizer';
 import { VertexDeduplicator } from './utils/vertexDeduplicator';
 import { ProgressiveSearchStrategy } from './utils/progressiveSearchStrategy';
 import { jobLog } from './utils/jobLogger';
+import { withVertexLimiter } from './vertex-limiter';
 
 interface ComprehensiveSearchResultV3 {
   subject: SubjectSummary;
@@ -64,6 +65,7 @@ export class ComprehensiveComparableSearchV3 {
   private normalizer: PropertyDataNormalizer;
   private deduplicator: VertexDeduplicator;
   private progressiveSearch: ProgressiveSearchStrategy;
+  private currentJobId: string = 'unknown'; // Track jobId for private methods
   constructor() {
     this.compService = new VertexComparableSearchService();
     this.arvService = new ARVCalculationService();
@@ -72,16 +74,19 @@ export class ComprehensiveComparableSearchV3 {
     this.progressiveSearch = new ProgressiveSearchStrategy();
   }
 
-  async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
+  async findComparables(address: string, jobId?: string): Promise<ComprehensiveSearchResultV3> {
+    const effectiveJobId = jobId || address; // Use provided jobId or fallback to address
+    this.currentJobId = effectiveJobId; // Store for use in private methods
     const startTime = Date.now();
     jobLog(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V3`);
     jobLog(`============================================================`);
     jobLog(`📍 Analyzing: ${address}`);
+    jobLog(`📋 Job ID: ${effectiveJobId}`);
 
     try {
       // Step 1: Get subject property details
       jobLog(`\n📋 Step 1: Subject Property Research`);
-      const subjectDetails = await fetchPropertyDetailsViaVertex(address);
+      const subjectDetails = await fetchPropertyDetailsViaVertex(address, { jobId: effectiveJobId });
 
       if (!subjectDetails) {
         throw new Error('Could not fetch subject property details');
@@ -1048,16 +1053,21 @@ ADDRESS 2:
 
       jobLog(`   🤖 Requesting coordinates for ${properties.length} properties from Vertex AI...`);
 
-      const response = await vertexGenerate({
-        token,
-        projectId,
-        location,
-        model,
-        prompt,
-        grounded: true,
-        json: false,
-        timeoutMs: 60000
-      });
+      // S0-v2: Wrap vertexGenerate with limiter
+      const response = await withVertexLimiter(
+        'v3:extractCoordinatesBatch',
+        this.currentJobId,
+        () => vertexGenerate({
+          token,
+          projectId,
+          location,
+          model,
+          prompt,
+          grounded: true,
+          json: false,
+          timeoutMs: 60000
+        })
+      );
 
       if (response && response.trim().length > 0) {
         // Parse the batch response with new JSON format

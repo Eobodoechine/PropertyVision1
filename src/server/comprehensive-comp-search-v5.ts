@@ -78,18 +78,20 @@ export class ComprehensiveComparableSearchV5 {
     this.progressiveSearch = new ProgressiveSearchStrategy();
   }
 
-  async findComparables(address: string): Promise<ComprehensiveSearchResultV3> {
+  async findComparables(address: string, jobId?: string): Promise<ComprehensiveSearchResultV3> {
+    const effectiveJobId = jobId || address; // Use provided jobId or fallback to address
     const startTime = Date.now();
     jobLog(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V5 - Progressive Vertex AI`);
     jobLog(`============================================================`);
     jobLog(`📍 Analyzing: ${address}`);
+    jobLog(`📋 Job ID: ${effectiveJobId}`);
 
     try {
       // Step 1: Get subject property details
       jobLog(`\n📋 Step 1: Subject Property Research`);
       await updateJobProgress('SUBJECT_PROPERTY');
 
-      const subjectDetails = await fetchPropertyDetailsViaVertex(address);
+      const subjectDetails = await fetchPropertyDetailsViaVertex(address, { jobId: effectiveJobId });
 
       if (!subjectDetails) {
         throw new Error('Could not fetch subject property details');

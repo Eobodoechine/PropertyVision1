@@ -2,7 +2,7 @@ import 'dotenv/config';
 import fs from 'fs';
 import https from 'https';
 import dns from 'dns';
-import crypto from 'crypto';
+import { createHash } from 'node:crypto';
 import { GoogleAuth } from 'google-auth-library';
 import pLimit from 'p-limit';
 // import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
@@ -107,7 +107,9 @@ class VertexComparableSearchService {
     jobId?: string
   ): Promise<FindComparablesResult> {
     // Use provided jobId or create one from address hash
-    const effectiveJobId = jobId || crypto.createHash('md5').update(subjectAddress).digest('hex').slice(0, 8);
+    const effectiveJobId = jobId || createHash('md5').update(subjectAddress).digest('hex').slice(0, 8);
+    // S0-v2: Capture baseline limiter count for per-job integrity tracking
+    const baselineLimiterCalls = getLimiterCallCount();
     this.currentJobId = effectiveJobId; // S0-v2: Store for use in private methods
     try {
       // Pre-warm proxy connection (fire-and-forget, non-blocking)
@@ -186,8 +188,10 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       // Always perform 3 subdivision runs (if subdivision is set), then 3 expanded runs, aggregate all
       const aggregatedComps = new Map<string, ComparableProperty>();
 
-      const fetchAndParse = async (p: string): Promise<ComparableProperty[]> => {
-        jobLog(`🔍 FETCH DEBUG: fetchAndParse starting...`);
+      // OPTIMIZATION #1: Return raw text instead of parsing immediately
+      // This allows us to batch all results and parse once instead of 6 times
+      const fetchRaw = async (p: string): Promise<string> => {
+        jobLog(`🔍 FETCH DEBUG: fetchRaw starting...`);
         jobLog(`🔍 SCOPE DEBUG: Checking subjectAddress availability: "${typeof subjectAddress}" = "${subjectAddress}"`);
         jobLog(`🔍 SCOPE DEBUG: Checking searchRadius availability: "${typeof searchRadius}" = "${searchRadius}"`);
         jobLog(`🔍 SCOPE DEBUG: Checking timeWindowMonths availability: "${typeof timeWindowMonths}" = "${timeWindowMonths}"`);
@@ -216,20 +220,9 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
 
         const vertexTime = Date.now() - startVertex;
         jobLog(`🔍 FETCH DEBUG: vertexGenerate completed in ${vertexTime}ms`);
-
-        jobLog(`🔍 FETCH DEBUG: About to parse with Gemini`);
         jobLog(`🔍 RAW RESPONSE: Raw Vertex AI response: "${r}"`);
 
-        // Use Gemini to parse the raw Vertex AI response directly
-        jobLog(`🤖 GEMINI: Parsing raw Vertex response with Gemini API...`);
-        const geminiProperties = await this.geminiParser.parsePropertyData(r);
-        jobLog(`🤖 GEMINI: Extracted ${geminiProperties.length} properties`);
-
-        // Convert Gemini parsed properties to ComparableProperty format
-        const parsed = await this.convertGeminiToComparable(geminiProperties, subjectCoords.lat, subjectCoords.lon, subjectDetails);
-        jobLog(`🔍 FETCH DEBUG: convertGeminiToComparable completed with ${parsed.length} results`);
-
-        return parsed;
+        return r;
       };
 
       // Prepare prompts and run all Vertex searches in parallel
@@ -264,7 +257,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         await sleep(phaseOffset);
       }
 
-      // S0-v2: Enhanced JOB_CONFIG with schema_version and expected calls
+      // S0-v2: Enhanced JOB_CONFIG with schema_version, expected calls, and baseline
       logJSON('JOB_CONFIG', {
         schema_version: 'v2',
         job_id: effectiveJobId,
@@ -277,6 +270,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         subdivision_prompts: subdivision ? 3 : 0,
         regular_prompts: 3,
         expected_vertex_calls: expectedVertexCalls,
+        baseline_limiter_calls: baselineLimiterCalls,
         note: 'expected_vertex_calls includes main searches only; enrichment/verification calls are additional'
       });
 
@@ -298,10 +292,11 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           jobLog(`📊 DIAG_SEARCH_START: search_id=${index + 1}, timestamp=${searchStart}, prompt_type=${index < 3 && subdivision ? 'subdivision' : 'regular'}`);
 
           try {
-            const result = await fetchAndParse(p);
+            // OPTIMIZATION #1: Fetch raw text only, don't parse yet
+            const result = await fetchRaw(p);
             const searchDuration = Date.now() - searchStart;
-            jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with ${result ? result.length : 0} results`);
-            jobLog(`✅ DIAG_SEARCH_COMPLETE: search_id=${index + 1}, duration=${searchDuration}ms, results_count=${result.length}`);
+            jobLog(`🔍 VERTEX DEBUG: Search ${index + 1} completed successfully with raw text (${result.length} chars)`);
+            jobLog(`✅ DIAG_SEARCH_COMPLETE: search_id=${index + 1}, duration=${searchDuration}ms, text_length=${result.length}`);
             return result;
           } catch (error: any) {
             const searchDuration = Date.now() - searchStart;
@@ -320,17 +315,18 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       const promiseAllTime = Date.now() - startPromiseAll;
       jobLog(`🔍 VERTEX DEBUG: Promise.allSettled completed in ${promiseAllTime}ms`);
 
-      // Extract successful results and handle failures
-      const batches: ComparableProperty[][] = [];
+      // OPTIMIZATION #1: Batch parse all successful results
+      jobLog(`🤖 OPTIMIZATION: Starting batch parsing of all search results...`);
+      const rawTexts: string[] = [];
       let timeoutCount = 0;
       let errorCount = 0;
-
       let okCount = 0;
+
       results.forEach((result, index) => {
         if (result.status === 'fulfilled') {
           okCount++;
-          jobLog(`✅ VERTEX DEBUG: Search ${index + 1} fulfilled with ${result.value ? result.value.length : 0} results`);
-          batches.push(result.value || []);
+          jobLog(`✅ VERTEX DEBUG: Search ${index + 1} fulfilled with raw text (${result.value ? result.value.length : 0} chars)`);
+          rawTexts.push(result.value || '');
         } else {
           const errorMessage = result.reason?.message || String(result.reason);
           const errorCode = result.reason?.code || 'unknown';
@@ -353,9 +349,58 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
           }
 
           console.error(`❌ VERTEX DEBUG: Search ${index + 1} rejected: ${errorMessage}`, result.reason);
-          batches.push([]); // Add empty array for failed searches
+          rawTexts.push(''); // Add empty string for failed searches
         }
       });
+
+      // OPTIMIZATION #1: Concatenate ALL raw texts and parse with SINGLE GeminiParser call
+      jobLog(`🤖 GEMINI OPTIMIZATION: Concatenating ${rawTexts.filter(t => t).length} search results for single batch parse...`);
+      const batchParseStart = Date.now();
+
+      // Concatenate all successful raw texts with clear separators
+      const concatenatedText = rawTexts
+        .filter(t => t && t.trim().length > 0)
+        .join('\n\n=== NEXT SEARCH RESULT ===\n\n');
+
+      jobLog(`🤖 GEMINI: Parsing ALL search results in single call (${concatenatedText.length} chars total)...`);
+
+      let allGeminiProperties: any[] = [];
+      if (concatenatedText.length > 0) {
+        try {
+          allGeminiProperties = await this.geminiParser.parsePropertyData(concatenatedText);
+          jobLog(`🤖 GEMINI: Single parse extracted ${allGeminiProperties.length} total properties from ALL searches`);
+        } catch (error: any) {
+          console.error(`❌ GEMINI: Batch parse failed:`, error.message);
+          jobLog(`⚠️  GEMINI: Falling back to sequential parsing...`);
+
+          // Fallback: parse each search individually if batch fails
+          for (let i = 0; i < rawTexts.length; i++) {
+            if (rawTexts[i]) {
+              try {
+                const props = await this.geminiParser.parsePropertyData(rawTexts[i]);
+                allGeminiProperties.push(...props);
+              } catch (e) {
+                console.error(`❌ GEMINI: Failed to parse search ${i + 1}:`, e);
+              }
+            }
+          }
+        }
+      }
+
+      // Convert all properties to ComparableProperty format
+      const batches: ComparableProperty[][] = [[]]; // Single batch with all results
+      if (allGeminiProperties.length > 0) {
+        try {
+          const allParsed = await this.convertGeminiToComparable(allGeminiProperties, subjectCoords.lat, subjectCoords.lon, subjectDetails);
+          jobLog(`🔍 CONVERSION: Converted ${allParsed.length} total properties`);
+          batches[0] = allParsed;
+        } catch (error: any) {
+          console.error(`❌ CONVERSION: Failed to convert properties:`, error.message);
+        }
+      }
+
+      const batchParseTime = Date.now() - batchParseStart;
+      jobLog(`🤖 GEMINI OPTIMIZATION COMPLETE: Parsed all results with 1 API call in ${batchParseTime}ms (saved ${rawTexts.filter(t => t).length - 1} API calls)`);
 
       // Phase A: Summary and optional fail-fast
       logJSON('FANOUT_SUMMARY', { okCount, errorCount, totalPrompts: prompts.length });
@@ -613,23 +658,26 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         }
       } catch {}
 
-      // S0-v2: JOB_END integrity check
-      const actualVertexCalls = getLimiterCallCount();
-      const callDelta = actualVertexCalls - expectedVertexCalls;
+      // S0-v2: JOB_END integrity check with per-job baseline tracking
+      const endLimiterCalls = getLimiterCallCount();
+      const actualSinceStart = Math.max(0, endLimiterCalls - baselineLimiterCalls);
+      const callDelta = actualSinceStart - expectedVertexCalls;
       logJSON('JOB_END', {
         schema_version: 'v2',
         job_id: effectiveJobId,
         run_label: process.env.RUN_LABEL || 'default',
-        expected_vertex_calls: expectedVertexCalls,
-        actual_vertex_calls: actualVertexCalls,
+        baseline_limiter_calls: baselineLimiterCalls,
+        end_limiter_calls: endLimiterCalls,
+        vertex_calls_since_start: actualSinceStart,
+        vertex_calls_expected_main: expectedVertexCalls,
         call_delta: callDelta,
         integrity_check: callDelta >= 0 ? 'PASS' : 'FAIL',
-        note: 'call_delta >= 0 is normal (enrichment/verification adds extra calls); call_delta < 0 means calls bypassed limiter'
+        note: 'Delta is calls_since_start - expected_main; enrichment/verification add extra calls (OK if delta >= 0)'
       });
 
-      // S0 strict mode: fail if calls bypassed limiter
+      // S0 strict mode: fail if calls bypassed limiter (fewer calls than expected)
       if (process.env.RUN_LABEL?.startsWith('S0') && callDelta < 0) {
-        const violation = `S0 integrity violation: expected ${expectedVertexCalls} calls, got ${actualVertexCalls} (delta: ${callDelta})`;
+        const violation = `S0 integrity violation: expected >=${expectedVertexCalls}, got ${actualSinceStart} (delta ${callDelta})`;
         console.error(JSON.stringify({ t: Date.now(), kind: 'S0_INTEGRITY_VIOLATION', message: violation }));
         throw new Error(violation);
       }
@@ -1483,7 +1531,7 @@ Return exactly this JSON structure:
       const needsEnrich = !Number.isFinite(updated.beds) || !Number.isFinite(updated.baths) || updated.yearBuilt == null;
       if (needsEnrich) {
         try {
-          const details = await fetchPropertyDetailsViaVertex(updated.address);
+          const details = await fetchPropertyDetailsViaVertex(updated.address, { jobId: this.currentJobId });
           if (details) {
             if (!Number.isFinite(updated.beds) && details.beds != null) updated.beds = details.beds as any;
             if (!Number.isFinite(updated.baths) && details.baths != null) updated.baths = details.baths as any;
@@ -1591,7 +1639,7 @@ Return exactly this JSON structure:
 
   private async geocodeWithTimeout(address: string, timeoutMs: number): Promise<{ lat: number; lon: number } | null> {
     const normalizedAddress = this.normalizeAddress(address);
-    const addressHash = crypto.createHash('md5').update(normalizedAddress).digest('hex').slice(0, 8);
+    const addressHash = createHash('md5').update(normalizedAddress).digest('hex').slice(0, 8);
 
     // Cache bypass for testing (respects GEOCODE_BYPASS_CACHE env var)
     if (!GEOCODE_BYPASS_CACHE && this.geocodeCache.has(normalizedAddress)) {

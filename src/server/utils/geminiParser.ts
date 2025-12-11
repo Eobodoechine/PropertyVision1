@@ -1,5 +1,6 @@
 // Vertex AI Gemini property data parser
 import { vertexGenerate } from '../vertex-freeform.js';
+import { withVertexLimiter } from '../vertex-limiter';
 import { jobLog } from '../utils/jobLogger';
 
 interface PropertyData {
@@ -72,15 +73,22 @@ Return JSON in exactly this format (no other text):
       const projectId = await resolveProjectId();
       const token = await getAccessTokenViaAuth();
 
-      const result = await vertexGenerate({
+      // S0-v2: Wrap Vertex call with global limiter for S0 runs
+      const runLabel = process.env.RUN_LABEL || '';
+      const vertexCall = () => vertexGenerate({
         projectId: projectId,
         location: this.location,
         model: this.model,
         prompt: prompt,
         token: token,
         json: true,
-        timeoutMs: 30000
+        timeoutMs: 30000,
+        caller: 'gemini-parser'
       });
+
+      const result = runLabel.startsWith('S0')
+        ? await withVertexLimiter('gemini-parser', 'gemini-parser', vertexCall)
+        : await vertexCall();
 
       if (!result) {
         // 🔧 [EMPTY_RESPONSE] Vertex AI returned empty response (likely rate limiting)

@@ -621,13 +621,9 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
 }
 // Direct vertex generate function for LLM parsing
 export async function vertexGenerate(opts) {
-    // S0-v2: Prevent direct vertexGenerate calls during S0 runs
-    // All S0 Vertex calls MUST go through withVertexLimiter wrapper
-    if (process.env.RUN_LABEL?.startsWith('S0')) {
-        const violation = 'S0 runs must use withVertexLimiter wrapper - direct vertexGenerate() call is prohibited';
-        console.error(JSON.stringify({ t: Date.now(), kind: 'S0_BYPASS_VIOLATION', message: violation, caller: opts.caller }));
-        throw new Error(violation);
-    }
+    // S0-v2 Note: S0 validation is now handled by withVertexLimiter via ATTEMPT_START events
+    // The limiter tracks pre/post inflight counts - violations are detected by summarize-429.js
+    // We removed the blocking check here because ALL Vertex calls now go through wrappers
 
     const caller = opts.caller || 'unknown';
     const callId = `${caller}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;

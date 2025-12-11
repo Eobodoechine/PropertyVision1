@@ -79,11 +79,13 @@ export class ComprehensiveComparableSearchV10 {
     jobLog(`   Levels: ${parallelSearchConfig.levels.join(',')}`);
   }
 
-  async findComparables(address: string): Promise<ComprehensiveSearchResultV10> {
+  async findComparables(address: string, jobId?: string): Promise<ComprehensiveSearchResultV10> {
+    const effectiveJobId = jobId || address; // Use provided jobId or fallback to address
     const startTime = Date.now();
     jobLog(`\n🔍 COMPREHENSIVE COMPARABLE SEARCH V10 - Parallel Immediate Mode`);
     jobLog(`============================================================`);
     jobLog(`📍 Analyzing: ${address}`);
+    jobLog(`📋 Job ID: ${effectiveJobId}`);
 
     try {
       // Step 1: Get subject property details
@@ -102,7 +104,7 @@ export class ComprehensiveComparableSearchV10 {
 
       let subjectDetails;
       try {
-        subjectDetails = await fetchPropertyDetailsViaVertex(address);
+        subjectDetails = await fetchPropertyDetailsViaVertex(address, { jobId: effectiveJobId });
       } catch (error) {
         console.error(`❌ [VERTEX_DETAILS] ERROR fetching subject property details:`);
         console.error(`   Error type: ${typeof error}`);

@@ -67,6 +67,10 @@ if (jobConfig) {
   console.log(`  Jitter (ms):        ${jobConfig.jitter_ms}`);
   console.log(`  Phase offset (ms):  ${jobConfig.phase_offset_max_ms}`);
   console.log(`  Total prompts:      ${jobConfig.total_prompts}`);
+  console.log(`  Expected Vertex:    ${jobConfig.expected_vertex_calls}`);
+  if (jobConfig.baseline_limiter_calls !== undefined) {
+    console.log(`  Baseline limiter:   ${jobConfig.baseline_limiter_calls}`);
+  }
   console.log('');
 } else {
   console.log('⚠️  No JOB_CONFIG found (Phase A logs?)');
@@ -214,11 +218,19 @@ if (isS0Run) {
     console.log(`     Violations: ${s0Violations.map(v => `pre=${v.pre_inflight}, post=${v.post_inflight}`).join(', ')}`);
   }
 
-  // Check JOB_END integrity (no bypassed calls)
+  // Check JOB_END integrity (no bypassed calls) - uses per-job baseline tracking
   const jobEnd = events.find(e => e.kind === 'JOB_END');
   if (jobEnd) {
-    const passIntegrity = jobEnd.integrity_check === 'PASS' && jobEnd.call_delta >= 0;
-    console.log(`  ${passIntegrity ? '✅' : '❌'} JOB_END integrity: ${passIntegrity ? 'PASS' : 'FAIL'} (expected: ${jobEnd.expected_vertex_calls}, actual: ${jobEnd.actual_vertex_calls}, delta: ${jobEnd.call_delta})`);
+    // New per-job baseline fields
+    const baseline = jobEnd.baseline_limiter_calls ?? 0;
+    const endCalls = jobEnd.end_limiter_calls ?? jobEnd.actual_vertex_calls ?? 0;
+    const sinceStart = jobEnd.vertex_calls_since_start ?? (endCalls - baseline);
+    const expected = jobEnd.vertex_calls_expected_main ?? jobEnd.expected_vertex_calls ?? 0;
+    const delta = jobEnd.call_delta ?? (sinceStart - expected);
+
+    const passIntegrity = jobEnd.integrity_check === 'PASS' && delta >= 0;
+    console.log(`  ${passIntegrity ? '✅' : '❌'} JOB_END integrity: ${passIntegrity ? 'PASS' : 'FAIL'}`);
+    console.log(`     baseline=${baseline}, end=${endCalls}, since_start=${sinceStart}, expected=${expected}, delta=${delta}`);
     if (!passIntegrity) {
       s0ValidationsPassed = false;
     }

@@ -1,6 +1,7 @@
 // Vertex AI-Powered Intelligent Deduplication
 // Replaces rule-based deduplication with AI that understands real estate data nuances
 import { jobLog } from '../utils/jobLogger';
+import { withVertexLimiter } from '../vertex-limiter';
 
 interface PropertyData {
   address: string;
@@ -130,7 +131,9 @@ ${JSON.stringify(propertyList, null, 2)}`;
       jobLog('🔍 DEDUP LINE 8: About to call vertexGenerate');
       jobLog('🚨🚨🚨 DEDUPLICATOR CALLING VERTEXGENERATE 🚨🚨🚨');
 
-      const response = await vertexGenerate({
+      // S0-v2: Wrap Vertex call with global limiter for S0 runs
+      const runLabel = process.env.RUN_LABEL || '';
+      const vertexCall = () => vertexGenerate({
         token,
         projectId,
         location,
@@ -140,8 +143,13 @@ ${JSON.stringify(propertyList, null, 2)}`;
         json: true, // Enable JSON response mode
         responseSchema, // Use response schema instead of function calling
         maxOutputTokens: 4096,
-        timeoutMs: 120000
+        timeoutMs: 120000,
+        caller: 'vertex-deduplicator'
       });
+
+      const response = runLabel.startsWith('S0')
+        ? await withVertexLimiter('vertex-deduplicator', 'vertex-deduplicator', vertexCall)
+        : await vertexCall();
 
       jobLog('🔍 DEDUP LINE 9: vertexGenerate completed successfully');
 

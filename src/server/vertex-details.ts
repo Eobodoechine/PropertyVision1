@@ -2,6 +2,7 @@ import 'dotenv/config';
 import https from 'https';
 import { jobLog } from './utils/jobLogger';
 import { GoogleAuth } from 'google-auth-library';
+import { withVertexLimiter } from './vertex-limiter';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
@@ -181,8 +182,10 @@ async function vertexGenerate(opts: {
   json: boolean;
   timeoutMs: number;
   responseSchema?: any;
+  jobId?: string;
 }): Promise<string> {
   const caller = opts.caller || 'vertex-details-unknown';
+  const jobId = opts.jobId || 'unknown';
   const token = opts.token;
   const endpoint = `https://aiplatform.googleapis.com/v1/projects/${opts.projectId}/locations/${opts.location}/publishers/google/models/${opts.model}:generateContent`;
   const payload: any = {
@@ -246,7 +249,7 @@ async function vertexGenerate(opts: {
 
             logJSON('429_DIAG', {
               schema_version: 'v2',
-              job_id: address, // Using address as proxy for job_id (actual jobId not available in this scope)
+              job_id: jobId,
               run_label: process.env.RUN_LABEL,
               attempt,
               caller,
@@ -356,7 +359,7 @@ async function vertexGenerate(opts: {
  */
 async function parseTextToJSON(
   text: string,
-  ctx: { token: string; projectId: string; location: string; model: string }
+  ctx: { token: string; projectId: string; location: string; model: string; jobId?: string }
 ): Promise<Partial<BasicDetails>> {
   const startTime = Date.now();
 
@@ -947,7 +950,22 @@ function parseFreeformRegex(text: string): Partial<BasicDetails> {
 // [DEPRECATED] Removed old sequential parsing helper functions (fallbackPropertyDetection, parsePropertyResponse,
 // hasRequiredFields, normalizePropertyType) - replaced by parallel SPD with parseTextToJSON in optimized flow
 
-export async function fetchPropertyDetailsViaVertex(address: string): Promise<BasicDetails | null> {
+export async function fetchPropertyDetailsViaVertex(
+  address: string,
+  options?: { jobId?: string; timeoutMs?: number }
+): Promise<BasicDetails | null> {
+  const jobId = options?.jobId ?? address; // default for legacy callers
+  const runLabel = process.env.RUN_LABEL || '';
+
+  // S0 enforcement: wrap entire function with limiter for strict serialization
+  if (runLabel.startsWith('S0')) {
+    return withVertexLimiter('pv:details', jobId, () => rawFetchPropertyDetailsViaVertex(address, jobId));
+  }
+  // Non-S0: direct call (or optionally wrap for consistency)
+  return rawFetchPropertyDetailsViaVertex(address, jobId);
+}
+
+async function rawFetchPropertyDetailsViaVertex(address: string, jobId: string): Promise<BasicDetails | null> {
   const totalStartTime = Date.now();
 
   jobLog(`🔍 SPD ENTRY: fetchPropertyDetailsViaVertex called for ${address}`);
@@ -969,7 +987,7 @@ export async function fetchPropertyDetailsViaVertex(address: string): Promise<Ba
   const tokenDuration = Date.now() - tokenStart;
   jobLog(`🎫 DIAG_SPD_TOKEN: acquired in ${tokenDuration}ms for SPD calls`);
 
-  const ctx = { token, projectId, location, model };
+  const ctx = { token, projectId, location, model, jobId };
 
   jobLog(`\n🚀 OPTIMIZED SPD: Parallel Primary + County fetch for: ${address}`);
 

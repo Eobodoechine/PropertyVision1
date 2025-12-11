@@ -534,6 +534,44 @@ export class RedisCache {
     }
   }
 
+  /**
+   * Renew a distributed lock TTL using Lua script for atomic check-and-expire
+   * Only renews if lockValue matches (prevents renewing another worker's lock)
+   *
+   * Returns true if TTL was renewed, false if lock didn't match or didn't exist
+   */
+  async renewLock(lockKey: string, lockValue: string, ttlSeconds: number): Promise<boolean> {
+    if (!this.client || !this.isConnected) {
+      console.error('❌ LOCK RENEW FAILED: Redis not connected');
+      return false;
+    }
+
+    try {
+      // Lua script for atomic check-and-expire
+      // IMPORTANT: Only renew if value matches (prevents renewing another worker's lock)
+      const luaScript = `
+        if redis.call("get", KEYS[1]) == ARGV[1] then
+          return redis.call("expire", KEYS[1], ARGV[2])
+        else
+          return 0
+        end
+      `;
+
+      const result = await this.client.eval(luaScript, 1, lockKey, lockValue, String(ttlSeconds)) as number;
+
+      if (result === 1) {
+        jobLog(`✅ LOCK RENEWED: ${lockKey} TTL reset to ${ttlSeconds}s`);
+        return true;
+      } else {
+        console.warn(`⚠️  LOCK RENEW FAILED: ${lockKey} not owned by ${lockValue}`);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ LOCK RENEW ERROR:', error);
+      return false;
+    }
+  }
+
   // ==================== Hybrid Cache: Global Comp Storage ====================
 
   /**
