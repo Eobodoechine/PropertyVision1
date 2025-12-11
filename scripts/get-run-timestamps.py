@@ -24,7 +24,7 @@ def get_run_timestamps(address_filter=None, limit=1):
         'gcloud', 'logging', 'read', query,
         '--limit', str(limit),
         '--format', 'json',
-        '--project', 'agile-device-472202-i8'
+        '--project', 'durable-ring-475417-g0'
     ], capture_output=True, text=True)
 
     if result.returncode != 0:

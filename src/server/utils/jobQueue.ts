@@ -70,6 +70,9 @@ export class JobQueue {
   private activeJobs = 0;
   private jobCompletedCallbacks: Array<() => void> = [];
 
+  // 🔧 BUG FIX: Track jobs currently being processed to prevent PEL duplicate processing
+  private processingJobIds = new Map<string, boolean>();
+
   constructor() {
     // Use V10 if parallel search is enabled, otherwise V5
     const useV10 = parallelSearchConfig.enabled;
@@ -274,7 +277,7 @@ export class JobQueue {
     // Only log if it's more than just a heartbeat update
     const isHeartbeatOnly = Object.keys(updates).length === 1 && 'lastHeartbeat' in updates;
     if (!isHeartbeatOnly) {
-      jobLog(`💾 Updating job ${jobId} with:`, JSON.stringify(updates).substring(0, 200));
+      jobLog(`💾 Updating job ${jobId} with:`, JSON.stringify(updates));
     }
 
     const job = await this.getJobStatus(jobId);
@@ -351,10 +354,23 @@ export class JobQueue {
               continue;
             }
 
+            // 🔧 BUG FIX: Skip if this job is already being processed (PEL deduplication)
+            if (this.processingJobIds.has(jobData.jobId)) {
+              jobLog(`⚠️  Job ${jobData.jobId.substring(0, 8)} already being processed, skipping duplicate PEL entry`);
+              await this.redis.xack(STREAM, GROUP, messageId);
+              continue;
+            }
+
+            // Mark as processing
+            this.processingJobIds.set(jobData.jobId, true);
+
             try {
               await this.processJob(jobData.jobId, jobData.address, messageId);
             } catch (error: any) {
               await this.handleJobFailure(jobData.jobId, error, messageId);
+            } finally {
+              // Clean up tracking map
+              this.processingJobIds.delete(jobData.jobId);
             }
           }
         }
@@ -392,6 +408,25 @@ export class JobQueue {
     console.log(`   About to enter runInJobContext - all logs will be isolated`);
 
     return runInJobContext(jobId, async () => {
+      // 🔧 BUG FIX (CRITICAL): Check job status BEFORE acquiring semaphore
+      // This prevents zombie jobs from waiting 6-8 minutes on semaphore before discovering they're already done
+      jobLog(`🔍 [PRE_SEMAPHORE_CHECK] Checking if job ${jobId.substring(0, 8)} is already completed/failed...`);
+
+      const existingJob = await this.getJobStatus(jobId);
+
+      // Skip jobs that are already completed, failed, or cancelled
+      if (existingJob && (existingJob.status === 'completed' || existingJob.status === 'failed')) {
+        jobLog(`✅ [PRE_SEMAPHORE_SKIP] Job ${jobId.substring(0, 8)} already ${existingJob.status}, acknowledging and skipping (NO semaphore wait)`);
+        await this.redis.xack(STREAM, GROUP, messageId);
+        return;
+      }
+
+      if (existingJob?.cancelRequested) {
+        jobLog(`⚠️  [PRE_SEMAPHORE_SKIP] Job ${jobId.substring(0, 8)} has cancel request, acknowledging and skipping (NO semaphore wait)`);
+        await this.redis.xack(STREAM, GROUP, messageId);
+        return;
+      }
+
       // 🔧 [CONCURRENCY_CONTROL] Acquire semaphore slot before processing
       jobLog(`🔧 [PROCESS_JOB_START] Job ${jobId.substring(0, 8)} starting, acquiring slot...`);
 
@@ -808,6 +843,13 @@ export class JobQueue {
               const jobData = this.parseStreamMessage(fields);
 
               if (jobData && jobData.jobId) {
+                // 🔧 BUG FIX: Skip if this job is already being processed (PEL deduplication in reaper)
+                if (this.processingJobIds.has(jobData.jobId)) {
+                  jobLog(`⚠️  [REAPER] Job ${jobData.jobId.substring(0, 8)} already being processed, skipping reclaimed PEL entry`);
+                  await this.redis.xack(STREAM, GROUP, messageId);
+                  continue;
+                }
+
                 // Check if job has exceeded max attempts
                 const job = await this.getJobStatus(jobData.jobId);
                 if (job && (job.attempts || 0) >= MAX_ATTEMPTS) {
@@ -816,10 +858,16 @@ export class JobQueue {
                   continue;
                 }
 
+                // Mark as processing
+                this.processingJobIds.set(jobData.jobId, true);
+
                 try {
                   await this.processJob(jobData.jobId, jobData.address, messageId);
                 } catch (error: any) {
                   await this.handleJobFailure(jobData.jobId, error, messageId);
+                } finally {
+                  // Clean up tracking map
+                  this.processingJobIds.delete(jobData.jobId);
                 }
               }
             }
