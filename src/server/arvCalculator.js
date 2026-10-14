@@ -96,16 +96,21 @@ export class ARVCalculator {
   }
 
   generateDedupKey(comp) {
-    if (comp.lat && comp.lng) {
-      return `coord:${Math.round(comp.lat*1e6)},${Math.round(comp.lng*1e6)}`;
-    }
     const address = comp.address || '';
+    const unitMatch = address.match(/#\s*(\S+)|(?:apt|unit)\s*(\S+)/i);
+    const unit = (unitMatch ? (unitMatch[1]||unitMatch[2]||'') : '').toLowerCase();
+
+    // Comparables arrive as `lon`; reading only `lng` made this branch unreachable, so the
+    // same sale counted twice when search phrased it as "Audubon Dr NE" and "Audubon Dr".
+    const lng = comp.lng ?? comp.lon;
+    if (comp.lat && lng) {
+      return `coord:${Math.round(comp.lat*1e6)},${Math.round(lng*1e6)}|${unit}`;
+    }
+
     const parts = address.split(',').map(p=>p.trim());
     const line1 = parts[0] || '';
     const zipMatch = address.match(/\b(\d{5})\b/);
     const zip = zipMatch ? zipMatch[1] : '';
-    const unitMatch = address.match(/#\s*(\S+)|(?:apt|unit)\s*(\S+)/i);
-    const unit = (unitMatch ? (unitMatch[1]||unitMatch[2]||'') : '').toLowerCase();
     const normalized = this.canonicalizeStreet(line1);
     return `addr:${normalized}|${zip}|${unit}`;
   }
@@ -127,8 +132,8 @@ export class ARVCalculator {
       sqft: c.sqft || c.comp?.sqft,
       ppsf: (c.price || c.comp?.price) / (c.sqft || c.comp?.sqft),
       saleDate: c.saleDate || c.comp?.saleDate || c.sale_date || '2025-01-01',
-      lat: c.lat || c.comp?.lat,
-      lng: c.lng || c.comp?.lng,
+      lat: c.lat ?? c.comp?.lat,
+      lng: c.lng ?? c.lon ?? c.comp?.lng ?? c.comp?.lon,
       reason: 'included'
     }));
 

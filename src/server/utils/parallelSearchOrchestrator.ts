@@ -82,68 +82,108 @@ export class ParallelSearchOrchestrator {
       // Global state
       const pools = new Map<number, ComparableProperty[]>(); // Raw results per level
       const seenComps = new Map<string, ComparableProperty>(); // Deduplicated pool
-      const levelPromises: Promise<SearchLevelResult>[] = [];
 
-      // Launch all levels immediately
-      for (const level of config.levels) {
+      // ===== PHASE 1: Nearby Search (Levels 1-2) =====
+      jobLog('\n🔍 PHASE 1: Searching nearby areas (1-2 miles)...');
+
+      const phase1Promises: Promise<SearchLevelResult>[] = [];
+      for (const level of config.phase1Levels) {
         jobLog(`   🚀 Launching Level ${level} search...`);
         const promise = this.executeLevelSearch(level, subject, subjectPropertyType);
-        levelPromises.push(promise);
+        phase1Promises.push(promise);
 
-        // Set up handler for when this level completes
         promise.then(result => this.onLevelReady(result, pools, seenComps, subject))
           .catch(error => {
             console.error(`❌ LEVEL ${level} FATAL ERROR:`, error);
-            console.error(`   Error type: ${typeof error}`);
-            console.error(`   Error message: ${error instanceof Error ? error.message : String(error)}`);
-            console.error(`   Error stack:`, error instanceof Error ? error.stack : 'N/A');
           });
       }
 
-      // Wait for all levels to complete (but early exit can happen via onLevelReady)
-      let results;
+      // Wait for Phase 1 to complete
+      let phase1Results;
       try {
-        results = await Promise.allSettled(levelPromises);
+        phase1Results = await Promise.allSettled(phase1Promises);
       } catch (error) {
-        console.error(`❌ [PARALLEL_COORDINATION] ERROR in Promise.allSettled:`);
-        console.error(`   Error type: ${typeof error}`);
-        console.error(`   Error message: ${error instanceof Error ? error.message : String(error)}`);
-        console.error(`   Error stack:`, error instanceof Error ? error.stack : 'N/A');
-        console.error(`   Context: address=${subject.address}, levels=${config.levels.join(',')}`);
-        throw error; // Critical - coordination failure
+        console.error(`❌ [PHASE1_COORDINATION] ERROR:`, error);
+        throw error;
       }
 
-      jobLog(`\n📊 ALL LEVELS COMPLETED:`);
-      results.forEach((result, idx) => {
-        const level = config.levels[idx];
-        if (result.status === 'fulfilled') {
-          jobLog(`   ✅ Level ${level}: ${result.value.rawComps.length} raw comps in ${result.value.searchTime}ms`);
-        } else {
-          jobLog(`   ❌ Level ${level}: FAILED - ${result.reason}`);
-        }
-      });
+      jobLog(`\n📊 PHASE 1 COMPLETE - ${seenComps.size} unique comps accumulated`);
 
-      // Final pass if no early exit occurred
-      jobLog(`\n🔍 FINAL PASS - Clean ordered pass 1→2→3→4 on all accumulated comps`);
+      // Try progressive passes on Phase 1 data
+      let qualifiedComps: ComparableProperty[] = [];
+      try {
+        qualifiedComps = await this.tryProgressivePasses(pools, seenComps, subject, config.phase1Levels, false);
+      } catch (error) {
+        console.error(`❌ [PHASE1_QUALIFICATION] ERROR:`, error);
+        qualifiedComps = [];
+      }
+
+      // ===== DECISION POINT: Do we need Phase 2? =====
+      if (qualifiedComps.length >= config.minCompsThreshold) {
+        jobLog(`\n✅ PHASE 1 SUCCESS: Found ${qualifiedComps.length} qualified comps (≥${config.minCompsThreshold})`);
+        jobLog(`   ⚡ Skipping Phase 2 (levels 3-4) - early exit`);
+
+        const totalTime = Date.now() - startTime;
+        return {
+          qualifiedComps: qualifiedComps.slice(0, config.targetComps),
+          searchMetadata: {
+            totalSearchTime: totalTime,
+            levelsRun: config.phase1Levels,
+            earlyStopAtLevel: 2,
+            totalRawComps: seenComps.size,
+            cacheHits: 0,
+            metrics: {
+              vertexQueueStats: this.vertexQueue.getStats(),
+              geocodeQueueStats: this.geocodeQueue.getStats(),
+            }
+          }
+        };
+      }
+
+      // ===== PHASE 2: Expanded Search (Levels 3-4) =====
+      jobLog(`\n PHASE 2: Expanding search area (3-4 miles)...`);
+      jobLog(`   ℹ️  Phase 1 found ${qualifiedComps.length} comps (<${config.minCompsThreshold} minimum)`);
+
+      const phase2Promises: Promise<SearchLevelResult>[] = [];
+      for (const level of config.phase2Levels) {
+        jobLog(`    Launching Level ${level} search...`);
+        const promise = this.executeLevelSearch(level, subject, subjectPropertyType);
+        phase2Promises.push(promise);
+
+        promise.then(result => this.onLevelReady(result, pools, seenComps, subject))
+          .catch(error => {
+            console.error(`❌ LEVEL ${level} FATAL ERROR:`, error);
+          });
+      }
+
+      // Wait for Phase 2 to complete
+      let phase2Results;
+      try {
+        phase2Results = await Promise.allSettled(phase2Promises);
+      } catch (error) {
+        console.error(`❌ [PHASE2_COORDINATION] ERROR:`, error);
+        throw error;
+      }
+
+      jobLog(`\n📊 PHASE 2 COMPLETE - ${seenComps.size} total unique comps`);
+
+      // ===== FINAL PASS: All 4 levels =====
+      jobLog(`\n🔍 FINAL PASS - Progressive filtering on all accumulated comps`);
       let finalComps;
       try {
-        finalComps = await this.tryProgressivePasses(pools, seenComps, subject, config.levels, true);
+        finalComps = await this.tryProgressivePasses(pools, seenComps, subject, [...config.phase1Levels, ...config.phase2Levels], true);
       } catch (error) {
-        console.error(`❌ [FINAL_PASS] ERROR in tryProgressivePasses:`);
-        console.error(`   Error type: ${typeof error}`);
-        console.error(`   Error message: ${error instanceof Error ? error.message : String(error)}`);
-        console.error(`   Error stack:`, error instanceof Error ? error.stack : 'N/A');
-        console.error(`   Context: address=${subject.address}, poolsSize=${pools.size}, seenCompsSize=${seenComps.size}, levels=${config.levels.join(',')}`);
-        throw error; // Critical - final qualification failure
+        console.error(`❌ [FINAL_PASS] ERROR:`, error);
+        throw error;
       }
 
       const totalTime = Date.now() - startTime;
 
       return {
-        qualifiedComps: finalComps,
+        qualifiedComps: finalComps.slice(0, config.targetComps),
         searchMetadata: {
           totalSearchTime: totalTime,
-          levelsRun: config.levels,
+          levelsRun: [...config.phase1Levels, ...config.phase2Levels],
           totalRawComps: seenComps.size,
           cacheHits: 0, // TODO: track cache hits
           metrics: {
@@ -318,6 +358,8 @@ export class ParallelSearchOrchestrator {
         qualified = [];
       }
 
+      qualified = this.orderDistinctByScore(qualified, subject);
+
       jobLog(`   ✅ Pass ${passLevel}: ${qualified.length} qualified comps`);
 
       // Track best result
@@ -335,16 +377,45 @@ export class ParallelSearchOrchestrator {
 
     // Return best pass result (not raw union)
     if (bestResult.length > 0) {
+      bestResult = this.orderDistinctByScore(bestResult, subject);
       jobLog(`   📋 No pass met target (${config.targetComps}), returning best pass result: ${bestResult.length} comps`);
       jobLog(`   📍 Best result comps: ${bestResult.map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}`);
       return bestResult;
     }
 
     // Last resort: return all comps if no passes produced any results
-    const final = this.getCompsUpToLevel(seenComps, 4);
+    const final = this.orderDistinctByScore(this.getCompsUpToLevel(seenComps, 4), subject);
     jobLog(`   ⚠️  All passes failed, returning all ${final.length} comps as fallback`);
     jobLog(`   📍 Fallback comps: ${final.slice(0, 10).map(c => `${c.address}($${c.price ? (c.price/1000).toFixed(0) : '?'}k)`).join(', ')}${final.length > 10 ? '...' : ''}`);
     return final;
+  }
+
+  /**
+   * Comparable searches resolve in arrival order and topK pops from a heap, so an unordered pool
+   * made the target slice depend on API latency. One sale also arrives under several search
+   * spellings ("Audubon Dr NE" vs "Audubon Dr"), and those duplicates consumed target slots,
+   * handing the ARV fewer unique houses than it reported and dropping it onto the 3-comp path.
+   */
+  private orderDistinctByScore(
+    comps: ComparableProperty[],
+    subject: SubjectProperty
+  ): ComparableProperty[] {
+    const sorted = [...comps].sort((a, b) =>
+      scoreComparable(b, subject) - scoreComparable(a, subject) ||
+      (a.distanceMi ?? a.distance ?? 0) - (b.distanceMi ?? b.distance ?? 0) ||
+      (a.address ?? '').localeCompare(b.address ?? '')
+    );
+
+    const distinct = new Map<string, ComparableProperty>();
+    for (const comp of sorted) {
+      const lng = (comp as any).lng ?? (comp as any).lon;
+      const key = comp.lat && lng
+        ? `coord:${Math.round(comp.lat * 1e6)},${Math.round(lng * 1e6)}`
+        : `addr:${(comp.address || '').toLowerCase()}`;
+      if (!distinct.has(key)) distinct.set(key, comp);
+    }
+
+    return Array.from(distinct.values());
   }
 
   /**
@@ -396,8 +467,9 @@ export class ParallelSearchOrchestrator {
       try {
         // Define level-specific search criteria
         const criteria = this.getLevelCriteria(level, subject.subdivision != null);
+        const levelPropertyType = criteria.relaxPropertyType ? undefined : propertyType;
 
-        jobLog(`   Level ${level} criteria: ${criteria.radius}mi, ${criteria.timeWindow}mo, ${criteria.maxResults} max`);
+        jobLog(`   Level ${level} criteria: ${criteria.radius}mi, ${criteria.timeWindow}mo, ${criteria.maxResults} max, propertyType=${levelPropertyType || 'RELAXED (dropped)'}`);
 
         // Execute search via bounded queue
         let result;
@@ -405,7 +477,7 @@ export class ParallelSearchOrchestrator {
           result = await this.vertexQueue.run(async () => {
             return await this.compService.findComparables(
               subject.address,
-              propertyType,
+              levelPropertyType,
               criteria.maxResults,
               criteria.radius,
               criteria.timeWindow,
@@ -513,11 +585,13 @@ export class ParallelSearchOrchestrator {
    * Get search criteria for a level
    */
   private getLevelCriteria(level: number, hasSubdivision: boolean) {
+    // Property type is dropped as the search expands. A mislabeled subject type
+    // otherwise restricts every level identically and can starve the pool to zero.
     const criteria = {
-      1: { radius: 1.0, timeWindow: 12, maxResults: 30 },
-      2: { radius: 2.0, timeWindow: 15, maxResults: 40 },
-      3: { radius: 3.0, timeWindow: 18, maxResults: 50 },
-      4: { radius: 4.0, timeWindow: 24, maxResults: 60 },
+      1: { radius: 1.0, timeWindow: 12, maxResults: 30, relaxPropertyType: false },
+      2: { radius: 2.0, timeWindow: 15, maxResults: 40, relaxPropertyType: false },
+      3: { radius: 3.0, timeWindow: 18, maxResults: 50, relaxPropertyType: true },
+      4: { radius: 4.0, timeWindow: 24, maxResults: 60, relaxPropertyType: true },
     };
 
     return criteria[level as keyof typeof criteria] || criteria[1];
@@ -580,7 +654,9 @@ export class ParallelSearchOrchestrator {
         const result = await this.geocoder.geocodeAddress(comp.address);
         if (result) {
           comp.lat = result.lat;
-          comp.lon = result.lon;
+          // The geocoder returns `lng`; reading `lon` stored undefined, which broke distance
+          // scoring and left coordinate dedup unreachable for freshly geocoded comps.
+          comp.lon = result.lng;
           comp.distanceMi = this.calculateDistance(subject, comp);
         } else {
           jobLog(`   ⚠️  Could not geocode: ${comp.address}`);
