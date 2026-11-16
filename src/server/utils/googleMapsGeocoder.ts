@@ -3,6 +3,7 @@
 
 import { jobLog } from './jobLogger';
 import { geocodeCache } from './geocodeCache';
+import { parallelSearchConfig } from './parallelSearchConfig';
 
 interface GoogleMapsGeocodeResult {
   lat: number;
@@ -39,7 +40,10 @@ export class GoogleMapsGeocoder {
   /**
    * Geocode a single address using Google Maps API
    */
-  async geocodeAddress(address: string): Promise<GoogleMapsGeocodeResult | null> {
+  async geocodeAddress(
+    address: string,
+    maxAttempts: number = parallelSearchConfig.geocodeMaxAttempts
+  ): Promise<GoogleMapsGeocodeResult | null> {
     // Check cache first
     const cached = await geocodeCache.get(address);
     if (cached) {
@@ -47,51 +51,88 @@ export class GoogleMapsGeocoder {
         lat: cached.lat,
         lng: cached.lon,
         formattedAddress: address,
-        locationType: 'ROOFTOP' as any,
+        locationType: (cached.locationType || 'APPROXIMATE') as any,
         addressComponents: []
       };
     }
 
     jobLog(`🗺️  Direct Google Maps geocoding: ${address}`);
 
-    try {
-      const encodedAddress = encodeURIComponent(address);
-      const url = `${this.baseUrl}?address=${encodedAddress}&key=${this.apiKey}`;
+    for (let attempt = 1; ; attempt++) {
+      const t0 = Date.now();
 
-      const response = await fetch(url);
-      const data: GoogleMapsResponse = await response.json();
+      try {
+        const encodedAddress = encodeURIComponent(address);
+        const url = `${this.baseUrl}?address=${encodedAddress}&key=${this.apiKey}`;
 
-      jobLog(`🗺️  Google Maps API status: ${data.status}`);
+        const response = await fetch(url);
+        const data: GoogleMapsResponse = await response.json();
 
-      if (data.status === 'OK' && data.results.length > 0) {
-        const result = data.results[0];
-        const location = result.geometry.location;
+        jobLog(`🗺️  Google Maps API status: ${data.status}`);
 
-        jobLog(`🎯 Direct Google Maps result: ${location.lat}, ${location.lng}`);
-        jobLog(`📍 Location type: ${result.geometry.location_type}`);
-        jobLog(`📮 Formatted address: ${result.formatted_address}`);
+        if (data.status === 'OK' && data.results.length > 0) {
+          const result = data.results[0];
+          const location = result.geometry.location;
 
-        // Save to cache
-        await geocodeCache.set(address, location.lat, location.lng);
+          jobLog(`🎯 Direct Google Maps result: ${location.lat}, ${location.lng}`);
+          jobLog(`📍 Location type: ${result.geometry.location_type}`);
+          jobLog(`📮 Formatted address: ${result.formatted_address}`);
 
-        return {
-          lat: location.lat,
-          lng: location.lng,
-          formattedAddress: result.formatted_address,
-          locationType: result.geometry.location_type as any,
-          addressComponents: result.address_components
-        };
-      } else {
+          // Save to cache
+          await geocodeCache.set(address, location.lat, location.lng, result.geometry.location_type);
+
+          return {
+            lat: location.lat,
+            lng: location.lng,
+            formattedAddress: result.formatted_address,
+            locationType: result.geometry.location_type as any,
+            addressComponents: result.address_components
+          };
+        }
+
+        // OVER_QUERY_LIMIT is Google's own throttle, so it is the only retryable status.
+        // Everything else is terminal: retrying it would hold the STEP 6 fast-fail open
+        // for seconds on an address that can never geocode.
+        if (data.status === 'OVER_QUERY_LIMIT') {
+          if (attempt < maxAttempts) {
+            const delayMs = this.retryDelayMs(attempt);
+            jobLog(`🔁 GEOCODE RETRY ATTEMPT ${attempt + 1}/${maxAttempts}: status=${data.status}, elapsed=${Date.now() - t0}ms, delayMs=${delayMs}, address=${address}`);
+            await this.sleep(delayMs);
+            continue;
+          }
+          jobLog(`❌ GEOCODE RETRY_EXHAUSTED: attempts=${maxAttempts}, lastStatus=${data.status}, address=${address}`);
+          return null;
+        }
+
         jobLog(`❌ Google Maps geocoding failed: ${data.status}`);
+        jobLog(`❌ GEOCODE TERMINAL STATUS: ${data.status} attempt=${attempt}/${maxAttempts}, address=${address}`);
         if (data.error_message) {
           jobLog(`❌ Error: ${data.error_message}`);
         }
         return null;
+      } catch (error) {
+        if (attempt < maxAttempts) {
+          const delayMs = this.retryDelayMs(attempt);
+          jobLog(`🔁 GEOCODE RETRY ATTEMPT ${attempt + 1}/${maxAttempts}: status=REQUEST_ERROR, elapsed=${Date.now() - t0}ms, delayMs=${delayMs}, address=${address}`);
+          console.error(`⚠️  Google Maps API request error (will retry):`, error);
+          await this.sleep(delayMs);
+          continue;
+        }
+        jobLog(`❌ GEOCODE RETRY_EXHAUSTED: attempts=${maxAttempts}, lastStatus=REQUEST_ERROR, address=${address}`);
+        console.error(`❌ Google Maps API error:`, error);
+        return null;
       }
-    } catch (error) {
-      console.error(`❌ Google Maps API error:`, error);
-      return null;
     }
+  }
+
+  /** Exponential backoff + jitter: base 500ms -> 500, 1000, 2000 (from v10 geocode retry test). */
+  private retryDelayMs(attempt: number): number {
+    const { geocodeRetryBaseMs, geocodeRetryJitterMs } = parallelSearchConfig;
+    return Math.round(geocodeRetryBaseMs * 2 ** (attempt - 1) + Math.random() * geocodeRetryJitterMs);
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   /**
@@ -104,7 +145,7 @@ export class GoogleMapsGeocoder {
 
     // Geocode all addresses in parallel
     const promises = addresses.map(async (address) => {
-      const result = await this.geocodeAddress(address);
+      const result = await this.geocodeAddress(address, 1);
       if (result) {
         results.set(address, result);
       }
@@ -121,7 +162,7 @@ export class GoogleMapsGeocoder {
    * Test coordinate accuracy against known reference
    */
   async testAccuracy(address: string, referenceLat: number, referenceLng: number): Promise<void> {
-    const result = await this.geocodeAddress(address);
+    const result = await this.geocodeAddress(address, 1);
 
     if (result) {
       // Calculate distance error using Haversine formula

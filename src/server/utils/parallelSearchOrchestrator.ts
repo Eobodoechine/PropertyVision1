@@ -15,6 +15,7 @@ import {
   mergeComparables
 } from './compScoring';
 import { parallelSearchConfig } from './parallelSearchConfig';
+import { isSamePropertyAddress } from './addressNormalizer';
 import { VertexComparableSearchService } from '../step3-find-comparables';
 import { jobLog } from '../utils/jobLogger';
 
@@ -444,6 +445,8 @@ export class ParallelSearchOrchestrator {
         const globalCompsMap = await redisCache.getGlobalComps(compAddresses);
 
         // Merge with subject-specific data (distance)
+        // The subject's own record is not a comparable: left in, it pins ARV to
+        // whatever the subject is listed or last sold at.
         cachedComps = cachedRefs
           .map(ref => {
             const globalData = globalCompsMap.get(ref.compAddress);
@@ -455,7 +458,7 @@ export class ParallelSearchOrchestrator {
             }
             return null;
           })
-          .filter((comp): comp is any => comp !== null);
+          .filter((comp): comp is any => comp !== null && !isSamePropertyAddress(comp.address, subject.address));
 
         jobLog(`   💾 Loaded ${cachedComps.length}/${cachedRefs.length} cached comps from Redis`);
       }
@@ -503,8 +506,16 @@ export class ParallelSearchOrchestrator {
 
         jobLog(`✅ LEVEL ${level} SEARCH COMPLETE: ${result.comparables?.length || 0} comps in ${searchTime}ms`);
 
+        const rawLiveComps = result.comparables || [];
+        const subjectOnly = rawLiveComps.filter(c => isSamePropertyAddress(c.address, subject.address));
+        // Filtered before both the merge and the cache write, so a hit on the subject's
+        // own listing cannot get stored and replayed on the next run for this address.
+        const liveComps = rawLiveComps.filter(c => !isSamePropertyAddress(c.address, subject.address));
+        if (subjectOnly.length > 0) {
+          jobLog(`🚫 [SUBJECT_SELF_COMP] Excluded ${subjectOnly.length} listing(s) of the subject itself at level ${level}: ${subjectOnly.map(c => c.address).join(' | ')}`);
+        }
+
         // Merge cached comps with live search results
-        const liveComps = result.comparables || [];
         const allComps = [...cachedComps, ...liveComps];
 
         // Deduplicate by address (prefer live comps over cached)
@@ -651,7 +662,9 @@ export class ParallelSearchOrchestrator {
         }
 
         // Geocode via Google Maps API
-        const result = await this.geocoder.geocodeAddress(comp.address);
+        // maxAttempts=1 is deliberate: a refusal here drops the comp at the caller, so
+        // retrying would re-admit comps that fail today and change the ARV.
+        const result = await this.geocoder.geocodeAddress(comp.address, 1);
         if (result) {
           comp.lat = result.lat;
           // The geocoder returns `lng`; reading `lon` stored undefined, which broke distance

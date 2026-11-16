@@ -1,8 +1,11 @@
 import 'dotenv/config';
 import https from 'https';
 import { jobLog } from './utils/jobLogger';
+import { getLocalDemoToken, localDemoEnabled } from './utils/localDemo.js';
 import { GoogleAuth } from 'google-auth-library';
 import { withVertexLimiter } from './vertex-limiter';
+import { getRedisCache } from './utils/redisCache';
+import { normalizeAddress } from './utils/addressNormalizer';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
@@ -140,6 +143,7 @@ function resolveLocation() {
 }
 
 async function getAccessTokenViaAuth(): Promise<string> {
+  if (localDemoEnabled()) return getLocalDemoToken();
   const authClient = await getCloudAuthClient();
   const tokenObj = await authClient.getAccessToken();
   const token = typeof tokenObj === 'string'
@@ -950,6 +954,38 @@ function parseFreeformRegex(text: string): Partial<BasicDetails> {
 // [DEPRECATED] Removed old sequential parsing helper functions (fallbackPropertyDetection, parsePropertyResponse,
 // hasRequiredFields, normalizePropertyType) - replaced by parallel SPD with parseTextToJSON in optimized flow
 
+const SUBJECT_DETAILS_TTL_MS = Math.max(0, Number(process.env.PV_SUBJECT_TTL_DAYS || 30)) * 24 * 60 * 60 * 1000;
+const subjectDetailsKey = (address: string) => `subjectDetails:${normalizeAddress(address)}`;
+
+async function readSubjectDetailsCache(address: string): Promise<BasicDetails | null> {
+  try {
+    const raw = await getRedisCache().get(subjectDetailsKey(address));
+    if (!raw) return null;
+    const entry = JSON.parse(raw);
+    const details = entry?.details as BasicDetails | undefined;
+    if (!details?.sqft || !details?.beds) return null;
+    if (SUBJECT_DETAILS_TTL_MS > 0 && Date.now() - Number(entry.storedAt) > SUBJECT_DETAILS_TTL_MS) return null;
+    return details;
+  } catch (error: any) {
+    jobLog(`⚠️ [SUBJECT_DETAILS_CACHE] read failed: ${error?.message}`);
+    return null;
+  }
+}
+
+async function writeSubjectDetailsCache(address: string, details: BasicDetails | null): Promise<void> {
+  // A failed or partial lookup must not get frozen in, or every later run inherits it.
+  if (!details || !details.success || !details.sqft || !details.beds) return;
+  try {
+    await getRedisCache().set(
+      subjectDetailsKey(address),
+      JSON.stringify({ details, storedAt: Date.now() })
+    );
+    jobLog(`💾 [SUBJECT_DETAILS_CACHE_SET] sqft=${details.sqft} beds=${details.beds} baths=${details.baths} year=${details.yearBuilt} subdivision=${details.subdivision || 'n/a'} source=${details.source || 'n/a'}`);
+  } catch (error: any) {
+    jobLog(`⚠️ [SUBJECT_DETAILS_CACHE] write failed: ${error?.message}`);
+  }
+}
+
 export async function fetchPropertyDetailsViaVertex(
   address: string,
   options?: { jobId?: string; timeoutMs?: number }
@@ -957,12 +993,24 @@ export async function fetchPropertyDetailsViaVertex(
   const jobId = options?.jobId ?? address; // default for legacy callers
   const runLabel = process.env.RUN_LABEL || '';
 
+  // Beds/baths/subdivision drive comp scoring and the pass filters, so letting the
+  // LLM re-answer them per run moves the ARV by tens of thousands on the same house.
+  const cached = await readSubjectDetailsCache(address);
+  if (cached) {
+    jobLog(`♻️ [SUBJECT_DETAILS_CACHE_HIT] Reusing reconciled subject record for ${address}`);
+    return cached;
+  }
+
+  let details: BasicDetails | null;
   // S0 enforcement: wrap entire function with limiter for strict serialization
   if (runLabel.startsWith('S0')) {
-    return withVertexLimiter('pv:details', jobId, () => rawFetchPropertyDetailsViaVertex(address, jobId));
+    details = await withVertexLimiter('pv:details', jobId, () => rawFetchPropertyDetailsViaVertex(address, jobId));
+  } else {
+    details = await rawFetchPropertyDetailsViaVertex(address, jobId);
   }
-  // Non-S0: direct call (or optionally wrap for consistency)
-  return rawFetchPropertyDetailsViaVertex(address, jobId);
+
+  await writeSubjectDetailsCache(address, details);
+  return details;
 }
 
 async function rawFetchPropertyDetailsViaVertex(address: string, jobId: string): Promise<BasicDetails | null> {

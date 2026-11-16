@@ -3,6 +3,8 @@ import https from 'https';
 import fs from 'fs';
 import { GoogleAuth } from 'google-auth-library';
 import { jobLog } from './utils/jobLogger';
+import { getLocalDemoToken, localDemoEnabled } from './utils/localDemo.js';
+import { postJsonWithBackoff } from './utils/vertex-http.js';
 
 const VERTEX_SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 
@@ -188,137 +190,20 @@ function logVertexStats() {
  * Implements workarounds from Node.js issue #55330
  */
 async function httpsPostJsonWithRetry(url, payload, headers, timeoutMs = 60000, callType = 'VERTEX') {
-    const startTime = Date.now();
-    let lastError = null;
-
-    for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-        const attemptStart = Date.now();
-        const isRetry = attempt > 1;
-
-        // Log attempt start
-        jobLog(`🔄 VERTEX_ATTEMPT_${attempt}/${MAX_RETRIES}: ${callType}`);
-        jobLog(`   Type: ${isRetry ? 'RETRY' : 'INITIAL'}`);
-        if (lastError) {
-            jobLog(`   Previous error: ${lastError.code || 'unknown'}`);
-            jobLog(`   Previous message: ${lastError.message}`);
-        }
-        if (isRetry) {
-            const elapsed = Date.now() - startTime;
-            jobLog(`   Time elapsed since first attempt: ${elapsed}ms`);
-        }
-
-        try {
-            const result = await httpsPostJson(url, payload, headers, timeoutMs);
-            const duration = Date.now() - attemptStart;
-            const totalDuration = Date.now() - startTime;
-
-            // Check for API-level 429 errors in the response
-            if (result && result.error) {
-                const errorCode = result.error.code;
-                const errorStatus = result.error.status;
-
-                if (errorCode === 429 || errorStatus === 'RESOURCE_EXHAUSTED') {
-                    // Treat 429 as a retryable error
-                    const hasRetriesLeft = attempt < MAX_RETRIES;
-
-                    jobLog(`⚠️  VERTEX_API_429: attempt=${attempt}/${MAX_RETRIES}`);
-                    jobLog(`   Status: ${errorStatus}`);
-                    jobLog(`   Code: ${errorCode}`);
-                    jobLog(`   Duration: ${duration}ms`);
-
-                    if (!hasRetriesLeft) {
-                        jobLog(`🛑 RETRY_EXHAUSTED_429: All retries exhausted for 429 error`);
-                        vertexStats.totalFailures++;
-                        return result;  // Return the error response
-                    }
-
-                    // 🔧 [RETRY_BACKOFF_429] Calculate delay with exponential backoff + cap
-                    const baseDelay = Math.min(RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), 12000); // Cap at 12s
-                    const jitter = Math.random() * 500; // 0-500ms random jitter
-                    const delay = baseDelay + jitter;
-
-                    jobLog(`🔧 [RETRY_BACKOFF_429] Base: ${baseDelay}ms, jitter: ${Math.floor(jitter)}ms, final: ${Math.floor(delay)}ms`);
-                    jobLog(`⏳ RETRY_SCHEDULED_429: waiting ${Math.floor(delay)}ms before retry ${attempt + 1}`);
-
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    continue;  // Retry
-                }
-            }
-
-            // Success logging
-            jobLog(`✅ VERTEX_ATTEMPT_SUCCESS: attempt=${attempt}/${MAX_RETRIES}`);
-            jobLog(`   Duration: ${duration}ms`);
-            jobLog(`   Total time (including retries): ${totalDuration}ms`);
-
-            if (attempt > 1) {
-                jobLog(`🎯 RETRY_SUCCESS: Succeeded after ${attempt} attempts`);
-                vertexStats.successAfterRetry++;
-            } else {
-                vertexStats.successFirstAttempt++;
-            }
-            vertexStats.retriesByAttempt[attempt]++;
-
-            return result;
-
-        } catch (error) {
-            lastError = error;
-            const duration = Date.now() - attemptStart;
-            const totalDuration = Date.now() - startTime;
-
-            // Error logging
-            jobLog(`❌ VERTEX_ATTEMPT_FAILED: attempt=${attempt}/${MAX_RETRIES}`);
-            jobLog(`   Error code: ${error.code || 'unknown'}`);
-            jobLog(`   Error message: ${error.message}`);
-            jobLog(`   Duration: ${duration}ms`);
-            jobLog(`   Total time: ${totalDuration}ms`);
-
-            // Track error codes
-            const errorCode = error.code || 'UNKNOWN';
-            vertexStats.errorCodes[errorCode] = (vertexStats.errorCodes[errorCode] || 0) + 1;
-
-            // 🔧 [RETRY_DECISION] Checking if error is retryable
-            const isRetryableError =
-                error.code === 'ETIMEDOUT' ||
-                error.code === 'ECONNRESET' ||
-                error.code === 'ENOTFOUND' ||
-                error.code === 'ECONNREFUSED' ||
-                error.code === 'EPIPE' ||
-                error.code === 'EAI_AGAIN' ||          // DNS temporary failure (reviewer suggestion)
-                error.code === 'VERTEX_EMPTY_RESPONSE' ||  // Empty Vertex response (rate limit)
-                error.message?.includes('socket hang up');
-
-            jobLog(`🔧 [RETRY_DECISION] Error code: ${error.code}, retryable: ${isRetryableError}`);
-
-            const hasRetriesLeft = attempt < MAX_RETRIES;
-            const shouldRetry = isRetryableError && hasRetriesLeft;
-
-            jobLog(`🤔 RETRY_DECISION:`);
-            jobLog(`   Is retryable error: ${isRetryableError ? '✅ YES' : '❌ NO'}`);
-            jobLog(`   Error type: ${errorCode}`);
-            jobLog(`   Has retries left: ${hasRetriesLeft ? `✅ YES (${MAX_RETRIES - attempt} remaining)` : '❌ NO (exhausted)'}`);
-            jobLog(`   Will retry: ${shouldRetry ? '✅ YES' : '❌ NO'}`);
-
-            if (!shouldRetry) {
-                jobLog(`🛑 RETRY_EXHAUSTED: returning empty result after ${attempt} attempts`);
-                jobLog(`   Final error: ${errorCode} - ${error.message}`);
-                vertexStats.totalFailures++;
-                throw error;  // Re-throw to be caught by caller
-            }
-
-            // 🔧 [RETRY_BACKOFF] Calculate delay with exponential backoff + cap
-            const baseDelay = Math.min(RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), 12000); // Cap at 12s
-            const jitter = Math.random() * 500; // 0-500ms random jitter
-            const delay = baseDelay + jitter;
-
-            jobLog(`🔧 [RETRY_BACKOFF] Base: ${baseDelay}ms, jitter: ${Math.floor(jitter)}ms, final: ${Math.floor(delay)}ms`);
-            jobLog(`⏳ RETRY_SCHEDULED: waiting ${Math.floor(delay)}ms before retry ${attempt + 1}`);
-
-            await new Promise(resolve => setTimeout(resolve, delay));
-        }
+    // Delegate to postJsonWithBackoff which has built-in rate limiting, retries, and probe instrumentation
+    jobLog(`🔄 VERTEX_CALL: ${callType} via postJsonWithBackoff`);
+    try {
+        const result = await postJsonWithBackoff(url, {
+            headers,
+            bodyJson: payload,
+            jobLog
+        });
+        jobLog(`✅ VERTEX_CALL_SUCCESS: ${callType}`);
+        return result;
+    } catch (error) {
+        jobLog(`❌ VERTEX_CALL_FAILED: ${callType}, error=${error.message}`);
+        throw error;
     }
-
-    // Should never reach here, but just in case
-    throw lastError || new Error('Max retries exceeded');
 }
 
 async function httpsPostJson(url, payload, headers, timeoutMs = 60000) {
@@ -813,6 +698,7 @@ export function resolveLocation() {
 }
 
 export async function getAccessTokenViaAuth() {
+  if (localDemoEnabled()) return getLocalDemoToken();
     const now = Date.now();
 
     // Check if token is cached and fresh (within 55 minutes = 3300000ms)

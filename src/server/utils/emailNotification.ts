@@ -2,7 +2,7 @@ import nodemailer from 'nodemailer';
 import { jobLog } from './jobLogger';
 
 // Email configuration
-const NOTIFICATION_EMAIL = 'nnamdi@enohomebuyers.com';
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'operator@example.invalid';
 
 // Use Gmail SMTP or environment variables for custom SMTP
 const EMAIL_USER = process.env.EMAIL_USER || '';
@@ -39,6 +39,7 @@ interface ErrorNotificationParams {
 }
 
 export async function sendErrorNotification(params: ErrorNotificationParams): Promise<boolean> {
+  if (process.env.PV_LOCAL_DEMO === 'true') return false;
   const { jobId, address, error, phase, attempts, timestamp, userId } = params;
 
   // Skip if email not configured
@@ -97,7 +98,7 @@ export async function sendErrorNotification(params: ErrorNotificationParams): Pr
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-          <p>View logs: <a href="https://console.cloud.google.com/logs/query?project=durable-ring-475417-g0" style="color: #2563eb;">Cloud Console</a></p>
+          <p>View logs: <a href="https://console.cloud.google.com/logs/query?project=your-google-cloud-project" style="color: #2563eb;">Cloud Console</a></p>
           <p>This is an automated notification from PropertyVision.</p>
         </div>
       </div>
@@ -125,6 +126,7 @@ interface SuccessNotificationParams {
 }
 
 export async function sendSuccessNotification(params: SuccessNotificationParams): Promise<boolean> {
+  if (process.env.PV_LOCAL_DEMO === 'true') return false;
   const { jobId, address, arv, compsCount, duration, timestamp, userId } = params;
 
   // Skip if email not configured

@@ -9,9 +9,31 @@ export const fetchCache = 'force-no-store';
 
 const redis = getRedisCache();
 
+const DEMO_WINDOW_MS = 10 * 60 * 1000;
+const DEMO_MAX_JOBS_PER_IP = Number(process.env.PV_DEMO_IP_JOB_LIMIT || 6);
+const recentSubmitsByIp = new Map<string, number[]>();
+
+// A published demo link is a public spend button: every submit here costs real Vertex
+// and geocoding quota, so the window is capped per IP while PV_LOCAL_DEMO is on.
+function withinDemoBudget(ip: string): boolean {
+  const now = Date.now();
+  const hits = (recentSubmitsByIp.get(ip) || []).filter(t => now - t < DEMO_WINDOW_MS);
+  const allowed = hits.length < DEMO_MAX_JOBS_PER_IP;
+  if (allowed) hits.push(now);
+  recentSubmitsByIp.set(ip, hits);
+  if (recentSubmitsByIp.size > 500) {
+    for (const [key, times] of recentSubmitsByIp) {
+      if (!times.length || now - times[times.length - 1] >= DEMO_WINDOW_MS) recentSubmitsByIp.delete(key);
+    }
+  }
+  return allowed;
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip');
+  // Cloudflare's edge sets cf-connecting-ip to the real client and strips anything
+  // the client sent; x-forwarded-for alone would let callers rotate the key for free.
+  const ip = request.headers.get('cf-connecting-ip') || request.headers.get('x-real-ip') || request.headers.get('x-forwarded-for');
 
   try {
     const body = await request.json();
@@ -40,6 +62,20 @@ export async function POST(request: NextRequest) {
       sessionId: sessionId || undefined,
       ip: ip || 'unknown',
     });
+
+    if (process.env.PV_LOCAL_DEMO === 'true' && !withinDemoBudget(ip || 'unknown')) {
+      logger.warn('Demo rate limit hit', {
+        eventType: 'JOB_THROTTLED',
+        address,
+        ip: ip || 'unknown',
+        limit: DEMO_MAX_JOBS_PER_IP,
+        windowMs: DEMO_WINDOW_MS,
+      });
+      return NextResponse.json(
+        { error: `Demo limit reached for this network (${DEMO_MAX_JOBS_PER_IP} analyses per 10 minutes). Please wait a few minutes.` },
+        { status: 429 }
+      );
+    }
 
     // Ensure Redis is connected before operations
     await redis.ensureConnected();

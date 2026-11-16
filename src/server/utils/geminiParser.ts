@@ -15,8 +15,8 @@ interface PropertyData {
 }
 
 export class GeminiParser {
-  private location = 'us-central1';
-  private model = 'gemini-2.0-flash-001';
+  private location = process.env.VERTEX_AI_LOCATION || 'us-central1';
+  private model = process.env.VERTEX_PARSER_MODEL || process.env.VERTEX_MODEL || 'gemini-2.5-flash';
 
   /**
    * Parse property data using Gemini API

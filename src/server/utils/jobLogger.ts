@@ -55,6 +55,10 @@ export function setJobContext(jobId: string | null) {
   console.warn('   This function does nothing now - AsyncLocalStorage handles context');
 }
 
+export function getCurrentJobId(): string | undefined {
+  return jobContextStorage.getStore();
+}
+
 export function jobLog(...args: any[]): void {
   // Get job ID from AsyncLocalStorage (isolated per async context)
   const currentJobId = jobContextStorage.getStore();

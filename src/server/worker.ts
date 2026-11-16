@@ -104,8 +104,9 @@ async function startWorker() {
 
   // Start HTTP server and wait for it to be ready
   await new Promise<void>((resolve) => {
-    server.listen(PORT, '0.0.0.0', () => {
-      jobLog(`✅ Worker health check server listening on 0.0.0.0:${PORT}`);
+    const host = process.env.PV_LOCAL_DEMO === 'true' ? '127.0.0.1' : '0.0.0.0';
+    server.listen(PORT, host, () => {
+      jobLog(`✅ Worker health check server listening on ${host}:${PORT}`);
       resolve();
     });
   });

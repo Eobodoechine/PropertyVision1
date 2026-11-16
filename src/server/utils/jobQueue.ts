@@ -27,7 +27,7 @@ console.log('🔧 MIN_IDLE_MS Configuration: 28000ms (4x heartbeat interval)');
 console.log('   HEARTBEAT_MS: 7000ms');
 console.log('   MIN_IDLE_MS: 28000ms (safe buffer for crash recovery)');
 const MAX_ATTEMPTS = 1; // Fast failure detection - maximizes speed + error handling
-const JOB_TTL = 3600; // 1 hour
+const JOB_TTL = process.env.PV_LOCAL_DEMO === 'true' ? 86400 : 3600;
 
 // Get unique consumer ID per container
 const CONSUMER = `${os.hostname()}:${process.pid}`;
@@ -297,6 +297,13 @@ export class JobQueue {
       };
       await this.redis.setJob(jobId, newJob, JOB_TTL);
       jobLog(`✅ Job ${jobId} created in Redis: status=${newJob.status}, progress=${newJob.progress}`);
+    }
+
+    // The bare site link opens this pointer, so a shared URL lands on a finished
+    // report instead of an empty form. Same TTL as the job record so it can never
+    // point at a report that has already expired.
+    if (updates.status === 'completed') {
+      await this.redis.setex('latestReport', JOB_TTL, jobId);
     }
   }
 

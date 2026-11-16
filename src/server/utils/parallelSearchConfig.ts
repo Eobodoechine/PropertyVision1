@@ -9,6 +9,12 @@ export interface ParallelSearchConfig {
   geocodeConcurrency: number;
   topKPerPass: number;
   targetComps: number;
+  minCompsThreshold: number;
+  geocodeMaxAttempts: number;
+  geocodeRetryBaseMs: number;
+  geocodeRetryJitterMs: number;
+  phase1Levels: number[];
+  phase2Levels: number[];
 }
 
 export function getParallelSearchConfig(): ParallelSearchConfig {
@@ -28,6 +34,13 @@ export function getParallelSearchConfig(): ParallelSearchConfig {
     geocodeConcurrency: Number(process.env.PV_GEOCODE_CONC || 20),
     topKPerPass: Number(process.env.PV_TOPK_PER_PASS || 16),
     targetComps: Number(process.env.PV_TARGET_COMPS || 6),
+    minCompsThreshold: Number(process.env.PV_MIN_COMPS_THRESHOLD || 3),
+    // Geocode front-door retry (shape from v10:test-geocode-improvements.ts)
+    geocodeMaxAttempts: Number(process.env.PV_GEOCODE_MAX_ATTEMPTS || 3),
+    geocodeRetryBaseMs: Number(process.env.PV_GEOCODE_RETRY_BASE_MS || 500),
+    geocodeRetryJitterMs: Number(process.env.PV_GEOCODE_RETRY_JITTER_MS || 400),
+    phase1Levels: [1, 2],
+    phase2Levels: [3, 4],
   };
 }
 

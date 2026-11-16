@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Providers } from '@/components/providers';
 import './globals.css';
 export const metadata: Metadata = {
-  title: 'PropertyAnalyzer | ARV & Comps',
-  description: 'Analyze ARV, property details, and comps in seconds.'
+  title: 'PropertyVision | Property Analysis Demo',
+  description: 'Explore property details, comparable sales, and value estimates.'
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -46,7 +46,8 @@ function createAnalyzeProperty(
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error('Failed to start analysis');
+        const failure = await response.json().catch(() => null);
+        throw new Error(failure?.error || 'Failed to start analysis');
       }
 
       const { jobId } = await response.json();
@@ -69,6 +70,7 @@ function createAnalyzeProperty(
 
             if (status.status === 'completed') {
               setCurrentJobId(null);
+              window.history.replaceState(null, '', `?job=${encodeURIComponent(jobId)}`);
               resolve(status.result);
             } else if (status.status === 'failed') {
               setCurrentJobId(null);
@@ -152,12 +154,50 @@ export default function HomePage() {
     }
   });
 
+  const autoLoadRef = React.useRef<AbortController | null>(null);
+
+  React.useEffect(() => {
+    const controller = new AbortController();
+    autoLoadRef.current = controller;
+    const loadReport = (jobId: string) => {
+      fetch(`${API_BASE_URL}/api/analyze/status/${jobId}`, { signal: controller.signal })
+        .then(response => response.ok ? response.json() : null)
+        .then(saved => {
+          if (controller.signal.aborted) return;
+          if (saved?.status === 'completed' && saved.result?.subject) {
+            setSelectedResult(saved.result);
+            setFormState({ address: saved.result.subject.address });
+          }
+        }).catch(() => {});
+    };
+
+    const savedJob = new URLSearchParams(window.location.search).get('job');
+    if (savedJob && /^[a-f0-9-]{36}$/i.test(savedJob)) {
+      loadReport(savedJob);
+    } else {
+      // A shared link carries no job id, so the bare URL opens the newest finished report.
+      fetch(`${API_BASE_URL}/api/analyze/latest`, { signal: controller.signal })
+        .then(response => response.ok ? response.json() : null)
+        .then(latest => { if (latest?.jobId) loadReport(latest.jobId); })
+        .catch(() => {});
+    }
+
+    return () => {
+      controller.abort();
+      if (autoLoadRef.current === controller) autoLoadRef.current = null;
+    };
+  }, []);
+
   // Progress is now updated by the polling mechanism in analyzeProperty
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const address = formState.address.trim();
     if (!address) return;
+    setSelectedResult(null);
+    // A newest-report load still in flight would otherwise land on top of this run.
+    autoLoadRef.current?.abort();
+    window.history.replaceState(null, '', window.location.pathname);
     mutation.mutate(address);
   };
 
@@ -201,7 +241,7 @@ export default function HomePage() {
               <CardDescription className="text-slate-500">
                 Enter a full street address to generate ARV, property insights, and comparable sales.
                 <br />
-                <span className="text-xs text-slate-400 mt-1 block">Analysis may take up to 10 minutes to complete.</span>
+                <span className="text-xs text-slate-400 mt-1 block">Full analysis can take several minutes.</span>
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -251,21 +291,14 @@ export default function HomePage() {
 }
 
 function Header() {
-  const { user, userProfile, logout } = useAuth();
-
   return (
     <header className="flex flex-col justify-between gap-4 rounded-3xl border border-slate-200 bg-white/90 px-6 py-5 shadow-sm shadow-slate-200/40 backdrop-blur md:flex-row md:items-center">
       <div>
-        <p className="text-sm font-medium text-slate-500">PropertyAnalyzer</p>
+        <p className="text-sm font-medium text-slate-500">PropertyVision</p>
         <h1 className="text-2xl font-semibold text-slate-900">ARV &amp; Comps Dashboard</h1>
       </div>
       <div className="flex items-center gap-3">
-        <span className="text-sm text-slate-600">
-          {userProfile?.name || user?.displayName || user?.email}
-        </span>
-        <Button variant="outline" size="sm" onClick={logout}>
-          Sign out
-        </Button>
+        <Badge variant="secondary">No sign-in required</Badge>
       </div>
     </header>
   );
@@ -346,6 +379,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
 
 function AnalysisSummary({ data }: { data: PropertyAnalysisResponse }) {
   const subjectSqft = data.subject.sqft ?? undefined;
+  const confidence = confidenceStyles[data.arv?.confidence || 'low'] || confidenceStyles.low;
 
   const perSqft = data.arv?.estimate && subjectSqft ? `$${Math.round(data.arv.estimate / subjectSqft)}/sq ft` : '—';
 
@@ -365,6 +399,7 @@ function AnalysisSummary({ data }: { data: PropertyAnalysisResponse }) {
           {data.arv ? formatCurrency(data.arv.estimate) : 'ARV unavailable'}
         </p>
         <p className="text-sm text-slate-500">{perSqft}</p>
+        <Badge className={confidence.className}>{confidence.label}</Badge>
       </CardContent>
     </Card>
   );
@@ -407,6 +442,8 @@ function ComparableList({ comps }: { comps: ComparableProperty[] }) {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {comps.map(comp => {
+            // Model-generated listing IDs are not verified. Offer an honest address lookup.
+            const sourceUrl = `https://www.google.com/search?q=${encodeURIComponent(`${comp.address} sold listing`)}`;
             const price = typeof comp.price === 'string' ? Number(comp.price) : comp.price;
             const sqft = typeof comp.sqft === 'string' ? Number(comp.sqft) : comp.sqft;
             const beds = typeof comp.beds === 'string' ? Number(comp.beds) : comp.beds;
@@ -418,9 +455,9 @@ function ComparableList({ comps }: { comps: ComparableProperty[] }) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                     <a
-                      href={comp.url ?? '#'}
-                      target={comp.url ? '_blank' : undefined}
-                      rel={comp.url ? 'noreferrer' : undefined}
+                      href={sourceUrl || undefined}
+                      target={sourceUrl ? '_blank' : undefined}
+                      rel={sourceUrl ? 'noreferrer' : undefined}
                       className="text-base font-semibold text-slate-900 hover:underline"
                     >
                       {comp.address}
@@ -439,17 +476,15 @@ function ComparableList({ comps }: { comps: ComparableProperty[] }) {
                 </div>
                 <div className="flex items-center justify-between text-xs text-slate-400">
                   <span>Sold: {formatSoldDate(comp.soldDate)}</span>
-                  {comp.source ? (
                     <a
-                      href={comp.url ?? '#'}
-                      target={comp.url ? '_blank' : undefined}
-                      rel={comp.url ? 'noreferrer' : undefined}
+                      href={sourceUrl || undefined}
+                      target={sourceUrl ? '_blank' : undefined}
+                      rel={sourceUrl ? 'noreferrer' : undefined}
                       className="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-slate-600"
                     >
-                      {comp.source}
-                      {comp.url ? <ExternalLink className="h-3 w-3" /> : null}
+                      Find listing
+                      {sourceUrl ? <ExternalLink className="h-3 w-3" /> : null}
                     </a>
-                  ) : null}
                 </div>
               </CardContent>
               </Card>

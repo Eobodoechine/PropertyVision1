@@ -10,6 +10,7 @@ import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
 import { jobLog } from './utils/jobLogger';
 import { withVertexLimiter, getLimiterCallCount } from './vertex-limiter';
+import { probe } from './utils/probe';
 
 // Force IPv4-first DNS resolution to avoid IPv6 timeout delays in VPC
 dns.setDefaultResultOrder('ipv4first');
@@ -119,6 +120,7 @@ class VertexComparableSearchService {
       jobLog(`   • Radius: ${searchRadius} miles`);
       jobLog(`   • Max results: ${maxResults}`);
       jobLog(`🔧 DIAG_SEARCH_STRATEGY: using legacy 6-prompt strategy (not progressive)`);
+      probe({ probe: 'STEP3_SEARCH_START', subjectAddress, searchRadius, maxResults });
 
       // Get subject property coordinates
       const subjectCoords = await this.geocodeWithTimeout(subjectAddress, 30000);
@@ -393,6 +395,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         try {
           const allParsed = await this.convertGeminiToComparable(allGeminiProperties, subjectCoords.lat, subjectCoords.lon, subjectDetails);
           jobLog(`🔍 CONVERSION: Converted ${allParsed.length} total properties`);
+          probe({ probe: 'STEP3_CONVERSION_COMPLETE', parsedCount: allParsed.length });
           batches[0] = allParsed;
         } catch (error: any) {
           console.error(`❌ CONVERSION: Failed to convert properties:`, error.message);
@@ -425,6 +428,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
       let comps = Array.from(aggregatedComps.values());
       const rawCompsBeforeFiltering = [...comps]; // Save raw comps before any filtering
       jobLog(`   🔗 Aggregated total before filters: ${comps.length} unique properties`);
+      probe({ probe: 'STEP3_AGGREGATION_COMPLETE', uniqueComps: comps.length });
 
       // LOG EACH PROPERTY BEFORE FILTERING
       jobLog(`   🔍 DETAILED PROPERTY FILTERING:`);
@@ -682,6 +686,7 @@ address | sold_price | sold_date(YYYY-MM-DD) | beds | baths | sqft | year_built 
         throw new Error(violation);
       }
 
+      probe({ probe: 'STEP3_SEARCH_COMPLETE', finalComps: finalComps.length, rawComps: rawCompsBeforeFiltering.length, success: true });
       return {
         comparables: finalComps,
         all_comps: rawCompsBeforeFiltering,

@@ -7,6 +7,7 @@ import { jobLog } from '../utils/jobLogger';
 interface GeoLocation {
   lat: number;
   lon: number;
+  locationType?: string;
   cached: boolean;
 }
 
@@ -46,16 +47,16 @@ export class GeocodeCache {
   /**
    * Store geocode result in cache
    */
-  async set(address: string, lat: number, lon: number): Promise<void> {
+  async set(address: string, lat: number, lon: number, locationType?: string): Promise<void> {
     try {
       const key = this.KEY_PREFIX + this.normalizeAddress(address);
       const redis = this.redis;
       await redis.ensureConnected();
 
-      const value = JSON.stringify({ lat, lon });
+      const value = JSON.stringify({ lat, lon, locationType });
       await redis.set(key, value);
 
-      jobLog(`🗺️  GEOCODE CACHED: ${address} → (${lat}, ${lon})`);
+      jobLog(`🗺️  GEOCODE CACHED: ${address} → (${lat}, ${lon}) [${locationType || 'unknown'}]`);
     } catch (error) {
       console.error(`❌ GEOCODE CACHE SET ERROR for "${address}":`, error);
       console.error(`   Error type: ${typeof error}`);
