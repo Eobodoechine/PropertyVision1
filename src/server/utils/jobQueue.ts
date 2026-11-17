@@ -17,7 +17,7 @@ import { setCurrentJobContext, PHASES as JOB_PHASES } from './jobProgress';
 const ENV_PREFIX = process.env.IS_STAGING === 'true' ? 'staging:' : 'prod:';
 const STREAM = `${ENV_PREFIX}jobs`;
 const GROUP = `${ENV_PREFIX}workers`;
-const HEARTBEAT_MS = 7_000; // 7 seconds
+const HEARTBEAT_MS = Number(process.env.PV_JOB_HEARTBEAT_MS || 7_000); // 7 seconds (env override for tests)
 const MIN_IDLE_MS = 28_000; // 28 seconds (4x heartbeat - prevents premature reclaim)
 // 🔧 PHASE 1 FIX: Increased MIN_IDLE_MS from 12000 to 28000
 // WHY: MIN_IDLE_MS should be 4-6x HEARTBEAT_MS to prevent race conditions
@@ -67,6 +67,8 @@ export class JobQueue {
 
   // 🔧 CONCURRENCY FIX v1.0: Semaphore pattern to limit concurrent job processing
   private maxConcurrentJobs = Number(process.env.PV_MAX_CONCURRENT_JOBS || 3);
+  // Jobs this worker has finished; see updateJob.
+  private finishedJobs = new Set<string>();
   private activeJobs = 0;
   private jobCompletedCallbacks: Array<() => void> = [];
 
@@ -276,11 +278,28 @@ export class JobQueue {
   private async updateJob(jobId: string, updates: Partial<JobData>): Promise<void> {
     // Only log if it's more than just a heartbeat update
     const isHeartbeatOnly = Object.keys(updates).length === 1 && 'lastHeartbeat' in updates;
+
+    // A finished job keeps its final status. The heartbeat and progress writes are
+    // read-modify-write; one that read the job before it finished used to land after
+    // the "completed" write and reset a finished 37-minute run to "processing 75%",
+    // so the page polled forever. Checked before the read and again before the write.
+    const isFinal = updates.status === 'completed' || updates.status === 'failed' || updates.status === 'cancelled';
+    if (isFinal) {
+      this.finishedJobs.add(jobId);
+      if (this.finishedJobs.size > 1000) this.finishedJobs.delete(this.finishedJobs.values().next().value as string);
+    } else if (this.finishedJobs.has(jobId)) {
+      return;
+    }
+
     if (!isHeartbeatOnly) {
       jobLog(`💾 Updating job ${jobId} with:`, JSON.stringify(updates));
     }
 
     const job = await this.getJobStatus(jobId);
+    if (!isFinal && (this.finishedJobs.has(jobId) || job?.status === 'completed' || job?.status === 'failed' || job?.status === 'cancelled')) {
+      jobLog(`⏭️  Skipped a late ${isHeartbeatOnly ? 'heartbeat' : 'progress'} write to finished job ${jobId}`);
+      return;
+    }
     if (job) {
       const updated = { ...job, ...updates, lastHeartbeat: Date.now() };
       await this.redis.setJob(jobId, updated, JOB_TTL);
@@ -298,13 +317,8 @@ export class JobQueue {
       await this.redis.setJob(jobId, newJob, JOB_TTL);
       jobLog(`✅ Job ${jobId} created in Redis: status=${newJob.status}, progress=${newJob.progress}`);
     }
-
-    // The bare site link opens this pointer, so a shared URL lands on a finished
-    // report instead of an empty form. Same TTL as the job record so it can never
-    // point at a report that has already expired.
-    if (updates.status === 'completed') {
-      await this.redis.setex('latestReport', JOB_TTL, jobId);
-    }
+    // No "latest report" pointer: on a public demo it let anyone read the newest
+    // visitor's address and report through /api/analyze/latest (route removed).
   }
 
   /**
@@ -453,7 +467,7 @@ export class JobQueue {
         // 🔧 PHASE 5 FIX: Acquire distributed lock to prevent concurrent processing
         const lockKey = `lock:job:${jobId}`;
         const lockValue = `${CONSUMER}:${randomUUID()}`;
-        const lockTTL = 300; // 5 minutes - auto-release if worker crashes
+        const lockTTL = Number(process.env.PV_JOB_LOCK_TTL_SECONDS || 300); // 5 minutes - auto-release if worker crashes; renewed by the heartbeat
 
         console.log('🔧 PHASE 5: Attempting distributed lock acquisition');
         console.log(`   Lock prevents multiple workers from processing same job`);
@@ -552,6 +566,10 @@ export class JobQueue {
     heartbeat = setInterval(async () => {
       const now = Date.now();
       console.log(`💓 HEARTBEAT: Updating lastHeartbeat to ${now}`);
+      // Keep the job lock alive while the job runs. Without this the 5-minute lock
+      // expired mid-run and the reaper started a second copy of the same job
+      // (seen 2026-11-16 on a 37-minute run). Claude-backed runs take 10-40 minutes.
+      await this.redis.renewLock(lockKey, lockValue, lockTTL).catch(() => false);
       await this.updateJob(jobId, { lastHeartbeat: now });
       console.log(`💓 HEARTBEAT: Update complete`);
     }, HEARTBEAT_MS);
