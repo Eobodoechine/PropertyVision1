@@ -1529,10 +1529,11 @@ Return exactly this JSON structure:
   ): Promise<ComparableProperty[]> {
     const enriched: ComparableProperty[] = [];
 
-    for (const comp of comps) {
-      let updated = { ...comp };
-
-      // Enrich missing fields (beds/baths/yearBuilt) using property details
+    // Enrich missing fields (beds/baths/yearBuilt) using property details. The
+    // lookups run at the same time (the global limiter still caps concurrency);
+    // one after another, each comp added about 25 s to the run.
+    const updatedComps = await Promise.all(comps.map(async (comp) => {
+      const updated = { ...comp };
       const needsEnrich = !Number.isFinite(updated.beds) || !Number.isFinite(updated.baths) || updated.yearBuilt == null;
       if (needsEnrich) {
         try {
@@ -1545,7 +1546,10 @@ Return exactly this JSON structure:
           }
         } catch {}
       }
+      return updated;
+    }));
 
+    for (const updated of updatedComps) {
       // Require full set after enrichment
       const hasAll = (
         updated.address &&

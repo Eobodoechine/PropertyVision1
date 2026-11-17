@@ -16,10 +16,25 @@
 //   CLAUDE_API_EFFORT_SEARCH   effort for search calls (default medium)
 //   CLAUDE_API_EFFORT_PARSE    effort for parse calls (default low)
 //   CLAUDE_API_MAX_SEARCHES    web searches allowed per call (default 6)
-//   CLAUDE_API_CONCURRENCY     parallel API calls per process (default 4)
+//   CLAUDE_API_CONCURRENCY     parallel API calls per process (default 12)
+//   CLAUDE_API_TIMEOUT_MAX_MS  longest any one attempt may run (default 120000,
+//                              the production per-search timeout)
+//   CLAUDE_API_SEARCH_MIN_MS   shortest deadline for a web-search attempt
+//                              (default 60000; Claude searches run 15-55 s)
+//   CLAUDE_API_PARSE_MIN_MS    shortest deadline for a parse attempt (default 20000)
+//   CLAUDE_API_TIMEOUT_RETRIES retries after an attempt hits its deadline (default 1)
+//   CLAUDE_API_MIN_CALL_MS     don't start a call with less job budget than this (default 3000)
+//
+// Hang handling: each attempt has a hard deadline taken from the caller's
+// timeoutMs (the production values: 120 s per search, 90 s subject research,
+// 30 s parse), clamped to the range above. The deadline aborts the whole
+// stream, not just the wait for headers: the SDK's own timeout stops once
+// headers arrive, so a stream that stalls mid-body would otherwise hang. No
+// attempt may run past the job's time budget (utils/jobBudget.ts).
 import Anthropic from '@anthropic-ai/sdk';
 import pLimit from 'p-limit';
 import { jobLog } from './utils/jobLogger';
+import { jobTimeLeftMs, searchTimeLeftMs } from './utils/jobBudget';
 
 const SYSTEM_PROMPT =
   'You are a precise real-estate data researcher. Follow the user instructions exactly ' +
@@ -48,8 +63,30 @@ function getClient() {
   }
   return client;
 }
+// Tests swap in a fake client.
+export function setClaudeApiClientForTest(c) { client = c; }
 
-const limit = pLimit(Math.max(1, Number(process.env.CLAUDE_API_CONCURRENCY || 4)));
+const limit = pLimit(Math.max(1, Number(process.env.CLAUDE_API_CONCURRENCY || 12)));
+
+// How long one attempt may run: the caller's timeout clamped to [min, max],
+// then cut to whatever the job budget still allows. Grounded calls stop early
+// enough to leave the reserve for parsing; parse calls may use the full budget.
+// Exported for tests.
+export function attemptDeadlineMs(opts) {
+  const max = Number(process.env.CLAUDE_API_TIMEOUT_MAX_MS || 120000);
+  const min = opts.grounded
+    ? Number(process.env.CLAUDE_API_SEARCH_MIN_MS || 60000)
+    : Number(process.env.CLAUDE_API_PARSE_MIN_MS || 20000);
+  const asked = opts.timeoutMs || (opts.grounded ? 120000 : 30000);
+  const clamped = Math.min(Math.max(asked, min), max);
+  return Math.min(clamped, budgetLeftMs(opts));
+}
+
+function budgetLeftMs(opts) {
+  return opts.grounded ? searchTimeLeftMs() : jobTimeLeftMs();
+}
+
+class DeadlineError extends Error {}
 
 export function pickApiModel(opts) {
   if (process.env.CLAUDE_API_MODEL) return process.env.CLAUDE_API_MODEL;
@@ -104,16 +141,16 @@ export function extractJson(text) {
   return end > start ? t.slice(start, end + 1) : t;
 }
 
-async function createMessage(params, useFallbacks, timeoutMs) {
+async function createMessage(params, useFallbacks, timeoutMs, signal) {
   const c = getClient();
   if (useFallbacks) {
     const stream = c.beta.messages.stream(
       { ...params, betas: [FALLBACK_BETA], fallbacks: 'default' },
-      { timeout: timeoutMs },
+      { timeout: timeoutMs, signal },
     );
     return stream.finalMessage();
   }
-  return c.messages.stream(params, { timeout: timeoutMs }).finalMessage();
+  return c.messages.stream(params, { timeout: timeoutMs, signal }).finalMessage();
 }
 
 export async function claudeApiGenerate(opts) {
@@ -149,34 +186,52 @@ async function generate(opts) {
           max_uses: Number(process.env.CLAUDE_API_MAX_SEARCHES || 6) }] }
       : {}),
   };
-  const timeoutMs = Math.max(opts.timeoutMs || 0, 240000); // web search needs longer than Gemini did
-
   jobLog(`📞 CLAUDE_API_CALL from ${caller}, model=${model}, grounded=${!!opts.grounded}, json=${wantJson}`);
   let callUsd = 0;
   try {
     let response;
-    // A long server-side search turn can pause; send it back so the server resumes it.
-    for (let round = 0; round < 4; round++) {
-      const useFallbacks = fallbacksEnabled && model === 'claude-sonnet-5-5';
-      try {
-        response = await createMessage(params, useFallbacks, timeoutMs);
-      } catch (e) {
-        if (useFallbacks && e instanceof Anthropic.BadRequestError) {
-          // A 400 can mean the fallbacks parameter was refused, or something else
-          // entirely (no credit, bad model). Retry once without it; switch fallbacks
-          // off for the process only if that retry succeeds.
-          response = await createMessage(params, false, timeoutMs);
-          fallbacksEnabled = false;
-          jobLog(`⚠️ CLAUDE_API: request with refusal fallbacks got 400 but succeeded without them; fallbacks off for this process`);
-        } else {
-          throw e;
-        }
+    const retries = Math.max(0, Number(process.env.CLAUDE_API_TIMEOUT_RETRIES ?? 1));
+    for (let attempt = 1; ; attempt++) {
+      const left = budgetLeftMs(opts);
+      if (left < Number(process.env.CLAUDE_API_MIN_CALL_MS || 3000)) {
+        throw new DeadlineError(`job time budget used up (${Math.round(left)}ms left), call skipped`);
       }
-      const { usd, searches } = estimateUsd(model, response.usage);
-      callUsd += usd;
-      costStats.searches += searches;
-      if (response.stop_reason !== 'pause_turn') break;
-      params.messages = [...params.messages, { role: 'assistant', content: response.content }];
+      const deadlineMs = attemptDeadlineMs(opts);
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), deadlineMs);
+      const attemptParams = { ...params, messages: [...params.messages] };
+      try {
+        // A long server-side search turn can pause; send it back so the server resumes it.
+        for (let round = 0; round < 4; round++) {
+          const useFallbacks = fallbacksEnabled && model === 'claude-sonnet-5-5';
+          try {
+            response = await createMessage(attemptParams, useFallbacks, deadlineMs, ctrl.signal);
+          } catch (e) {
+            if (useFallbacks && e instanceof Anthropic.BadRequestError) {
+              // A 400 can mean the fallbacks parameter was refused, or something else
+              // entirely (no credit, bad model). Retry once without it; switch fallbacks
+              // off for the process only if that retry succeeds.
+              response = await createMessage(attemptParams, false, deadlineMs, ctrl.signal);
+              fallbacksEnabled = false;
+              jobLog(`⚠️ CLAUDE_API: request with refusal fallbacks got 400 but succeeded without them; fallbacks off for this process`);
+            } else {
+              throw e;
+            }
+          }
+          const { usd, searches } = estimateUsd(model, response.usage);
+          callUsd += usd;
+          costStats.searches += searches;
+          if (response.stop_reason !== 'pause_turn') break;
+          attemptParams.messages = [...attemptParams.messages, { role: 'assistant', content: response.content }];
+        }
+        break;
+      } catch (e) {
+        if (!ctrl.signal.aborted) throw e;
+        jobLog(`⏱️ CLAUDE_API_TIMEOUT: caller=${caller}, attempt=${attempt}, deadline=${Math.round(deadlineMs / 1000)}s`);
+        if (attempt > retries) throw new DeadlineError(`no response within ${Math.round(deadlineMs / 1000)}s after ${attempt} attempt(s)`);
+      } finally {
+        clearTimeout(timer);
+      }
     }
     costStats.calls++;
     costStats.usd += callUsd;
@@ -192,7 +247,8 @@ async function generate(opts) {
     jobLog(`✅ CLAUDE_API_SUCCESS: caller=${caller}, ms=${Date.now() - started}, stop=${response.stop_reason}, textLength=${text.length}`);
     return text;
   } catch (e) {
-    const kind = e instanceof Anthropic.AuthenticationError ? 'auth'
+    const kind = e instanceof DeadlineError ? 'deadline'
+      : e instanceof Anthropic.AuthenticationError ? 'auth'
       : e instanceof Anthropic.RateLimitError ? 'rate_limit'
       : e instanceof Anthropic.APIError ? `api_${e.status}`
       : 'network_or_timeout';

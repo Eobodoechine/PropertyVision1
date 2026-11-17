@@ -8,6 +8,7 @@ import { GoogleMapsGeocoder } from './googleMapsGeocoder';
 import { randomUUID } from 'crypto';
 import os from 'os';
 import { jobLog, setJobContext, runInJobContext } from './jobLogger';
+import { startJobBudget, endJobBudget, jobBudgetMs } from './jobBudget';
 import { setCurrentJobContext, PHASES as JOB_PHASES } from './jobProgress';
 
 // Global job context - allows comprehensive-comp-search to update progress
@@ -463,6 +464,9 @@ export class JobQueue {
 
       try {
         jobLog(`⚙️  [${messageId}] Processing job ${jobId}: ${address}`);
+        // The run must finish in under 5 minutes: model calls stop at this deadline.
+        startJobBudget(jobId);
+        jobLog(`⏱️ JOB_BUDGET: ${Math.round(jobBudgetMs() / 1000)}s for this job`);
 
         // 🔧 PHASE 5 FIX: Acquire distributed lock to prevent concurrent processing
         const lockKey = `lock:job:${jobId}`;
@@ -747,6 +751,7 @@ export class JobQueue {
         console.error(`   Slot acquired: ${slotAcquired}`);
         throw error;
       } finally {
+        endJobBudget(jobId);
         // 🔧 [CONCURRENCY_CONTROL] Always release semaphore slot
         if (slotAcquired) {
           jobLog(`🔧 [PROCESS_JOB_FINALLY] Releasing slot for job ${jobId.substring(0, 8)}...`);

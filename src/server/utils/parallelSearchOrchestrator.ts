@@ -18,6 +18,7 @@ import { parallelSearchConfig } from './parallelSearchConfig';
 import { isSamePropertyAddress } from './addressNormalizer';
 import { VertexComparableSearchService } from '../step3-find-comparables';
 import { jobLog } from '../utils/jobLogger';
+import { searchTimeLeftMs } from './jobBudget';
 
 export interface SearchLevelResult {
   level: number;
@@ -142,11 +143,21 @@ export class ParallelSearchOrchestrator {
       }
 
       // ===== PHASE 2: Expanded Search (Levels 3-4) =====
-      jobLog(`\n PHASE 2: Expanding search area (3-4 miles)...`);
-      jobLog(`   ℹ️  Phase 1 found ${qualifiedComps.length} comps (<${config.minCompsThreshold} minimum)`);
+      // Time budget: a run must finish in under 5 minutes. If too little search
+      // time is left for another round, skip Phase 2 and finish on Phase 1 data.
+      const phase2MinMs = Number(process.env.PV_PHASE2_MIN_MS || 45_000);
+      const searchMsLeft = searchTimeLeftMs();
+      const runPhase2 = searchMsLeft >= phase2MinMs;
+      const finalLevels = runPhase2 ? [...config.phase1Levels, ...config.phase2Levels] : config.phase1Levels;
+      if (runPhase2) {
+        jobLog(`\n PHASE 2: Expanding search area (3-4 miles)...`);
+        jobLog(`   ℹ️  Phase 1 found ${qualifiedComps.length} comps (<${config.minCompsThreshold} minimum)`);
+      } else {
+        jobLog(`\n⏱️ JOB_BUDGET: ${Math.round(searchMsLeft / 1000)}s of search time left (<${Math.round(phase2MinMs / 1000)}s); skipping Phase 2 and finishing on Phase 1 data`);
+      }
 
       const phase2Promises: Promise<SearchLevelResult>[] = [];
-      for (const level of config.phase2Levels) {
+      for (const level of runPhase2 ? config.phase2Levels : []) {
         jobLog(`    Launching Level ${level} search...`);
         const promise = this.executeLevelSearch(level, subject, subjectPropertyType);
         phase2Promises.push(promise);
@@ -172,7 +183,7 @@ export class ParallelSearchOrchestrator {
       jobLog(`\n🔍 FINAL PASS - Progressive filtering on all accumulated comps`);
       let finalComps;
       try {
-        finalComps = await this.tryProgressivePasses(pools, seenComps, subject, [...config.phase1Levels, ...config.phase2Levels], true);
+        finalComps = await this.tryProgressivePasses(pools, seenComps, subject, finalLevels, true);
       } catch (error) {
         console.error(`❌ [FINAL_PASS] ERROR:`, error);
         throw error;
@@ -184,7 +195,7 @@ export class ParallelSearchOrchestrator {
         qualifiedComps: finalComps.slice(0, config.targetComps),
         searchMetadata: {
           totalSearchTime: totalTime,
-          levelsRun: [...config.phase1Levels, ...config.phase2Levels],
+          levelsRun: finalLevels,
           totalRawComps: seenComps.size,
           cacheHits: 0, // TODO: track cache hits
           metrics: {
