@@ -134,7 +134,11 @@ export function topK<T>(
   scoreFn: (item: T) => number
 ): T[] {
   try {
-    const heap = new MinHeap<T>(k);
+    // Keep the k LOWEST scores (lower score = better fit). The MinHeap above keeps
+    // its smallest item at the root and replaced that root, so it threw away the
+    // best candidates once more than k arrived. Comp pools are small, so a sort is
+    // both correct and fast.
+    const scored: Array<{ item: T; score: number }> = [];
     let processedCount = 0;
 
     for (const item of items) {
@@ -145,7 +149,7 @@ export function topK<T>(
           console.error(`   Item:`, item);
           continue; // Skip invalid scores
         }
-        heap.add(item, score);
+        scored.push({ item, score });
         processedCount++;
       } catch (error) {
         console.error(`❌ TOP K SCORE FUNCTION ERROR:`);
@@ -158,7 +162,8 @@ export function topK<T>(
     }
 
     jobLog(`📊 TOP K: Processed ${processedCount} items, returning top ${Math.min(k, processedCount)}`);
-    return heap.getSorted();
+    scored.sort((a, b) => a.score - b.score);
+    return scored.slice(0, Math.max(0, k)).map(s => s.item);
   } catch (error) {
     console.error(`❌ TOP K ERROR:`);
     console.error(`   Error type: ${typeof error}`);

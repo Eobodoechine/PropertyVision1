@@ -401,9 +401,18 @@ export class ParallelSearchOrchestrator {
     comps: ComparableProperty[],
     subject: SubjectProperty
   ): ComparableProperty[] {
+    // Best fit first: scoreComparable is lower-is-better (distance, size, beds,
+    // baths, sale age). Ties go to the closer comp, then the more recent sale.
+    // The October 2026 version sorted b - a, which put the worst fits first so the
+    // dedup and the target slice kept the worst comps.
+    const soldTime = (c: ComparableProperty) => {
+      const t = Date.parse((c as any).soldDate ?? '');
+      return Number.isFinite(t) ? t : 0;
+    };
     const sorted = [...comps].sort((a, b) =>
-      scoreComparable(b, subject) - scoreComparable(a, subject) ||
-      (a.distanceMi ?? a.distance ?? 0) - (b.distanceMi ?? b.distance ?? 0) ||
+      scoreComparable(a, subject) - scoreComparable(b, subject) ||
+      (a.distanceMi ?? a.distance ?? 99) - (b.distanceMi ?? b.distance ?? 99) ||
+      soldTime(b) - soldTime(a) ||
       (a.address ?? '').localeCompare(b.address ?? '')
     );
 
