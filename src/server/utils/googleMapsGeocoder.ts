@@ -3,6 +3,7 @@
 
 import { jobLog } from './jobLogger';
 import { geocodeCache } from './geocodeCache';
+import { useCensusGeocoder, censusGeocode } from './censusGeocoder';
 import { parallelSearchConfig } from './parallelSearchConfig';
 
 interface GoogleMapsGeocodeResult {
@@ -32,7 +33,7 @@ export class GoogleMapsGeocoder {
 
   constructor(apiKey?: string) {
     this.apiKey = apiKey || process.env.GOOGLE_MAPS_API_KEY || '';
-    if (!this.apiKey) {
+    if (!this.apiKey && !useCensusGeocoder()) {
       throw new Error('Google Maps API key is required');
     }
   }
@@ -52,6 +53,20 @@ export class GoogleMapsGeocoder {
         lng: cached.lon,
         formattedAddress: address,
         locationType: (cached.locationType || 'APPROXIMATE') as any,
+        addressComponents: []
+      };
+    }
+
+    // Free US Census geocoder (default). Google Maps only when GEOCODER=google.
+    if (useCensusGeocoder()) {
+      const c = await censusGeocode(address);
+      if (!c) return null;
+      await geocodeCache.set(address, c.lat, c.lng, 'ROOFTOP');
+      return {
+        lat: c.lat,
+        lng: c.lng,
+        formattedAddress: c.matchedAddress,
+        locationType: 'ROOFTOP' as any, // Census interpolates along the street segment
         addressComponents: []
       };
     }

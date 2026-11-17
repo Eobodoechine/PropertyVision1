@@ -1,0 +1,294 @@
+{
+  "subject": {
+    "address": "2221 Plantation Dr, East Point, GA 30344",
+    "sqft": 1939,
+    "beds": 3,
+    "baths": 2,
+    "yearBuilt": 1961,
+    "lotSize": null,
+    "subdivision": "Connally Estates",
+    "success": true
+  },
+  "arv": {
+    "method": "Banding",
+    "estimate": 340785,
+    "confidence": "high",
+    "dataPoints": 4
+  },
+  "renovationAnalysis": {
+    "likely_renovated": [],
+    "likely_unrenovated": [],
+    "market_average": [
+      {
+        "id": "C5",
+        "address": "2718 Delowe Dr, Atlanta, GA 30344",
+        "price": 360000,
+        "sqft": 2200,
+        "ppsf": 163.63636363636363,
+        "reason": "band_supported"
+      },
+      {
+        "id": "C1",
+        "address": "2649 Headland Dr, East Point, GA 30344",
+        "price": 325000,
+        "sqft": 1914,
+        "ppsf": 169.80146290491118,
+        "reason": "band_supported"
+      },
+      {
+        "id": "C3",
+        "address": "2429 Woodhill Ln, Atlanta, GA 30344",
+        "price": 290000,
+        "sqft": 1596,
+        "ppsf": 181.70426065162908,
+        "reason": "band_supported"
+      },
+      {
+        "id": "C4",
+        "address": "2682 Westchester Dr, East Point, GA 30344",
+        "price": 350000,
+        "sqft": 1660,
+        "ppsf": 210.84337349397592,
+        "reason": "band_supported"
+      }
+    ]
+  },
+  "compsUsed": [
+    {
+      "address": "2649 Headland Dr, East Point, GA 30344",
+      "price": 325000,
+      "sqft": 1914,
+      "beds": 3,
+      "baths": 3,
+      "yearBuilt": 1954,
+      "soldDate": "2026-06-08",
+      "distance": 0.7178558657496258,
+      "lat": 33.691153173395,
+      "lon": -84.474851725168,
+      "source": "https://www.redfin.com/GA/East-Point/2649-Headland-Dr-30344/home/24649424",
+      "confidence": "medium",
+      "fingerprint": "2649 headland dr, east point, ga 30344|325000|1914",
+      "validationFlags": [],
+      "primarySource": "https://www.redfin.com/GA/East-Point/2649-Headland-Dr-30344/home/24649424"
+    },
+    {
+      "address": "2705 Hayden Dr, East Point, GA 30344",
+      "price": 184000,
+      "sqft": 1713,
+      "beds": 3,
+      "baths": 3,
+      "yearBuilt": 1961,
+      "soldDate": "2026-09-21",
+      "distance": 0.7994125946744373,
+      "lat": 33.692575217373,
+      "lon": -84.476674266094,
+      "source": "https://www.movoto.com/east-point-ga/2705-hayden-dr-east-point-ga-30344-421_8887610/",
+      "confidence": "medium",
+      "fingerprint": "2705 hayden dr, east point, ga 30344|184000|1713",
+      "validationFlags": [],
+      "primarySource": "https://www.movoto.com/east-point-ga/2705-hayden-dr-east-point-ga-30344-421_8887610/"
+    },
+    {
+      "address": "2429 Woodhill Ln, Atlanta, GA 30344",
+      "price": 290000,
+      "sqft": 1596,
+      "beds": 3,
+      "baths": 2,
+      "yearBuilt": 1960,
+      "soldDate": "2026-06-01",
+      "distance": 0.5634739254047314,
+      "lat": 33.687493700748,
+      "lon": -84.468541317233,
+      "source": "https://brianwilliams.evatlanta.com/listing-detail/1180130953/2429-Woodhill-LN-Atlanta-GA",
+      "confidence": "medium",
+      "distanceMi": 0.5634739254047314,
+      "fingerprint": "2429 woodhill ln, atlanta, ga 30344|290000|1596",
+      "validationFlags": [],
+      "primarySource": "https://brianwilliams.evatlanta.com/listing-detail/1180130953/2429-Woodhill-LN-Atlanta-GA"
+    },
+    {
+      "address": "2682 Westchester Dr, East Point, GA 30344",
+      "price": 350000,
+      "sqft": 1660,
+      "beds": 3,
+      "baths": 2,
+      "yearBuilt": 1962,
+      "soldDate": "2026-08-07",
+      "distance": 0.9192285648986781,
+      "lat": 33.681590093853,
+      "lon": -84.468127260173,
+      "source": "https://www.movoto.com/east-point-ga/2682-westchester-dr-east-point-ga-30344/pid_qqsexwkenabb/",
+      "confidence": "medium",
+      "fingerprint": "2682 westchester dr, east point, ga 30344|350000|1660",
+      "validationFlags": [],
+      "primarySource": "https://www.movoto.com/east-point-ga/2682-westchester-dr-east-point-ga-30344/pid_qqsexwkenabb/"
+    },
+    {
+      "address": "2718 Delowe Dr, Atlanta, GA 30344",
+      "price": 360000,
+      "sqft": 2200,
+      "beds": 4,
+      "baths": 2,
+      "yearBuilt": 1956,
+      "soldDate": "2026-10-15",
+      "distance": 0.9425135443057805,
+      "lat": 33.681246793144,
+      "lon": -84.457628654692,
+      "source": "https://www.coldwellbankerhomes.com/ga/atlanta/2718-delowe-dr/pid_68851123/",
+      "confidence": "medium",
+      "fingerprint": "2718 delowe dr, atlanta, ga 30344|360000|2200",
+      "validationFlags": [],
+      "primarySource": "https://www.coldwellbankerhomes.com/ga/atlanta/2718-delowe-dr/pid_68851123/"
+    },
+    {
+      "address": "2910 Knollwood Trl, East Point, GA 30344",
+      "price": 255000,
+      "sqft": 2290,
+      "beds": 4,
+      "baths": 3,
+      "yearBuilt": 1968,
+      "soldDate": "2026-08-23",
+      "distance": 1.4068607554991086,
+      "lat": 33.676839206604,
+      "lon": -84.475757653148,
+      "source": "https://www.movoto.com/east-point-ga/2910-knollwood-trl-east-point-ga-30344/pid_qaf88i8jkubb/",
+      "confidence": "medium",
+      "fingerprint": "2910 knollwood trl, east point, ga 30344|255000|2290",
+      "validationFlags": [],
+      "primarySource": "https://www.movoto.com/east-point-ga/2910-knollwood-trl-east-point-ga-30344/pid_qaf88i8jkubb/"
+    }
+  ],
+  "allComps": [
+    {
+      "address": "2649 Headland Dr, East Point, GA 30344",
+      "price": 325000,
+      "sqft": 1914,
+      "beds": 3,
+      "baths": 3,
+      "yearBuilt": 1954,
+      "soldDate": "2026-06-08",
+      "distance": 0.7178558657496258,
+      "lat": 33.691153173395,
+      "lon": -84.474851725168,
+      "source": "https://www.redfin.com/GA/East-Point/2649-Headland-Dr-30344/home/24649424",
+      "confidence": "high"
+    },
+    {
+      "address": "2705 Hayden Dr, East Point, GA 30344",
+      "price": 184000,
+      "sqft": 1713,
+      "beds": 3,
+      "baths": 3,
+      "yearBuilt": 1961,
+      "soldDate": "2026-09-21",
+      "distance": 0.7994125946744373,
+      "lat": 33.692575217373,
+      "lon": -84.476674266094,
+      "source": "https://www.movoto.com/east-point-ga/2705-hayden-dr-east-point-ga-30344-421_8887610/",
+      "confidence": "high"
+    },
+    {
+      "address": "2429 Woodhill Ln, Atlanta, GA 30344",
+      "price": 290000,
+      "sqft": 1596,
+      "beds": 3,
+      "baths": 2,
+      "yearBuilt": 1960,
+      "soldDate": "2026-06-01",
+      "distance": 0.5634739254047314,
+      "lat": 33.687493700748,
+      "lon": -84.468541317233,
+      "source": "https://brianwilliams.evatlanta.com/listing-detail/1180130953/2429-Woodhill-LN-Atlanta-GA",
+      "confidence": "high",
+      "distanceMi": 0.5634739254047314
+    },
+    {
+      "address": "2682 Westchester Dr, East Point, GA 30344",
+      "price": 350000,
+      "sqft": 1660,
+      "beds": 3,
+      "baths": 2,
+      "yearBuilt": 1962,
+      "soldDate": "2026-08-07",
+      "distance": 0.9192285648986781,
+      "lat": 33.681590093853,
+      "lon": -84.468127260173,
+      "source": "https://www.movoto.com/east-point-ga/2682-westchester-dr-east-point-ga-30344/pid_qqsexwkenabb/",
+      "confidence": "high"
+    },
+    {
+      "address": "2718 Delowe Dr, Atlanta, GA 30344",
+      "price": 360000,
+      "sqft": 2200,
+      "beds": 4,
+      "baths": 2,
+      "yearBuilt": 1956,
+      "soldDate": "2026-10-15",
+      "distance": 0.9425135443057805,
+      "lat": 33.681246793144,
+      "lon": -84.457628654692,
+      "source": "https://www.coldwellbankerhomes.com/ga/atlanta/2718-delowe-dr/pid_68851123/",
+      "confidence": "high"
+    },
+    {
+      "address": "2910 Knollwood Trl, East Point, GA 30344",
+      "price": 255000,
+      "sqft": 2290,
+      "beds": 4,
+      "baths": 3,
+      "yearBuilt": 1968,
+      "soldDate": "2026-08-23",
+      "distance": 1.4068607554991086,
+      "lat": 33.676839206604,
+      "lon": -84.475757653148,
+      "source": "https://www.movoto.com/east-point-ga/2910-knollwood-trl-east-point-ga-30344/pid_qaf88i8jkubb/",
+      "confidence": "high"
+    }
+  ],
+  "confidenceScores": {},
+  "searchMetadata": {
+    "version": "V10",
+    "strategy": "parallel_immediate",
+    "searchLevels": 4,
+    "totalSearchTime": 1726069,
+    "qualityScore": "good",
+    "cacheHits": 0,
+    "normalizationSummary": {
+      "originalCount": 6,
+      "duplicatesFound": 0,
+      "conflictsResolved": 0,
+      "finalCount": 6,
+      "highConfidence": 0,
+      "mediumConfidence": 6,
+      "lowConfidence": 0
+    },
+    "deduplicationSummary": {
+      "duplicatesRemoved": 0,
+      "uniqueProperties": 6
+    },
+    "distanceValidationSummary": {},
+    "parallelMetrics": {
+      "totalSearchTime": 1689441,
+      "levelsRun": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "totalRawComps": 7,
+      "cacheHits": 0,
+      "metrics": {
+        "vertexQueueStats": {
+          "running": 0,
+          "queued": 0,
+          "maxConcurrency": 80
+        },
+        "geocodeQueueStats": {
+          "running": 0,
+          "queued": 0,
+          "maxConcurrency": 20
+        }
+      }
+    }
+  }
+}

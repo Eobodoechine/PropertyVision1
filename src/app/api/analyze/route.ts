@@ -9,6 +9,55 @@ export const fetchCache = 'force-no-store';
 
 const redis = getRedisCache();
 
+// Public demo guardrails. Each live analysis spends API credits, so the demo
+// caps runs per visitor and per day. LIVE_ANALYSIS=off leaves only the saved
+// example reports.
+const LIVE_ANALYSIS = (process.env.LIVE_ANALYSIS || 'on').toLowerCase() !== 'off';
+const MAX_PER_IP_PER_DAY = Number(process.env.DEMO_MAX_PER_IP_PER_DAY || 3);
+const MAX_PER_DAY = Number(process.env.DEMO_MAX_PER_DAY || 25);
+
+function clientIp(request: NextRequest): string {
+  // Behind the Cloudflare tunnel the visitor's address is in cf-connecting-ip.
+  return (
+    request.headers.get('cf-connecting-ip') ||
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown'
+  );
+}
+
+async function checkDemoLimits(request: NextRequest): Promise<NextResponse | null> {
+  if (!LIVE_ANALYSIS) {
+    return NextResponse.json(
+      { error: 'Live analysis is turned off on this demo right now. Open one of the example reports instead.' },
+      { status: 503 }
+    );
+  }
+  const day = new Date().toISOString().slice(0, 10);
+  try {
+    const perIp = await redis.incrWithExpiry(`demo:ip:${day}:${clientIp(request)}`, 2 * 86400);
+    if (perIp > MAX_PER_IP_PER_DAY) {
+      return NextResponse.json(
+        { error: `This demo allows ${MAX_PER_IP_PER_DAY} live analyses per visitor per day. The example reports are always available.` },
+        { status: 429 }
+      );
+    }
+    const total = await redis.incrWithExpiry(`demo:day:${day}`, 2 * 86400);
+    if (total > MAX_PER_DAY) {
+      return NextResponse.json(
+        { error: "Today's live analyses for this demo are used up. Please try again tomorrow, or open an example report." },
+        { status: 429 }
+      );
+    }
+  } catch {
+    return NextResponse.json(
+      { error: 'Live analysis is unavailable right now. The example reports are still available.' },
+      { status: 503 }
+    );
+  }
+  return null;
+}
+
 const DEMO_WINDOW_MS = 10 * 60 * 1000;
 const DEMO_MAX_JOBS_PER_IP = Number(process.env.PV_DEMO_IP_JOB_LIMIT || 6);
 const recentSubmitsByIp = new Map<string, number[]>();
@@ -54,6 +103,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    if (address.length > 200) {
+      return NextResponse.json(
+        { error: 'Please enter a single street address (under 200 characters).' },
+        { status: 400 }
+      );
+    }
 
     // Log incoming search request
     logSearchRequest({
@@ -79,6 +134,9 @@ export async function POST(request: NextRequest) {
 
     // Ensure Redis is connected before operations
     await redis.ensureConnected();
+
+    const limited = await checkDemoLimits(request);
+    if (limited) return limited;
 
     // Create async job
     const jobQueue = getJobQueue();

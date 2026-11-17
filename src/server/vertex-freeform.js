@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import https from 'https';
 import fs from 'fs';
-import { GoogleAuth } from 'google-auth-library';
+import { loadGoogleAuth } from './utils/googleAuthLazy';
+import { useClaude, claudeGenerate } from './claude-cli.js';
 import { jobLog } from './utils/jobLogger';
 import { getLocalDemoToken, localDemoEnabled } from './utils/localDemo.js';
 import { postJsonWithBackoff } from './utils/vertex-http.js';
@@ -506,6 +507,7 @@ async function httpsPostForm(url, body, headers, timeoutMs) {
 }
 // Direct vertex generate function for LLM parsing
 export async function vertexGenerate(opts) {
+    if (useClaude()) return claudeGenerate(opts);
     // S0-v2 Note: S0 validation is now handled by withVertexLimiter via ATTEMPT_START events
     // The limiter tracks pre/post inflight counts - violations are detected by summarize-429.js
     // We removed the blocking check here because ALL Vertex calls now go through wrappers
@@ -671,24 +673,25 @@ export async function getCloudAuthClient() {
             json = fs.readFileSync(jsonPath, 'utf-8');
         }
         const credentials = JSON.parse(json);
-        const auth = new GoogleAuth({ credentials, scopes: VERTEX_SCOPES });
+        const auth = new (await loadGoogleAuth())({ credentials, scopes: VERTEX_SCOPES });
         jobLog(`🔑 DIAG_AUTH_CLIENT_CREATED: instance_id=${instanceId}, type=explicit_credentials`);
         return auth.getClient();
     }
 
     // Default: keyless ADC on Cloud Run
-    const auth = new GoogleAuth({ scopes: VERTEX_SCOPES });
+    const auth = new (await loadGoogleAuth())({ scopes: VERTEX_SCOPES });
     jobLog(`🔑 DIAG_AUTH_CLIENT_CREATED: instance_id=${instanceId}, type=ADC`);
     return auth.getClient();
 }
 
 export async function resolveProjectId(auth) {
+    if (useClaude()) return 'claude';
     const explicit =
         process.env.VERTEX_AI_PROJECT_ID ||
         process.env.GOOGLE_CLOUD_PROJECT ||
         process.env.GCLOUD_PROJECT;
     if (explicit) return explicit;
-    const a = auth ?? new GoogleAuth();
+    const a = auth ?? new (await loadGoogleAuth())();
     const pid = await a.getProjectId();
     return typeof pid === 'string' ? pid : String(pid);
 }
@@ -698,6 +701,7 @@ export function resolveLocation() {
 }
 
 export async function getAccessTokenViaAuth() {
+  if (useClaude()) return 'claude';
   if (localDemoEnabled()) return getLocalDemoToken();
     const now = Date.now();
 

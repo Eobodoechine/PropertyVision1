@@ -20,6 +20,16 @@ import { useCountdown, useInterpolatedProgress } from '@/hooks/useJobProgress';
 
 const DEFAULT_ADDRESS = '';
 
+// Turn pipeline error codes into something a visitor can act on.
+function friendlyJobError(raw?: string): string {
+  const msg = raw || '';
+  if (/insufficient_data|ARV unavailable|No qualified comparables/i.test(msg)) {
+    return 'Not enough recent comparable sales were found near this address to estimate an ARV with confidence. ' +
+      'Try another address, or open one of the example reports.';
+  }
+  return msg || 'The analysis did not finish. Please try again or open an example report.';
+}
+
 type FormState = {
   address: string;
 };
@@ -74,7 +84,7 @@ function createAnalyzeProperty(
               resolve(status.result);
             } else if (status.status === 'failed') {
               setCurrentJobId(null);
-              reject(new Error(status.error || 'Analysis failed'));
+              reject(new Error(friendlyJobError(status.error)));
             } else {
               // Update progress
               setProgress(status.progress || 0);
@@ -171,15 +181,12 @@ export default function HomePage() {
         }).catch(() => {});
     };
 
+    // A ?job= link opens that report. The bare URL no longer auto-opens the newest
+    // report: on a public demo that showed one visitor's address to the next one.
+    // The saved example reports cover the empty state instead.
     const savedJob = new URLSearchParams(window.location.search).get('job');
     if (savedJob && /^[a-f0-9-]{36}$/i.test(savedJob)) {
       loadReport(savedJob);
-    } else {
-      // A shared link carries no job id, so the bare URL opens the newest finished report.
-      fetch(`${API_BASE_URL}/api/analyze/latest`, { signal: controller.signal })
-        .then(response => response.ok ? response.json() : null)
-        .then(latest => { if (latest?.jobId) loadReport(latest.jobId); })
-        .catch(() => {});
     }
 
     return () => {
@@ -194,11 +201,51 @@ export default function HomePage() {
     event.preventDefault();
     const address = formState.address.trim();
     if (!address) return;
+    runLive(address);
+  };
+
+  const runLive = (address: string) => {
     setSelectedResult(null);
-    // A newest-report load still in flight would otherwise land on top of this run.
+    setActiveExample(null);
+    // A report load still in flight would otherwise land on top of this run.
     autoLoadRef.current?.abort();
     window.history.replaceState(null, '', window.location.pathname);
     mutation.mutate(address);
+  };
+
+  // Saved example reports: static files in public/examples, so they load
+  // instantly and cost nothing to view.
+  const [examples, setExamples] = React.useState<ExampleMeta[] | null>(null);
+  const [activeExample, setActiveExample] = React.useState<ExampleMeta | null>(null);
+  const [exampleError, setExampleError] = React.useState<string | null>(null);
+  const [liveAvailable, setLiveAvailable] = React.useState(true);
+
+  React.useEffect(() => {
+    fetch('/api/demo-status')
+      .then(r => (r.ok ? r.json() : { live: true }))
+      .then(s => setLiveAvailable(s?.live !== false))
+      .catch(() => setLiveAvailable(true));
+    fetch('/examples/index.json')
+      .then(r => (r.ok ? r.json() : []))
+      .then(list => setExamples(Array.isArray(list) ? list : []))
+      .catch(() => setExamples([]));
+  }, []);
+
+  const openExample = async (example: ExampleMeta) => {
+    setExampleError(null);
+    try {
+      const r = await fetch(`/examples/${example.id}.json`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data: PropertyAnalysisResponse = await r.json();
+      autoLoadRef.current?.abort();
+      mutation.reset();
+      setSelectedResult(data);
+      setActiveExample(example);
+      setFormState({ address: example.address });
+      window.history.replaceState(null, '', window.location.pathname);
+    } catch {
+      setExampleError('That example could not be loaded. Please try another one.');
+    }
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,20 +278,66 @@ export default function HomePage() {
 
   return (
     <main className="w-full">
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 pb-16 pt-10 md:px-6 lg:flex-row">
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-10 md:px-6">
         <div className="flex-1 space-y-8">
           <Header />
 
           <Card className="border-0 bg-white/90 shadow-lg shadow-slate-200/40 backdrop-blur">
-            <CardHeader className="gap-3">
-              <CardTitle className="text-2xl font-semibold">Analyze Property</CardTitle>
+            <CardHeader className="gap-2">
+              <CardTitle className="text-2xl font-semibold">Example reports</CardTitle>
               <CardDescription className="text-slate-500">
-                Enter a full street address to generate ARV, property insights, and comparable sales.
-                <br />
-                <span className="text-xs text-slate-400 mt-1 block">Full analysis can take several minutes.</span>
+                Finished analyses from real addresses. They open instantly.
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {examples === null ? (
+                <p className="text-sm text-slate-400">Loading examples…</p>
+              ) : examples.length === 0 ? (
+                <p className="text-sm text-slate-400">No example reports yet.</p>
+              ) : (
+                <div className="grid gap-3 md:grid-cols-3">
+                  {examples.map(example => (
+                    <button
+                      key={example.id}
+                      type="button"
+                      onClick={() => openExample(example)}
+                      disabled={loading}
+                      className={cn(
+                        'rounded-2xl border px-4 py-3 text-left transition hover:border-slate-400 hover:bg-slate-50 disabled:opacity-50',
+                        activeExample?.id === example.id ? 'border-slate-900 bg-slate-50' : 'border-slate-200'
+                      )}
+                    >
+                      <p className="flex items-center gap-1 text-sm font-medium text-slate-900">
+                        <MapPin className="h-4 w-4 shrink-0 text-slate-400" />
+                        <span className="truncate">{example.address}</span>
+                      </p>
+                      <p className="mt-1 text-xs text-slate-500">
+                        ARV {formatCurrency(example.arv)} · {example.comps} comps · analyzed {example.analyzedAt}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {exampleError ? <p className="mt-3 text-sm text-rose-600">{exampleError}</p> : null}
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 bg-white/90 shadow-lg shadow-slate-200/40 backdrop-blur">
+            <CardHeader className="gap-3">
+              <CardTitle className="text-2xl font-semibold">Run a live analysis</CardTitle>
+              <CardDescription className="text-slate-500">
+                Enter a full US street address. Claude searches the web for recent nearby sales, filters them, and
+                calculates the after-repair value (ARV).
+                <br />
+                <span className="text-xs text-slate-400 mt-1 block">A live run usually takes 5–15 minutes. Runs are limited per day on this demo.</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!liveAvailable ? (
+                <p className="text-sm text-slate-500">
+                  Live analysis is paused on this demo right now. The example reports above show complete results.
+                </p>
+              ) : (
               <form className="flex flex-col gap-3 md:flex-row" onSubmit={handleSubmit}>
                 <Input
                   aria-label="Street address"
@@ -267,6 +360,7 @@ export default function HomePage() {
                   )}
                 </Button>
               </form>
+              )}
             </CardContent>
           </Card>
 
@@ -275,20 +369,31 @@ export default function HomePage() {
 
           {result ? (
             <section className="space-y-8">
+              {activeExample && selectedResult ? (
+                <p className="text-sm text-slate-500">
+                  Saved example report, analyzed {activeExample.analyzedAt}. Sale data reflects that date.
+                </p>
+              ) : null}
               <AnalysisSummary data={result} />
               <PropertyDetails data={result} />
               <ComparableList comps={result.compsUsed} />
             </section>
           ) : null}
         </div>
-
-        <aside className="w-full space-y-6 lg:w-80">
-          {/* <SearchHistory onSelectSearch={handleSelectSearch} limit={15} /> */}
-        </aside>
       </div>
     </main>
   );
 }
+
+type ExampleMeta = {
+  id: string;
+  address: string;
+  arv: number;
+  comps: number;
+  analyzedAt: string;
+};
+
+const REPO_URL = 'https://github.com/Eobodoechine/PropertyVision1/tree/hirer-demo';
 
 function Header() {
   return (
@@ -296,9 +401,20 @@ function Header() {
       <div>
         <p className="text-sm font-medium text-slate-500">PropertyVision</p>
         <h1 className="text-2xl font-semibold text-slate-900">ARV &amp; Comps Dashboard</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          After-repair value estimates for fix-and-flip deals, from recent comparable sales.
+        </p>
       </div>
-      <div className="flex items-center gap-3">
-        <Badge variant="secondary">No sign-in required</Badge>
+      <div className="flex flex-col items-start gap-2 md:items-end">
+        <span className="text-sm text-slate-600">Built by Nnamdi Obodoechine</span>
+        <div className="flex items-center gap-2">
+          <Badge variant="secondary">No sign-in required</Badge>
+          <Button variant="outline" size="sm" asChild>
+            <a href={REPO_URL} target="_blank" rel="noreferrer">
+              View the code <ExternalLink className="ml-1 h-3.5 w-3.5" />
+            </a>
+          </Button>
+        </div>
       </div>
     </header>
   );
@@ -367,10 +483,7 @@ function ErrorState({ message, onRetry }: { message: string; onRetry: () => void
       <p className="text-sm text-rose-600">{message || 'Something went wrong while analyzing the property.'}</p>
       <div className="mt-3 flex gap-3">
         <Button size="sm" variant="secondary" onClick={onRetry}>
-          Try again
-        </Button>
-        <Button size="sm" variant="ghost" asChild>
-          <a href="mailto:support@propertyvision.app">Contact support</a>
+          Dismiss
         </Button>
       </div>
     </Alert>

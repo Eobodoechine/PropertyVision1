@@ -3,8 +3,8 @@ import fs from 'fs';
 import https from 'https';
 import dns from 'dns';
 import { createHash } from 'node:crypto';
-import { GoogleAuth } from 'google-auth-library';
 import pLimit from 'p-limit';
+import { useCensusGeocoder, censusGeocode } from './utils/censusGeocoder';
 // import { groundedFreeform } from './vertex-freeform'; // Replaced with deterministic vertexGenerate
 import { fetchPropertyDetailsViaVertex } from './vertex-details';
 import { GeminiParser } from './utils/geminiParser';
@@ -90,8 +90,8 @@ class VertexComparableSearchService {
 
   constructor() {
     this.googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || '';
-    if (!this.googleMapsApiKey) {
-      throw new Error('GOOGLE_MAPS_API_KEY environment variable is required');
+    if (!this.googleMapsApiKey && !useCensusGeocoder()) {
+      throw new Error('GOOGLE_MAPS_API_KEY environment variable is required when GEOCODER=google');
     }
     this.geocodeCache = new Map();
     this.geminiParser = new GeminiParser();
@@ -1657,6 +1657,15 @@ Return exactly this JSON structure:
     if (USE_GEO_PROXY) {
       diag('geocode.proxy.call', { addressHash, timeoutMs, url: GEO_PROXY_URL });
       return await this.geocodeViaProxy(normalizedAddress, timeoutMs);
+    }
+
+    // Free Census geocoder (default). Google Maps only when GEOCODER=google.
+    if (useCensusGeocoder()) {
+      const c = await censusGeocode(normalizedAddress, timeoutMs);
+      if (!c) return null;
+      const coords = { lat: c.lat, lon: c.lng };
+      this.geocodeCache.set(normalizedAddress, coords);
+      return coords;
     }
 
     // DNS/VIP fingerprinting (async, non-blocking)

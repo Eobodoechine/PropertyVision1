@@ -1,5 +1,4 @@
 import winston from 'winston';
-import { LoggingWinston } from '@google-cloud/logging-winston';
 import { AsyncLocalStorage } from 'async_hooks';
 
 interface TraceContext {
@@ -11,16 +10,7 @@ interface TraceContext {
 
 const traceStorage = new AsyncLocalStorage<TraceContext>();
 
-const loggingWinston = new LoggingWinston({
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-  logName: 'propertyvision-api',
-});
-
-// Handle transport errors to prevent crashes
-loggingWinston.on('error', (error) => {
-  console.error('[LoggingWinston Transport Error - Non-Fatal]:', error.message);
-});
+// Logs go to the console only; the host collects them. (Google Cloud Logging was removed.)
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
@@ -40,7 +30,6 @@ const logger = winston.createLogger({
         winston.format.simple()
       ),
     }),
-    ...(process.env.PV_LOCAL_DEMO === 'true' ? [] : [loggingWinston]),
   ],
   // Prevent transport errors from crashing the process
   exitOnError: false,

@@ -333,6 +333,19 @@ export class RedisCache {
     }
   }
 
+  /**
+   * Increment a counter and set its expiry on first use. Used for the demo's
+   * daily usage caps. Throws if Redis is unavailable so callers fail closed.
+   */
+  async incrWithExpiry(key: string, ttlSeconds: number): Promise<number> {
+    if (!this.client || !this.isConnected) {
+      throw new Error('Redis not connected');
+    }
+    const count = await this.client.incr(key);
+    if (count === 1) await this.client.expire(key, ttlSeconds);
+    return count;
+  }
+
   // ==================== Redis Streams Methods ====================
 
   /**

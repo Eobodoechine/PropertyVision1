@@ -1,25 +1,6 @@
-import { Logging } from '@google-cloud/logging';
 import { getCurrentJobId } from './jobLogger';
 
-// Cloud Logging client (lazy-loaded for local development)
-// Pin projectId and resource explicitly to prevent logs going to different project/resource
-const PROJECT_ID = process.env.GOOGLE_CLOUD_PROJECT || 'your-google-cloud-project';
-let cloudLogger: any = null;
-let loggingClient: any = null;
-
-function getCloudLogger() {
-  if (!cloudLogger && process.env.NODE_ENV === 'development') {
-    try {
-      // Pin projectId explicitly (other AI agent recommendation #1)
-      loggingClient = new Logging({ projectId: PROJECT_ID });
-      cloudLogger = loggingClient.log('local-arv-test');
-    } catch (err) {
-      console.error('Failed to initialize Cloud Logging:', err);
-      cloudLogger = false; // Prevent retry
-    }
-  }
-  return cloudLogger === false ? null : cloudLogger;
-}
+// Probes log to the console only; the host collects stdout. (Google Cloud Logging was removed.)
 
 /**
  * Extract caller file:line:col from Error stack trace
@@ -74,25 +55,5 @@ export function probe(p: ProbeCommon & Record<string, any> = {}) {
     console.log(`[${shortId}]`, JSON.stringify(payload));
   } else {
     console.log(JSON.stringify(payload));
-  }
-
-  // In local development, also send to Cloud Logging API
-  const logger = getCloudLogger();
-  if (logger) {
-    // Pin resource explicitly to prevent entries going to 'global' unexpectedly (other AI agent recommendation #2)
-    const resource = {
-      type: 'global',
-      labels: { project_id: PROJECT_ID }
-    };
-
-    const entry = logger.entry({ severity: payload.level, resource }, payload);
-
-    // Use partialSuccess=false to surface errors instead of silent drops (other AI agent recommendation #3)
-    logger.write([entry], { partialSuccess: false }).catch((err: any) => {
-      console.error(`❌ Cloud Logging write error (probe):`, err);
-      console.error(`   Probe: ${payload.probe}`);
-      console.error(`   Project: ${PROJECT_ID}`);
-      console.error(`   Logger project: ${loggingClient?.projectId}`);
-    });
   }
 }

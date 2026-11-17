@@ -2,7 +2,8 @@ import 'dotenv/config';
 import https from 'https';
 import { jobLog } from './utils/jobLogger';
 import { getLocalDemoToken, localDemoEnabled } from './utils/localDemo.js';
-import { GoogleAuth } from 'google-auth-library';
+import { loadGoogleAuth } from './utils/googleAuthLazy';
+import { useClaude, claudeGenerate } from './claude-cli.js';
 import { withVertexLimiter } from './vertex-limiter';
 import { getRedisCache } from './utils/redisCache';
 import { normalizeAddress } from './utils/addressNormalizer';
@@ -118,22 +119,23 @@ async function getCloudAuthClient() {
     // Explicit SA JSON provided
     const json = b64 ? Buffer.from(b64, 'base64').toString('utf8') : jsonUtf8!;
     const credentials = JSON.parse(json);
-    const auth = new GoogleAuth({ credentials, scopes: VERTEX_SCOPES });
+    const auth = new (await loadGoogleAuth())({ credentials, scopes: VERTEX_SCOPES });
     return auth.getClient();
   }
 
   // Fallback: ADC (uses GOOGLE_APPLICATION_CREDENTIALS automatically)
-  const auth = new GoogleAuth({ scopes: VERTEX_SCOPES });
+  const auth = new (await loadGoogleAuth())({ scopes: VERTEX_SCOPES });
   return auth.getClient();
 }
 
-async function resolveProjectId(auth?: GoogleAuth) {
+async function resolveProjectId(auth?: any) {
+  if (useClaude()) return 'claude';
   const explicit =
     process.env.VERTEX_AI_PROJECT_ID ||
     process.env.GOOGLE_CLOUD_PROJECT ||
     process.env.GCLOUD_PROJECT;
   if (explicit) return explicit;
-  const a = auth ?? new GoogleAuth();
+  const a = auth ?? new (await loadGoogleAuth())();
   const pid = await a.getProjectId();
   return typeof pid === 'string' ? pid : String(pid);
 }
@@ -143,6 +145,7 @@ function resolveLocation() {
 }
 
 async function getAccessTokenViaAuth(): Promise<string> {
+  if (useClaude()) return 'claude';
   if (localDemoEnabled()) return getLocalDemoToken();
   const authClient = await getCloudAuthClient();
   const tokenObj = await authClient.getAccessToken();
@@ -188,6 +191,7 @@ async function vertexGenerate(opts: {
   responseSchema?: any;
   jobId?: string;
 }): Promise<string> {
+  if (useClaude()) return claudeGenerate(opts);
   const caller = opts.caller || 'vertex-details-unknown';
   const jobId = opts.jobId || 'unknown';
   const token = opts.token;
